@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>Space_Refinery_Game_Renderer</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	<EnablePreviewFeatures>True</EnablePreviewFeatures>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Veldrid" Version="4.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="FixedPrecision">
+      <HintPath>..\..\FixedPrecision\FixedPrecision\bin\Release\net6.0\FixedPrecision.dll</HintPath>
+    </Reference>
+    <Reference Include="FXRenderer">
+      <HintPath>..\..\FXPRenderer\FXRenderer\bin\Release\net6.0\FXRenderer.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

@@ -21,7 +21,7 @@ void main()
 {
     vec4 texColor = texture(sampler2D(Tex, Samp), fsin_TexCoord);
 
-    float diffuseIntensity = clamp(dot(fsin_Normal, -LightDirection), 0, 1);
+    float diffuseIntensity = clamp(dot(fsin_Normal, -LightDirection), 0.4f, 1);
     vec4 diffuseColor = texColor * diffuseIntensity;
 
     // Specular color

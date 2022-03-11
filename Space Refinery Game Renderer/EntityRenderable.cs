@@ -94,7 +94,7 @@ public class EntityRenderable : IRenderable, ITransformable
 			ResourceLayouts = new ResourceLayout[] { sharedLayout, textureLayout },
 			ShaderSet = new ShaderSetDescription(
 				vertexLayouts: new VertexLayoutDescription[] { vertexLayout, transformationVertexShaderParameterLayout },
-				shaders: Utils.LoadShaders(Environment.CurrentDirectory, "EntityRenderable", factory)
+				shaders: Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), "EntityRenderable", factory)
 			),
 			Outputs = gd.MainSwapchain.Framebuffer.OutputDescription
 		};

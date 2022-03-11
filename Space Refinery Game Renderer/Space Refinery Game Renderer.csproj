@@ -16,16 +16,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="EntityRenderable-fragment.glsl">
+    <Content Include="Shaders\EntityRenderable-fragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="EntityRenderable-vertex.glsl">
+    <Content Include="Shaders\EntityRenderable-vertex.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Starfield-fragment.glsl">
+    <Content Include="Shaders\Starfield-fragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Starfield-vertex.glsl">
+    <Content Include="Shaders\Starfield-vertex.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

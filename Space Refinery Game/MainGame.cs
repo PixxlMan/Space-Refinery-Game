@@ -30,6 +30,8 @@ public class MainGame
 
 	private Camera camera;
 
+	private Vector2FixedDecimalInt4 previousMousePos;
+
 	public void Start(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
 		window.Rendering += (_) => RenderScene();
@@ -38,7 +40,7 @@ public class MainGame
 
 		camera = new(window.Width, window.Height);
 
-		camera.Position = new Vector3FixedDecimalInt4(-36, 20, 100);
+		camera.Position = new Vector3FixedDecimalInt4(0, 0, 10);
 		camera.Pitch = "-0.3".Parse<FixedDecimalInt4>();
 		camera.Yaw = "0.1".Parse<FixedDecimalInt4>();
 
@@ -61,11 +63,15 @@ public class MainGame
 			FixedDecimalInt4 timeLastUpdate = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalInt4>();
 			FixedDecimalInt4 time;
 			FixedDecimalInt4 deltaTime;
-			while (true)
+			while (window.Exists)
 			{
 				time = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalInt4>();
 
 				deltaTime = time - timeLastUpdate;
+
+				timeLastUpdate = time;
+
+				Thread.Sleep(6);
 
 				Update(deltaTime);
 			}
@@ -94,33 +100,65 @@ public class MainGame
 	{
 		SceneRenderables.Add(StarfieldRenderable.Create(viewInfoBuffer, gd, factory));
 
-		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(10, 20, 30)), Mesh.LoadMesh(gd, factory, @"R:\teapot.obj"), Utils.GetSolidColoredTexture(RgbaByte.Red, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
+		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Environment.CurrentDirectory, "Pipe_1mx1m_Straight.obj")), Utils.GetSolidColoredTexture(RgbaByte.Red, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
+
+		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 2, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Environment.CurrentDirectory, "Pipe_1mx1m_Straight.obj")), Utils.GetSolidColoredTexture(RgbaByte.Red, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
 	}
 
 	private void Update(FixedDecimalInt4 deltaTime)
 	{
-		Thread.Sleep(2);
+		InputTracker.UpdateFrameInput(window.PumpEvents());
 
-		InputSnapshot snapshot = window.PumpEvents();
+		if (InputTracker.GetKey(Key.Escape))
+		{
+			Environment.Exit(69);
+		}
 
-		if (snapshot.KeyEvents.Count > 0)
-			switch (snapshot.KeyEvents[0].Key)
-			{
-				case Key.W:
-					camera.Position += -Vector3FixedDecimalInt4.UnitZ * deltaTime;
-					break;
-				case Key.S:
-					camera.Position += Vector3FixedDecimalInt4.UnitZ * deltaTime;
-					break;
-				case Key.A:
-					camera.Position += -Vector3FixedDecimalInt4.UnitX * deltaTime;
-					break;
-				case Key.D:
-					camera.Position += Vector3FixedDecimalInt4.UnitX * deltaTime;
-					break;
-				default:
-					break;
-			}
+		FixedDecimalInt4 sprintFactor = InputTracker.GetKey(Key.ShiftLeft)
+							? 3
+							: "0.5".Parse<FixedDecimalInt4>();
+		Vector3FixedDecimalInt4 motionDir = Vector3FixedDecimalInt4.Zero;
+		if (InputTracker.GetKey(Key.A))
+		{
+			motionDir += -Vector3FixedDecimalInt4.UnitX;
+		}
+		if (InputTracker.GetKey(Key.D))
+		{
+			motionDir += Vector3FixedDecimalInt4.UnitX;
+		}
+		if (InputTracker.GetKey(Key.W))
+		{
+			motionDir += -Vector3FixedDecimalInt4.UnitZ;
+		}
+		if (InputTracker.GetKey(Key.S))
+		{
+			motionDir += Vector3FixedDecimalInt4.UnitZ;
+		}
+		if (InputTracker.GetKey(Key.Q))
+		{
+			motionDir += -Vector3FixedDecimalInt4.UnitY;
+		}
+		if (InputTracker.GetKey(Key.E))
+		{
+			motionDir += Vector3FixedDecimalInt4.UnitY;
+		}
+
+		if (motionDir != Vector3FixedDecimalInt4.Zero)
+		{
+			QuaternionFixedDecimalInt4 lookRotation = QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(camera.Yaw.ToDouble().ToFixed<FixedDecimalInt4>(), camera.Pitch.ToDouble().ToFixed<FixedDecimalInt4>(), FixedDecimalInt4.Zero);
+			motionDir = Vector3FixedDecimalInt4.Transform(motionDir, lookRotation);
+			camera.Position += (motionDir * sprintFactor * deltaTime).ToVector3().ToFixed<Vector3FixedDecimalInt4>();
+		}
+
+		Vector2FixedDecimalInt4 mouseDelta = InputTracker.MousePosition - previousMousePos;
+		previousMousePos = InputTracker.MousePosition;
+
+		//if (InputTracker.GetMouseButton(MouseButton.Left) || InputTracker.GetMouseButton(MouseButton.Right))
+		{
+			camera.Yaw += -mouseDelta.X / 300;
+			camera.Pitch += -mouseDelta.Y / 300;
+			camera.Pitch = camera.Clamp(camera.Pitch, -1, 1);
+		}
 	}
 
 	private void RenderScene()
@@ -131,13 +169,13 @@ public class MainGame
 		commandList.Begin();
 
 		// Update per-frame resources.
-		commandList.UpdateBuffer(cameraProjViewBuffer, 0, new FXRenderer.MatrixPair(camera.ViewMatrix.ToMatrix4x4(), camera.ProjectionMatrix.ToMatrix4x4()));
+		commandList.UpdateBuffer(cameraProjViewBuffer, 0, new MatrixPair(camera.ViewMatrix.ToMatrix4x4(), camera.ProjectionMatrix.ToMatrix4x4()));
 
 		commandList.UpdateBuffer(lightInfoBuffer, 0, new LightInfo(lightDir.ToVector3(), camera.Position.ToVector3()));
 
 		Matrix4x4.Invert(camera.ProjectionMatrix.ToMatrix4x4(), out Matrix4x4 inverseProjection);
 		Matrix4x4.Invert(camera.ViewMatrix.ToMatrix4x4(), out Matrix4x4 inverseView);
-		commandList.UpdateBuffer(viewInfoBuffer, 0, new FXRenderer.MatrixPair(
+		commandList.UpdateBuffer(viewInfoBuffer, 0, new MatrixPair(
 			inverseProjection,
 			inverseView));
 

@@ -44,6 +44,8 @@ public class MainGame
 		camera.Pitch = "-0.3".Parse<FixedDecimalInt4>();
 		camera.Yaw = "0.1".Parse<FixedDecimalInt4>();
 
+		camera.NearDistance = "0.01".Parse<FixedDecimalInt4>();
+
 		this.window = window;
 
 		CreateGameObjects(gd, factory, swapchain);
@@ -100,9 +102,11 @@ public class MainGame
 	{
 		SceneRenderables.Add(StarfieldRenderable.Create(viewInfoBuffer, gd, factory));
 
-		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "Pipe_1mx1m_Straight.obj")), Utils.GetSolidColoredTexture(RgbaByte.Red, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
+		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeStraight.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
 
-		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 2, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "Pipe_1mx1m_Straight.obj")), Utils.GetSolidColoredTexture(RgbaByte.Red, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
+		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(1, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeBend90.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
+
+		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(3, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeBend180.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
 	}
 
 	private void Update(FixedDecimalInt4 deltaTime)

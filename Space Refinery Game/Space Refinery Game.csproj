@@ -10,12 +10,24 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\Models\Pipe\Pipe_1mx1m_Straight.obj" />
+    <None Remove="Assets\Models\Pipe\CleanedUpPipe.obj" />
+    <None Remove="Assets\Models\Pipe\Pipe.obj" />
+    <None Remove="Assets\Models\Pipe\Pipe180Bend.obj" />
+    <None Remove="Assets\Models\Pipe\Pipe90Bend.obj" />
+    <None Remove="Assets\Models\Pipe\PipeBend180.obj" />
+    <None Remove="Assets\Models\Pipe\PipeBend90.obj" />
+    <None Remove="Assets\Models\Pipe\PipeStraight.obj" />
     <None Remove="Pipe_1mx1m_Straight.obj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\Models\Pipe\Pipe_1mx1m_Straight.obj">
+    <Content Include="Assets\Models\Pipe\PipeBend180.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Models\Pipe\PipeBend90.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Models\Pipe\PipeStraight.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

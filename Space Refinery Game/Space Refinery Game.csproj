@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Models\Machinery\MachineryGeneric.obj" />
     <None Remove="Assets\Models\Pipe\CleanedUpPipe.obj" />
     <None Remove="Assets\Models\Pipe\Pipe.obj" />
     <None Remove="Assets\Models\Pipe\Pipe180Bend.obj" />
@@ -25,6 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Assets\Models\Machinery\MachineryGeneric.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Models\Pipe\PipeBend180.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

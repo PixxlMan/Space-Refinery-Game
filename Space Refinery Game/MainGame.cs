@@ -102,8 +102,8 @@ public class MainGame
 	private void AddDefaultObjects()
 	{
 		SceneRenderables.Add(StarfieldRenderable.Create(viewInfoBuffer, gd, factory));
-
-		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeStraight.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
+		 
+		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 /*90 degrees to radians*/ * (FixedDecimalInt4.PI / 180), 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeStraight.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
 
 		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(1, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeBend90.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
 
@@ -116,33 +116,13 @@ public class MainGame
 		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(5, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeStraightDivergeX.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
 
 		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(6, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeBend180.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
+
+		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(-1, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Machinery"), "MachineryGeneric.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
 	}
 
-	private Vector3FixedDecimalInt4 rotation;
 	private void Update(FixedDecimalInt4 deltaTime)
 	{
 		InputTracker.UpdateFrameInput(window.PumpEvents());
-
-		if (InputTracker.GetKey(Key.J))
-		{
-			rotation += new Vector3FixedDecimalInt4(1 * deltaTime, 0, 0);
-		}
-
-		if (InputTracker.GetKey(Key.K))
-		{
-			rotation += new Vector3FixedDecimalInt4(0, 1 * deltaTime, 0);
-		}
-
-		if (InputTracker.GetKey(Key.L))
-		{
-			rotation += new Vector3FixedDecimalInt4(0, 0, 1 * deltaTime);
-		}
-
-		Console.WriteLine("X " + rotation.X);
-		Console.WriteLine("Y " + rotation.Y);
-		Console.WriteLine("Z " + rotation.Z);
-
-		((ITransformable)SceneRenderables[3]).Rotation = QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(rotation.X, rotation.Y, rotation.Z);
 
 		if (InputTracker.GetKey(Key.Escape))
 		{

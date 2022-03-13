@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Veldrid;
+using static FixedPrecision.Convenience;
 
 namespace Space_Refinery_Game;
 
@@ -41,10 +42,10 @@ public class MainGame
 		camera = new(window.Width, window.Height);
 
 		camera.Position = new Vector3FixedDecimalInt4(0, 0, 10);
-		camera.Pitch = "-0.3".Parse<FixedDecimalInt4>();
-		camera.Yaw = "0.1".Parse<FixedDecimalInt4>();
+		camera.Pitch = 0;
+		camera.Yaw = 0;
 
-		camera.NearDistance = "0.01".Parse<FixedDecimalInt4>();
+		camera.NearDistance = "0.1".Parse<FixedDecimalInt4>();
 
 		this.window = window;
 
@@ -106,12 +107,42 @@ public class MainGame
 
 		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(1, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeBend90.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
 
-		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(3, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeBend180.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
+		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(2, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeBend45.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
+
+		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(3, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeStraightDivergeT.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
+
+		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(4, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeStraightDivergeY.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
+
+		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(5, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeStraightDivergeX.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
+
+		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(6, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeBend180.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
 	}
 
+	private Vector3FixedDecimalInt4 rotation;
 	private void Update(FixedDecimalInt4 deltaTime)
 	{
 		InputTracker.UpdateFrameInput(window.PumpEvents());
+
+		if (InputTracker.GetKey(Key.J))
+		{
+			rotation += new Vector3FixedDecimalInt4(1 * deltaTime, 0, 0);
+		}
+
+		if (InputTracker.GetKey(Key.K))
+		{
+			rotation += new Vector3FixedDecimalInt4(0, 1 * deltaTime, 0);
+		}
+
+		if (InputTracker.GetKey(Key.L))
+		{
+			rotation += new Vector3FixedDecimalInt4(0, 0, 1 * deltaTime);
+		}
+
+		Console.WriteLine("X " + rotation.X);
+		Console.WriteLine("Y " + rotation.Y);
+		Console.WriteLine("Z " + rotation.Z);
+
+		((ITransformable)SceneRenderables[3]).Rotation = QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(rotation.X, rotation.Y, rotation.Z);
 
 		if (InputTracker.GetKey(Key.Escape))
 		{

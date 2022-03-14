@@ -28,6 +28,9 @@ public class MainGame
 	private Vector3FixedDecimalInt4 lightDir;
 	private DeviceBuffer viewInfoBuffer;
 	private Window window;
+	private UI ui;
+
+	private String synchronizationObject = "69";
 
 	private Camera camera;
 
@@ -48,6 +51,8 @@ public class MainGame
 		camera.NearDistance = "0.1".Parse<FixedDecimalInt4>();
 
 		this.window = window;
+
+		ui = new(gd, swapchain.Framebuffer);
 
 		CreateGameObjects(gd, factory, swapchain);
 
@@ -122,95 +127,104 @@ public class MainGame
 
 	private void Update(FixedDecimalInt4 deltaTime)
 	{
-		InputTracker.UpdateFrameInput(window.PumpEvents());
+		lock(synchronizationObject)
+		{
+			InputTracker.UpdateFrameInput(window.PumpEvents());
 
-		if (InputTracker.GetKey(Key.Escape))
-		{
-			Environment.Exit(69);
-		}
+			ui.Update(deltaTime);
 
-		FixedDecimalInt4 sprintFactor = InputTracker.GetKey(Key.ShiftLeft)
-							? 3
-							: "0.5".Parse<FixedDecimalInt4>();
-		Vector3FixedDecimalInt4 motionDir = Vector3FixedDecimalInt4.Zero;
-		if (InputTracker.GetKey(Key.A))
-		{
-			motionDir += -Vector3FixedDecimalInt4.UnitX;
-		}
-		if (InputTracker.GetKey(Key.D))
-		{
-			motionDir += Vector3FixedDecimalInt4.UnitX;
-		}
-		if (InputTracker.GetKey(Key.W))
-		{
-			motionDir += -Vector3FixedDecimalInt4.UnitZ;
-		}
-		if (InputTracker.GetKey(Key.S))
-		{
-			motionDir += Vector3FixedDecimalInt4.UnitZ;
-		}
-		if (InputTracker.GetKey(Key.Q))
-		{
-			motionDir += -Vector3FixedDecimalInt4.UnitY;
-		}
-		if (InputTracker.GetKey(Key.E))
-		{
-			motionDir += Vector3FixedDecimalInt4.UnitY;
-		}
+			if (InputTracker.GetKey(Key.Escape))
+			{
+				Environment.Exit(69);
+			}
 
-		if (motionDir != Vector3FixedDecimalInt4.Zero)
-		{
-			QuaternionFixedDecimalInt4 lookRotation = QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(camera.Yaw.ToDouble().ToFixed<FixedDecimalInt4>(), camera.Pitch.ToDouble().ToFixed<FixedDecimalInt4>(), FixedDecimalInt4.Zero);
-			motionDir = Vector3FixedDecimalInt4.Transform(motionDir, lookRotation);
-			camera.Position += (motionDir * sprintFactor * deltaTime).ToVector3().ToFixed<Vector3FixedDecimalInt4>();
-		}
+			FixedDecimalInt4 sprintFactor = InputTracker.GetKey(Key.ShiftLeft)
+								? 3
+								: "0.5".Parse<FixedDecimalInt4>();
+			Vector3FixedDecimalInt4 motionDir = Vector3FixedDecimalInt4.Zero;
+			if (InputTracker.GetKey(Key.A))
+			{
+				motionDir += -Vector3FixedDecimalInt4.UnitX;
+			}
+			if (InputTracker.GetKey(Key.D))
+			{
+				motionDir += Vector3FixedDecimalInt4.UnitX;
+			}
+			if (InputTracker.GetKey(Key.W))
+			{
+				motionDir += -Vector3FixedDecimalInt4.UnitZ;
+			}
+			if (InputTracker.GetKey(Key.S))
+			{
+				motionDir += Vector3FixedDecimalInt4.UnitZ;
+			}
+			if (InputTracker.GetKey(Key.Q))
+			{
+				motionDir += -Vector3FixedDecimalInt4.UnitY;
+			}
+			if (InputTracker.GetKey(Key.E))
+			{
+				motionDir += Vector3FixedDecimalInt4.UnitY;
+			}
 
-		Vector2FixedDecimalInt4 mouseDelta = InputTracker.MousePosition - previousMousePos;
-		previousMousePos = InputTracker.MousePosition;
+			if (motionDir != Vector3FixedDecimalInt4.Zero)
+			{
+				QuaternionFixedDecimalInt4 lookRotation = QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(camera.Yaw.ToDouble().ToFixed<FixedDecimalInt4>(), camera.Pitch.ToDouble().ToFixed<FixedDecimalInt4>(), FixedDecimalInt4.Zero);
+				motionDir = Vector3FixedDecimalInt4.Transform(motionDir, lookRotation);
+				camera.Position += (motionDir * sprintFactor * deltaTime).ToVector3().ToFixed<Vector3FixedDecimalInt4>();
+			}
 
-		//if (InputTracker.GetMouseButton(MouseButton.Left) || InputTracker.GetMouseButton(MouseButton.Right))
-		{
-			camera.Yaw += -mouseDelta.X / 300;
-			camera.Pitch += -mouseDelta.Y / 300;
-			camera.Pitch = camera.Clamp(camera.Pitch, -1, 1);
+			Vector2FixedDecimalInt4 mouseDelta = InputTracker.MousePosition - previousMousePos;
+			previousMousePos = InputTracker.MousePosition;
+
+			//if (InputTracker.GetMouseButton(MouseButton.Left) || InputTracker.GetMouseButton(MouseButton.Right))
+			{
+				camera.Yaw += -mouseDelta.X / 300;
+				camera.Pitch += -mouseDelta.Y / 300;
+				camera.Pitch = camera.Clamp(camera.Pitch, -1, 1);
+			}
 		}
 	}
 
 	private void RenderScene()
 	{
 		Thread.Sleep(1);
-
-		// Begin() must be called before commands can be issued.
-		commandList.Begin();
-
-		// Update per-frame resources.
-		commandList.UpdateBuffer(cameraProjViewBuffer, 0, new MatrixPair(camera.ViewMatrix.ToMatrix4x4(), camera.ProjectionMatrix.ToMatrix4x4()));
-
-		commandList.UpdateBuffer(lightInfoBuffer, 0, new LightInfo(lightDir.ToVector3(), camera.Position.ToVector3()));
-
-		Matrix4x4.Invert(camera.ProjectionMatrix.ToMatrix4x4(), out Matrix4x4 inverseProjection);
-		Matrix4x4.Invert(camera.ViewMatrix.ToMatrix4x4(), out Matrix4x4 inverseView);
-		commandList.UpdateBuffer(viewInfoBuffer, 0, new MatrixPair(
-			inverseProjection,
-			inverseView));
-
-		// We want to render directly to the output window.
-		commandList.SetFramebuffer(swapchain.Framebuffer);
-		commandList.ClearColorTarget(0, RgbaFloat.White);
-		commandList.ClearDepthStencil(1f);
-
-		foreach (var renderable in SceneRenderables)
+		lock(synchronizationObject)
 		{
-			renderable.AddDrawCommands(commandList);
+			// Begin() must be called before commands can be issued.
+			commandList.Begin();
+
+			// Update per-frame resources.
+			commandList.UpdateBuffer(cameraProjViewBuffer, 0, new MatrixPair(camera.ViewMatrix.ToMatrix4x4(), camera.ProjectionMatrix.ToMatrix4x4()));
+
+			commandList.UpdateBuffer(lightInfoBuffer, 0, new LightInfo(lightDir.ToVector3(), camera.Position.ToVector3()));
+
+			Matrix4x4.Invert(camera.ProjectionMatrix.ToMatrix4x4(), out Matrix4x4 inverseProjection);
+			Matrix4x4.Invert(camera.ViewMatrix.ToMatrix4x4(), out Matrix4x4 inverseView);
+			commandList.UpdateBuffer(viewInfoBuffer, 0, new MatrixPair(
+				inverseProjection,
+				inverseView));
+
+			// We want to render directly to the output window.
+			commandList.SetFramebuffer(swapchain.Framebuffer);
+			commandList.ClearColorTarget(0, RgbaFloat.White);
+			commandList.ClearDepthStencil(1f);
+
+			ui.DrawUI(commandList);
+
+			foreach (var renderable in SceneRenderables)
+			{
+				renderable.AddDrawCommands(commandList);
+			}
+
+			// End() must be called before commands can be submitted for execution.
+			commandList.End();
+			gd.SubmitCommands(commandList);
+			gd.WaitForIdle();
+
+			// Once commands have been submitted, the rendered image can be presented to the application window.
+			gd.SwapBuffers(swapchain);
 		}
-
-		// End() must be called before commands can be submitted for execution.
-		commandList.End();
-		gd.SubmitCommands(commandList);
-		gd.WaitForIdle();
-
-		// Once commands have been submitted, the rendered image can be presented to the application window.
-		gd.SwapBuffers(swapchain);
 	}
 
 	[StructLayout(LayoutKind.Sequential)]

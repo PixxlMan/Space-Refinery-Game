@@ -35,7 +35,7 @@ public class MainGame
 	private UI ui;
 	private Simulation simulation;
 
-	private String synchronizationObject = "69";
+	public String SynchronizationObject = "69";
 
 	private Camera camera;
 
@@ -132,7 +132,7 @@ public class MainGame
 	FixedDecimalInt4 flow = 0;
 	private void Update(FixedDecimalInt4 deltaTime)
 	{
-		lock(synchronizationObject)
+		lock(SynchronizationObject)
 		{
 			InputTracker.UpdateFrameInput(window.PumpEvents());
 
@@ -195,7 +195,7 @@ public class MainGame
 	private void RenderScene(FixedDecimalInt4 deltaTime)
 	{
 		Thread.Sleep(1);
-		lock(synchronizationObject)
+		lock(SynchronizationObject)
 		{
 			// Begin() must be called before commands can be issued.
 			commandList.Begin();

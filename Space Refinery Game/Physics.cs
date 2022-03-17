@@ -232,10 +232,12 @@ namespace Space_Refinery_Game
             while (true)
             {
                 Thread.Sleep(16);
+                lock(game.SynchronizationObject)
+				{
+                    simulation.Timestep(0.016f, threadDispatcher);
 
-                simulation.Timestep(0.016f, threadDispatcher);
-
-                ((ITransformable)game.SceneRenderables[1]).Position = simulation.Bodies[sphereHandle].Pose.Position.ToFixed<Vector3FixedDecimalInt4>();
+                    ((ITransformable)game.SceneRenderables[1]).Position = simulation.Bodies[sphereHandle].Pose.Position.ToFixed<Vector3FixedDecimalInt4>();
+                }
             }
 
             //If you intend to reuse the BufferPool, disposing the simulation is a good idea- it returns all the buffers to the pool for reuse.

@@ -30,15 +30,9 @@ namespace Space_Refinery_Game
 		{
 			imGuiRenderer.Update(deltaTime.ToFloat(), InputTracker.FrameSnapshot);
 
-			ImGui.Begin("Test");
-			if (ImGui.Button("1233"))
-			{
-
-			}
-			ImGui.Text("Bouunjjoorr");
+			ImGui.Begin("Test", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
+				ImGui.LabelText("Test", "");
 			ImGui.End();
-
-			ImGui.ShowMetricsWindow();
 
 			imGuiRenderer.WindowResized((int)gd.MainSwapchain.Framebuffer.Width, (int)gd.MainSwapchain.Framebuffer.Height);
 

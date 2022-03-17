@@ -33,8 +33,6 @@ public class MainGame
 	{
 		this.window = window;
 
-		ui = new(gd);
-
 		GraphicsWorld = new();
 
 		GraphicsWorld.SetUp(window, gd, factory, swapchain);
@@ -47,7 +45,9 @@ public class MainGame
 
 		StartUpdating();
 
-		GraphicsWorld.AddRenderable(ui, 1);
+		ui = UI.Create(GraphicsWorld);
+
+		Starfield.Create(GraphicsWorld);
 
 		PipeStraght.Create(PhysicsWorld, GraphicsWorld, new Transform(new(0, 2, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * FixedDecimalInt4.DegreesToRadians, 0, 0)));
 
@@ -94,7 +94,7 @@ public class MainGame
 			}
 
 			flow += deltaTime * FixedDecimalInt4.DegreesToRadians * 10;
-			((ITransformable)(GraphicsWorld.UnorderedRenderables[2])).Rotation = QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(flow, -90 * FixedDecimalInt4.DegreesToRadians, 0);
+			//((ITransformable)(GraphicsWorld.UnorderedRenderables[0])).Rotation = QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(flow, -90 * FixedDecimalInt4.DegreesToRadians, 0);
 
 			FixedDecimalInt4 sprintFactor = InputTracker.GetKey(Key.ShiftLeft)
 								? 3

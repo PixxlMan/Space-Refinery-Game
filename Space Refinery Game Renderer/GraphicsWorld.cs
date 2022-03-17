@@ -58,14 +58,6 @@ public class GraphicsWorld
 		Camera.NearDistance = "0.1".Parse<FixedDecimalInt4>();
 
 		CreateDeviceObjects(gd, factory, swapchain);
-
-		UnorderedRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * FixedDecimalInt4.DegreesToRadians, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeStraight.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), CameraProjViewBuffer, LightInfoBuffer));
-
-		UnorderedRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, ".75".Parse<FixedDecimalInt4>()), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * FixedDecimalInt4.DegreesToRadians, -90 * FixedDecimalInt4.DegreesToRadians, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe", "Special"), "PipeSpecialValve.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), CameraProjViewBuffer, LightInfoBuffer));
-
-		UnorderedRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, ".75".Parse<FixedDecimalInt4>()), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * FixedDecimalInt4.DegreesToRadians, -90 * FixedDecimalInt4.DegreesToRadians, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe", "Special"), "PipeSpecialValveInternalBlocker.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), CameraProjViewBuffer, LightInfoBuffer));
-
-		AddRenderable(StarfieldRenderable.Create(ViewInfoBuffer, gd, factory), -1);
 	}
 
 	public void Run()

@@ -8,6 +8,7 @@ using ImGuiNET;
 using FixedPrecision;
 using System.Numerics;
 using FXRenderer;
+using Space_Refinery_Game_Renderer;
 
 namespace Space_Refinery_Game
 {
@@ -17,10 +18,8 @@ namespace Space_Refinery_Game
 
 		private GraphicsDevice gd;
 
-		public UI(GraphicsDevice gd)
+		private UI(GraphicsDevice gd)
 		{
-			ImGui.CreateContext();
-
 			imGuiRenderer = new(gd, gd.MainSwapchain.Framebuffer.OutputDescription, (int)gd.MainSwapchain.Framebuffer.Width, (int)gd.MainSwapchain.Framebuffer.Height);
 
 			imGuiRenderer.CreateDeviceResources(gd, gd.MainSwapchain.Framebuffer.OutputDescription);
@@ -28,19 +27,35 @@ namespace Space_Refinery_Game
 			this.gd = gd;
 		}
 
+		public static UI Create(GraphicsWorld graphWorld)
+		{
+			ImGui.CreateContext();
+
+			UI ui = new(graphWorld.GraphicsDevice);
+
+			graphWorld.AddRenderable(ui, 1);
+
+			return ui;
+		}
+
 		public void AddDrawCommands(CommandList cl)
 		{
 			imGuiRenderer.Update(1, InputTracker.FrameSnapshot);
 
-			ImGui.Begin("Test", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
-				ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2, gd.MainSwapchain.Framebuffer.Height / 2));
-
-				ImGui.LabelText("Test", "");
-			ImGui.End();
+			DoUI();
 
 			imGuiRenderer.WindowResized((int)gd.MainSwapchain.Framebuffer.Width, (int)gd.MainSwapchain.Framebuffer.Height);
 
 			imGuiRenderer.Render(gd, cl);
+		}
+
+		public void DoUI()
+		{
+			ImGui.Begin("Test", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
+			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2, gd.MainSwapchain.Framebuffer.Height / 2));
+
+			ImGui.LabelText("Test", "");
+			ImGui.End();
 		}
 	}
 }

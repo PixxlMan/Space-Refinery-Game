@@ -35,12 +35,17 @@ namespace Space_Refinery_Game
 
 		public void Run()
 		{
-			while (true)
+			Thread thread = new Thread(new ParameterizedThreadStart((_) =>
 			{
-				Thread.Sleep(16);
+				while (true)
+				{
+					Thread.Sleep(16);
 
-				simulation.Timestep(0.016f, threadDispatcher);
-			}
+					simulation.Timestep(0.016f, threadDispatcher);
+				}
+			}));
+
+			thread.Start();
 		}
 
 		public PhysicsObject AddPhysicsObject<TShape>(PhysicsObjectDescription<TShape> physicsObjectDescription) where TShape : unmanaged, IConvexShape

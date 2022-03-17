@@ -45,16 +45,11 @@ public class MainGame
 
 		PhysicsWorld.SetUp();
 
-		Thread thread = new Thread(new ParameterizedThreadStart((_) =>
-		{
-			PhysicsWorld.Run();
-		}));
-
-		thread.Start();
-
-		Update(1);
+		PhysicsWorld.Run();
 
 		StartUpdating();
+
+		GraphicsWorld.Run();
 	}
 
 	private void StartUpdating()

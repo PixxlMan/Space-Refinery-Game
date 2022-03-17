@@ -35,7 +35,7 @@ public class GraphicsWorld
 
 	public void SetUp(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
-		window.Rendering += RenderScene;
+		this.window = window;
 
 		window.Resized += () => Camera.WindowResized(window.Width, window.Height);
 
@@ -48,6 +48,35 @@ public class GraphicsWorld
 		Camera.NearDistance = "0.1".Parse<FixedDecimalInt4>();
 
 		CreateDeviceObjects(gd, factory, swapchain);
+
+		SceneRenderables.Add(StarfieldRenderable.Create(viewInfoBuffer, gd, factory));
+	}
+
+	public void Run()
+	{
+		Thread thread = new Thread(new ParameterizedThreadStart((_) =>
+		{
+			Stopwatch stopwatch = new();
+			stopwatch.Start();
+
+			FixedDecimalInt4 timeLastUpdate = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalInt4>();
+			FixedDecimalInt4 time;
+			FixedDecimalInt4 deltaTime;
+			while (window.Exists)
+			{
+				time = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalInt4>();
+
+				deltaTime = time - timeLastUpdate;
+
+				timeLastUpdate = time;
+
+				Thread.Sleep(1);
+
+				RenderScene(deltaTime);
+			}
+		}));
+
+		thread.Start();
 	}
 
 	private void CreateDeviceObjects(GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)

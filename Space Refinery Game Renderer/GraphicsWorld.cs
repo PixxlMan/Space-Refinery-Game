@@ -19,14 +19,22 @@ public class GraphicsWorld
 {
 	public List<IRenderable> SceneRenderables = new();
 
-	private GraphicsDevice gd;
-	private ResourceFactory factory;
-	private Swapchain swapchain;
+	public GraphicsDevice GraphicsDevice;
+
+	public ResourceFactory Factory;
+
+	public Swapchain Swapchain;
+
 	private CommandList commandList;
-	private DeviceBuffer cameraProjViewBuffer;
-	private DeviceBuffer lightInfoBuffer;
+
+	public DeviceBuffer CameraProjViewBuffer;
+
+	public DeviceBuffer LightInfoBuffer;
+
 	private Vector3FixedDecimalInt4 lightDir;
-	private DeviceBuffer viewInfoBuffer;
+
+	public DeviceBuffer ViewInfoBuffer;
+
 	private Window window;
 
 	public String SynchronizationObject = "69";
@@ -49,7 +57,13 @@ public class GraphicsWorld
 
 		CreateDeviceObjects(gd, factory, swapchain);
 
-		SceneRenderables.Add(StarfieldRenderable.Create(viewInfoBuffer, gd, factory));
+		SceneRenderables.Add(StarfieldRenderable.Create(ViewInfoBuffer, gd, factory));
+
+		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * FixedDecimalInt4.DegreesToRadians, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeStraight.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), CameraProjViewBuffer, LightInfoBuffer));
+
+		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, ".75".Parse<FixedDecimalInt4>()), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * FixedDecimalInt4.DegreesToRadians, -90 * FixedDecimalInt4.DegreesToRadians, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe", "Special"), "PipeSpecialValve.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), CameraProjViewBuffer, LightInfoBuffer));
+
+		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, ".75".Parse<FixedDecimalInt4>()), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * FixedDecimalInt4.DegreesToRadians, -90 * FixedDecimalInt4.DegreesToRadians, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe", "Special"), "PipeSpecialValveInternalBlocker.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), CameraProjViewBuffer, LightInfoBuffer));
 	}
 
 	public void Run()
@@ -81,18 +95,18 @@ public class GraphicsWorld
 
 	private void CreateDeviceObjects(GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
-		this.gd = gd;
-		this.factory = factory;
-		this.swapchain = swapchain;
+		this.GraphicsDevice = gd;
+		this.Factory = factory;
+		this.Swapchain = swapchain;
 
 		commandList = factory.CreateCommandList();
 
-		cameraProjViewBuffer = factory.CreateBuffer(
+		CameraProjViewBuffer = factory.CreateBuffer(
 			new BufferDescription((uint)(Unsafe.SizeOf<Matrix4x4>() * 2), BufferUsage.UniformBuffer | BufferUsage.Dynamic));
-		lightInfoBuffer = factory.CreateBuffer(new BufferDescription(32, BufferUsage.UniformBuffer | BufferUsage.Dynamic));
+		LightInfoBuffer = factory.CreateBuffer(new BufferDescription(32, BufferUsage.UniformBuffer | BufferUsage.Dynamic));
 		lightDir = Vector3FixedDecimalInt4.Normalize(new Vector3FixedDecimalInt4("0.3".Parse<FixedDecimalInt4>(), "-0.75".Parse<FixedDecimalInt4>(), "-0.3".Parse<FixedDecimalInt4>()));
 
-		viewInfoBuffer = factory.CreateBuffer(new BufferDescription((uint)Unsafe.SizeOf<MatrixPair>(), BufferUsage.UniformBuffer | BufferUsage.Dynamic));
+		ViewInfoBuffer = factory.CreateBuffer(new BufferDescription((uint)Unsafe.SizeOf<MatrixPair>(), BufferUsage.UniformBuffer | BufferUsage.Dynamic));
 	}
 
 	public void AddRenderable(IRenderable renderable)
@@ -108,18 +122,18 @@ public class GraphicsWorld
 			commandList.Begin();
 
 			// Update per-frame resources.
-			commandList.UpdateBuffer(cameraProjViewBuffer, 0, new MatrixPair(Camera.ViewMatrix.ToMatrix4x4(), Camera.ProjectionMatrix.ToMatrix4x4()));
+			commandList.UpdateBuffer(CameraProjViewBuffer, 0, new MatrixPair(Camera.ViewMatrix.ToMatrix4x4(), Camera.ProjectionMatrix.ToMatrix4x4()));
 
-			commandList.UpdateBuffer(lightInfoBuffer, 0, new LightInfo(lightDir.ToVector3(), Camera.Position.ToVector3()));
+			commandList.UpdateBuffer(LightInfoBuffer, 0, new LightInfo(lightDir.ToVector3(), Camera.Position.ToVector3()));
 
 			Matrix4x4.Invert(Camera.ProjectionMatrix.ToMatrix4x4(), out Matrix4x4 inverseProjection);
 			Matrix4x4.Invert(Camera.ViewMatrix.ToMatrix4x4(), out Matrix4x4 inverseView);
-			commandList.UpdateBuffer(viewInfoBuffer, 0, new MatrixPair(
+			commandList.UpdateBuffer(ViewInfoBuffer, 0, new MatrixPair(
 				inverseProjection,
 				inverseView));
 
 			// We want to render directly to the output window.
-			commandList.SetFramebuffer(swapchain.Framebuffer);
+			commandList.SetFramebuffer(Swapchain.Framebuffer);
 			commandList.ClearColorTarget(0, RgbaFloat.White);
 			commandList.ClearDepthStencil(1f);
 
@@ -135,11 +149,11 @@ public class GraphicsWorld
 
 			// End() must be called before commands can be submitted for execution.
 			commandList.End();
-			gd.SubmitCommands(commandList);
-			gd.WaitForIdle();
+			GraphicsDevice.SubmitCommands(commandList);
+			GraphicsDevice.WaitForIdle();
 
 			// Once commands have been submitted, the rendered image can be presented to the application window.
-			gd.SwapBuffers(swapchain);
+			GraphicsDevice.SwapBuffers(Swapchain);
 		}
 	}
 

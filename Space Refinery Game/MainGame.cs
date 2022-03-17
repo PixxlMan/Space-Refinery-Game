@@ -47,6 +47,10 @@ public class MainGame
 
 		StartUpdating();
 
+		GraphicsWorld.AddRenderable(ui);
+
+		PipeStraght.Create(PhysicsWorld, GraphicsWorld, new Transform(new(0, 2, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * FixedDecimalInt4.DegreesToRadians, 0, 0)));
+
 		GraphicsWorld.Run();
 	}
 
@@ -90,7 +94,7 @@ public class MainGame
 			}
 
 			flow += deltaTime * FixedDecimalInt4.DegreesToRadians * 10;
-			//((ITransformable)(GraphicsWorld.SceneRenderables[3])).Rotation = QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(flow, -90 * DegreesToRadians, 0);
+			((ITransformable)(GraphicsWorld.SceneRenderables[3])).Rotation = QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(flow, -90 * FixedDecimalInt4.DegreesToRadians, 0);
 
 			FixedDecimalInt4 sprintFactor = InputTracker.GetKey(Key.ShiftLeft)
 								? 3

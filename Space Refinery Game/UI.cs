@@ -7,10 +7,11 @@ using Veldrid;
 using ImGuiNET;
 using FixedPrecision;
 using System.Numerics;
+using FXRenderer;
 
 namespace Space_Refinery_Game
 {
-	public class UI
+	public class UI : IRenderable
 	{
 		private ImGuiRenderer imGuiRenderer;
 
@@ -27,9 +28,9 @@ namespace Space_Refinery_Game
 			this.gd = gd;
 		}
 
-		public void DrawUI(CommandList cl, FixedDecimalInt4 deltaTime)
+		public void AddDrawCommands(CommandList cl)
 		{
-			imGuiRenderer.Update(deltaTime.ToFloat(), InputTracker.FrameSnapshot);
+			imGuiRenderer.Update(1, InputTracker.FrameSnapshot);
 
 			ImGui.Begin("Test", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
 				ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2, gd.MainSwapchain.Framebuffer.Height / 2));

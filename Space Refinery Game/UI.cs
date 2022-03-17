@@ -13,34 +13,36 @@ namespace Space_Refinery_Game
 	{
 		private ImGuiRenderer imGuiRenderer;
 
-		private Framebuffer framebuffer;
-
 		private GraphicsDevice gd;
 
-		public UI(GraphicsDevice gd, Framebuffer framebuffer)
+		public UI(GraphicsDevice gd)
 		{
 			ImGui.CreateContext();
 
-			imGuiRenderer = new(gd, framebuffer.OutputDescription, (int)framebuffer.Width, (int)framebuffer.Height);
+			imGuiRenderer = new(gd, gd.MainSwapchain.Framebuffer.OutputDescription, (int)gd.MainSwapchain.Framebuffer.Width, (int)gd.MainSwapchain.Framebuffer.Height);
 
-			imGuiRenderer.CreateDeviceResources(gd, framebuffer.OutputDescription);
+			imGuiRenderer.CreateDeviceResources(gd, gd.MainSwapchain.Framebuffer.OutputDescription);
 
-			this.framebuffer = framebuffer;
+			this.gd = gd;
 		}
 
-		public void DrawUI(CommandList cl)
-		{
-			ImGui.Begin("Test");
-			ImGui.End();
-
-			imGuiRenderer.WindowResized((int)framebuffer.Width, (int)framebuffer.Height);
-
-			imGuiRenderer.Render(gd, cl);
-		}
-
-		public void Update(FixedDecimalInt4 deltaTime)
+		public void DrawUI(CommandList cl, FixedDecimalInt4 deltaTime)
 		{
 			imGuiRenderer.Update(deltaTime.ToFloat(), InputTracker.FrameSnapshot);
+
+			ImGui.Begin("Test");
+			if (ImGui.Button("1233"))
+			{
+
+			}
+			ImGui.Text("Bouunjjoorr");
+			ImGui.End();
+
+			ImGui.ShowMetricsWindow();
+
+			imGuiRenderer.WindowResized((int)gd.MainSwapchain.Framebuffer.Width, (int)gd.MainSwapchain.Framebuffer.Height);
+
+			imGuiRenderer.Render(gd, cl);
 		}
 	}
 }

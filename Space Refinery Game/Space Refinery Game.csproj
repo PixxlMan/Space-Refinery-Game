@@ -22,6 +22,8 @@
     <None Remove="Assets\Models\Pipe\PipeStraightDivergeT.obj" />
     <None Remove="Assets\Models\Pipe\PipeStraightDivergeX.obj" />
     <None Remove="Assets\Models\Pipe\PipeStraightDivergeY.obj" />
+    <None Remove="Assets\Models\Pipe\Special\PipeSpecialValve.obj" />
+    <None Remove="Assets\Models\Pipe\Special\PipeSpecialValveInternalBlocker.obj" />
     <None Remove="Pipe_1mx1m_Straight.obj" />
   </ItemGroup>
 
@@ -50,11 +52,18 @@
     <Content Include="Assets\Models\Pipe\PipeStraightDivergeY.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Models\Pipe\Special\PipeSpecialValve.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Models\Pipe\Special\PipeSpecialValveInternalBlocker.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Veldrid" Version="4.8.0" />
     <PackageReference Include="Veldrid.ImGui" Version="5.72.0" />
+    <PackageReference Include="Veldrid.RenderDoc" Version="1.0.1" />
     <PackageReference Include="Veldrid.SDL2" Version="4.8.0" />
     <PackageReference Include="Veldrid.SPIRV" Version="1.0.14" />
     <PackageReference Include="Veldrid.StartupUtilities" Version="4.8.0" />

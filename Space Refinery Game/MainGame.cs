@@ -17,6 +17,8 @@ namespace Space_Refinery_Game;
 
 public class MainGame
 {
+	public static FixedDecimalInt4 DegreesToRadians = (FixedDecimalInt4.PI / 180);
+
 	public List<IRenderable> SceneRenderables = new();
 
 	private GraphicsDevice gd;
@@ -38,7 +40,7 @@ public class MainGame
 
 	public void Start(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
-		window.Rendering += (_) => RenderScene();
+		window.Rendering += RenderScene;
 
 		window.Resized += () => camera.WindowResized(window.Width, window.Height);
 
@@ -52,11 +54,13 @@ public class MainGame
 
 		this.window = window;
 
-		ui = new(gd, swapchain.Framebuffer);
+		ui = new(gd);
 
 		CreateGameObjects(gd, factory, swapchain);
 
 		AddDefaultObjects();
+
+		Update(1);
 
 		StartUpdating();
 	}
@@ -108,35 +112,27 @@ public class MainGame
 	{
 		SceneRenderables.Add(StarfieldRenderable.Create(viewInfoBuffer, gd, factory));
 		 
-		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 /*90 degrees to radians*/ * (FixedDecimalInt4.PI / 180), 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeStraight.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
+		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * DegreesToRadians, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeStraight.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
 
-		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(1, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeBend90.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
+		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, ".75".Parse<FixedDecimalInt4>()), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * DegreesToRadians, -90 * DegreesToRadians, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe", "Special"), "PipeSpecialValve.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
 
-		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(2, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeBend45.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
-
-		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(3, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeStraightDivergeT.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
-
-		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(4, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeStraightDivergeY.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
-
-		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(5, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeStraightDivergeX.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
-
-		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(6, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeBend180.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
-
-		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(-1, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Machinery"), "MachineryGeneric.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
+		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, ".75".Parse<FixedDecimalInt4>()), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * DegreesToRadians, -90 * DegreesToRadians, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe", "Special"), "PipeSpecialValveInternalBlocker.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), cameraProjViewBuffer, lightInfoBuffer));
 	}
 
+	FixedDecimalInt4 flow = 0;
 	private void Update(FixedDecimalInt4 deltaTime)
 	{
 		lock(synchronizationObject)
 		{
 			InputTracker.UpdateFrameInput(window.PumpEvents());
 
-			ui.Update(deltaTime);
-
 			if (InputTracker.GetKey(Key.Escape))
 			{
 				Environment.Exit(69);
 			}
+
+			flow += deltaTime * DegreesToRadians * 10;
+			((ITransformable)(SceneRenderables[3])).Rotation = QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(flow, -90 * DegreesToRadians, 0);
 
 			FixedDecimalInt4 sprintFactor = InputTracker.GetKey(Key.ShiftLeft)
 								? 3
@@ -186,7 +182,7 @@ public class MainGame
 		}
 	}
 
-	private void RenderScene()
+	private void RenderScene(FixedDecimalInt4 deltaTime)
 	{
 		Thread.Sleep(1);
 		lock(synchronizationObject)
@@ -210,12 +206,15 @@ public class MainGame
 			commandList.ClearColorTarget(0, RgbaFloat.White);
 			commandList.ClearDepthStencil(1f);
 
-			ui.DrawUI(commandList);
-
+			commandList.PushDebugGroup("Draw renderables");
 			foreach (var renderable in SceneRenderables)
 			{
 				renderable.AddDrawCommands(commandList);
 			}
+			commandList.PopDebugGroup();
+
+			commandList.InsertDebugMarker("Draw UI");
+			ui.DrawUI(commandList, deltaTime);
 
 			// End() must be called before commands can be submitted for execution.
 			commandList.End();

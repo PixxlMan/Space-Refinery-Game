@@ -9,13 +9,10 @@ namespace Space_Refinery_Game
 
 		public Transform InitialTransform;
 
-		public bool Static;
-
-		public PhysicsObjectDescription(TShape shape, Transform initialTransform, bool @static)
+		public PhysicsObjectDescription(TShape shape, Transform initialTransform)
 		{
 			Shape = shape;
 			InitialTransform = initialTransform;
-			Static = @static;
 		}
 	}
 }

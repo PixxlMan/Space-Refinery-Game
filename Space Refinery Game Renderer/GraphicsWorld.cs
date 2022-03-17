@@ -17,7 +17,9 @@ namespace Space_Refinery_Game_Renderer;
 
 public class GraphicsWorld
 {
-	public List<IRenderable> SceneRenderables = new();
+	public List<IRenderable> UnorderedRenderables = new();
+
+	public SortedDictionary<int, List<IRenderable>> SpecificOrderRenderables = new();
 
 	public GraphicsDevice GraphicsDevice;
 
@@ -57,13 +59,13 @@ public class GraphicsWorld
 
 		CreateDeviceObjects(gd, factory, swapchain);
 
-		SceneRenderables.Add(StarfieldRenderable.Create(ViewInfoBuffer, gd, factory));
+		UnorderedRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * FixedDecimalInt4.DegreesToRadians, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeStraight.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), CameraProjViewBuffer, LightInfoBuffer));
 
-		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * FixedDecimalInt4.DegreesToRadians, 0, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeStraight.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), CameraProjViewBuffer, LightInfoBuffer));
+		UnorderedRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, ".75".Parse<FixedDecimalInt4>()), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * FixedDecimalInt4.DegreesToRadians, -90 * FixedDecimalInt4.DegreesToRadians, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe", "Special"), "PipeSpecialValve.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), CameraProjViewBuffer, LightInfoBuffer));
 
-		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, ".75".Parse<FixedDecimalInt4>()), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * FixedDecimalInt4.DegreesToRadians, -90 * FixedDecimalInt4.DegreesToRadians, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe", "Special"), "PipeSpecialValve.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), CameraProjViewBuffer, LightInfoBuffer));
+		UnorderedRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, ".75".Parse<FixedDecimalInt4>()), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * FixedDecimalInt4.DegreesToRadians, -90 * FixedDecimalInt4.DegreesToRadians, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe", "Special"), "PipeSpecialValveInternalBlocker.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), CameraProjViewBuffer, LightInfoBuffer));
 
-		SceneRenderables.Add(EntityRenderable.Create(gd, factory, new Transform(new(0, 0, ".75".Parse<FixedDecimalInt4>()), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * FixedDecimalInt4.DegreesToRadians, -90 * FixedDecimalInt4.DegreesToRadians, 0)), Mesh.LoadMesh(gd, factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe", "Special"), "PipeSpecialValveInternalBlocker.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, gd, factory), CameraProjViewBuffer, LightInfoBuffer));
+		AddRenderable(StarfieldRenderable.Create(ViewInfoBuffer, gd, factory), -1);
 	}
 
 	public void Run()
@@ -111,7 +113,19 @@ public class GraphicsWorld
 
 	public void AddRenderable(IRenderable renderable)
 	{
-		SceneRenderables.Add(renderable);
+		UnorderedRenderables.Add(renderable);
+	}
+
+	public void AddRenderable(IRenderable renderable, int order)
+	{
+		if (SpecificOrderRenderables.ContainsKey(order))
+		{
+			SpecificOrderRenderables[order].Add(renderable);
+		}
+		else
+		{
+			SpecificOrderRenderables.Add(order, new() { renderable });
+		}
 	}
 
 	private void RenderScene(FixedDecimalInt4 deltaTime)
@@ -138,14 +152,43 @@ public class GraphicsWorld
 			commandList.ClearDepthStencil(1f);
 
 			commandList.PushDebugGroup("Draw renderables");
-			foreach (var renderable in SceneRenderables)
+			if (SpecificOrderRenderables.Count == 0)
 			{
-				renderable.AddDrawCommands(commandList);
+				foreach (var renderable in UnorderedRenderables)
+				{
+					renderable.AddDrawCommands(commandList);
+				}
+			}
+			else
+			{
+				bool hasRenderedUnorderedRenderables = false;
+				foreach (var index in SpecificOrderRenderables.Keys)
+				{
+					if (index >= 0 && !hasRenderedUnorderedRenderables)
+					{
+						foreach (var renderable in UnorderedRenderables)
+						{
+							renderable.AddDrawCommands(commandList);
+
+							hasRenderedUnorderedRenderables = true;
+						}
+					}
+
+					foreach (var renderable in SpecificOrderRenderables[index])
+					{
+						renderable.AddDrawCommands(commandList);
+					}
+				}
+
+				if (!hasRenderedUnorderedRenderables)
+				{
+					foreach (var renderable in UnorderedRenderables)
+					{
+						renderable.AddDrawCommands(commandList);
+					}
+				}
 			}
 			commandList.PopDebugGroup();
-
-			commandList.InsertDebugMarker("Draw UI");
-			//ui.DrawUI(commandList, deltaTime);
 
 			// End() must be called before commands can be submitted for execution.
 			commandList.End();

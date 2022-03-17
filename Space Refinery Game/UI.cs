@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Veldrid;
 using ImGuiNET;
 using FixedPrecision;
+using System.Numerics;
 
 namespace Space_Refinery_Game
 {
@@ -31,6 +32,8 @@ namespace Space_Refinery_Game
 			imGuiRenderer.Update(deltaTime.ToFloat(), InputTracker.FrameSnapshot);
 
 			ImGui.Begin("Test", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
+				ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2, gd.MainSwapchain.Framebuffer.Height / 2));
+
 				ImGui.LabelText("Test", "");
 			ImGui.End();
 

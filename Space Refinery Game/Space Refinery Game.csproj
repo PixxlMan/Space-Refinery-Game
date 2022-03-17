@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	<EnablePreviewFeatures>True</EnablePreviewFeatures>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -61,6 +62,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BepuPhysics" Version="2.4.0" />
     <PackageReference Include="Veldrid" Version="4.8.0" />
     <PackageReference Include="Veldrid.ImGui" Version="5.72.0" />
     <PackageReference Include="Veldrid.RenderDoc" Version="1.0.1" />

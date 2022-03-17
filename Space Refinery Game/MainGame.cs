@@ -12,6 +12,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Veldrid;
 using static FixedPrecision.Convenience;
+using BepuPhysics;
+using BepuUtilities.Memory;
 
 namespace Space_Refinery_Game;
 
@@ -31,6 +33,7 @@ public class MainGame
 	private DeviceBuffer viewInfoBuffer;
 	private Window window;
 	private UI ui;
+	private Simulation simulation;
 
 	private String synchronizationObject = "69";
 
@@ -56,9 +59,16 @@ public class MainGame
 
 		ui = new(gd);
 
-		CreateGameObjects(gd, factory, swapchain);
+		CreateDeviceObjects(gd, factory, swapchain);
 
 		AddDefaultObjects();
+
+		Thread thread = new Thread(new ParameterizedThreadStart((_) =>
+		{
+			Physics.Run(this);
+		}));
+
+		thread.Start();
 
 		Update(1);
 
@@ -92,7 +102,7 @@ public class MainGame
 		thread.Start();
 	}
 
-	private void CreateGameObjects(GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
+	private void CreateDeviceObjects(GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
 		this.gd = gd;
 		this.factory = factory;

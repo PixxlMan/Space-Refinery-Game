@@ -19,8 +19,6 @@ namespace Space_Refinery_Game;
 
 public class MainGame
 {
-	public static FixedDecimalInt4 DegreesToRadians = (FixedDecimalInt4.PI / 180);
-
 	public GraphicsWorld GraphicsWorld;
 	public PhysicsWorld PhysicsWorld;
 
@@ -91,7 +89,7 @@ public class MainGame
 				Environment.Exit(69);
 			}
 
-			flow += deltaTime * DegreesToRadians * 10;
+			flow += deltaTime * FixedDecimalInt4.DegreesToRadians * 10;
 			//((ITransformable)(GraphicsWorld.SceneRenderables[3])).Rotation = QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(flow, -90 * DegreesToRadians, 0);
 
 			FixedDecimalInt4 sprintFactor = InputTracker.GetKey(Key.ShiftLeft)

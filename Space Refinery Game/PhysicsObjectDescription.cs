@@ -12,11 +12,14 @@ namespace Space_Refinery_Game
 
 		public FixedDecimalInt4 Mass;
 
-		public PhysicsObjectDescription(TShape shape, Transform initialTransform, FixedDecimalInt4 mass)
+		public bool Kinematic;
+
+		public PhysicsObjectDescription(TShape shape, Transform initialTransform, FixedDecimalInt4 mass, bool kinematic)
 		{
 			Shape = shape;
 			InitialTransform = initialTransform;
 			Mass = mass;
+			Kinematic = kinematic;
 		}
 	}
 }

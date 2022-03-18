@@ -43,8 +43,6 @@ public class MainGame
 
 		PhysicsWorld.Run();
 
-		StartUpdating();
-
 		ui = UI.Create(GraphicsWorld);
 
 		Starfield.Create(GraphicsWorld);
@@ -52,6 +50,8 @@ public class MainGame
 		PipeStraght.Create(PhysicsWorld, GraphicsWorld, new Transform(new(0, 2, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * FixedDecimalInt4.DegreesToRadians, 0, 0)));
 
 		GraphicsWorld.Run();
+
+		StartUpdating();
 	}
 
 	private void StartUpdating()
@@ -81,7 +81,6 @@ public class MainGame
 		thread.Start();
 	}
 
-	FixedDecimalInt4 flow = 0;
 	private void Update(FixedDecimalInt4 deltaTime)
 	{
 		lock(SynchronizationObject)
@@ -93,8 +92,12 @@ public class MainGame
 				Environment.Exit(69);
 			}
 
-			flow += deltaTime * FixedDecimalInt4.DegreesToRadians * 10;
-			//((ITransformable)(GraphicsWorld.UnorderedRenderables[0])).Rotation = QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(flow, -90 * FixedDecimalInt4.DegreesToRadians, 0);
+			var physicsObject = PhysicsWorld.Raycast(GraphicsWorld.Camera.Position, GraphicsWorld.Camera.Forward, 1000);
+
+			if (physicsObject is not null)
+				ui.Text = physicsObject.Text;
+			else
+				ui.Text = "Space";
 
 			FixedDecimalInt4 sprintFactor = InputTracker.GetKey(Key.ShiftLeft)
 								? 3

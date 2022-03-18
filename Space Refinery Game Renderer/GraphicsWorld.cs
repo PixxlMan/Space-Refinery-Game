@@ -19,7 +19,7 @@ public class GraphicsWorld
 {
 	public List<IRenderable> UnorderedRenderables = new();
 
-	public SortedDictionary<int, List<IRenderable>> SpecificOrderRenderables = new();
+	public SortedDictionary<int, List<IRenderable>> SpecificOrderRenderables = new(); // Use Lookup<int, IRenderable> and sort manually as it's not very common to add objects?
 
 	public GraphicsDevice GraphicsDevice;
 

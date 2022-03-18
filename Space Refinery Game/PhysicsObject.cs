@@ -6,6 +6,8 @@ namespace Space_Refinery_Game
 {
 	public class PhysicsObject
 	{
+		public string Text = "lol";
+
 		public readonly PhysicsWorld World;
 
 		public Transform Transform => World.GetTransform(BodyHandle);

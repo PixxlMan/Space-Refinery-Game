@@ -1,4 +1,5 @@
 ﻿using BepuPhysics.Collidables;
+using FixedPrecision;
 using FXRenderer;
 
 namespace Space_Refinery_Game
@@ -9,10 +10,13 @@ namespace Space_Refinery_Game
 
 		public Transform InitialTransform;
 
-		public PhysicsObjectDescription(TShape shape, Transform initialTransform)
+		public FixedDecimalInt4 Mass;
+
+		public PhysicsObjectDescription(TShape shape, Transform initialTransform, FixedDecimalInt4 mass)
 		{
 			Shape = shape;
 			InitialTransform = initialTransform;
+			Mass = mass;
 		}
 	}
 }

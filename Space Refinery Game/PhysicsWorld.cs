@@ -1,5 +1,6 @@
 ﻿using BepuPhysics;
 using BepuPhysics.Collidables;
+using BepuPhysics.Trees;
 using BepuUtilities;
 using BepuUtilities.Memory;
 using FixedPrecision;
@@ -9,11 +10,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using System.Text;
+using Veldrid.Utilities;
 
 namespace Space_Refinery_Game
 {
 	public partial class PhysicsWorld
 	{
+		public Dictionary<BodyHandle, PhysicsObject> PhysicsObjectLookup = new();
+
 		private BufferPool bufferPool;
 
 		private Simulation simulation;
@@ -50,10 +54,48 @@ namespace Space_Refinery_Game
 
 		public PhysicsObject AddPhysicsObject<TShape>(PhysicsObjectDescription<TShape> physicsObjectDescription) where TShape : unmanaged, IConvexShape
 		{
-			var inertia = physicsObjectDescription.Shape.ComputeInertia(100);
-			BodyHandle bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(new Vector3(0, 20, 0), inertia, simulation.Shapes.Add(physicsObjectDescription.Shape), 0.01f));
+			var inertia = physicsObjectDescription.Shape.ComputeInertia(physicsObjectDescription.Mass.ToFloat());
+			BodyHandle bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(physicsObjectDescription.InitialTransform.Position.ToVector3(), inertia, simulation.Shapes.Add(physicsObjectDescription.Shape), 0.01f));
 
-			return new PhysicsObject(this, bodyHandle);
+			PhysicsObject physicsObject = new PhysicsObject(this, bodyHandle);
+
+			PhysicsObjectLookup.Add(bodyHandle, physicsObject);
+
+			return physicsObject;
+		}
+
+		struct RaycastHitHandler : IRayHitHandler
+		{
+			public BodyHandle? BodyHandle;
+
+			public bool AllowTest(CollidableReference collidable)
+			{
+				return true;
+			}
+
+			public bool AllowTest(CollidableReference collidable, int childIndex)
+			{
+				return true;
+			}
+
+			public void OnRayHit(in RayData ray, ref float maximumT, float t, in Vector3 normal, CollidableReference collidable, int childIndex)
+			{
+				BodyHandle = collidable.BodyHandle;
+			}
+		}
+
+		public PhysicsObject Raycast(Vector3FixedDecimalInt4 start, Vector3FixedDecimalInt4 direction, FixedDecimalInt4 maxDistance)
+		{
+			var raycastHitHandler = new RaycastHitHandler();
+
+			simulation.RayCast(start.ToVector3(), direction.ToVector3(), maxDistance.ToFloat(), ref raycastHitHandler);
+
+			if (raycastHitHandler.BodyHandle is null)
+			{
+				return null;
+			}
+
+			return PhysicsObjectLookup[raycastHitHandler.BodyHandle.Value];
 		}
 
 		public Transform GetTransform(BodyHandle bodyHandle)

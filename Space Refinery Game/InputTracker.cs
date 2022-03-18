@@ -15,7 +15,9 @@ namespace Space_Refinery_Game
         private static HashSet<MouseButton> _newMouseButtonsThisFrame = new HashSet<MouseButton>();
 
         public static Vector2FixedDecimalInt4 MousePosition;
-        public static InputSnapshot FrameSnapshot { get; private set; }
+
+        private static InputSnapshot inputSnapshot;
+        public static InputSnapshot FrameSnapshot { get => inputSnapshot is null ? new BogusInputSnapshot() : inputSnapshot; private set => inputSnapshot = value; }
 
         public static bool GetKey(Key key)
         {

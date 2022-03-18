@@ -35,9 +35,11 @@ namespace Space_Refinery_Game
 
 			graphWorld.AddRenderable(renderable);
 
-			PhysicsObjectDescription<Box> physicsObjectDescription = new(new Box(.5f, .5f, 1), transform);
+			PhysicsObjectDescription<Box> physicsObjectDescription = new(new Box(1, 1, 1), transform, 0);
 
 			PhysicsObject physObj = physWorld.AddPhysicsObject(physicsObjectDescription);
+
+			physObj.Text = "Pipe";
 
 			return new(physWorld, physObj, graphWorld, renderable);
 		}

@@ -82,7 +82,7 @@ namespace Space_Refinery_Game
                 //Note that these are SIMD operations and "Wide" types. There are Vector<float>.Count lanes of execution being evaluated simultaneously.
                 //The types are laid out in array-of-structures-of-arrays (AOSOA) format. That's because this function is frequently called from vectorized contexts within the solver.
                 //Transforming to "array of structures" (AOS) format for the callback and then back to AOSOA would involve a lot of overhead, so instead the callback works on the AOSOA representation directly.
-                velocity.Linear += gravityWideDt;
+                //velocity.Linear += gravityWideDt;
             }
 
         }

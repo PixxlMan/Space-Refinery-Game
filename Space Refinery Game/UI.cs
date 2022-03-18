@@ -14,7 +14,7 @@ namespace Space_Refinery_Game
 {
 	public class UI : IRenderable
 	{
-		public string Text = "None";
+		public Action DrawCustomInformation;
 
 		private ImGuiRenderer imGuiRenderer;
 
@@ -53,15 +53,15 @@ namespace Space_Refinery_Game
 
 		public void DoUI()
 		{
-			ImGui.Begin("Test", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
+			ImGui.Begin("Center", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
 			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2, gd.MainSwapchain.Framebuffer.Height / 2), ImGuiCond.Always);
 			ImGui.Bullet();
 			ImGui.End();
 
-			ImGui.Begin("Test", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
-			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2, gd.MainSwapchain.Framebuffer.Height / 2), ImGuiCond.Always);
+			ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
+			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 4 * 3, gd.MainSwapchain.Framebuffer.Height / 2), ImGuiCond.Always);
 
-			ImGui.LabelText(Text, "");
+			DrawCustomInformation?.Invoke();
 			ImGui.End();
 		}
 	}

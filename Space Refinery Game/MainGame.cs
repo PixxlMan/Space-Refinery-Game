@@ -49,6 +49,8 @@ public class MainGame
 
 		PipeStraght.Create(PhysicsWorld, GraphicsWorld, new Transform(new(0, 2, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * FixedDecimalInt4.DegreesToRadians, 0, 0)));
 
+		PipeStraght.Create(PhysicsWorld, GraphicsWorld, new Transform(new(0, 2, 1), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * FixedDecimalInt4.DegreesToRadians, 0, 0)));
+
 		GraphicsWorld.Run();
 
 		StartUpdating();
@@ -85,6 +87,8 @@ public class MainGame
 	{
 		lock(SynchronizationObject)
 		{
+			ui.DrawCustomInformation = null;
+
 			InputTracker.UpdateFrameInput(window.PumpEvents());
 
 			if (InputTracker.GetKey(Key.Escape))
@@ -95,9 +99,9 @@ public class MainGame
 			var physicsObject = PhysicsWorld.Raycast(GraphicsWorld.Camera.Position, GraphicsWorld.Camera.Forward, 1000);
 
 			if (physicsObject is not null)
-				ui.Text = physicsObject.Text;
-			else
-				ui.Text = "Space";
+			{
+				ui.DrawCustomInformation = new Action(physicsObject.InformationProvider.InformationUI);
+			}
 
 			FixedDecimalInt4 sprintFactor = InputTracker.GetKey(Key.ShiftLeft)
 								? 3

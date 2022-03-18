@@ -6,7 +6,7 @@ namespace Space_Refinery_Game
 {
 	public class PhysicsObject
 	{
-		public string Text = string.Empty;
+		public IInformationProvider InformationProvider;
 
 		public readonly PhysicsWorld World;
 
@@ -14,10 +14,11 @@ namespace Space_Refinery_Game
 
 		public readonly BodyHandle BodyHandle;
 
-		public PhysicsObject(PhysicsWorld world, BodyHandle bodyHandle)
+		public PhysicsObject(PhysicsWorld world, BodyHandle bodyHandle, IInformationProvider informationProvider)
 		{
 			World = world;
 			BodyHandle = bodyHandle;
+			InformationProvider = informationProvider;
 		}
 	}
 }

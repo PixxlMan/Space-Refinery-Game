@@ -6,7 +6,7 @@ namespace Space_Refinery_Game
 {
 	public class PhysicsObject
 	{
-		public string Text = "lol";
+		public string Text = string.Empty;
 
 		public readonly PhysicsWorld World;
 

@@ -55,7 +55,7 @@ namespace Space_Refinery_Game
 		public PhysicsObject AddPhysicsObject<TShape>(PhysicsObjectDescription<TShape> physicsObjectDescription) where TShape : unmanaged, IConvexShape
 		{
 			var inertia = physicsObjectDescription.Shape.ComputeInertia(physicsObjectDescription.Mass.ToFloat());
-			BodyHandle bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(physicsObjectDescription.InitialTransform.Position.ToVector3(), inertia, simulation.Shapes.Add(physicsObjectDescription.Shape), 0.01f));
+			BodyHandle bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(new RigidPose(physicsObjectDescription.InitialTransform.Position.ToVector3(), physicsObjectDescription.InitialTransform.Rotation.ToQuaternion()), inertia, simulation.Shapes.Add(physicsObjectDescription.Shape), 0.01f));
 
 			PhysicsObject physicsObject = new PhysicsObject(this, bodyHandle);
 

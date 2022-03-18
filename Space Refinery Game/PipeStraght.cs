@@ -35,7 +35,7 @@ namespace Space_Refinery_Game
 
 			graphWorld.AddRenderable(renderable);
 
-			PhysicsObjectDescription<Box> physicsObjectDescription = new(new Box(1, 1, 1), transform, 0);
+			PhysicsObjectDescription<Box> physicsObjectDescription = new(new Box(1, .5f, .5f), transform, 0);
 
 			PhysicsObject physObj = physWorld.AddPhysicsObject(physicsObjectDescription);
 

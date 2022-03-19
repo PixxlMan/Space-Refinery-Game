@@ -51,9 +51,9 @@ public class MainGame
 
 		Starfield.Create(GraphicsWorld);
 
-		PipeStraght.Create(PhysicsWorld, GraphicsWorld, new Transform(new(0, 2, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 45 * FixedDecimalInt4.DegreesToRadians)));
+		PipeStraight.Create(PhysicsWorld, GraphicsWorld, new Transform(new(0, 2, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 45 * FixedDecimalInt4.DegreesToRadians)));
 
-		PipeStraght.Create(PhysicsWorld, GraphicsWorld, new Transform(new(0, 2, 1), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)));
+		PipeStraight.Create(PhysicsWorld, GraphicsWorld, new Transform(new(0, 2, 1), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)));
 
 		GraphicsWorld.Run();
 
@@ -104,12 +104,16 @@ public class MainGame
 			{
 				ui.CurrentlySelectedInformationProvider = physicsObject.InformationProvider;
 			}
+			else
+			{
+				ui.CurrentlySelectedInformationProvider = null;
+			}
 
 			if (physicsObject is not null && physicsObject.InformationProvider is ConnectorInformationProvider)
 			{
 				if (InputTracker.GetMouseButtonDown(MouseButton.Left))
 				{
-					PipeStraght.Create(PhysicsWorld, GraphicsWorld, new Transform(physicsObject.Transform.Position + -((ITransformable)physicsObject.Transform).LocalUnitX / 2, physicsObject.Transform.Rotation));
+					PipeStraight.Create(PhysicsWorld, GraphicsWorld, new Transform(physicsObject.Transform.Position + -((ITransformable)physicsObject.Transform).LocalUnitX / 2, physicsObject.Transform.Rotation));
 				}
 			}
 

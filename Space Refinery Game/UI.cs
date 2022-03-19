@@ -60,16 +60,20 @@ namespace Space_Refinery_Game
 			}
 			ImGui.End();
 
-			if (CurrentlySelectedInformationProvider is not null)
+			ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize /*| ImGuiWindowFlags.NoBackground */| ImGuiWindowFlags.NoDecoration);
+			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 4 * 3, gd.MainSwapchain.Framebuffer.Height / 2), ImGuiCond.Always);
 			{
-				ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
-				ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 4 * 3, gd.MainSwapchain.Framebuffer.Height / 2), ImGuiCond.Always);
+				if (CurrentlySelectedInformationProvider is not null)
 				{
 					ImGui.Text($"Information for: {CurrentlySelectedInformationProvider.Name}");
 					CurrentlySelectedInformationProvider.InformationUI();
 				}
-				ImGui.End();
+				else
+				{
+					ImGui.Text("Nothing to view information for.");
+				}
 			}
+			ImGui.End();
 		}
 	}
 }

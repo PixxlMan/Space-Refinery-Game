@@ -25,7 +25,7 @@ namespace Space_Refinery_Game
 		{
 			StarfieldRenderable renderable = StarfieldRenderable.Create(graphWorld.ViewInfoBuffer, graphWorld.GraphicsDevice, graphWorld.Factory);
 
-			graphWorld.AddRenderable(renderable);
+			graphWorld.AddRenderable(renderable, -1);
 
 			return new(graphWorld, renderable);
 		}

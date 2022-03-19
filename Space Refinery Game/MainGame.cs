@@ -107,6 +107,14 @@ public class MainGame
 				ui.DrawCustomInformation = new Action(physicsObject.InformationProvider.InformationUI);
 			}
 
+			if (physicsObject is not null && physicsObject.InformationProvider is ConnectorInformationProvider)
+			{
+				if (InputTracker.GetMouseButtonDown(MouseButton.Left))
+				{
+					PipeStraght.Create(PhysicsWorld, GraphicsWorld, new Transform(physicsObject.Transform.Position + -((ITransformable)physicsObject.Transform).LocalUnitX / 2, physicsObject.Transform.Rotation));
+				}
+			}
+
 			FixedDecimalInt4 sprintFactor = InputTracker.GetKey(Key.ShiftLeft)
 								? 3
 								: "0.5".Parse<FixedDecimalInt4>();

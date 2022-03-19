@@ -90,6 +90,11 @@ namespace Space_Refinery_Game
 
 			public void OnRayHit(in RayData ray, ref float maximumT, float t, in Vector3 normal, CollidableReference collidable, int childIndex)
 			{
+				if (BodyHandle.HasValue)
+				{
+					return;
+				}
+
 				BodyHandle = collidable.BodyHandle;
 			}
 		}

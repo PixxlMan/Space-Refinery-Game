@@ -48,17 +48,13 @@ namespace Space_Refinery_Game
 
 			PhysicsObject physObj = physWorld.AddPhysicsObject(physicsObjectDescription);
 
-			Transform connectorA = new Transform(default, transform.Rotation) { Position = transform.Position + ((ITransformable)transform).LocalUnitX * 0.5f };
+			Transform connectorA = new Transform(default, transform.Rotation, new(.25f, .5f, .5f)) { Position = transform.Position + ((ITransformable)transform).LocalUnitX * 0.5f };
 
-			Transform connectorB = new Transform(default, transform.Rotation) { Position = transform.Position + -((ITransformable)transform).LocalUnitX * 0.5f };
+			Transform connectorB = new Transform(default, transform.Rotation, new(.25f, .5f, .5f)) { Position = transform.Position + -((ITransformable)transform).LocalUnitX * 0.5f };
 
-			var renderableConnectorA = EntityRenderable.Create(graphWorld.GraphicsDevice, graphWorld.Factory, connectorA, Utils.CreateDeviceResources(Utils.GetCubeVertexPositionTexture(Vector3.One * 0.25f), Utils.GetCubeIndices(), graphWorld.GraphicsDevice, graphWorld.Factory), Utils.GetSolidColoredTexture(RgbaByte.White, graphWorld.GraphicsDevice, graphWorld.Factory), graphWorld.CameraProjViewBuffer, graphWorld.LightInfoBuffer);
+			MainGame.DebugRender.DrawCube(connectorA, RgbaFloat.Blue);
 
-			var renderableConnectorB = EntityRenderable.Create(graphWorld.GraphicsDevice, graphWorld.Factory, connectorB, Utils.CreateDeviceResources(Utils.GetCubeVertexPositionTexture(Vector3.One * 0.25f), Utils.GetCubeIndices(), graphWorld.GraphicsDevice, graphWorld.Factory), Utils.GetSolidColoredTexture(RgbaByte.White, graphWorld.GraphicsDevice, graphWorld.Factory), graphWorld.CameraProjViewBuffer, graphWorld.LightInfoBuffer);
-
-			graphWorld.AddRenderable(renderableConnectorA);
-
-			graphWorld.AddRenderable(renderableConnectorB);
+			MainGame.DebugRender.DrawCube(connectorB, RgbaFloat.Cyan);
 
 			ConnectorInformationProvider connectorInformationProviderConnectorA = new();
 
@@ -66,8 +62,8 @@ namespace Space_Refinery_Game
 
 			PhysicsObjectDescription<Box>[] physicsObjectConnectorDescription = new PhysicsObjectDescription<Box>[]
 			{
-				new(new Box(.25f, .25f, .25f), connectorA, 0, true, connectorInformationProviderConnectorA),
-				new(new Box(.25f, .25f, .25f), connectorB, 0, true, connectorInformationProviderConnectorB),
+				new(new Box(connectorA.Scale.X.ToFloat(), connectorA.Scale.Y.ToFloat(), connectorA.Scale.Z.ToFloat()), connectorA, 0, true, connectorInformationProviderConnectorA),
+				new(new Box(connectorB.Scale.X.ToFloat(), connectorB.Scale.Y.ToFloat(), connectorB.Scale.Z.ToFloat()), connectorB, 0, true, connectorInformationProviderConnectorB),
 			};
 
 			PhysicsObject[] physicsObjects = new PhysicsObject[]

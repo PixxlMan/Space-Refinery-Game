@@ -22,6 +22,8 @@ public class MainGame
 	public GraphicsWorld GraphicsWorld;
 	public PhysicsWorld PhysicsWorld;
 
+	public static DebugRender DebugRender;
+
 	private Window window;
 	private UI ui;
 
@@ -36,6 +38,8 @@ public class MainGame
 		GraphicsWorld = new();
 
 		GraphicsWorld.SetUp(window, gd, factory, swapchain);
+
+		DebugRender = DebugRender.Create(GraphicsWorld);
 
 		PhysicsWorld = new();
 

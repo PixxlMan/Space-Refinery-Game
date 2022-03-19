@@ -43,6 +43,8 @@ public class GraphicsWorld
 
 	public Camera Camera;
 
+	public event Action<CommandList> CustomDrawOperations;
+
 	public void SetUp(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
 		this.window = window;
@@ -181,6 +183,8 @@ public class GraphicsWorld
 				}
 			}
 			commandList.PopDebugGroup();
+
+			CustomDrawOperations?.Invoke(commandList);
 
 			// End() must be called before commands can be submitted for execution.
 			commandList.End();

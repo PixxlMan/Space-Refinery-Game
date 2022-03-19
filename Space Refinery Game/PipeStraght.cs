@@ -5,6 +5,7 @@ using Space_Refinery_Game_Renderer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Veldrid;
@@ -17,16 +18,19 @@ namespace Space_Refinery_Game
 
 		public PhysicsObject PhysicsObject;
 
+		public PhysicsObject[] PhysicsObjectConnectors;
+
 		public GraphicsWorld GraphicsWorld;
 
 		public EntityRenderable Renderable;
 
 		public IInformationProvider InformationProvider;
 
-		private PipeStraght(PhysicsWorld physicsWorld, PhysicsObject physicsObject, GraphicsWorld graphicsWorld, EntityRenderable renderable, IInformationProvider informationProvider)
+		private PipeStraght(PhysicsWorld physicsWorld, PhysicsObject physicsObject, PhysicsObject[] physicsObjectConnectors, GraphicsWorld graphicsWorld, EntityRenderable renderable, IInformationProvider informationProvider)
 		{
 			PhysicsWorld = physicsWorld;
 			PhysicsObject = physicsObject;
+			PhysicsObjectConnectors = physicsObjectConnectors;
 			GraphicsWorld = graphicsWorld;
 			Renderable = renderable;
 			InformationProvider = informationProvider;
@@ -44,7 +48,35 @@ namespace Space_Refinery_Game
 
 			PhysicsObject physObj = physWorld.AddPhysicsObject(physicsObjectDescription);
 
-			PipeStraght pipeStraght = new(physWorld, physObj, graphWorld, renderable, informationProvider);
+			Transform connectorA = new Transform(default, transform.Rotation) { Position = transform.Position + ((ITransformable)transform).LocalUnitX * 0.5f };
+
+			Transform connectorB = new Transform(default, transform.Rotation) { Position = transform.Position + -((ITransformable)transform).LocalUnitX * 0.5f };
+
+			var renderableConnectorA = EntityRenderable.Create(graphWorld.GraphicsDevice, graphWorld.Factory, connectorA, Utils.CreateDeviceResources(Utils.GetCubeVertexPositionTexture(Vector3.One * 0.25f), Utils.GetCubeIndices(), graphWorld.GraphicsDevice, graphWorld.Factory), Utils.GetSolidColoredTexture(RgbaByte.White, graphWorld.GraphicsDevice, graphWorld.Factory), graphWorld.CameraProjViewBuffer, graphWorld.LightInfoBuffer);
+
+			var renderableConnectorB = EntityRenderable.Create(graphWorld.GraphicsDevice, graphWorld.Factory, connectorB, Utils.CreateDeviceResources(Utils.GetCubeVertexPositionTexture(Vector3.One * 0.25f), Utils.GetCubeIndices(), graphWorld.GraphicsDevice, graphWorld.Factory), Utils.GetSolidColoredTexture(RgbaByte.White, graphWorld.GraphicsDevice, graphWorld.Factory), graphWorld.CameraProjViewBuffer, graphWorld.LightInfoBuffer);
+
+			graphWorld.AddRenderable(renderableConnectorA);
+
+			graphWorld.AddRenderable(renderableConnectorB);
+
+			ConnectorInformationProvider connectorInformationProviderConnectorA = new();
+
+			ConnectorInformationProvider connectorInformationProviderConnectorB = new();
+
+			PhysicsObjectDescription<Box>[] physicsObjectConnectorDescription = new PhysicsObjectDescription<Box>[]
+			{
+				new(new Box(.25f, .25f, .25f), connectorA, 0, true, connectorInformationProviderConnectorA),
+				new(new Box(.25f, .25f, .25f), connectorB, 0, true, connectorInformationProviderConnectorB),
+			};
+
+			PhysicsObject[] physicsObjects = new PhysicsObject[]
+			{
+				physWorld.AddPhysicsObject(physicsObjectConnectorDescription[0]),
+				physWorld.AddPhysicsObject(physicsObjectConnectorDescription[1]),
+			};
+
+			PipeStraght pipeStraght = new(physWorld, physObj, physicsObjects, graphWorld, renderable, informationProvider);
 
 			((PipeStraightInformationProvider)informationProvider).PipeStraght = pipeStraght;
 

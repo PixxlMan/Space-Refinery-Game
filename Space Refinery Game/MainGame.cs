@@ -47,9 +47,9 @@ public class MainGame
 
 		Starfield.Create(GraphicsWorld);
 
-		PipeStraght.Create(PhysicsWorld, GraphicsWorld, new Transform(new(0, 2, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * FixedDecimalInt4.DegreesToRadians, 0, 0)));
+		PipeStraght.Create(PhysicsWorld, GraphicsWorld, new Transform(new(0, 2, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 45 * FixedDecimalInt4.DegreesToRadians)));
 
-		PipeStraght.Create(PhysicsWorld, GraphicsWorld, new Transform(new(0, 2, 1), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(90 * FixedDecimalInt4.DegreesToRadians, 0, 0)));
+		PipeStraght.Create(PhysicsWorld, GraphicsWorld, new Transform(new(0, 2, 1), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)));
 
 		GraphicsWorld.Run();
 

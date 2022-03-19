@@ -91,8 +91,6 @@ public class MainGame
 	{
 		lock(SynchronizationObject)
 		{
-			ui.DrawCustomInformation = null;
-
 			InputTracker.UpdateFrameInput(window.PumpEvents());
 
 			if (InputTracker.GetKey(Key.Escape))
@@ -104,7 +102,7 @@ public class MainGame
 
 			if (physicsObject is not null)
 			{
-				ui.DrawCustomInformation = new Action(physicsObject.InformationProvider.InformationUI);
+				ui.CurrentlySelectedInformationProvider = physicsObject.InformationProvider;
 			}
 
 			if (physicsObject is not null && physicsObject.InformationProvider is ConnectorInformationProvider)

@@ -14,7 +14,7 @@ namespace Space_Refinery_Game
 {
 	public class UI : IRenderable
 	{
-		public Action DrawCustomInformation;
+		public IInformationProvider CurrentlySelectedInformationProvider;
 
 		private ImGuiRenderer imGuiRenderer;
 
@@ -55,14 +55,21 @@ namespace Space_Refinery_Game
 		{
 			ImGui.Begin("Center", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
 			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2, gd.MainSwapchain.Framebuffer.Height / 2), ImGuiCond.Always);
-			ImGui.Bullet();
+			{
+				ImGui.Bullet();
+			}
 			ImGui.End();
 
-			ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
-			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 4 * 3, gd.MainSwapchain.Framebuffer.Height / 2), ImGuiCond.Always);
-
-			DrawCustomInformation?.Invoke();
-			ImGui.End();
+			if (CurrentlySelectedInformationProvider is not null)
+			{
+				ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
+				ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 4 * 3, gd.MainSwapchain.Framebuffer.Height / 2), ImGuiCond.Always);
+				{
+					ImGui.Text($"Information for: {CurrentlySelectedInformationProvider.Name}");
+					CurrentlySelectedInformationProvider.InformationUI();
+				}
+				ImGui.End();
+			}
 		}
 	}
 }

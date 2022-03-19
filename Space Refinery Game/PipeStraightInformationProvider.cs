@@ -5,9 +5,9 @@ namespace Space_Refinery_Game
 {
 	public class PipeStraightInformationProvider : IInformationProvider
 	{
-		public PipeStraght PipeStraght;
+		public PipeStraight PipeStraght;
 
-		public PipeStraightInformationProvider(PipeStraght pipeStraght)
+		public PipeStraightInformationProvider(PipeStraight pipeStraght)
 		{
 			PipeStraght = pipeStraght;
 		}

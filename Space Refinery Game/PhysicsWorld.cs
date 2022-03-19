@@ -52,7 +52,7 @@ namespace Space_Refinery_Game
 			thread.Start();
 		}
 
-		public PhysicsObject AddPhysicsObject<TShape>(PhysicsObjectDescription<TShape> physicsObjectDescription) where TShape : unmanaged, IConvexShape
+		public PhysicsObject AddPhysicsObject<TShape>(PhysicsObjectDescription<TShape> physicsObjectDescription, Entity entity) where TShape : unmanaged, IConvexShape
 		{
 			var inertia = physicsObjectDescription.Shape.ComputeInertia(physicsObjectDescription.Mass.ToFloat());
 
@@ -67,7 +67,7 @@ namespace Space_Refinery_Game
 				bodyHandle = simulation.Bodies.Add(BodyDescription.CreateKinematic(new RigidPose(physicsObjectDescription.InitialTransform.Position.ToVector3(), physicsObjectDescription.InitialTransform.Rotation.ToQuaternion()), simulation.Shapes.Add(physicsObjectDescription.Shape), 0.01f));
 			}
 
-			PhysicsObject physicsObject = new PhysicsObject(this, bodyHandle, physicsObjectDescription.InformationProvider);
+			PhysicsObject physicsObject = new PhysicsObject(this, bodyHandle, entity);
 
 			PhysicsObjectLookup.Add(bodyHandle, physicsObject);
 

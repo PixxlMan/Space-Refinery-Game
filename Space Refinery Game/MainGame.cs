@@ -116,6 +116,13 @@ public class MainGame
 					PipeStraight.Build((Connector)physicsObject.Entity, PhysicsWorld, GraphicsWorld);
 				}
 			}
+			else if (physicsObject is not null && physicsObject.Entity is IConstruction)
+			{
+				if (InputTracker.GetMouseButtonDown(MouseButton.Right))
+				{
+					((IConstruction)physicsObject.Entity).Deconstruct();
+				}
+			}
 
 			FixedDecimalInt4 sprintFactor = InputTracker.GetKey(Key.ShiftLeft)
 								? 3

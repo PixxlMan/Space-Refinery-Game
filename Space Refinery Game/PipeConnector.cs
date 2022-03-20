@@ -62,6 +62,31 @@
 			}
 		}
 
+		public void Disconnect(ConnectorSide side)
+		{
+			if (side == ConnectorSide.A)
+			{
+				Pipes = (null, Pipes.pipeB);
+			}
+			else if (side == ConnectorSide.B)
+			{
+				Pipes = (Pipes.pipeA, null);
+			}
+			VacantSide = side;
+		}
+
+		public void Disconnect(Pipe pipe)
+		{
+			if (Pipes.pipeA == pipe)
+			{
+				Disconnect(ConnectorSide.A);
+			}
+			else if (Pipes.pipeB == pipe)
+			{
+				Disconnect(ConnectorSide.A);
+			}
+		}
+
 		private IInformationProvider informationProvider = new ConnectorInformationProvider();
 
 		public override IInformationProvider InformationProvider => informationProvider;

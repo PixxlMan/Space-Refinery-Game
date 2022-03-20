@@ -165,5 +165,17 @@ namespace Space_Refinery_Game
 			GraphicsWorld = graphicsWorld;
 			Renderable = renderable;
 		}
+
+		public void Deconstruct()
+		{
+			PhysicsObject.Destroy();
+			Renderable.Destroy();
+
+			GraphicsWorld.UnorderedRenderables.Remove(Renderable);
+
+			Connectors.connectorA.Disconnect(this);
+
+			Connectors.connectorB.Disconnect(this);
+		}
 	}
 }

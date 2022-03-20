@@ -6,6 +6,8 @@ namespace Space_Refinery_Game
 	{
 		public static abstract IConstruction/*<TConnector>*/ Build(/*TConnector*/ Connector connector, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld);
 
+		public void Deconstruct();
+
 		//public static abstract bool VerifyCompatibility(Connector connector);
 	}
 }

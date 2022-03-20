@@ -130,4 +130,9 @@ public class EntityRenderable : IRenderable, ITransformable
 
 		commandList.DrawIndexed(mesh.IndexCount);
 	}
+
+	public void Destroy()
+	{
+		
+	}
 }

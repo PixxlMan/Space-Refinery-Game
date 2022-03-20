@@ -22,5 +22,10 @@ namespace Space_Refinery_Game
 			BodyHandle = bodyHandle;
 			Entity = entity;
 		}
+
+		public void Destroy()
+		{
+			
+		}
 	}
 }

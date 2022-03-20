@@ -30,6 +30,8 @@ namespace Space_Refinery_Game
 
 		public IInformationProvider InformationProvider => informationProvider;
 
+		public static IConstructible Constructible => new PipeStraightConstructible();
+
 		private PipeStraight(Transform transform)
 		{
 			informationProvider = new PipeStraightInformationProvider(this);

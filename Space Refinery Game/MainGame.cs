@@ -98,6 +98,11 @@ public class MainGame
 				Environment.Exit(69);
 			}
 
+			if (InputTracker.FrameSnapshot.WheelDelta != 0)
+			{
+				ui.ChangeSelection(-(int)InputTracker.FrameSnapshot.WheelDelta);
+			}
+
 			var physicsObject = PhysicsWorld.Raycast(GraphicsWorld.Camera.Position, GraphicsWorld.Camera.Forward, 1000);
 
 			if (physicsObject is not null)
@@ -109,11 +114,11 @@ public class MainGame
 				ui.CurrentlySelectedInformationProvider = null;
 			}
 
-			if (physicsObject is not null && physicsObject.Entity is Connector)
+			if (physicsObject is not null && physicsObject.Entity is Connector && ui.SelectedConstruction is not null)
 			{
 				if (InputTracker.GetMouseButtonDown(MouseButton.Left))
 				{
-					PipeStraight.Build((Connector)physicsObject.Entity, PhysicsWorld, GraphicsWorld);
+					ui.SelectedConstruction.Build((Connector)physicsObject.Entity, PhysicsWorld, GraphicsWorld);
 				}
 			}
 			else if (physicsObject is not null && physicsObject.Entity is IConstruction)

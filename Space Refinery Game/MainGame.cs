@@ -109,11 +109,11 @@ public class MainGame
 				ui.CurrentlySelectedInformationProvider = null;
 			}
 
-			if (physicsObject is not null && physicsObject.InformationProvider is ConnectorInformationProvider)
+			if (physicsObject is not null && physicsObject.Entity is Connector)
 			{
 				if (InputTracker.GetMouseButtonDown(MouseButton.Left))
 				{
-					PipeStraight.Create(PhysicsWorld, GraphicsWorld, new Transform(physicsObject.Transform.Position + -((ITransformable)physicsObject.Transform).LocalUnitX / 2, physicsObject.Transform.Rotation));
+					PipeStraight.Build((Connector)physicsObject.Entity, PhysicsWorld, GraphicsWorld);
 				}
 			}
 

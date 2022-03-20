@@ -1,6 +1,6 @@
 ﻿namespace Space_Refinery_Game
 {
-	public abstract class Entity
+	public interface Entity
 	{
 		public abstract IInformationProvider InformationProvider { get; }
 	}

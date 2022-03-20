@@ -8,5 +8,6 @@ namespace Space_Refinery_Game
 {
 	public abstract class Connector : Entity
 	{
+		public abstract IInformationProvider InformationProvider { get; }
 	}
 }

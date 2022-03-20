@@ -1,6 +1,9 @@
-﻿namespace Space_Refinery_Game
+﻿using FXRenderer;
+
+namespace Space_Refinery_Game
 {
-	public abstract class Pipe : Entity, IConstruction
+	public interface Pipe : Entity, IConstruction
 	{
+		public Transform Transform { get; protected set; }
 	}
 }

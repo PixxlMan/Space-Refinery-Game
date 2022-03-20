@@ -133,7 +133,9 @@ namespace Space_Refinery_Game
 		{
 			PipeConnector pipeConnector = (PipeConnector)connector;
 
-			Vector3FixedDecimalInt4 position = pipeConnector.UnconnectedPipe.Transform.Position + (pipeConnector.VacantSide == ConnectorSide.A ? ((ITransformable)pipeConnector.UnconnectedPipe.Transform).LocalUnitX : -((ITransformable)pipeConnector.UnconnectedPipe.Transform).LocalUnitX);
+			Vector3FixedDecimalInt4 positionOffset = ((ITransformable)pipeConnector.UnconnectedPipe.Transform).LocalUnitX;
+
+			Vector3FixedDecimalInt4 position = pipeConnector.UnconnectedPipe.Transform.Position + (pipeConnector.VacantSide == ConnectorSide.A ? -positionOffset : positionOffset);
 
 			Transform transform = new()
 			{

@@ -74,9 +74,9 @@ namespace Space_Refinery_Game
 
 			Transform connectorB = new Transform(default, transform.Rotation, new(.25f, .5f, .5f)) { Position = transform.Position + -((ITransformable)transform).LocalUnitX * 0.5f };
 
-			MainGame.DebugRender.DrawCube(connectorA, RgbaFloat.Blue);
+			//MainGame.DebugRender.DrawCube(connectorA, RgbaFloat.Blue);
 
-			MainGame.DebugRender.DrawCube(connectorB, RgbaFloat.Cyan);
+			//MainGame.DebugRender.DrawCube(connectorB, RgbaFloat.Cyan);
 
 			PipeConnector pipeConnectorA = new(pipeStraight, ConnectorSide.A);
 
@@ -105,7 +105,7 @@ namespace Space_Refinery_Game
 			Vector3FixedDecimalInt4 connectorPositionOffset = ((ITransformable)transform).LocalUnitX / 2;
 			Transform otherConnectorTransform = new Transform(default, transform.Rotation, new(.25f, .5f, .5f)) { Position = transform.Position + (existingConnector.VacantSide == ConnectorSide.A ? -connectorPositionOffset : connectorPositionOffset) };
 
-			MainGame.DebugRender.DrawCube(otherConnectorTransform, RgbaFloat.Blue);
+			//MainGame.DebugRender.DrawCube(otherConnectorTransform, RgbaFloat.Blue);
 
 			PipeConnector otherPipeConnector = new(pipeStraight, existingConnector.PopulatedSide.Value);
 

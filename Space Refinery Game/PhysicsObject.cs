@@ -25,7 +25,7 @@ namespace Space_Refinery_Game
 
 		public void Destroy()
 		{
-			
+			World.DestroyPhysicsObject(this);
 		}
 	}
 }

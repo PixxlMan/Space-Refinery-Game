@@ -37,6 +37,8 @@ namespace Space_Refinery_Game
 			threadDispatcher = new ThreadDispatcher(Environment.ProcessorCount);
 		}
 
+		public String SynchronizationObject = "69";
+
 		public void Run()
 		{
 			Thread thread = new Thread(new ParameterizedThreadStart((_) =>
@@ -45,7 +47,10 @@ namespace Space_Refinery_Game
 				{
 					Thread.Sleep(16);
 
-					simulation.Timestep(0.016f, threadDispatcher);
+					lock (SynchronizationObject)
+					{
+						simulation.Timestep(0.016f, threadDispatcher);
+					}
 				}
 			}));
 
@@ -72,6 +77,16 @@ namespace Space_Refinery_Game
 			PhysicsObjectLookup.Add(bodyHandle, physicsObject);
 
 			return physicsObject;
+		}
+
+		public void DestroyPhysicsObject(PhysicsObject physicsObject)
+		{
+			lock (SynchronizationObject)
+			{
+				simulation.Bodies.Remove(physicsObject.BodyHandle);
+
+				PhysicsObjectLookup.Remove(physicsObject.BodyHandle);
+			}
 		}
 
 		struct RaycastHitHandler : IRayHitHandler

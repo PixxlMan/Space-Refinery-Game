@@ -1,4 +1,6 @@
-﻿namespace Space_Refinery_Game
+﻿using Veldrid;
+
+namespace Space_Refinery_Game
 {
 	public class PipeConnector : Connector
 	{
@@ -73,6 +75,11 @@
 				Pipes = (Pipes.pipeA, null);
 			}
 			VacantSide = side;
+
+			if (Pipes.pipeA is null && Pipes.pipeB is null)
+			{
+				PhysicsObject.Destroy();
+			}
 		}
 
 		public void Disconnect(Pipe pipe)
@@ -83,7 +90,7 @@
 			}
 			else if (Pipes.pipeB == pipe)
 			{
-				Disconnect(ConnectorSide.A);
+				Disconnect(ConnectorSide.B);
 			}
 		}
 

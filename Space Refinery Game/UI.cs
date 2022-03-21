@@ -30,13 +30,13 @@ namespace Space_Refinery_Game
 		{
 			Selection += selectionDelta;
 
-			while (Selection > 10 || Selection < 0)
+			while (Selection >= 10 || Selection < 0)
 			{
 				if (Selection < 0)
 				{
 					Selection += 10;
 				}
-				else if (Selection > 10)
+				else if (Selection >= 10)
 				{
 					Selection -= 10;
 				}

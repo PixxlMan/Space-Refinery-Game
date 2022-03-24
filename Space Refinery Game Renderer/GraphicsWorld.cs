@@ -57,6 +57,8 @@ public class GraphicsWorld
 		Camera.Pitch = 0;
 		Camera.Yaw = 0;
 
+		Camera.FarDistance = 10000;
+
 		Camera.NearDistance = "0.1".Parse<FixedDecimalInt4>();
 
 		CreateDeviceObjects(gd, factory, swapchain);

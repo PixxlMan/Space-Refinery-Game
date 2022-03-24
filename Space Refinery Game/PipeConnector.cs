@@ -1,4 +1,5 @@
-﻿using Veldrid;
+﻿using FXRenderer;
+using Veldrid;
 
 namespace Space_Refinery_Game
 {
@@ -19,6 +20,8 @@ namespace Space_Refinery_Game
 		public (Pipe? pipeA, Pipe? pipeB) Pipes;
 
 		public PhysicsObject PhysicsObject;
+
+		public Transform Transform;
 
 		public Pipe? UnconnectedPipe
 		{

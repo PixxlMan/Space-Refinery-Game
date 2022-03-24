@@ -6,6 +6,6 @@ namespace Space_Refinery_Game
 	{
 		public string TargetName { get; }
 
-		public Func<Connector, PhysicsWorld, GraphicsWorld, IConstruction> Build { get; }
+		public Func<Connector, IEntityType, int, PhysicsWorld, GraphicsWorld, IConstruction> Build { get; }
 	}
 }

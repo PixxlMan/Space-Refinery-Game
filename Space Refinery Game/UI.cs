@@ -20,25 +20,25 @@ namespace Space_Refinery_Game
 
 		private GraphicsDevice gd;
 
-		public IConstructible[] Constructibles = new IConstructible[10];
+		public PipeType[] PipeTypes = new PipeType[10];
 
-		public IConstructible SelectedConstruction => Constructibles[Selection];
+		public PipeType SelectedPipeType => PipeTypes[Selection];
 
 		public int Selection;
 
 		public void ChangeSelection(int selectionDelta)
 		{
 			Selection += selectionDelta;
-
-			while (Selection >= 10 || Selection < 0)
+			 
+			while (Selection >= PipeTypes.Length || Selection < 0)
 			{
 				if (Selection < 0)
 				{
-					Selection += 10;
+					Selection += PipeTypes.Length;
 				}
-				else if (Selection >= 10)
+				else if (Selection >= PipeTypes.Length)
 				{
-					Selection -= 10;
+					Selection -= PipeTypes.Length;
 				}
 			}
 		}
@@ -49,9 +49,25 @@ namespace Space_Refinery_Game
 
 			imGuiRenderer.CreateDeviceResources(gd, gd.MainSwapchain.Framebuffer.OutputDescription);
 
-			Constructibles = new IConstructible[10]
+			PipeTypes = new PipeType[10]
 			{
-				PipeStraight.Constructible,
+				new PipeType()
+				{
+					ConnectorPlacements = new PositionAndDirection[]
+					{
+						new PositionAndDirection()
+						{
+							Position = new(.5f, 0, 0),
+							Direction = new(1, 0, 0),
+						},
+						new PositionAndDirection()
+						{
+							Position = new(-.5f, 0, 0),
+							Direction = new(-1, 0, 0),
+						},
+					},
+					Name = "Straight Pipe",
+				},
 				null,
 				null,
 				null,
@@ -116,10 +132,10 @@ namespace Space_Refinery_Game
 			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2, gd.MainSwapchain.Framebuffer.Height / 5 * 4), ImGuiCond.Always);
 			ImGui.SetWindowSize(new Vector2(500, 50), ImGuiCond.Always);
 			{
-				ImGui.Columns(Constructibles.Length);
-				for (int i = 0; i < Constructibles.Length; i++)
+				ImGui.Columns(PipeTypes.Length);
+				for (int i = 0; i < PipeTypes.Length; i++)
 				{
-					if (Constructibles[i] is null)
+					if (PipeTypes[i] is null)
 					{
 						if (Selection == i)
 						{
@@ -136,11 +152,11 @@ namespace Space_Refinery_Game
 
 					if (Selection == i)
 					{
-						ImGui.TextColored(RgbaFloat.Blue.ToVector4(), (Constructibles[i].TargetName));
+						ImGui.TextColored(RgbaFloat.Blue.ToVector4(), (PipeTypes[i].Name));
 					}
 					else
 					{
-						ImGui.TextDisabled(Constructibles[i].TargetName);
+						ImGui.TextDisabled(PipeTypes[i].Name);
 					}
 					
 					ImGui.NextColumn();

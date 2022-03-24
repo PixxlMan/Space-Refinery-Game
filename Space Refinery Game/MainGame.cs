@@ -51,9 +51,11 @@ public class MainGame
 
 		Starfield.Create(GraphicsWorld);
 
-		PipeStraight.Create(PhysicsWorld, GraphicsWorld, new Transform(new(0, 2, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 45 * FixedDecimalInt4.DegreesToRadians)));
+		Pipe.Create(ui.SelectedPipeType, new Transform(new(5, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 45 * FixedDecimalInt4.DegreesToRadians)), PhysicsWorld, GraphicsWorld);
 
-		PipeStraight.Create(PhysicsWorld, GraphicsWorld, new Transform(new(0, 2, 1), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)));
+		Pipe.Create(ui.SelectedPipeType, new Transform(new(5, 0, 1), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), PhysicsWorld, GraphicsWorld);
+
+		//DebugRender.DrawCube(new Transform(default, Quaternion.CreateFromAxisAngle(45 * FixedDecimalInt4.DegreesToRadians))));
 
 		GraphicsWorld.Run();
 
@@ -114,11 +116,11 @@ public class MainGame
 				ui.CurrentlySelectedInformationProvider = null;
 			}
 
-			if (physicsObject is not null && physicsObject.Entity is Connector && ui.SelectedConstruction is not null)
+			if (physicsObject is not null && physicsObject.Entity is Connector && ui.SelectedPipeType is not null)
 			{
 				if (InputTracker.GetMouseButtonDown(MouseButton.Left))
 				{
-					ui.SelectedConstruction.Build((Connector)physicsObject.Entity, PhysicsWorld, GraphicsWorld);
+					Pipe.Build((Connector)physicsObject.Entity, ui.SelectedPipeType, 0, PhysicsWorld, GraphicsWorld);
 				}
 			}
 			else if (physicsObject is not null && physicsObject.Entity is IConstruction)

@@ -6,6 +6,6 @@ namespace Space_Refinery_Game
 	{
 		public string TargetName => "Pipe Straight";
 
-		public Func<Connector, PhysicsWorld, GraphicsWorld, IConstruction> Build => PipeStraight.Build;
+		public Func<Connector, IEntityType, int, PhysicsWorld, GraphicsWorld, IConstruction> Build => Pipe.Build;
 	}
 }

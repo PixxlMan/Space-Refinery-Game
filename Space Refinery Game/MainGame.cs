@@ -55,7 +55,9 @@ public class MainGame
 
 		Pipe.Create(ui.SelectedPipeType, new Transform(new(5, 0, 1), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), PhysicsWorld, GraphicsWorld);
 
-		//DebugRender.DrawCube(new Transform(default, Quaternion.CreateFromAxisAngle(45 * FixedDecimalInt4.DegreesToRadians))));
+		DebugRender.DrawRay(default, Vector3FixedDecimalInt4.UnitX, RgbaFloat.Red);
+		DebugRender.DrawRay(default, Vector3FixedDecimalInt4.UnitY, RgbaFloat.Green);
+		DebugRender.DrawRay(default, Vector3FixedDecimalInt4.UnitZ, RgbaFloat.Blue);
 
 		GraphicsWorld.Run();
 

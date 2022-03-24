@@ -115,7 +115,18 @@ namespace Space_Refinery_Game_Renderer
 
 		public void DrawCube(Transform transform, RgbaFloat color)
 		{
-			debugRenderables.Add(DebugRenderable.Create(Utils.CreateDeviceResources(Utils.GetCubeVertexPositionTexture(Vector3.One), Utils.GetCubeIndices(), GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory), transform, color, GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory));
+			var renderable = DebugRenderable.Create(Utils.CreateDeviceResources(Utils.GetCubeVertexPositionTexture(Vector3.One), Utils.GetCubeIndices(), GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory), transform, color, GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory);
+
+			debugRenderables.Add(renderable);
+		}
+
+		public void DrawRay(Vector3FixedDecimalInt4 origin, Vector3FixedDecimalInt4 direction, RgbaFloat color)
+		{
+			Transform transform = new(origin, QuaternionFixedDecimalInt4.CreateLookingAt(direction));
+
+			var renderable = DebugRenderable.Create(Utils.CreateDeviceResources(Utils.GetCubeVertexPositionTexture(new(.1f, .1f, 2f)), Utils.GetCubeIndices(), GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory), transform, color, GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory);
+
+			debugRenderables.Add(renderable);
 		}
 	}
 }

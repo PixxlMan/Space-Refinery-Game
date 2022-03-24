@@ -128,5 +128,12 @@ namespace Space_Refinery_Game_Renderer
 
 			debugRenderables.Add(renderable);
 		}
+
+		public void DrawOrientationMarks(Transform transform)
+		{
+			DrawRay(default, ((ITransformable)transform).LocalUnitX, RgbaFloat.Red);
+			DrawRay(default, ((ITransformable)transform).LocalUnitY, RgbaFloat.Green);
+			DrawRay(default, ((ITransformable)transform).LocalUnitZ, RgbaFloat.Blue);
+		}
 	}
 }

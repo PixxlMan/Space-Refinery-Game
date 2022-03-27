@@ -97,6 +97,8 @@ namespace Space_Refinery_Game_Renderer
 
 		private void DrawDebugObjects(CommandList cl)
 		{
+			cl.PushDebugGroup("Debug objects");
+
 			cl.SetPipeline(pipeline);
 			cl.SetGraphicsResourceSet(0, resourceSet);
 
@@ -104,6 +106,8 @@ namespace Space_Refinery_Game_Renderer
 			{
 				renderable.AddDrawCommands(cl);
 			}
+
+			cl.PopDebugGroup();
 		}
 
 		private DebugRender(GraphicsWorld graphicsWorld)
@@ -115,14 +119,14 @@ namespace Space_Refinery_Game_Renderer
 
 		public void DrawCube(Transform transform, RgbaFloat color)
 		{
-			var renderable = DebugRenderable.Create(Utils.CreateDeviceResources(Utils.GetCubeVertexPositionTexture(Vector3.One), Utils.GetCubeIndices(), GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory), transform, color, GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory);
+			var renderable = DebugRenderable.Create(Utils.CreateDeviceResources(Utils.GetCubeVertexPositionTexture(transform.Scale.ToVector3()), Utils.GetCubeIndices(), GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory), new(transform) { Scale = Vector3FixedDecimalInt4.One }, color, GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory);
 
 			debugRenderables.Add(renderable);
 		}
 
 		public void DrawRay(Vector3FixedDecimalInt4 origin, Vector3FixedDecimalInt4 direction, RgbaFloat color)
 		{
-			Transform transform = new(origin, QuaternionFixedDecimalInt4.CreateLookingAt(direction));
+			Transform transform = new(origin, QuaternionFixedDecimalInt4.CreateLookingAt(direction, Vector3FixedDecimalInt4.UnitZ, Vector3FixedDecimalInt4.UnitY));
 
 			var renderable = DebugRenderable.Create(Utils.CreateDeviceResources(Utils.GetCubeVertexPositionTexture(new(.1f, .1f, 2f)), Utils.GetCubeIndices(), GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory), transform, color, GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory);
 
@@ -131,9 +135,9 @@ namespace Space_Refinery_Game_Renderer
 
 		public void DrawOrientationMarks(Transform transform)
 		{
-			DrawRay(default, ((ITransformable)transform).LocalUnitX, RgbaFloat.Red);
-			DrawRay(default, ((ITransformable)transform).LocalUnitY, RgbaFloat.Green);
-			DrawRay(default, ((ITransformable)transform).LocalUnitZ, RgbaFloat.Blue);
+			DrawRay(transform.Position, ((ITransformable)transform).LocalUnitX, RgbaFloat.Red);
+			DrawRay(transform.Position, ((ITransformable)transform).LocalUnitY, RgbaFloat.Green);
+			DrawRay(transform.Position, ((ITransformable)transform).LocalUnitZ, RgbaFloat.Blue);
 		}
 	}
 }

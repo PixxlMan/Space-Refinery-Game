@@ -43,6 +43,8 @@ namespace Space_Refinery_Game
 		{
 			Pipe pipeStraight = new(transform);
 
+			MainGame.DebugRender.DrawOrientationMarks(transform);
+
 			EntityRenderable renderable = CreateRenderable(graphWorld, transform);
 
 			PhysicsObject physObj = CreatePhysicsObject(physWorld, transform, pipeStraight);
@@ -82,7 +84,9 @@ namespace Space_Refinery_Game
 				{
 					PipeConnector connector = new PipeConnector(pipe, ConnectorSide.A);
 
-					Transform transform = new(pipe.Transform.Position + pipeType.ConnectorPlacements[i].Position, QuaternionFixedDecimalInt4.CreateLookingAt(Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Direction, pipe.Transform.Rotation)));
+					Transform transform = new(pipe.Transform.Position + pipeType.ConnectorPlacements[i].Position, QuaternionFixedDecimalInt4.CreateLookingAt(Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Direction, pipe.Transform.Rotation), Vector3FixedDecimalInt4.UnitZ, Vector3FixedDecimalInt4.UnitY));
+
+					MainGame.DebugRender.DrawOrientationMarks(transform);
 
 					connector.Transform = transform;
 
@@ -115,7 +119,9 @@ namespace Space_Refinery_Game
 
 			PipeType pipeType = (PipeType)entityType;
 
-			Transform transform = new(pipeConnector.Transform.Position + -pipeType.ConnectorPlacements[indexOfSelectedConnector].Position, QuaternionFixedDecimalInt4.CreateLookingAt(Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[indexOfSelectedConnector].Direction, pipeConnector.Transform.Rotation)));
+			Transform transform = new(pipeConnector.Transform.Position + -pipeType.ConnectorPlacements[indexOfSelectedConnector].Position, QuaternionFixedDecimalInt4.CreateLookingAt(Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[indexOfSelectedConnector].Direction, pipeConnector.Transform.Rotation), Vector3FixedDecimalInt4.UnitZ, Vector3FixedDecimalInt4.UnitY));
+
+			MainGame.DebugRender.DrawOrientationMarks(transform);
 
 			Pipe pipeStraight = new(transform);
 

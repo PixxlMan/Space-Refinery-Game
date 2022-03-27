@@ -45,7 +45,7 @@ public class MainGame
 
 		PhysicsWorld.SetUp();
 
-		PhysicsWorld.Run();
+		PhysicsWorld.Run(); 
 
 		ui = UI.Create(GraphicsWorld);
 

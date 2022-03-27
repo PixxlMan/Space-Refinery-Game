@@ -31,8 +31,9 @@ void main()
     mat3 instanceRotFull = mat3(InstanceRotationM11, InstanceRotationM12, InstanceRotationM13, InstanceRotationM21, InstanceRotationM22, InstanceRotationM23,InstanceRotationM31, InstanceRotationM32, InstanceRotationM33);
     mat3 scalingMat = mat3(InstanceScale.x, 0, 0, 0, InstanceScale.y, 0, 0, 0, InstanceScale.z);
 
+    // Could multiplying with scalingMat after the other matrices fix potential bug with scaling being applied globally instead of locally?
     vec3 transformedPos = (scalingMat * instanceRotFull * Position) + InstancePosition;
-    vec4 pos = vec4(transformedPos, 1);
+    vec4 pos = vec4(transformedPos, 1); 
     gl_Position = Proj * View * pos;
 
     color = Color;

@@ -83,8 +83,8 @@ namespace Space_Refinery_Game
 
 			for (int i = 0; i < pipeType.ConnectorPlacements.Length; i++)
 			{
-				var physicsObject = physWorld.Raycast(pipeType.ConnectorPlacements[i].Position + pipe.Transform.Position, pipeType.ConnectorPlacements[i].Direction, 0.5f);
-
+				PhysicsObject physicsObject = null;// physWorld.Raycast(pipeType.ConnectorPlacements[i].Position + pipe.Transform.Position, pipeType.ConnectorPlacements[i].Direction, 0.5f);
+				
 				if (physicsObject is null || physicsObject.Entity is not PipeConnector)
 				{
 					PipeConnector connector = new PipeConnector(pipe, ConnectorSide.A);
@@ -120,7 +120,11 @@ namespace Space_Refinery_Game
 
 			PipeType pipeType = (PipeType)entityType;
 
-			Transform transform = new(pipeConnector.Transform.Position + Vector3FixedDecimalInt4.Transform(-pipeType.ConnectorPlacements[indexOfSelectedConnector].Position, QuaternionFixedDecimalInt4.CreateLookingAt(-pipeType.ConnectorPlacements[indexOfSelectedConnector].Direction, ((ITransformable)pipeConnector.Transform).LocalUnitZ, ((ITransformable)pipeConnector.Transform).LocalUnitY)), QuaternionFixedDecimalInt4.CreateLookingAt(-pipeType.ConnectorPlacements[indexOfSelectedConnector].Direction, ((ITransformable)pipeConnector.Transform).LocalUnitZ, ((ITransformable)pipeConnector.Transform).LocalUnitY));
+			Transform transform =
+				new(
+					pipeConnector.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[indexOfSelectedConnector].Position, QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.CreateLookingAt(pipeType.ConnectorPlacements[indexOfSelectedConnector].Direction, ((ITransformable)pipeConnector.Transform).LocalUnitZ, ((ITransformable)pipeConnector.Transform).LocalUnitY))),
+					QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.CreateLookingAt(pipeType.ConnectorPlacements[indexOfSelectedConnector].Direction, -((ITransformable)pipeConnector.Transform).LocalUnitZ, -((ITransformable)pipeConnector.Transform).LocalUnitY))
+				);
 
 			Pipe pipe = new(transform);
 
@@ -130,9 +134,9 @@ namespace Space_Refinery_Game
 
 			PhysicsObject physObj = CreatePhysicsObject(physicsWorld, transform, pipe);
 
-			var connectors = CreateConnectors(pipeType, pipe, physicsWorld);
+			//var connectors = CreateConnectors(pipeType, pipe, physicsWorld);
 
-			pipe.SetUp(physicsWorld, physObj, connectors, graphicsWorld, renderable);
+			pipe.SetUp(physicsWorld, physObj, Array.Empty<PipeConnector>() /*connectors*/, graphicsWorld, renderable);
 
 			return pipe;
 		}

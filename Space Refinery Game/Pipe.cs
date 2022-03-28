@@ -34,26 +34,31 @@ namespace Space_Refinery_Game
 
 		private Pipe(Transform transform)
 		{
-			informationProvider = new PipeStraightInformationProvider(this);
+			informationProvider = new PipeInformationProvider(this);
 
 			Transform = transform;
 		}
 
+		public void AddDebugObjects()
+		{
+			MainGame.DebugRender.DrawOrientationMarks(Transform);
+		}
+
 		public static Pipe Create(PipeType pipeType, Transform transform, PhysicsWorld physWorld, GraphicsWorld graphWorld)
 		{
-			Pipe pipeStraight = new(transform);
+			Pipe pipe = new(transform);
 
-			MainGame.DebugRender.DrawOrientationMarks(transform);
+			MainGame.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
 
 			EntityRenderable renderable = CreateRenderable(graphWorld, transform);
 
-			PhysicsObject physObj = CreatePhysicsObject(physWorld, transform, pipeStraight);
+			PhysicsObject physObj = CreatePhysicsObject(physWorld, transform, pipe);
 
-			PipeConnector[] connectors = CreateConnectors(pipeType, pipeStraight, physWorld);
+			PipeConnector[] connectors = CreateConnectors(pipeType, pipe, physWorld);
 
-			pipeStraight.SetUp(physWorld, physObj, connectors, graphWorld, renderable);
+			pipe.SetUp(physWorld, physObj, connectors, graphWorld, renderable);
 
-			return pipeStraight;
+			return pipe;
 		}
 
 		private static EntityRenderable CreateRenderable(GraphicsWorld graphWorld, Transform transform)
@@ -84,9 +89,7 @@ namespace Space_Refinery_Game
 				{
 					PipeConnector connector = new PipeConnector(pipe, ConnectorSide.A);
 
-					Transform transform = new(pipe.Transform.Position + pipeType.ConnectorPlacements[i].Position, QuaternionFixedDecimalInt4.CreateLookingAt(Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Direction, pipe.Transform.Rotation), Vector3FixedDecimalInt4.UnitZ, Vector3FixedDecimalInt4.UnitY));
-
-					MainGame.DebugRender.DrawOrientationMarks(transform);
+					Transform transform = new(pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation), QuaternionFixedDecimalInt4.CreateLookingAt(Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Direction, pipe.Transform.Rotation), ((ITransformable)pipe.Transform).LocalUnitZ, ((ITransformable)pipe.Transform).LocalUnitY));
 
 					connector.Transform = transform;
 
@@ -95,8 +98,6 @@ namespace Space_Refinery_Game
 					connector.PhysicsObject = physWorld.AddPhysicsObject(physicsObjectDescription, connector);
 
 					connectors[i] = connector;
-
-					MainGame.DebugRender.DrawCube(new(transform) { Scale = new(.4f, .4f, .25f) }, RgbaFloat.CornflowerBlue);
 
 					continue;
 				}
@@ -119,21 +120,21 @@ namespace Space_Refinery_Game
 
 			PipeType pipeType = (PipeType)entityType;
 
-			Transform transform = new(pipeConnector.Transform.Position + -pipeType.ConnectorPlacements[indexOfSelectedConnector].Position, QuaternionFixedDecimalInt4.CreateLookingAt(Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[indexOfSelectedConnector].Direction, pipeConnector.Transform.Rotation), Vector3FixedDecimalInt4.UnitZ, Vector3FixedDecimalInt4.UnitY));
+			Transform transform = new(pipeConnector.Transform.Position + Vector3FixedDecimalInt4.Transform(-pipeType.ConnectorPlacements[indexOfSelectedConnector].Position, QuaternionFixedDecimalInt4.CreateLookingAt(-pipeType.ConnectorPlacements[indexOfSelectedConnector].Direction, ((ITransformable)pipeConnector.Transform).LocalUnitZ, ((ITransformable)pipeConnector.Transform).LocalUnitY)), QuaternionFixedDecimalInt4.CreateLookingAt(-pipeType.ConnectorPlacements[indexOfSelectedConnector].Direction, ((ITransformable)pipeConnector.Transform).LocalUnitZ, ((ITransformable)pipeConnector.Transform).LocalUnitY));
 
-			MainGame.DebugRender.DrawOrientationMarks(transform);
+			Pipe pipe = new(transform);
 
-			Pipe pipeStraight = new(transform);
+			MainGame.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
 
 			EntityRenderable renderable = CreateRenderable(graphicsWorld, transform);
 
-			PhysicsObject physObj = CreatePhysicsObject(physicsWorld, transform, pipeStraight);
+			PhysicsObject physObj = CreatePhysicsObject(physicsWorld, transform, pipe);
 
-			var connectors = CreateConnectors(pipeType, pipeStraight, physicsWorld);
+			var connectors = CreateConnectors(pipeType, pipe, physicsWorld);
 
-			pipeStraight.SetUp(physicsWorld, physObj, connectors, graphicsWorld, renderable);
+			pipe.SetUp(physicsWorld, physObj, connectors, graphicsWorld, renderable);
 
-			return pipeStraight;
+			return pipe;
 		}
 		
 		private void SetUp(PhysicsWorld physicsWorld, PhysicsObject physicsObject, PipeConnector[] connectors, GraphicsWorld graphicsWorld, EntityRenderable renderable)
@@ -149,6 +150,8 @@ namespace Space_Refinery_Game
 		{
 			PhysicsObject.Destroy();
 			Renderable.Destroy();
+
+			MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
 
 			GraphicsWorld.UnorderedRenderables.Remove(Renderable);
 

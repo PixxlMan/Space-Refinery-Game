@@ -25,7 +25,7 @@ namespace Space_Refinery_Game
 		{
 			MainGame.DebugRender.DrawOrientationMarks(PhysicsObject.Transform);
 
-			MainGame.DebugRender.DrawCube(new (PhysicsObject.Transform) { Scale = new(.4f, .4f, .25f)}, VacantSide is null ? new(0, 1, 0, .5f) : RgbaFloat.Cyan);
+			MainGame.DebugRender.DrawCube(new (PhysicsObject.Transform) { Scale = new(.4f, .4f, .25f)}, VacantSide is null ? RgbaFloat.Green : RgbaFloat.Cyan);
 		}
 
 		public (Pipe? pipeA, Pipe? pipeB) Pipes;

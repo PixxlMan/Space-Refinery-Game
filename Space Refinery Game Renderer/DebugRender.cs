@@ -12,6 +12,8 @@ namespace Space_Refinery_Game_Renderer
 {
 	public class DebugRender
 	{
+		public bool ShouldRender;
+
 		private Pipeline pipeline;
 
 		private ResourceLayout sharedLayout;
@@ -19,6 +21,8 @@ namespace Space_Refinery_Game_Renderer
 		private ResourceSet resourceSet;
 
 		private List<DebugRenderable> debugRenderables = new();
+
+		public event Action AddDebugObjects;
 
 		public static DebugRender Create(GraphicsWorld graphicsWorld)
 		{
@@ -93,10 +97,17 @@ namespace Space_Refinery_Game_Renderer
 			BindableResource[] bindableResources = new BindableResource[] { GraphicsWorld.CameraProjViewBuffer };
 			ResourceSetDescription resourceSetDescription = new ResourceSetDescription(sharedLayout, bindableResources);
 			resourceSet = factory.CreateResourceSet(resourceSetDescription);
+
+			RayMesh = Utils.CreateDeviceResources(Utils.GetCubeVertexPositionTexture(new(.1f, .1f, 1f)), Utils.GetCubeIndices(), GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory);
 		}
 
 		private void DrawDebugObjects(CommandList cl)
 		{
+			if (!ShouldRender)
+				return;
+
+			AddDebugObjects?.Invoke();
+
 			cl.PushDebugGroup("Debug objects");
 
 			cl.SetPipeline(pipeline);
@@ -105,9 +116,12 @@ namespace Space_Refinery_Game_Renderer
 			foreach (var renderable in debugRenderables)
 			{
 				renderable.AddDrawCommands(cl);
+				renderable.Dispose();
 			}
 
 			cl.PopDebugGroup();
+
+			debugRenderables.Clear();
 		}
 
 		private DebugRender(GraphicsWorld graphicsWorld)
@@ -124,20 +138,26 @@ namespace Space_Refinery_Game_Renderer
 			debugRenderables.Add(renderable);
 		}
 
+		public Mesh RayMesh;
+
 		public void DrawRay(Vector3FixedDecimalInt4 origin, Vector3FixedDecimalInt4 direction, RgbaFloat color)
 		{
 			Transform transform = new(origin, QuaternionFixedDecimalInt4.CreateLookingAt(direction, Vector3FixedDecimalInt4.UnitZ, Vector3FixedDecimalInt4.UnitY));
 
-			var renderable = DebugRenderable.Create(Utils.CreateDeviceResources(Utils.GetCubeVertexPositionTexture(new(.1f, .1f, 2f)), Utils.GetCubeIndices(), GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory), transform, color, GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory);
+			var renderable = DebugRenderable.Create(RayMesh, transform, color, GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory);
 
 			debugRenderables.Add(renderable);
 		}
 
 		public void DrawOrientationMarks(Transform transform)
 		{
-			DrawRay(transform.Position, ((ITransformable)transform).LocalUnitX, RgbaFloat.Red);
-			DrawRay(transform.Position, ((ITransformable)transform).LocalUnitY, RgbaFloat.Green);
-			DrawRay(transform.Position, ((ITransformable)transform).LocalUnitZ, RgbaFloat.Blue);
+			DrawRay(transform.Position + ((ITransformable)transform).LocalUnitX / 2, ((ITransformable)transform).LocalUnitX, RgbaFloat.Red);
+			DrawRay(transform.Position + ((ITransformable)transform).LocalUnitY / 2, ((ITransformable)transform).LocalUnitY, RgbaFloat.Green);
+			DrawRay(transform.Position + ((ITransformable)transform).LocalUnitZ / 2, ((ITransformable)transform).LocalUnitZ, RgbaFloat.Blue);
+
+			DrawRay(transform.Position - ((ITransformable)transform).LocalUnitX / 2, -((ITransformable)transform).LocalUnitX, new(.4f, 0, 0, 1));
+			DrawRay(transform.Position - ((ITransformable)transform).LocalUnitY / 2, -((ITransformable)transform).LocalUnitY, new(0, .4f, 0, 1));
+			DrawRay(transform.Position - ((ITransformable)transform).LocalUnitZ / 2, -((ITransformable)transform).LocalUnitZ, new(0, 0, .4f, 1));
 		}
 	}
 }

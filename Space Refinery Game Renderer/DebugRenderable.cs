@@ -9,7 +9,7 @@ using Veldrid;
 
 namespace Space_Refinery_Game_Renderer
 {
-	internal readonly struct DebugRenderable : IRenderable
+	internal readonly struct DebugRenderable : IRenderable, IDisposable
 	{
 		public static DebugRenderable Create(Mesh mesh, Transform transform, RgbaFloat color, GraphicsDevice gd, ResourceFactory factory)
 		{
@@ -45,6 +45,12 @@ namespace Space_Refinery_Game_Renderer
 			commandList.SetVertexBuffer(2, TransformationBuffer);
 
 			commandList.DrawIndexed(Mesh.IndexCount);
+		}
+
+		public void Dispose()
+		{
+			TransformationBuffer.Dispose();
+			ColorBuffer.Dispose();
 		}
 	}
 }

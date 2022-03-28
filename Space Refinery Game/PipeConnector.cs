@@ -8,6 +8,8 @@ namespace Space_Refinery_Game
 		public PipeConnector((Pipe pipeA, Pipe pipeB) pipes)
 		{
 			Pipes = pipes;
+
+			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
 		}
 
 		public PipeConnector(Pipe initialPipe, ConnectorSide side)
@@ -15,6 +17,15 @@ namespace Space_Refinery_Game
 			Pipes = (side == ConnectorSide.A ? (initialPipe, null) : (null, initialPipe));
 
 			VacantSide = (side == ConnectorSide.A ? ConnectorSide.B : ConnectorSide.A);
+
+			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
+		}
+
+		public void AddDebugObjects()
+		{
+			MainGame.DebugRender.DrawOrientationMarks(PhysicsObject.Transform);
+
+			MainGame.DebugRender.DrawCube(new (PhysicsObject.Transform) { Scale = new(.4f, .4f, .25f)}, VacantSide is null ? new(0, 1, 0, .5f) : RgbaFloat.Cyan);
 		}
 
 		public (Pipe? pipeA, Pipe? pipeB) Pipes;
@@ -82,6 +93,8 @@ namespace Space_Refinery_Game
 			if (Pipes.pipeA is null && Pipes.pipeB is null)
 			{
 				PhysicsObject.Destroy();
+
+				MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
 			}
 		}
 

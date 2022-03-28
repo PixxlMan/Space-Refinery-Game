@@ -51,9 +51,9 @@ public class MainGame
 
 		Starfield.Create(GraphicsWorld);
 
-		Pipe.Create(ui.SelectedPipeType, new Transform(new(5, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 45 * FixedDecimalInt4.DegreesToRadians)), PhysicsWorld, GraphicsWorld);
+		Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 45 * FixedDecimalInt4.DegreesToRadians)), PhysicsWorld, GraphicsWorld);
 
-		Pipe.Create(ui.SelectedPipeType, new Transform(new(5, 0, 1), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), PhysicsWorld, GraphicsWorld);
+		Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 5), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), PhysicsWorld, GraphicsWorld);
 
 		DebugRender.DrawOrientationMarks(new Transform(default));
 
@@ -103,6 +103,11 @@ public class MainGame
 			if (InputTracker.FrameSnapshot.WheelDelta != 0)
 			{
 				ui.ChangeSelection(-(int)InputTracker.FrameSnapshot.WheelDelta);
+			}
+
+			if (InputTracker.GetKeyDown(Key.P))
+			{
+				DebugRender.ShouldRender = !DebugRender.ShouldRender;
 			}
 
 			var physicsObject = PhysicsWorld.Raycast(GraphicsWorld.Camera.Position, GraphicsWorld.Camera.Forward, 1000);

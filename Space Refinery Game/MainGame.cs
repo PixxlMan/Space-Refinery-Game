@@ -93,7 +93,9 @@ public class MainGame
 	{
 		lock(SynchronizationObject)
 		{
-			InputTracker.UpdateFrameInput(window.PumpEvents());
+			window.PumpEvents(out var input);
+
+			InputTracker.UpdateFrameInput(input);
 
 			if (InputTracker.GetKey(Key.Escape))
 			{

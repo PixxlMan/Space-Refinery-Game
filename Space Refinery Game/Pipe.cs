@@ -134,9 +134,9 @@ namespace Space_Refinery_Game
 
 			PhysicsObject physObj = CreatePhysicsObject(physicsWorld, transform, pipe);
 
-			//var connectors = CreateConnectors(pipeType, pipe, physicsWorld);
+			var connectors = CreateConnectors(pipeType, pipe, physicsWorld);
 
-			pipe.SetUp(physicsWorld, physObj, Array.Empty<PipeConnector>() /*connectors*/, graphicsWorld, renderable);
+			pipe.SetUp(physicsWorld, physObj, connectors, graphicsWorld, renderable);
 
 			return pipe;
 		}

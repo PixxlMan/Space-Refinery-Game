@@ -20,7 +20,7 @@ namespace Space_Refinery_Game
 
 		private GraphicsDevice gd;
 
-		public PipeType[] PipeTypes = new PipeType[10];
+		public List<PipeType> PipeTypes = new();
 
 		public PipeType SelectedPipeType => PipeTypes[Selection];
 
@@ -30,15 +30,15 @@ namespace Space_Refinery_Game
 		{
 			Selection += selectionDelta;
 			 
-			while (Selection >= PipeTypes.Length || Selection < 0)
+			while (Selection >= PipeTypes.Count || Selection < 0)
 			{
 				if (Selection < 0)
 				{
-					Selection += PipeTypes.Length;
+					Selection += PipeTypes.Count;
 				}
-				else if (Selection >= PipeTypes.Length)
+				else if (Selection >= PipeTypes.Count)
 				{
-					Selection -= PipeTypes.Length;
+					Selection -= PipeTypes.Count;
 				}
 			}
 		}
@@ -48,36 +48,6 @@ namespace Space_Refinery_Game
 			imGuiRenderer = new(gd, gd.MainSwapchain.Framebuffer.OutputDescription, (int)gd.MainSwapchain.Framebuffer.Width, (int)gd.MainSwapchain.Framebuffer.Height);
 
 			imGuiRenderer.CreateDeviceResources(gd, gd.MainSwapchain.Framebuffer.OutputDescription);
-
-			PipeTypes = new PipeType[10]
-			{
-				new PipeType()
-				{
-					ConnectorPlacements = new PositionAndDirection[]
-					{
-						new PositionAndDirection()
-						{
-							Position = new(.5f, 0, 0),
-							Direction = new(1, 0, 0),
-						},
-						new PositionAndDirection()
-						{
-							Position = new(-.5f, 0, 0),
-							Direction = new(-1, 0, 0),
-						},
-					},
-					Name = "Straight Pipe",
-				},
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-			};
 
 			this.gd = gd;
 		}
@@ -89,6 +59,8 @@ namespace Space_Refinery_Game
 			UI ui = new(graphWorld.GraphicsDevice);
 
 			graphWorld.AddRenderable(ui, 1);
+
+			ui.PipeTypes.AddRange(PipeType.GetAllPipeTypes(graphWorld));
 
 			return ui;
 		}
@@ -132,8 +104,8 @@ namespace Space_Refinery_Game
 			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2, gd.MainSwapchain.Framebuffer.Height / 5 * 4), ImGuiCond.Always);
 			ImGui.SetWindowSize(new Vector2(500, 50), ImGuiCond.Always);
 			{
-				ImGui.Columns(PipeTypes.Length);
-				for (int i = 0; i < PipeTypes.Length; i++)
+				ImGui.Columns(PipeTypes.Count);
+				for (int i = 0; i < PipeTypes.Count; i++)
 				{
 					if (PipeTypes[i] is null)
 					{

@@ -50,7 +50,7 @@ namespace Space_Refinery_Game
 
 			MainGame.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
 
-			EntityRenderable renderable = CreateRenderable(graphWorld, transform);
+			EntityRenderable renderable = CreateRenderable(pipeType, graphWorld, transform);
 
 			PhysicsObject physObj = CreatePhysicsObject(physWorld, transform, pipe);
 
@@ -61,9 +61,9 @@ namespace Space_Refinery_Game
 			return pipe;
 		}
 
-		private static EntityRenderable CreateRenderable(GraphicsWorld graphWorld, Transform transform)
+		private static EntityRenderable CreateRenderable(PipeType pipeType, GraphicsWorld graphWorld, Transform transform)
 		{
-			EntityRenderable renderable = EntityRenderable.Create(graphWorld.GraphicsDevice, graphWorld.Factory, transform, FXRenderer.Mesh.LoadMesh(graphWorld.GraphicsDevice, graphWorld.Factory, Path.Combine(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe"), "PipeStraight.obj")), Utils.GetSolidColoredTexture(RgbaByte.Green, graphWorld.GraphicsDevice, graphWorld.Factory), graphWorld.CameraProjViewBuffer, graphWorld.LightInfoBuffer);
+			EntityRenderable renderable = EntityRenderable.Create(graphWorld.GraphicsDevice, graphWorld.Factory, transform, pipeType.Model, Utils.GetSolidColoredTexture(RgbaByte.Green, graphWorld.GraphicsDevice, graphWorld.Factory), graphWorld.CameraProjViewBuffer, graphWorld.LightInfoBuffer);
 
 			graphWorld.AddRenderable(renderable);
 			return renderable;
@@ -130,7 +130,7 @@ namespace Space_Refinery_Game
 
 			MainGame.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
 
-			EntityRenderable renderable = CreateRenderable(graphicsWorld, transform);
+			EntityRenderable renderable = CreateRenderable(pipeType, graphicsWorld, transform);
 
 			PhysicsObject physObj = CreatePhysicsObject(physicsWorld, transform, pipe);
 

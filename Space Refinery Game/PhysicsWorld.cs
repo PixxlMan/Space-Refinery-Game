@@ -114,6 +114,41 @@ namespace Space_Refinery_Game
 			}
 		}
 
+		struct RaycastHitHandler<T> : IRayHitHandler
+			where T : Entity
+		{
+			public PhysicsObject? PhysicsObject;
+
+			public PhysicsWorld physicsWorld;
+
+			public RaycastHitHandler(PhysicsWorld physicsWorld) : this()
+			{
+				this.physicsWorld = physicsWorld;
+			}
+
+			public bool AllowTest(CollidableReference collidable)
+			{
+				return true;
+			}
+
+			public bool AllowTest(CollidableReference collidable, int childIndex)
+			{
+				return true;
+			}
+
+			public void OnRayHit(in RayData ray, ref float maximumT, float t, in Vector3 normal, CollidableReference collidable, int childIndex)
+			{
+				if (PhysicsObject is not null)
+				{
+					return;
+				}
+				else if (physicsWorld.PhysicsObjectLookup[collidable.BodyHandle].Entity is T)
+				{
+					PhysicsObject = physicsWorld.PhysicsObjectLookup[collidable.BodyHandle];
+				}
+			}
+		}
+
 		public PhysicsObject Raycast(Vector3FixedDecimalInt4 start, Vector3FixedDecimalInt4 direction, FixedDecimalInt4 maxDistance)
 		{
 			var raycastHitHandler = new RaycastHitHandler();
@@ -126,6 +161,21 @@ namespace Space_Refinery_Game
 			}
 
 			return PhysicsObjectLookup[raycastHitHandler.BodyHandle.Value];
+		}
+
+		public PhysicsObject Raycast<T>(Vector3FixedDecimalInt4 start, Vector3FixedDecimalInt4 direction, FixedDecimalInt4 maxDistance)
+			where T : Entity
+		{
+			var raycastHitHandler = new RaycastHitHandler<T>(this);
+
+			simulation.RayCast(start.ToVector3(), direction.ToVector3(), maxDistance.ToFloat(), ref raycastHitHandler);
+
+			if (raycastHitHandler.PhysicsObject is null)
+			{
+				return null;
+			}
+
+			return raycastHitHandler.PhysicsObject;
 		}
 
 		public Transform GetTransform(BodyHandle bodyHandle)

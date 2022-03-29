@@ -1,4 +1,5 @@
-﻿using FXRenderer;
+﻿using FixedPrecision;
+using FXRenderer;
 using Space_Refinery_Game_Renderer;
 using System;
 using System.Collections.Generic;
@@ -90,6 +91,24 @@ namespace Space_Refinery_Game
 					},
 					Name = "T Pipe",
 					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeStraightDivergeT.obj"),
+				},
+				new PipeType()
+				{
+					ConnectorPlacements = new PositionAndDirection[]
+					{
+						new PositionAndDirection()
+						{
+							Position = new(0, -.5f, 0),
+							Direction = new(0, -1, 0),
+						},
+						new PositionAndDirection()
+						{
+							Position = new(-.5f, 0, 0),
+							Direction = new(-1, 0, 0),
+						},
+					},
+					Name = "90 Bend Pipe",
+					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeBend90.obj"),
 				},
 			};
 

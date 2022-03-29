@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -78,8 +78,9 @@
 
   <ItemGroup>
     <Reference Include="FixedPrecision">
-      <HintPath>..\..\FixedPrecision\FixedPrecision\bin\Release\net6.0\FixedPrecision.dll</HintPath>
-    </Reference>
+      <!--<HintPath>..\..\FixedPrecision\FixedPrecision\bin\Release\net6.0\FixedPrecision.dll</HintPath>-->
+	  <HintPath>..\..\FixedPrecision\FixedPrecision\bin\Debug\net6.0\FixedPrecision.dll</HintPath>
+	</Reference>
     <Reference Include="FXRenderer">
       <HintPath>..\..\FXPRenderer\FXRenderer\bin\Release\net6.0\FXRenderer.dll</HintPath>
     </Reference>

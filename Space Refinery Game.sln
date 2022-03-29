@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Space Refinery Game", "Space Refinery Game\Space Refinery Game.csproj", "{01575825-6D2C-468D-A70B-0A44A9E9FE87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Space Refinery Game Renderer", "Space Refinery Game Renderer\Space Refinery Game Renderer.csproj", "{FD35CD9A-AF07-46B2-BC18-FD56D5C80445}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Space Refinery Game Renderer", "Space Refinery Game Renderer\Space Refinery Game Renderer.csproj", "{FD35CD9A-AF07-46B2-BC18-FD56D5C80445}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

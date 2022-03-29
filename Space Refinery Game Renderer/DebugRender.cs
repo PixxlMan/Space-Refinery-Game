@@ -22,6 +22,8 @@ namespace Space_Refinery_Game_Renderer
 
 		private List<DebugRenderable> debugRenderables = new();
 
+		private List<DebugRenderable> persistentRenderables = new();
+
 		public event Action AddDebugObjects;
 
 		public static DebugRender Create(GraphicsWorld graphicsWorld)
@@ -104,7 +106,11 @@ namespace Space_Refinery_Game_Renderer
 		private void DrawDebugObjects(CommandList cl)
 		{
 			if (!ShouldRender)
+			{
+				persistentRenderables.Clear();
+
 				return;
+			}
 
 			AddDebugObjects?.Invoke();
 
@@ -117,6 +123,11 @@ namespace Space_Refinery_Game_Renderer
 			{
 				renderable.AddDrawCommands(cl);
 				renderable.Dispose();
+			}
+
+			foreach (var renderable in persistentRenderables)
+			{
+				renderable.AddDrawCommands(cl);
 			}
 
 			cl.PopDebugGroup();
@@ -147,6 +158,15 @@ namespace Space_Refinery_Game_Renderer
 			var renderable = DebugRenderable.Create(RayMesh, transform, color, GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory);
 
 			debugRenderables.Add(renderable);
+		}
+
+		public void PersistentRay(Vector3FixedDecimalInt4 origin, Vector3FixedDecimalInt4 direction, RgbaFloat color)
+		{
+			Transform transform = new(origin, QuaternionFixedDecimalInt4.CreateLookingAt(direction, Vector3FixedDecimalInt4.UnitZ, Vector3FixedDecimalInt4.UnitY));
+
+			var renderable = DebugRenderable.Create(RayMesh, transform, color, GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory);
+
+			persistentRenderables.Add(renderable);
 		}
 
 		public void DrawOrientationMarks(Transform transform)

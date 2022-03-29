@@ -83,13 +83,24 @@ namespace Space_Refinery_Game
 
 			for (int i = 0; i < pipeType.ConnectorPlacements.Length; i++)
 			{
-				PhysicsObject physicsObject = null;// physWorld.Raycast(pipeType.ConnectorPlacements[i].Position + pipe.Transform.Position, pipeType.ConnectorPlacements[i].Direction, 0.5f);
+				PhysicsObject physicsObject = physWorld.Raycast<PipeConnector>(
+					pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation) * 2,
+					-Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Direction, pipe.Transform.Rotation),
+					.5f);
+
+				MainGame.DebugRender.PersistentRay(
+					pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation) * 2,
+					-Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Direction, pipe.Transform.Rotation),
+					RgbaFloat.Yellow);
 				
 				if (physicsObject is null || physicsObject.Entity is not PipeConnector)
 				{
 					PipeConnector connector = new PipeConnector(pipe, ConnectorSide.A);
 
-					Transform transform = new(pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation), QuaternionFixedDecimalInt4.CreateLookingAt(Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Direction, pipe.Transform.Rotation), ((ITransformable)pipe.Transform).LocalUnitZ, ((ITransformable)pipe.Transform).LocalUnitY));
+					Transform transform = new(
+						pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation),
+						QuaternionFixedDecimalInt4.CreateLookingAt(Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Direction, pipe.Transform.Rotation), ((ITransformable)pipe.Transform).LocalUnitZ, ((ITransformable)pipe.Transform).LocalUnitY)
+					);
 
 					connector.Transform = transform;
 

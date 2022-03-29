@@ -53,9 +53,13 @@ public class MainGame
 
 		Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 45 * FixedDecimalInt4.DegreesToRadians)), PhysicsWorld, GraphicsWorld);
 
-		Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 5), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), PhysicsWorld, GraphicsWorld);
+		var pipe = Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 5), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 45 * FixedDecimalInt4.DegreesToRadians)), PhysicsWorld, GraphicsWorld);
 
-		DebugRender.DrawOrientationMarks(new Transform(default));
+		Pipe subPipe = (Pipe)Pipe.Build(pipe.Connectors[0], ui.SelectedPipeType, 0, PhysicsWorld, GraphicsWorld);
+
+		Pipe.Build(pipe.Connectors[1], ui.SelectedPipeType, 1, PhysicsWorld, GraphicsWorld);
+
+		Pipe.Build(subPipe.Connectors[1], ui.SelectedPipeType, 0, PhysicsWorld, GraphicsWorld);
 
 		GraphicsWorld.Run();
 

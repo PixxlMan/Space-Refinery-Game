@@ -51,7 +51,7 @@ namespace Space_Refinery_Game
 		{
 			ConnectorSelection += selectionDelta;
 
-			while (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length || EntitySelection < 0)
+			while (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length || SelectedPipeType.ConnectorPlacements.Length < 0)
 			{
 				if (ConnectorSelection < 0)
 				{

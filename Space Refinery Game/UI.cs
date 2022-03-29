@@ -22,23 +22,44 @@ namespace Space_Refinery_Game
 
 		public List<PipeType> PipeTypes = new();
 
-		public PipeType SelectedPipeType => PipeTypes[Selection];
+		public PipeType SelectedPipeType => PipeTypes[EntitySelection];
 
-		public int Selection;
+		public int EntitySelection;
 
-		public void ChangeSelection(int selectionDelta)
+		public void ChangeEntitySelection(int selectionDelta)
 		{
-			Selection += selectionDelta;
+			ChangeConnectorSelection(0);
+
+			EntitySelection += selectionDelta;
 			 
-			while (Selection >= PipeTypes.Count || Selection < 0)
+			while (EntitySelection >= PipeTypes.Count || EntitySelection < 0)
 			{
-				if (Selection < 0)
+				if (EntitySelection < 0)
 				{
-					Selection += PipeTypes.Count;
+					EntitySelection += PipeTypes.Count;
 				}
-				else if (Selection >= PipeTypes.Count)
+				else if (EntitySelection >= PipeTypes.Count)
 				{
-					Selection -= PipeTypes.Count;
+					EntitySelection -= PipeTypes.Count;
+				}
+			}
+		}
+
+		public int ConnectorSelection;
+
+		public void ChangeConnectorSelection(int selectionDelta)
+		{
+			ConnectorSelection += selectionDelta;
+
+			while (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length || EntitySelection < 0)
+			{
+				if (ConnectorSelection < 0)
+				{
+					ConnectorSelection += SelectedPipeType.ConnectorPlacements.Length;
+				}
+				else if (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length)
+				{
+					ConnectorSelection -= SelectedPipeType.ConnectorPlacements.Length;
 				}
 			}
 		}
@@ -88,6 +109,9 @@ namespace Space_Refinery_Game
 			ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize /*| ImGuiWindowFlags.NoBackground */| ImGuiWindowFlags.NoDecoration);
 			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 4 * 3, gd.MainSwapchain.Framebuffer.Height / 2), ImGuiCond.Always);
 			{
+				ImGui.Text("Connector: " + ConnectorSelection);
+				ImGui.Text("Entity: " + EntitySelection);
+
 				if (CurrentlySelectedInformationProvider is not null)
 				{
 					ImGui.Text($"Information for: {CurrentlySelectedInformationProvider.Name}");
@@ -109,7 +133,7 @@ namespace Space_Refinery_Game
 				{
 					if (PipeTypes[i] is null)
 					{
-						if (Selection == i)
+						if (EntitySelection == i)
 						{
 							ImGui.TextColored(RgbaFloat.Blue.ToVector4(), "None");
 						}
@@ -122,7 +146,7 @@ namespace Space_Refinery_Game
 						continue;
 					}
 
-					if (Selection == i)
+					if (EntitySelection == i)
 					{
 						ImGui.TextColored(RgbaFloat.Blue.ToVector4(), (PipeTypes[i].Name));
 					}

@@ -106,9 +106,18 @@ public class MainGame
 				Environment.Exit(69);
 			}
 
+			if (InputTracker.GetKeyDown(Key.E))
+			{
+				ui.ChangeConnectorSelection(1);
+			}
+			else if (InputTracker.GetKeyDown(Key.Q))
+			{
+				ui.ChangeConnectorSelection(-1);
+			}
+
 			if (InputTracker.FrameSnapshot.WheelDelta != 0)
 			{
-				ui.ChangeSelection(-(int)InputTracker.FrameSnapshot.WheelDelta);
+				ui.ChangeEntitySelection(-(int)InputTracker.FrameSnapshot.WheelDelta);
 			}
 
 			if (InputTracker.GetKeyDown(Key.P))
@@ -131,7 +140,7 @@ public class MainGame
 			{
 				if (InputTracker.GetMouseButtonDown(MouseButton.Left))
 				{
-					Pipe.Build((Connector)physicsObject.Entity, ui.SelectedPipeType, 0, PhysicsWorld, GraphicsWorld);
+					Pipe.Build((Connector)physicsObject.Entity, ui.SelectedPipeType, ui.ConnectorSelection, PhysicsWorld, GraphicsWorld);
 				}
 			}
 			else if (physicsObject is not null && physicsObject.Entity is IConstruction)

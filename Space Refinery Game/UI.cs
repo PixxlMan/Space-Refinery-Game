@@ -25,6 +25,10 @@ namespace Space_Refinery_Game
 
 		public int EntitySelection;
 
+		public bool Paused;
+
+		public event Action<bool> PauseStateChanged;
+
 		public void ChangeEntitySelection(int selectionDelta)
 		{
 			ChangeConnectorSelection(0);
@@ -96,7 +100,98 @@ namespace Space_Refinery_Game
 			imGuiRenderer.Render(gd, cl);
 		}
 
+		public void Update()
+		{
+			if (InputTracker.GetKeyDown(Key.C) && InputTracker.GetKey(Key.ShiftLeft))
+			{
+				ChangeConnectorSelection(-1);
+			}
+			else if (InputTracker.GetKeyDown(Key.C))
+			{
+				ChangeConnectorSelection(1);
+			}
+
+			if (InputTracker.FrameSnapshot.WheelDelta != 0)
+			{
+				ChangeEntitySelection(-(int)InputTracker.FrameSnapshot.WheelDelta);
+			}
+
+			if (InputTracker.GetKeyDown(Key.Escape))
+			{
+				TogglePause();
+			}
+		}
+
+		public void TogglePause()
+		{
+			if (Paused)
+			{
+				Unpause();
+			}
+			else
+			{
+				Pause();
+			}
+		}
+
+		public void Pause()
+		{
+			if (Paused)
+			{
+				return;
+			}
+
+			Paused = true;
+
+			PauseStateChanged?.Invoke(true);
+		}
+
+		public void Unpause()
+		{
+			if (!Paused)
+			{
+				return;
+			}
+
+			Paused = false;
+
+			PauseStateChanged?.Invoke(false);
+		}
+
 		public void DoUI()
+		{
+			if (!Paused)
+			{
+				DoGameRunningUI();
+			}
+			else if (Paused)
+			{
+				DoPauseMenuUI();
+			}
+		}
+
+		private Vector2 PauseMenuSize => new Vector2(gd.MainSwapchain.Framebuffer.Width / 3, (gd.MainSwapchain.Framebuffer.Height / 10) * 8);
+
+		private void DoPauseMenuUI()
+		{
+			ImGui.Begin("Pause menu", ImGuiWindowFlags.NoDecoration);
+			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2 - PauseMenuSize.X / 2, gd.MainSwapchain.Framebuffer.Height / 2 - PauseMenuSize.Y / 2), ImGuiCond.Always);
+			ImGui.SetWindowSize(PauseMenuSize, ImGuiCond.Always);
+			{
+				if (ImGui.Button("Resume"))
+				{
+					Unpause();
+				}
+
+				if (ImGui.Button("Exit game"))
+				{
+					Environment.Exit(69);
+				}
+			}
+			ImGui.End();
+		}
+
+		private void DoGameRunningUI()
 		{
 			ImGui.Begin("Center", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
 			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2, gd.MainSwapchain.Framebuffer.Height / 2), ImGuiCond.Always);
@@ -153,7 +248,7 @@ namespace Space_Refinery_Game
 					{
 						ImGui.TextDisabled(PipeTypes[i].Name);
 					}
-					
+
 					ImGui.NextColumn();
 				}
 			}

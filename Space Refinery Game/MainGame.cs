@@ -27,6 +27,8 @@ public class MainGame
 	private Window window;
 	private UI ui;
 
+	public bool Paused;
+
 	public String SynchronizationObject = "69";
 
 	private Vector2FixedDecimalInt4 previousMousePos;
@@ -49,21 +51,26 @@ public class MainGame
 
 		ui = UI.Create(GraphicsWorld);
 
+		ui.PauseStateChanged += UI_PauseStateChanged;
+
 		Starfield.Create(GraphicsWorld);
 
-		Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 45 * FixedDecimalInt4.DegreesToRadians)), PhysicsWorld, GraphicsWorld);
+		Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), PhysicsWorld, GraphicsWorld);
 
-		var pipe = Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 5), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 45 * FixedDecimalInt4.DegreesToRadians)), PhysicsWorld, GraphicsWorld);
-
-		Pipe subPipe = (Pipe)Pipe.Build(pipe.Connectors[0], ui.SelectedPipeType, 0, PhysicsWorld, GraphicsWorld);
-
-		Pipe.Build(pipe.Connectors[1], ui.SelectedPipeType, 1, PhysicsWorld, GraphicsWorld);
-
-		Pipe.Build(subPipe.Connectors[1], ui.SelectedPipeType, 0, PhysicsWorld, GraphicsWorld);
+		InputTracker.IgnoreNextFrameMousePosition = true;
 
 		GraphicsWorld.Run();
 
 		StartUpdating();
+	}
+
+	private void UI_PauseStateChanged(bool paused)
+	{
+		InputTracker.IgnoreNextFrameMousePosition = true;
+
+		Paused = paused;
+
+		window.CaptureMouse = !paused;
 	}
 
 	private void StartUpdating()
@@ -101,98 +108,84 @@ public class MainGame
 
 			InputTracker.UpdateFrameInput(input);
 
-			if (InputTracker.GetKey(Key.Escape))
-			{
-				Environment.Exit(69);
-			}
-
-			if (InputTracker.GetKeyDown(Key.E))
-			{
-				ui.ChangeConnectorSelection(1);
-			}
-			else if (InputTracker.GetKeyDown(Key.Q))
-			{
-				ui.ChangeConnectorSelection(-1);
-			}
-
-			if (InputTracker.FrameSnapshot.WheelDelta != 0)
-			{
-				ui.ChangeEntitySelection(-(int)InputTracker.FrameSnapshot.WheelDelta);
-			}
+			ui.Update();
 
 			if (InputTracker.GetKeyDown(Key.P))
 			{
 				DebugRender.ShouldRender = !DebugRender.ShouldRender;
 			}
 
-			var physicsObject = PhysicsWorld.Raycast(GraphicsWorld.Camera.Position, GraphicsWorld.Camera.Forward, 1000);
+			if (!Paused)
+			{
+				var physicsObject = PhysicsWorld.Raycast(GraphicsWorld.Camera.Position, GraphicsWorld.Camera.Forward, 1000);
 
-			if (physicsObject is not null)
-			{
-				ui.CurrentlySelectedInformationProvider = physicsObject.InformationProvider;
-			}
-			else
-			{
-				ui.CurrentlySelectedInformationProvider = null;
-			}
-
-			if (physicsObject is not null && physicsObject.Entity is Connector && ui.SelectedPipeType is not null)
-			{
-				if (InputTracker.GetMouseButtonDown(MouseButton.Left))
+				if (physicsObject is not null)
 				{
-					Pipe.Build((Connector)physicsObject.Entity, ui.SelectedPipeType, ui.ConnectorSelection, PhysicsWorld, GraphicsWorld);
+					ui.CurrentlySelectedInformationProvider = physicsObject.InformationProvider;
 				}
-			}
-			else if (physicsObject is not null && physicsObject.Entity is IConstruction)
-			{
-				if (InputTracker.GetMouseButtonDown(MouseButton.Right))
+				else
 				{
-					((IConstruction)physicsObject.Entity).Deconstruct();
+					ui.CurrentlySelectedInformationProvider = null;
 				}
-			}
 
-			FixedDecimalInt4 sprintFactor = InputTracker.GetKey(Key.ShiftLeft)
-								? 3
-								: "0.5".Parse<FixedDecimalInt4>();
-			Vector3FixedDecimalInt4 motionDir = Vector3FixedDecimalInt4.Zero;
-			if (InputTracker.GetKey(Key.A))
-			{
-				motionDir += -Vector3FixedDecimalInt4.UnitX;
-			}
-			if (InputTracker.GetKey(Key.D))
-			{
-				motionDir += Vector3FixedDecimalInt4.UnitX;
-			}
-			if (InputTracker.GetKey(Key.W))
-			{
-				motionDir += -Vector3FixedDecimalInt4.UnitZ;
-			}
-			if (InputTracker.GetKey(Key.S))
-			{
-				motionDir += Vector3FixedDecimalInt4.UnitZ;
-			}
-			if (InputTracker.GetKey(Key.Q))
-			{
-				motionDir += -Vector3FixedDecimalInt4.UnitY;
-			}
-			if (InputTracker.GetKey(Key.E))
-			{
-				motionDir += Vector3FixedDecimalInt4.UnitY;
-			}
+				if (physicsObject is not null && physicsObject.Entity is Connector && ui.SelectedPipeType is not null)
+				{
+					if (InputTracker.GetMouseButtonDown(MouseButton.Left))
+					{
+						Pipe.Build((Connector)physicsObject.Entity, ui.SelectedPipeType, ui.ConnectorSelection, PhysicsWorld, GraphicsWorld);
+					}
+				}
+				else if (physicsObject is not null && physicsObject.Entity is IConstruction)
+				{
+					if (InputTracker.GetMouseButtonDown(MouseButton.Right))
+					{
+						((IConstruction)physicsObject.Entity).Deconstruct();
+					}
+				}
 
-			if (motionDir != Vector3FixedDecimalInt4.Zero)
-			{
-				QuaternionFixedDecimalInt4 lookRotation = QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(GraphicsWorld.Camera.Yaw, GraphicsWorld.Camera.Pitch, FixedDecimalInt4.Zero);
-				motionDir = Vector3FixedDecimalInt4.Transform(motionDir, lookRotation);
-				GraphicsWorld.Camera.Position += (motionDir * sprintFactor * deltaTime).ToVector3().ToFixed<Vector3FixedDecimalInt4>();
+				FixedDecimalInt4 sprintFactor = InputTracker.GetKey(Key.ShiftLeft)
+									? 3
+									: 0.5f;
+				Vector3FixedDecimalInt4 motionDir = Vector3FixedDecimalInt4.Zero;
+				if (InputTracker.GetKey(Key.A))
+				{
+					motionDir += -Vector3FixedDecimalInt4.UnitX;
+				}
+				if (InputTracker.GetKey(Key.D))
+				{
+					motionDir += Vector3FixedDecimalInt4.UnitX;
+				}
+				if (InputTracker.GetKey(Key.W))
+				{
+					motionDir += -Vector3FixedDecimalInt4.UnitZ;
+				}
+				if (InputTracker.GetKey(Key.S))
+				{
+					motionDir += Vector3FixedDecimalInt4.UnitZ;
+				}
+				if (InputTracker.GetKey(Key.Q))
+				{
+					motionDir += -Vector3FixedDecimalInt4.UnitY;
+				}
+				if (InputTracker.GetKey(Key.E))
+				{
+					motionDir += Vector3FixedDecimalInt4.UnitY;
+				}
+
+				if (motionDir != Vector3FixedDecimalInt4.Zero)
+				{
+					QuaternionFixedDecimalInt4 lookRotation = QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(GraphicsWorld.Camera.Yaw, GraphicsWorld.Camera.Pitch, FixedDecimalInt4.Zero);
+					motionDir = Vector3FixedDecimalInt4.Transform(motionDir, lookRotation);
+					GraphicsWorld.Camera.Position += (motionDir * sprintFactor * deltaTime).ToVector3().ToFixed<Vector3FixedDecimalInt4>();
+				}
+
+				Vector2FixedDecimalInt4 mouseDelta = InputTracker.MousePosition - previousMousePos;
+				previousMousePos = InputTracker.MousePosition;
+
+				GraphicsWorld.Camera.Yaw += -mouseDelta.X / 300;
+				GraphicsWorld.Camera.Pitch += -mouseDelta.Y / 300;
+				GraphicsWorld.Camera.Pitch = FixedDecimalInt4.Clamp(GraphicsWorld.Camera.Pitch, -1.8f, 1.8f);
 			}
-
-			Vector2FixedDecimalInt4 mouseDelta = InputTracker.MousePosition - previousMousePos;
-			previousMousePos = InputTracker.MousePosition;
-
-			GraphicsWorld.Camera.Yaw += -mouseDelta.X / 300;
-			GraphicsWorld.Camera.Pitch += -mouseDelta.Y / 300;
-			GraphicsWorld.Camera.Pitch = FixedDecimalInt4.Clamp(GraphicsWorld.Camera.Pitch, -1, 1);
 		}
 	}
 

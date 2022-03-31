@@ -16,6 +16,8 @@ public static class Program
 
 		Window window = new("Space Refinery");
 
+		window.CaptureMouse = true;
+
 		MainGame mainGame = new();
 
 		window.GraphicsDeviceCreated += delegate (GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)

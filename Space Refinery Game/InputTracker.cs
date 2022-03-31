@@ -19,6 +19,8 @@ namespace Space_Refinery_Game
         private static InputSnapshot inputSnapshot;
         public static InputSnapshot FrameSnapshot { get => inputSnapshot is null ? new BogusInputSnapshot() : inputSnapshot; private set => inputSnapshot = value; }
 
+        public static bool IgnoreNextFrameMousePosition;
+
         public static bool GetKey(Key key)
         {
             return _currentlyPressedKeys.Contains(key);
@@ -45,7 +47,15 @@ namespace Space_Refinery_Game
             _newKeysThisFrame.Clear();
             _newMouseButtonsThisFrame.Clear();
 
-            MousePosition = snapshot.MousePosition.ToFixed<Vector2FixedDecimalInt4>();
+			if (!IgnoreNextFrameMousePosition)
+			{
+                MousePosition = snapshot.MousePosition.ToFixed<Vector2FixedDecimalInt4>();
+			}
+			else
+			{
+                MousePosition = Vector2FixedDecimalInt4.Zero;
+			}
+
             for (int i = 0; i < snapshot.KeyEvents.Count; i++)
             {
                 KeyEvent ke = snapshot.KeyEvents[i];
@@ -58,6 +68,7 @@ namespace Space_Refinery_Game
                     KeyUp(ke.Key);
                 }
             }
+
             for (int i = 0; i < snapshot.MouseEvents.Count; i++)
             {
                 MouseEvent me = snapshot.MouseEvents[i];
@@ -70,6 +81,8 @@ namespace Space_Refinery_Game
                     MouseUp(me.MouseButton);
                 }
             }
+
+            IgnoreNextFrameMousePosition = false;
         }
 
         private static void MouseUp(MouseButton mouseButton)

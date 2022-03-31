@@ -21,6 +21,7 @@ public class MainGame
 {
 	public GraphicsWorld GraphicsWorld;
 	public PhysicsWorld PhysicsWorld;
+	public GameWorld GameWorld;
 
 	public static DebugRender DebugRender;
 
@@ -53,9 +54,11 @@ public class MainGame
 
 		ui.PauseStateChanged += UI_PauseStateChanged;
 
+		GameWorld = new();
+
 		Starfield.Create(GraphicsWorld);
 
-		Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), PhysicsWorld, GraphicsWorld);
+		GameWorld.AddConstruction(Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), PhysicsWorld, GraphicsWorld));
 
 		InputTracker.IgnoreNextFrameMousePosition = true;
 
@@ -128,18 +131,18 @@ public class MainGame
 					ui.CurrentlySelectedInformationProvider = null;
 				}
 
-				if (physicsObject is not null && physicsObject.Entity is Connector && ui.SelectedPipeType is not null)
+				if (physicsObject is not null && physicsObject.Entity is Connector connector && ui.SelectedPipeType is not null)
 				{
 					if (InputTracker.GetMouseButtonDown(MouseButton.Left))
 					{
-						Pipe.Build((Connector)physicsObject.Entity, ui.SelectedPipeType, ui.ConnectorSelection, PhysicsWorld, GraphicsWorld);
+						GameWorld.AddConstruction(Pipe.Build(connector, ui.SelectedPipeType, ui.ConnectorSelection, PhysicsWorld, GraphicsWorld));
 					}
 				}
-				else if (physicsObject is not null && physicsObject.Entity is IConstruction)
+				else if (physicsObject is not null && physicsObject.Entity is IConstruction construction)
 				{
 					if (InputTracker.GetMouseButtonDown(MouseButton.Right))
 					{
-						((IConstruction)physicsObject.Entity).Deconstruct();
+						GameWorld.Deconstruct(construction);
 					}
 				}
 

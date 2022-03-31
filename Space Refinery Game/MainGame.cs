@@ -75,7 +75,7 @@ public class MainGame
 
 	private void StartUpdating()
 	{
-		Thread thread = new Thread(new ParameterizedThreadStart((_) => 
+		Thread thread = new Thread(new ThreadStart(() => 
 		{
 			Stopwatch stopwatch = new();
 			stopwatch.Start();

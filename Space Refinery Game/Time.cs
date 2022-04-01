@@ -9,6 +9,8 @@ namespace Space_Refinery_Game
 {
 	public static class Time
 	{
-		public static readonly FixedDecimalInt4 TickInterval = "0.0016".Parse<FixedDecimalInt4>();
+		public static readonly FixedDecimalInt4 TickInterval = 0.0016f;
+
+		public static readonly FixedDecimalInt4 UpdateInterval = 0.0006f;
 	}
 }

@@ -185,7 +185,7 @@ namespace Space_Refinery_Game
 
 		private void DoPauseMenuUI()
 		{
-			ImGui.Begin("Pause menu", ImGuiWindowFlags.NoDecoration);
+			ImGui.Begin("Pause menu", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove);
 			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2 - PauseMenuSize.X / 2, gd.MainSwapchain.Framebuffer.Height / 2 - PauseMenuSize.Y / 2), ImGuiCond.Always);
 			ImGui.SetWindowSize(PauseMenuSize, ImGuiCond.Always);
 			{

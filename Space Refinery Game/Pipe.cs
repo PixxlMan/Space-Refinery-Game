@@ -131,21 +131,7 @@ namespace Space_Refinery_Game
 
 			PipeType pipeType = (PipeType)entityType;
 
-			QuaternionFixedDecimalInt4 connectorRotation = pipeConnector.VacantSide == ConnectorSide.A ? QuaternionFixedDecimalInt4.Inverse(pipeConnector.Transform.Rotation) : pipeConnector.Transform.Rotation;
-
-			connectorRotation = QuaternionFixedDecimalInt4.Normalize(connectorRotation);
-
-			ITransformable pipeConnectorTransformable = new Transform(pipeConnector.Transform) { Rotation = connectorRotation };
-
-			Vector3FixedDecimalInt4 direction = pipeConnector.VacantSide == ConnectorSide.A ? -pipeType.ConnectorPlacements[indexOfSelectedConnector].Direction : pipeType.ConnectorPlacements[indexOfSelectedConnector].Direction;
-
-			Vector3FixedDecimalInt4 position = pipeConnector.VacantSide == ConnectorSide.A ? -pipeType.ConnectorPlacements[indexOfSelectedConnector].Position : pipeType.ConnectorPlacements[indexOfSelectedConnector].Position;
-
-			Transform transform =
-				new(
-					pipeConnector.Transform.Position + Vector3FixedDecimalInt4.Transform(position, QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.CreateLookingAt(direction, pipeConnectorTransformable.LocalUnitZ, pipeConnectorTransformable.LocalUnitY))),
-					QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.CreateLookingAt(direction, -pipeConnectorTransformable.LocalUnitZ, -pipeConnectorTransformable.LocalUnitY))
-				);
+			Transform transform = GameWorld.GenerateTransformForConnector(pipeType.ConnectorPlacements[indexOfSelectedConnector], pipeConnector);
 
 			transform.Rotation = QuaternionFixedDecimalInt4.Normalize(transform.Rotation);
 
@@ -163,7 +149,7 @@ namespace Space_Refinery_Game
 
 			return pipe;
 		}
-		
+
 		private void SetUp(PhysicsWorld physicsWorld, PhysicsObject physicsObject, PipeConnector[] connectors, GraphicsWorld graphicsWorld, EntityRenderable renderable)
 		{
 			PhysicsWorld = physicsWorld;

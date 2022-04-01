@@ -11,6 +11,8 @@
   <ItemGroup>
     <None Remove="EntityRenderable-fragment.glsl" />
     <None Remove="EntityRenderable-vertex.glsl" />
+    <None Remove="Shaders\ConstructionMarker-fragment.glsl" />
+    <None Remove="Shaders\ConstructionMarker-vertex.glsl" />
     <None Remove="Shaders\DebugRenderable-fragment.glsl" />
     <None Remove="Shaders\DebugRenderable-vertex.glsl" />
     <None Remove="Starfield-fragment.glsl" />
@@ -18,7 +20,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Shaders\ConstructionMarker-fragment.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Shaders\DebugRenderable-fragment.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\ConstructionMarker-vertex.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\EntityRenderable-fragment.glsl">

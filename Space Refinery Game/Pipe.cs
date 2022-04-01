@@ -133,6 +133,8 @@ namespace Space_Refinery_Game
 
 			QuaternionFixedDecimalInt4 connectorRotation = pipeConnector.VacantSide == ConnectorSide.A ? QuaternionFixedDecimalInt4.Inverse(pipeConnector.Transform.Rotation) : pipeConnector.Transform.Rotation;
 
+			connectorRotation = QuaternionFixedDecimalInt4.Normalize(connectorRotation);
+
 			ITransformable pipeConnectorTransformable = new Transform(pipeConnector.Transform) { Rotation = connectorRotation };
 
 			Vector3FixedDecimalInt4 direction = pipeConnector.VacantSide == ConnectorSide.A ? -pipeType.ConnectorPlacements[indexOfSelectedConnector].Direction : pipeType.ConnectorPlacements[indexOfSelectedConnector].Direction;
@@ -144,6 +146,8 @@ namespace Space_Refinery_Game
 					pipeConnector.Transform.Position + Vector3FixedDecimalInt4.Transform(position, QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.CreateLookingAt(direction, pipeConnectorTransformable.LocalUnitZ, pipeConnectorTransformable.LocalUnitY))),
 					QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.CreateLookingAt(direction, -pipeConnectorTransformable.LocalUnitZ, -pipeConnectorTransformable.LocalUnitY))
 				);
+
+			transform.Rotation = QuaternionFixedDecimalInt4.Normalize(transform.Rotation);
 
 			Pipe pipe = new(transform);
 

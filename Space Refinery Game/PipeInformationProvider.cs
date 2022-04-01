@@ -5,11 +5,11 @@ namespace Space_Refinery_Game
 {
 	public class PipeInformationProvider : IInformationProvider
 	{
-		public Pipe PipeStraght;
+		public Pipe Pipe;
 
 		public PipeInformationProvider(Pipe pipeStraght)
 		{
-			PipeStraght = pipeStraght;
+			Pipe = pipeStraght;
 		}
 
 		public string Name => "Pipe";
@@ -18,9 +18,9 @@ namespace Space_Refinery_Game
 		{
 			ImGui.Spacing();
 			
-			ImGui.Text("Postition: " + PipeStraght.Renderable.Position.ToString("", CultureInfo.CurrentCulture));
+			ImGui.Text("Postition: " + Pipe.Renderable.Position.ToString("", CultureInfo.CurrentCulture));
 
-			ImGui.Text("Orientation: " + PipeStraght.Renderable.Rotation.ToString());
+			ImGui.Text("Orientation: " + Pipe.Renderable.Rotation.ToString());
 		}
 	}
 }

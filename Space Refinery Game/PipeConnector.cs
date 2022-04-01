@@ -9,6 +9,8 @@ namespace Space_Refinery_Game
 		{
 			Pipes = pipes;
 
+			informationProvider = new PipeConnectorInformationProvider(this);
+
 			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
 		}
 
@@ -17,6 +19,8 @@ namespace Space_Refinery_Game
 			Pipes = (side == ConnectorSide.A ? (initialPipe, null) : (null, initialPipe));
 
 			VacantSide = (side == ConnectorSide.A ? ConnectorSide.B : ConnectorSide.A);
+
+			informationProvider = new PipeConnectorInformationProvider(this);
 
 			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
 		}
@@ -110,7 +114,7 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		private IInformationProvider informationProvider = new ConnectorInformationProvider();
+		private IInformationProvider informationProvider;
 
 		public override IInformationProvider InformationProvider => informationProvider;
 	}

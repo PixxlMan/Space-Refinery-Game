@@ -5,21 +5,20 @@ namespace Space_Refinery_Game
 {
 	public class PipeConnector : Connector
 	{
-		public PipeConnector((Pipe pipeA, Pipe pipeB) pipes)
+		public PipeConnector((Pipe pipeA, Pipe pipeB) pipes) : this()
 		{
 			Pipes = pipes;
-
-			informationProvider = new PipeConnectorInformationProvider(this);
-
-			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
 		}
 
-		public PipeConnector(Pipe initialPipe, ConnectorSide side)
+		public PipeConnector(Pipe initialPipe, ConnectorSide side) : this()
 		{
 			Pipes = (side == ConnectorSide.A ? (initialPipe, null) : (null, initialPipe));
 
 			VacantSide = (side == ConnectorSide.A ? ConnectorSide.B : ConnectorSide.A);
+		}
 
+		private PipeConnector()
+		{
 			informationProvider = new PipeConnectorInformationProvider(this);
 
 			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;

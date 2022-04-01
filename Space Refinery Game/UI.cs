@@ -27,6 +27,8 @@ namespace Space_Refinery_Game
 
 		public bool Paused;
 
+		public FixedDecimalInt4 Rotation;
+
 		public event Action<bool> PauseStateChanged;
 
 		public void ChangeEntitySelection(int selectionDelta)
@@ -109,6 +111,15 @@ namespace Space_Refinery_Game
 			else if (InputTracker.GetKeyDown(Key.C))
 			{
 				ChangeConnectorSelection(1);
+			}
+
+			if (InputTracker.GetKey(Key.R) && InputTracker.GetKey(Key.ShiftLeft))
+			{
+				Rotation -= 10 * Time.UpdateInterval;
+			}
+			else if (InputTracker.GetKey(Key.R))
+			{
+				Rotation += 10 * Time.UpdateInterval;
 			}
 
 			if (InputTracker.FrameSnapshot.WheelDelta != 0)
@@ -205,6 +216,7 @@ namespace Space_Refinery_Game
 			{
 				ImGui.Text("Connector: " + ConnectorSelection);
 				ImGui.Text("Entity: " + EntitySelection);
+				ImGui.Text("Rotation: " + Rotation);
 
 				if (CurrentlySelectedInformationProvider is not null)
 				{

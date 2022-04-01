@@ -94,7 +94,7 @@ public class MainGame
 
 				timeLastUpdate = time;
 
-				Thread.Sleep(6);
+				Thread.Sleep((Time.UpdateInterval * 1000).ToInt32());
 
 				Update(deltaTime);
 			}
@@ -135,7 +135,7 @@ public class MainGame
 				{
 					if (InputTracker.GetMouseButtonDown(MouseButton.Left))
 					{
-						GameWorld.AddConstruction(Pipe.Build(connector, ui.SelectedPipeType, ui.ConnectorSelection, PhysicsWorld, GraphicsWorld));
+						GameWorld.AddConstruction(Pipe.Build(connector, ui.SelectedPipeType, ui.ConnectorSelection, ui.Rotation, PhysicsWorld, GraphicsWorld));
 					}
 				}
 				else if (physicsObject is not null && physicsObject.Entity is IConstruction construction)

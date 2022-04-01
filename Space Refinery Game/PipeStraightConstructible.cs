@@ -1,4 +1,5 @@
-﻿using Space_Refinery_Game_Renderer;
+﻿using FixedPrecision;
+using Space_Refinery_Game_Renderer;
 
 namespace Space_Refinery_Game
 {
@@ -6,6 +7,6 @@ namespace Space_Refinery_Game
 	{
 		public string TargetName => "Pipe Straight";
 
-		public Func<Connector, IEntityType, int, PhysicsWorld, GraphicsWorld, IConstruction> Build => Pipe.Build;
+		public Func<Connector, IEntityType, int, FixedDecimalInt4, PhysicsWorld, GraphicsWorld, IConstruction> Build => Pipe.Build;
 	}
 }

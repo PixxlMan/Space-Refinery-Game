@@ -79,13 +79,19 @@ namespace Space_Refinery_Game
 			{
 				Pipes = (pipe, Pipes.pipeB);
 
-				VacantSide = null;
+				if (Pipes.pipeB is not null)
+				{
+					VacantSide = null;
+				}
 			}
 			else if (VacantSide == ConnectorSide.B)
 			{
 				Pipes = (Pipes.pipeA, pipe);
 
-				VacantSide = null;
+				if (Pipes.pipeA is not null)
+				{
+					VacantSide = null;
+				}
 			}
 		}
 

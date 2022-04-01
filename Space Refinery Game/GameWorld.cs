@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FixedPrecision;
+using FXRenderer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +22,27 @@ namespace Space_Refinery_Game
 			Constructions.Remove(construction);
 
 			construction.Deconstruct();
+		}
+
+		public static Transform GenerateTransformForConnector(PositionAndDirection chosenConnectorTransform, PipeConnector connector)
+		{
+			QuaternionFixedDecimalInt4 connectorRotation = connector.VacantSide == ConnectorSide.A ? QuaternionFixedDecimalInt4.Inverse(connector.Transform.Rotation) : connector.Transform.Rotation;
+
+			connectorRotation = QuaternionFixedDecimalInt4.Normalize(connectorRotation);
+
+			ITransformable pipeConnectorTransformable = new Transform(connector.Transform) { Rotation = connectorRotation };
+
+			Vector3FixedDecimalInt4 direction = connector.VacantSide == ConnectorSide.A ? -chosenConnectorTransform.Direction : chosenConnectorTransform.Direction;
+
+			Vector3FixedDecimalInt4 position = connector.VacantSide == ConnectorSide.A ? -chosenConnectorTransform.Position : chosenConnectorTransform.Position;
+
+			Transform transform =
+				new(
+					connector.Transform.Position + Vector3FixedDecimalInt4.Transform(position, QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.CreateLookingAt(direction, pipeConnectorTransformable.LocalUnitZ, pipeConnectorTransformable.LocalUnitY))),
+					QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.CreateLookingAt(direction, -pipeConnectorTransformable.LocalUnitZ, -pipeConnectorTransformable.LocalUnitY))
+				);
+
+			return transform;
 		}
 	}
 }

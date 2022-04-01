@@ -34,6 +34,8 @@ public class MainGame
 
 	private Vector2FixedDecimalInt4 previousMousePos;
 
+	private ConstructionMarker constructionMarker;
+
 	public void Start(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
 		this.window = window;
@@ -57,6 +59,8 @@ public class MainGame
 		GameWorld = new();
 
 		Starfield.Create(GraphicsWorld);
+
+		constructionMarker = ConstructionMarker.Create(GraphicsWorld);
 
 		GameWorld.AddConstruction(Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), PhysicsWorld, GraphicsWorld));
 
@@ -133,6 +137,14 @@ public class MainGame
 
 				if (physicsObject is not null && physicsObject.Entity is Connector connector && ui.SelectedPipeType is not null && ((PipeConnector)connector).Vacant)
 				{
+					constructionMarker.SetMesh(ui.SelectedPipeType.Model);
+
+					constructionMarker.SetColor(RgbaFloat.Green);
+
+					constructionMarker.SetTransform(GameWorld.GenerateTransformForConnector(ui.SelectedPipeType.ConnectorPlacements[ui.ConnectorSelection], ((PipeConnector)connector)));
+
+					constructionMarker.ShouldDraw = true;
+
 					if (InputTracker.GetMouseButtonDown(MouseButton.Left))
 					{
 						GameWorld.AddConstruction(Pipe.Build(connector, ui.SelectedPipeType, ui.ConnectorSelection, ui.Rotation, PhysicsWorld, GraphicsWorld));
@@ -144,6 +156,11 @@ public class MainGame
 					{
 						GameWorld.Deconstruct(construction);
 					}
+				}
+
+				if (physicsObject is null || physicsObject.Entity is not Connector)
+				{
+					constructionMarker.ShouldDraw = false;
 				}
 
 				FixedDecimalInt4 sprintFactor = InputTracker.GetKey(Key.ShiftLeft)

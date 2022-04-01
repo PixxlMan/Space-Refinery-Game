@@ -41,15 +41,15 @@ namespace Space_Refinery_Game
 
 		public void Run()
 		{
-			Thread thread = new Thread(new ParameterizedThreadStart((_) =>
+			Thread thread = new Thread(new ThreadStart(() =>
 			{
 				while (true)
 				{
-					Thread.Sleep(16);
+					Thread.Sleep((Time.PhysicsInterval * 1000).ToInt32());
 
 					lock (SynchronizationObject)
 					{
-						simulation.Timestep(0.016f, threadDispatcher);
+						simulation.Timestep(Time.PhysicsInterval.ToFloat(), threadDispatcher);
 					}
 				}
 			}));

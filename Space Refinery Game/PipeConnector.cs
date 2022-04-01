@@ -38,6 +38,8 @@ namespace Space_Refinery_Game
 
 		public Transform Transform;
 
+		public bool Vacant => VacantSide is not null;
+
 		public Pipe? UnconnectedPipe
 		{
 			get
@@ -68,6 +70,11 @@ namespace Space_Refinery_Game
 
 		public void Connect(Pipe pipe)
 		{
+			if (!Vacant)
+			{
+				throw new Exception("PipeConnector is not vacant.");
+			}
+
 			if (VacantSide == ConnectorSide.A)
 			{
 				Pipes = (pipe, Pipes.pipeB);

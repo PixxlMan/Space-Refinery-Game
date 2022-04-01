@@ -187,7 +187,7 @@ public class MainGame
 
 				GraphicsWorld.Camera.Yaw += -mouseDelta.X / 300;
 				GraphicsWorld.Camera.Pitch += -mouseDelta.Y / 300;
-				GraphicsWorld.Camera.Pitch = FixedDecimalInt4.Clamp(GraphicsWorld.Camera.Pitch, -1.8f, 1.8f);
+				GraphicsWorld.Camera.Pitch = FixedDecimalInt4.Clamp(GraphicsWorld.Camera.Pitch, -1.2f, 1.2f);
 			}
 		}
 	}

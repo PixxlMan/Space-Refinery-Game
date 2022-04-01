@@ -20,7 +20,7 @@ namespace Space_Refinery_Game
 		public string ModelPath;
 
 		[NonSerialized]
-		public Mesh Model;
+		public Mesh Mesh;
 
 		public string Name;
 
@@ -37,14 +37,14 @@ namespace Space_Refinery_Game
 
 			var pipeType = JsonSerializer.Deserialize<PipeType>(stream, new JsonSerializerOptions() { IncludeFields = true });
 
-			pipeType.Model = Mesh.LoadMesh(gd, factory, pipeType.ModelPath);
+			pipeType.Mesh = Mesh.LoadMesh(gd, factory, pipeType.ModelPath);
 
 			return pipeType;
 		}
 
 		public void AssignModel(GraphicsDevice gd, ResourceFactory factory)
 		{
-			Model = Mesh.LoadMesh(gd, factory, ModelPath);
+			Mesh = Mesh.LoadMesh(gd, factory, ModelPath);
 		}
 
 		public static PipeType[] GetAllPipeTypes(GraphicsWorld graphicsWorld)

@@ -137,7 +137,7 @@ public class MainGame
 
 				if (physicsObject is not null && physicsObject.Entity is Connector connector && ui.SelectedPipeType is not null && ((PipeConnector)connector).Vacant)
 				{
-					constructionMarker.SetMesh(ui.SelectedPipeType.Model);
+					constructionMarker.SetMesh(ui.SelectedPipeType.Mesh);
 
 					constructionMarker.SetColor(RgbaFloat.Green);
 

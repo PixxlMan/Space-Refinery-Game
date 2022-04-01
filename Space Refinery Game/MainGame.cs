@@ -131,7 +131,7 @@ public class MainGame
 					ui.CurrentlySelectedInformationProvider = null;
 				}
 
-				if (physicsObject is not null && physicsObject.Entity is Connector connector && ui.SelectedPipeType is not null)
+				if (physicsObject is not null && physicsObject.Entity is Connector connector && ui.SelectedPipeType is not null && ((PipeConnector)connector).Vacant)
 				{
 					if (InputTracker.GetMouseButtonDown(MouseButton.Left))
 					{

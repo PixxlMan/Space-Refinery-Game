@@ -135,19 +135,23 @@ public class MainGame
 					ui.CurrentlySelectedInformationProvider = null;
 				}
 
-				if (physicsObject is not null && physicsObject.Entity is Connector connector && ui.SelectedPipeType is not null && ((PipeConnector)connector).Vacant)
+				if (physicsObject is not null && (((physicsObject.Entity is Connector connector && ((PipeConnector)connector).Vacant) || (physicsObject.Entity is ConnectorProxy connectorProxy && ((PipeConnector)connectorProxy.Connector).Vacant))) && ui.SelectedPipeType is not null)
 				{
+					PipeConnector pipeConnector = physicsObject.Entity is Connector con ? (PipeConnector)con : ((PipeConnector)((ConnectorProxy)physicsObject.Entity).Connector);
+
 					constructionMarker.SetMesh(ui.SelectedPipeType.Mesh);
 
 					constructionMarker.SetColor(RgbaFloat.Green);
 
-					constructionMarker.SetTransform(GameWorld.GenerateTransformForConnector(ui.SelectedPipeType.ConnectorPlacements[ui.ConnectorSelection], ((PipeConnector)connector)));
+					constructionMarker.SetTransform(GameWorld.GenerateTransformForConnector(ui.SelectedPipeType.ConnectorPlacements[ui.ConnectorSelection], pipeConnector));
 
 					constructionMarker.ShouldDraw = true;
 
 					if (InputTracker.GetMouseButtonDown(MouseButton.Left))
 					{
-						GameWorld.AddConstruction(Pipe.Build(connector, ui.SelectedPipeType, ui.ConnectorSelection, ui.Rotation, PhysicsWorld, GraphicsWorld));
+						GameWorld.AddConstruction(Pipe.Build(pipeConnector, ui.SelectedPipeType, ui.ConnectorSelection, ui.Rotation, PhysicsWorld, GraphicsWorld));
+
+						constructionMarker.ShouldDraw = false;
 					}
 				}
 				else if (physicsObject is not null && physicsObject.Entity is IConstruction construction)

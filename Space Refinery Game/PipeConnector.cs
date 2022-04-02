@@ -35,6 +35,8 @@ namespace Space_Refinery_Game
 
 		public PhysicsObject PhysicsObject;
 
+		public ConnectorProxy Proxy;
+
 		public Transform Transform;
 
 		public bool Vacant => VacantSide is not null;
@@ -109,6 +111,8 @@ namespace Space_Refinery_Game
 			if (Pipes.pipeA is null && Pipes.pipeB is null)
 			{
 				PhysicsObject.Destroy();
+
+				Proxy.PhysicsObject.Destroy();
 
 				MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
 			}

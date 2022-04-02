@@ -102,11 +102,21 @@ namespace Space_Refinery_Game
 						QuaternionFixedDecimalInt4.CreateLookingAt(Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Direction, pipe.Transform.Rotation), ((ITransformable)pipe.Transform).LocalUnitZ, ((ITransformable)pipe.Transform).LocalUnitY)
 					);
 
+					transform.Rotation = QuaternionFixedDecimalInt4.Normalize(transform.Rotation);
+
 					connector.Transform = transform;
 
 					var physicsObjectDescription = new PhysicsObjectDescription<Box>(new Box(.4f, .4f, .25f), transform, 0, true);
 
 					connector.PhysicsObject = physWorld.AddPhysicsObject(physicsObjectDescription, connector);
+
+					ConnectorProxy connectorProxy = new(connector);
+
+					var userInteractableObjectDescription = new PhysicsObjectDescription<Box>(new Box(.75f, .75f, .75f), transform, 0, true);
+
+					connectorProxy.PhysicsObject = physWorld.AddPhysicsObject(userInteractableObjectDescription, connector);
+
+					connector.Proxy = connectorProxy;
 
 					connectors[i] = connector;
 
@@ -132,8 +142,6 @@ namespace Space_Refinery_Game
 			PipeType pipeType = (PipeType)entityType;
 
 			Transform transform = GameWorld.GenerateTransformForConnector(pipeType.ConnectorPlacements[indexOfSelectedConnector], pipeConnector);
-
-			transform.Rotation = QuaternionFixedDecimalInt4.Normalize(transform.Rotation);
 
 			Pipe pipe = new(transform);
 

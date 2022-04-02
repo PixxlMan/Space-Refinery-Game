@@ -22,7 +22,7 @@ namespace Space_Refinery_Game
 		{
 			ImGui.Text($"Vacant side: {PipeConnector.VacantSide}");
 
-			ImGui.Text($"Connector position: {PipeConnector.Transform.Position.ToString()}");
+			ImGui.Text($"Connector position: {PipeConnector.Transform.Position.ToString("", null)}");
 			ImGui.Text($"Connector rotation: {PipeConnector.Transform.Rotation}");
 
 			ImGui.Text($"Pipe A: {(PipeConnector.Pipes.pipeA is null ? "None" : "Connected")}");

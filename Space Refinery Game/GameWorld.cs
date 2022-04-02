@@ -42,6 +42,8 @@ namespace Space_Refinery_Game
 					QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.CreateLookingAt(direction, -pipeConnectorTransformable.LocalUnitZ, -pipeConnectorTransformable.LocalUnitY))
 				);
 
+			transform.Rotation = QuaternionFixedDecimalInt4.Normalize(transform.Rotation);
+
 			return transform;
 		}
 	}

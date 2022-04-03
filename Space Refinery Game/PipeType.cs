@@ -57,12 +57,12 @@ namespace Space_Refinery_Game
 					{
 						new PositionAndDirection()
 						{
-							Position = new(.5f, 0, 0),
+							Position = new((FixedDecimalInt4).5f, 0, 0),
 							Direction = new(1, 0, 0),
 						},
 						new PositionAndDirection()
 						{
-							Position = new(-.5f, 0, 0),
+							Position = new(-(FixedDecimalInt4).5f, 0, 0),
 							Direction = new(-1, 0, 0),
 						},
 					},
@@ -75,17 +75,17 @@ namespace Space_Refinery_Game
 					{
 						new PositionAndDirection()
 						{
-							Position = new(0, -.5f, 0),
+							Position = new(0, -(FixedDecimalInt4).5f, 0),
 							Direction = new(0, -1, 0),
 						},
 						new PositionAndDirection()
 						{
-							Position = new(.5f, 0, 0),
+							Position = new((FixedDecimalInt4).5f, 0, 0),
 							Direction = new(1, 0, 0),
 						},
 						new PositionAndDirection()
 						{
-							Position = new(-.5f, 0, 0),
+							Position = new(-(FixedDecimalInt4).5f, 0, 0),
 							Direction = new(-1, 0, 0),
 						},
 					},
@@ -98,12 +98,12 @@ namespace Space_Refinery_Game
 					{
 						new PositionAndDirection()
 						{
-							Position = new(0, -.5f, 0),
+							Position = new(0, -(FixedDecimalInt4).5f, 0),
 							Direction = new(0, -1, 0),
 						},
 						new PositionAndDirection()
 						{
-							Position = new(-.5f, 0, 0),
+							Position = new(-(FixedDecimalInt4).5f, 0, 0),
 							Direction = new(-1, 0, 0),
 						},
 					},

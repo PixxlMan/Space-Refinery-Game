@@ -1,4 +1,5 @@
-﻿using FXRenderer;
+﻿using FixedPrecision;
+using FXRenderer;
 using Veldrid;
 
 namespace Space_Refinery_Game
@@ -28,7 +29,7 @@ namespace Space_Refinery_Game
 		{
 			MainGame.DebugRender.DrawOrientationMarks(PhysicsObject.Transform);
 
-			MainGame.DebugRender.DrawCube(new (PhysicsObject.Transform) { Scale = new(.4f, .4f, .25f)}, VacantSide is null ? RgbaFloat.Green : RgbaFloat.Cyan);
+			MainGame.DebugRender.DrawCube(new (PhysicsObject.Transform) { Scale = new((FixedDecimalInt4).4f, (FixedDecimalInt4).4f, (FixedDecimalInt4).25f)}, VacantSide is null ? RgbaFloat.Green : RgbaFloat.Cyan);
 		}
 
 		public (Pipe? pipeA, Pipe? pipeB) Pipes;

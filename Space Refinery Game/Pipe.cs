@@ -86,7 +86,7 @@ namespace Space_Refinery_Game
 				PhysicsObject physicsObject = physWorld.Raycast<PipeConnector>(
 					pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation) * 2,
 					-Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Direction, pipe.Transform.Rotation),
-					.5f);
+					(FixedDecimalInt4).5f);
 
 				MainGame.DebugRender.PersistentRay(
 					pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation) * 2,
@@ -99,12 +99,12 @@ namespace Space_Refinery_Game
 
 					Transform transform = new(
 						pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation),
-						QuaternionFixedDecimalInt4.CreateLookingAt(Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Direction, pipe.Transform.Rotation), ((ITransformable)pipe.Transform).LocalUnitZ, ((ITransformable)pipe.Transform).LocalUnitY)
+						QuaternionFixedDecimalInt4.CreateLookingAt(Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation), ((ITransformable)pipe.Transform).LocalUnitZ, ((ITransformable)pipe.Transform).LocalUnitY)
 					);
 
 					transform.Rotation = QuaternionFixedDecimalInt4.Normalize(transform.Rotation);
 
-					connector.Transform = transform;
+					connector.Transform  = transform;
 
 					var physicsObjectDescription = new PhysicsObjectDescription<Box>(new Box(.4f, .4f, .25f), transform, 0, true);
 

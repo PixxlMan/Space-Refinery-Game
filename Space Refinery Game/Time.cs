@@ -9,10 +9,10 @@ namespace Space_Refinery_Game
 {
 	public static class Time
 	{
-		public static readonly FixedDecimalInt4 TickInterval = 0.0166f;
+		public static readonly FixedDecimalInt4 TickInterval = (FixedDecimalInt4)0.0166f;
 
-		public static readonly FixedDecimalInt4 UpdateInterval = 0.0050f;
+		public static readonly FixedDecimalInt4 UpdateInterval = (FixedDecimalInt4)0.0050f;
 
-		public static readonly FixedDecimalInt4 PhysicsInterval = 0.0166f;
+		public static readonly FixedDecimalInt4 PhysicsInterval = (FixedDecimalInt4)0.0166f;
 	}
 }

@@ -169,7 +169,7 @@ public class MainGame
 
 				FixedDecimalInt4 sprintFactor = InputTracker.GetKey(Key.ShiftLeft)
 									? 3
-									: 0.5f;
+									: (FixedDecimalInt4)0.5f;
 				Vector3FixedDecimalInt4 motionDir = Vector3FixedDecimalInt4.Zero;
 				if (InputTracker.GetKey(Key.A))
 				{
@@ -208,7 +208,7 @@ public class MainGame
 
 				GraphicsWorld.Camera.Yaw += -mouseDelta.X / 300;
 				GraphicsWorld.Camera.Pitch += -mouseDelta.Y / 300;
-				GraphicsWorld.Camera.Pitch = FixedDecimalInt4.Clamp(GraphicsWorld.Camera.Pitch, -1.2f, 1.2f);
+				GraphicsWorld.Camera.Pitch = FixedDecimalInt4.Clamp(GraphicsWorld.Camera.Pitch, -(FixedDecimalInt4)1.2f, (FixedDecimalInt4)1.2f);
 			}
 		}
 	}

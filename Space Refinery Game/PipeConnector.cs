@@ -27,6 +27,9 @@ namespace Space_Refinery_Game
 
 		public void AddDebugObjects()
 		{
+			if (!MainGame.DebugSettings.AccessSetting<BooleanSetting>($"{nameof(PipeConnector)} debug objects"))
+				return;
+
 			MainGame.DebugRender.DrawOrientationMarks(PhysicsObject.Transform);
 
 			MainGame.DebugRender.DrawCube(new (PhysicsObject.Transform) { Scale = new((FixedDecimalInt4).4f, (FixedDecimalInt4).4f, (FixedDecimalInt4).25f)}, VacantSide is null ? RgbaFloat.Green : RgbaFloat.Cyan);

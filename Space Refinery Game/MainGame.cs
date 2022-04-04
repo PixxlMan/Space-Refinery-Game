@@ -25,6 +25,8 @@ public class MainGame
 
 	public static DebugRender DebugRender;
 
+	public static DebugSettings DebugSettings = new();
+
 	private Window window;
 	private UI ui;
 

@@ -41,6 +41,9 @@ namespace Space_Refinery_Game
 
 		public void AddDebugObjects()
 		{
+			if (!MainGame.DebugSettings.AccessSetting<BooleanSetting>($"{nameof(Pipe)} debug objects"))
+				return;
+
 			MainGame.DebugRender.DrawOrientationMarks(Transform);
 		}
 

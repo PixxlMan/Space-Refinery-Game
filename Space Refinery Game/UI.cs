@@ -181,13 +181,26 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		private Vector2 PauseMenuSize => new Vector2(gd.MainSwapchain.Framebuffer.Width / 3, (gd.MainSwapchain.Framebuffer.Height / 10) * 8);
+		private void DoDebugSettingsUI()
+		{
+			if (ImGui.Begin("Debug Settings"))
+			{
+				foreach (var debugSetting in MainGame.DebugSettings.DebugSettingsDictionary.Values)
+				{
+					debugSetting.DrawUIElement();
+				}
+
+				ImGui.End();
+			}
+		}
+
+		private Vector2 pauseMenuSize => new Vector2(gd.MainSwapchain.Framebuffer.Width / 3, (gd.MainSwapchain.Framebuffer.Height / 10) * 8);
 
 		private void DoPauseMenuUI()
 		{
 			ImGui.Begin("Pause menu", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove);
-			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2 - PauseMenuSize.X / 2, gd.MainSwapchain.Framebuffer.Height / 2 - PauseMenuSize.Y / 2), ImGuiCond.Always);
-			ImGui.SetWindowSize(PauseMenuSize, ImGuiCond.Always);
+			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2 - pauseMenuSize.X / 2, gd.MainSwapchain.Framebuffer.Height / 2 - pauseMenuSize.Y / 2), ImGuiCond.Always);
+			ImGui.SetWindowSize(pauseMenuSize, ImGuiCond.Always);
 			{
 				if (ImGui.Button("Resume"))
 				{
@@ -200,10 +213,22 @@ namespace Space_Refinery_Game
 				}
 			}
 			ImGui.End();
+
+			DoDebugSettingsUI();
 		}
 
 		private void DoGameRunningUI()
 		{
+			ImGui.Begin("Staus", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
+			ImGui.SetWindowPos(new Vector2(0, 0), ImGuiCond.Always);
+			{
+				if (MainGame.DebugRender.ShouldRender)
+				{
+					ImGui.TextColored(RgbaFloat.Red.ToVector4(), "Debug drawing");
+				}
+			}
+			ImGui.End();
+
 			ImGui.Begin("Center", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
 			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2, gd.MainSwapchain.Framebuffer.Height / 2), ImGuiCond.Always);
 			{

@@ -110,6 +110,24 @@ namespace Space_Refinery_Game
 					Name = "90 Bend Pipe",
 					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeBend90.obj"),
 				},
+				new PipeType()
+				{
+					ConnectorPlacements = new PositionAndDirection[]
+					{
+						new PositionAndDirection()
+						{
+							Position = new(0, (FixedDecimalInt4).5f, 0),
+							Direction = new(-1, 0, 0),
+						},
+						new PositionAndDirection()
+						{
+							Position = new(0, (FixedDecimalInt4).5f, 0),
+							Direction = new(-1, 0, 0),
+						},
+					},
+					Name = "180 Bend Pipe",
+					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeBend180.obj"),
+				},
 			};
 
 			foreach (PipeType pipeType in entityTypes)

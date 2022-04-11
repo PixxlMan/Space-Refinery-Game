@@ -26,7 +26,7 @@ namespace Space_Refinery_Game
 
 		public static Transform GenerateTransformForConnector(PositionAndDirection chosenConnectorTransform, PipeConnector connector)
 		{
-			QuaternionFixedDecimalInt4 connectorRotation = connector.VacantSide == ConnectorSide.A ? QuaternionFixedDecimalInt4.Inverse(connector.Transform.Rotation) : connector.Transform.Rotation;
+			QuaternionFixedDecimalInt4 connectorRotation = /*connector.VacantSide == ConnectorSide.A ? QuaternionFixedDecimalInt4.Inverse(connector.Transform.Rotation) :*/ connector.Transform.Rotation;
 
 			connectorRotation = QuaternionFixedDecimalInt4.Normalize(connectorRotation);
 
@@ -38,9 +38,9 @@ namespace Space_Refinery_Game
 
 			Transform transform =
 				new(
-					connector.Transform.Position + Vector3FixedDecimalInt4.Transform(position, QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.CreateLookingAt(direction, pipeConnectorTransformable.LocalUnitZ, pipeConnectorTransformable.LocalUnitY))),
+					connector.Transform.Position + Vector3FixedDecimalInt4.Transform(position, QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.CreateLookingAt(direction, connector.VacantSide == ConnectorSide.A ? -pipeConnectorTransformable.LocalUnitZ : pipeConnectorTransformable.LocalUnitZ, connector.VacantSide == ConnectorSide.A ? -pipeConnectorTransformable.LocalUnitY : pipeConnectorTransformable.LocalUnitY))),
 					QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.CreateLookingAt(direction, -pipeConnectorTransformable.LocalUnitZ, -pipeConnectorTransformable.LocalUnitY))
-				);
+				);			
 
 			transform.Rotation = QuaternionFixedDecimalInt4.Normalize(transform.Rotation);
 

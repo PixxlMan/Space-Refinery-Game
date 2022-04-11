@@ -66,6 +66,10 @@ public class MainGame
 
 		GameWorld.AddConstruction(Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), PhysicsWorld, GraphicsWorld));
 
+		GameWorld.AddConstruction(Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 10, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 45)), PhysicsWorld, GraphicsWorld));
+
+		GameWorld.AddConstruction(Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 5, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 90, 0)), PhysicsWorld, GraphicsWorld));
+
 		InputTracker.IgnoreNextFrameMousePosition = true;
 
 		GraphicsWorld.Run();

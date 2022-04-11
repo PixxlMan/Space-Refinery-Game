@@ -100,11 +100,20 @@ namespace Space_Refinery_Game
 				{
 					PipeConnector connector = new PipeConnector(pipe, ConnectorSide.A);
 
-					Transform transform = new(
-						pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation),
-						QuaternionFixedDecimalInt4.CreateLookingAt(Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation), ((ITransformable)pipe.Transform).LocalUnitZ, ((ITransformable)pipe.Transform).LocalUnitY)
-					);
+					QuaternionFixedDecimalInt4 rotation = QuaternionFixedDecimalInt4.Inverse(
+						QuaternionFixedDecimalInt4.CreateLookingAt(
+							Vector3FixedDecimalInt4.Transform(
+								pipeType.ConnectorPlacements[i].Direction,
+								pipe.Transform.Rotation),
+							((ITransformable)pipe.Transform).LocalUnitZ,
+							((ITransformable)pipe.Transform).LocalUnitY));
 
+					Vector3FixedDecimalInt4 position = pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, rotation);
+
+					Transform transform = new(
+						position,
+						rotation
+					);
 					transform.Rotation = QuaternionFixedDecimalInt4.Normalize(transform.Rotation);
 
 					connector.Transform  = transform;

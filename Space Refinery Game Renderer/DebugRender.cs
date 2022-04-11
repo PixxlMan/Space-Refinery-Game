@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using FixedPrecision;
+﻿using FixedPrecision;
 using FXRenderer;
 using Veldrid;
 
@@ -19,6 +13,12 @@ namespace Space_Refinery_Game_Renderer
 		private ResourceLayout sharedLayout;
 
 		private ResourceSet resourceSet;
+
+		private Dictionary<Transform, DeviceBuffer> transformationBuffers = new();
+
+		private Dictionary<RgbaFloat, DeviceBuffer> colorBuffers = new();
+
+		private Dictionary<Vector3FixedDecimalInt4, Mesh> cubeMeshes = new();
 
 		private List<DebugRenderable> debugRenderables = new();
 
@@ -122,7 +122,7 @@ namespace Space_Refinery_Game_Renderer
 			foreach (var renderable in debugRenderables)
 			{
 				renderable.AddDrawCommands(cl);
-				renderable.Dispose();
+				//renderable.Dispose();
 			}
 
 			foreach (var renderable in persistentRenderables)
@@ -142,9 +142,60 @@ namespace Space_Refinery_Game_Renderer
 
 		public GraphicsWorld GraphicsWorld;
 
+		private void GetBuffers(RgbaFloat color, Transform transform, out DeviceBuffer transformationBuffer, out DeviceBuffer colorBuffer)
+		{
+			if (transformationBuffers.ContainsKey(transform))
+			{
+				transformationBuffer = transformationBuffers[transform];
+			}
+			else
+			{
+				transformationBuffer = GraphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes, BufferUsage.VertexBuffer));
+				GraphicsWorld.GraphicsDevice.UpdateBuffer(transformationBuffer, 0, ((ITransformable)transform).GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
+
+				transformationBuffers.Add(transform, transformationBuffer);
+			}
+
+			if (colorBuffers.ContainsKey(color))
+			{
+				colorBuffer = transformationBuffers[transform];
+			}
+			else
+			{
+				colorBuffer = GraphicsWorld.Factory.CreateBuffer(new BufferDescription((uint)RgbaFloat.SizeInBytes, BufferUsage.VertexBuffer));
+				GraphicsWorld.GraphicsDevice.UpdateBuffer(colorBuffer, 0, color);
+
+				colorBuffers.Add(color, colorBuffer);
+			}
+		}
+
+		private Mesh GetCubeMesh(Vector3FixedDecimalInt4 size)
+		{
+			Mesh mesh;
+
+			if (cubeMeshes.ContainsKey(size))
+			{
+				mesh = cubeMeshes[size];
+			}
+			else
+			{
+				mesh = Utils.CreateDeviceResources(Utils.GetCubeVertexPositionTexture(size.ToVector3()), Utils.GetCubeIndices(), GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory);
+
+				cubeMeshes.Add(size, mesh);
+			}
+
+			return mesh;
+		}
+
+
+		// TODO: use separate size? instead of using transform.scale...
 		public void DrawCube(Transform transform, RgbaFloat color)
 		{
-			var renderable = DebugRenderable.Create(Utils.CreateDeviceResources(Utils.GetCubeVertexPositionTexture(transform.Scale.ToVector3()), Utils.GetCubeIndices(), GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory), new(transform) { Scale = Vector3FixedDecimalInt4.One }, color, GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory);
+			DeviceBuffer transformationBuffer, colorBuffer;
+
+			GetBuffers(color, new(transform) { Scale = Vector3FixedDecimalInt4.One }, out transformationBuffer, out colorBuffer);
+
+			DebugRenderable renderable = new(GetCubeMesh(transform.Scale), transformationBuffer, colorBuffer);
 
 			debugRenderables.Add(renderable);
 		}
@@ -155,7 +206,11 @@ namespace Space_Refinery_Game_Renderer
 		{
 			Transform transform = new(origin, QuaternionFixedDecimalInt4.CreateLookingAt(direction, Vector3FixedDecimalInt4.UnitZ, Vector3FixedDecimalInt4.UnitY));
 
-			var renderable = DebugRenderable.Create(RayMesh, transform, color, GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory);
+			DeviceBuffer transformationBuffer, colorBuffer;
+
+			GetBuffers(color, transform, out transformationBuffer, out colorBuffer);
+
+			DebugRenderable renderable = new(RayMesh, transformationBuffer, colorBuffer);
 
 			debugRenderables.Add(renderable);
 		}
@@ -164,7 +219,11 @@ namespace Space_Refinery_Game_Renderer
 		{
 			Transform transform = new(origin, QuaternionFixedDecimalInt4.CreateLookingAt(direction, Vector3FixedDecimalInt4.UnitZ, Vector3FixedDecimalInt4.UnitY));
 
-			var renderable = DebugRenderable.Create(RayMesh, transform, color, GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory);
+			DeviceBuffer transformationBuffer, colorBuffer;
+
+			GetBuffers(color, transform, out transformationBuffer, out colorBuffer);
+
+			DebugRenderable renderable = new(RayMesh, transformationBuffer, colorBuffer);
 
 			persistentRenderables.Add(renderable);
 		}

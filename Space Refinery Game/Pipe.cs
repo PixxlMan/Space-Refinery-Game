@@ -153,7 +153,7 @@ namespace Space_Refinery_Game
 
 			PipeType pipeType = (PipeType)entityType;
 
-			Transform transform = GameWorld.GenerateTransformForConnector(pipeType.ConnectorPlacements[indexOfSelectedConnector], pipeConnector);
+			Transform transform = GameWorld.GenerateTransformForConnector(pipeType.ConnectorPlacements[indexOfSelectedConnector], pipeConnector, rotation);
 
 			Pipe pipe = new(transform);
 

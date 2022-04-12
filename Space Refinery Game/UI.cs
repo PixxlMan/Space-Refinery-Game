@@ -33,8 +33,6 @@ namespace Space_Refinery_Game
 
 		public void ChangeEntitySelection(int selectionDelta)
 		{
-			ChangeConnectorSelection(0);
-
 			EntitySelection += selectionDelta;
 			 
 			while (EntitySelection >= PipeTypes.Count || EntitySelection < 0)
@@ -48,6 +46,8 @@ namespace Space_Refinery_Game
 					EntitySelection -= PipeTypes.Count;
 				}
 			}
+
+			ChangeConnectorSelection(0);
 		}
 
 		public int ConnectorSelection;

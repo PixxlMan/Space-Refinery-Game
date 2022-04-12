@@ -1,5 +1,6 @@
 ﻿using FixedPrecision;
 using FXRenderer;
+using System.Numerics;
 using Veldrid;
 
 namespace Space_Refinery_Game_Renderer
@@ -16,7 +17,7 @@ namespace Space_Refinery_Game_Renderer
 
 		private Dictionary<Transform, DeviceBuffer> transformationBuffers = new();
 
-		private Dictionary<RgbaFloat, DeviceBuffer> colorBuffers = new();
+		private Dictionary<Vector4, DeviceBuffer> colorBuffers = new();
 
 		private Dictionary<Vector3FixedDecimalInt4, Mesh> cubeMeshes = new();
 
@@ -156,16 +157,16 @@ namespace Space_Refinery_Game_Renderer
 				transformationBuffers.Add(transform, transformationBuffer);
 			}
 
-			if (colorBuffers.ContainsKey(color))
+			if (colorBuffers.ContainsKey(color.ToVector4()))
 			{
-				colorBuffer = transformationBuffers[transform];
+				colorBuffer = colorBuffers[color.ToVector4()];
 			}
 			else
 			{
 				colorBuffer = GraphicsWorld.Factory.CreateBuffer(new BufferDescription((uint)RgbaFloat.SizeInBytes, BufferUsage.VertexBuffer));
-				GraphicsWorld.GraphicsDevice.UpdateBuffer(colorBuffer, 0, color);
+				GraphicsWorld.GraphicsDevice.UpdateBuffer(colorBuffer, 0, new Vector3(color.R, color.G, color.B));
 
-				colorBuffers.Add(color, colorBuffer);
+				colorBuffers.Add(color.ToVector4(), colorBuffer);
 			}
 		}
 

@@ -37,7 +37,7 @@ namespace Space_Refinery_Game
 
 			var pipeType = JsonSerializer.Deserialize<PipeType>(stream, new JsonSerializerOptions() { IncludeFields = true });
 
-			pipeType.Mesh = Mesh.LoadMesh(gd, factory, pipeType.ModelPath);
+			pipeType.AssignModel(gd, factory);
 
 			return pipeType;
 		}

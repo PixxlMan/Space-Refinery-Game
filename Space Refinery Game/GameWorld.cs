@@ -36,10 +36,14 @@ namespace Space_Refinery_Game
 
 			Vector3FixedDecimalInt4 position = connector.VacantSide == ConnectorSide.A ? -chosenConnectorTransform.Position : chosenConnectorTransform.Position;
 
+			QuaternionFixedDecimalInt4 orientation = QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateLookingAt(direction, -pipeConnectorTransformable.LocalUnitZ, -pipeConnectorTransformable.LocalUnitY), QuaternionFixedDecimalInt4.CreateFromAxisAngle(direction, rotation)));
+
+			orientation = QuaternionFixedDecimalInt4.Normalize(orientation);
+
 			Transform transform =
 				new(
-					connector.Transform.Position + Vector3FixedDecimalInt4.Transform(position, QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.CreateLookingAt(direction, connector.VacantSide == ConnectorSide.A ? -pipeConnectorTransformable.LocalUnitZ : pipeConnectorTransformable.LocalUnitZ, connector.VacantSide == ConnectorSide.A ? -pipeConnectorTransformable.LocalUnitY : pipeConnectorTransformable.LocalUnitY))),
-					QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateLookingAt(direction, -pipeConnectorTransformable.LocalUnitZ, -pipeConnectorTransformable.LocalUnitY), QuaternionFixedDecimalInt4.CreateFromAxisAngle(direction, rotation)))
+					connector.Transform.Position + Vector3FixedDecimalInt4.Transform(position, QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.CreateLookingAt(Vector3FixedDecimalInt4.Transform(direction, orientation), connector.VacantSide == ConnectorSide.A ? -Vector3FixedDecimalInt4.Transform(Vector3FixedDecimalInt4.UnitZ, orientation) : Vector3FixedDecimalInt4.Transform(Vector3FixedDecimalInt4.UnitZ, orientation), connector.VacantSide == ConnectorSide.A ? -Vector3FixedDecimalInt4.Transform(Vector3FixedDecimalInt4.UnitY, orientation) : Vector3FixedDecimalInt4.Transform(Vector3FixedDecimalInt4.UnitY, orientation)))),
+					QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.CreateLookingAt(Vector3FixedDecimalInt4.Transform(direction, orientation), -Vector3FixedDecimalInt4.Transform(Vector3FixedDecimalInt4.UnitZ, orientation), -Vector3FixedDecimalInt4.Transform(Vector3FixedDecimalInt4.UnitY, orientation)))
 				);
 
 			transform.Rotation = QuaternionFixedDecimalInt4.Normalize(transform.Rotation);

@@ -147,7 +147,7 @@ namespace Space_Refinery_Game
 			return connectors;
 		}
 
-		public static IConstruction Build(Connector connector, IEntityType entityType, int indexOfSelectedConnector, FixedDecimalInt4 rotation, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld)
+		public static IConstruction Build(Connector connector, IEntityType entityType, int indexOfSelectedConnector, FixedDecimalLong8 rotation, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld)
 		{
 			PipeConnector pipeConnector = (PipeConnector)connector;
 

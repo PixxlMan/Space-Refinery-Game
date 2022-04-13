@@ -110,7 +110,7 @@ namespace Space_Refinery_Game
 					Name = "90 Bend Pipe",
 					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeBend90.obj"),
 				},
-				new PipeType()
+				/*new PipeType() // Disabled due to borken
 				{
 					ConnectorPlacements = new PositionAndDirection[]
 					{
@@ -127,7 +127,7 @@ namespace Space_Refinery_Game
 					},
 					Name = "180 Bend Pipe",
 					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeBend180.obj"),
-				},
+				},*/
 				new PipeType()
 				{
 					ConnectorPlacements = new PositionAndDirection[]

@@ -75,6 +75,24 @@ namespace Space_Refinery_Game
 					{
 						new PositionAndDirection()
 						{
+							Position = new((FixedDecimalInt4).25f, 0, 0),
+							Direction = new(1, 0, 0),
+						},
+						new PositionAndDirection()
+						{
+							Position = new(-(FixedDecimalInt4).25f, 0, 0),
+							Direction = new(-1, 0, 0),
+						},
+					},
+					Name = "Valve Pipe",
+					ModelPath = Path.Combine("Assets", "Models", "Pipe", "Special", "PipeSpecialValve.obj"),
+				},
+				new PipeType()
+				{
+					ConnectorPlacements = new PositionAndDirection[]
+					{
+						new PositionAndDirection()
+						{
 							Position = new(0, -(FixedDecimalInt4).5f, 0),
 							Direction = new(0, -1, 0),
 						},

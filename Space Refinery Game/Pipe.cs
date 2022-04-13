@@ -87,12 +87,12 @@ namespace Space_Refinery_Game
 			for (int i = 0; i < pipeType.ConnectorPlacements.Length; i++)
 			{
 				PhysicsObject physicsObject = physWorld.Raycast<PipeConnector>(
-					pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation) * 2,
+					pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation) * (FixedDecimalInt4)1.25f,
 					-Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Direction, pipe.Transform.Rotation),
-					(FixedDecimalInt4).5f);
+					(FixedDecimalInt4).125f);
 
 				MainGame.DebugRender.PersistentRay(
-					pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation) * 2,
+					pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation) * (FixedDecimalInt4)1.25f,
 					-Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Direction, pipe.Transform.Rotation),
 					RgbaFloat.Yellow);
 				

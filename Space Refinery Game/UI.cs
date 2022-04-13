@@ -27,7 +27,7 @@ namespace Space_Refinery_Game
 
 		public bool Paused;
 
-		public FixedDecimalInt4 Rotation;
+		public int RotationIndex;
 
 		public event Action<bool> PauseStateChanged;
 
@@ -113,13 +113,13 @@ namespace Space_Refinery_Game
 				ChangeConnectorSelection(1);
 			}
 
-			if (InputTracker.GetKey(Key.R) && InputTracker.GetKey(Key.ShiftLeft))
+			if (InputTracker.GetKeyDown(Key.R) && InputTracker.GetKey(Key.ShiftLeft))
 			{
-				Rotation -= 10 * Time.UpdateInterval;
+				RotationIndex--;
 			}
-			else if (InputTracker.GetKey(Key.R))
+			else if (InputTracker.GetKeyDown(Key.R))
 			{
-				Rotation += 10 * Time.UpdateInterval;
+				RotationIndex++;
 			}
 
 			if (InputTracker.FrameSnapshot.WheelDelta != 0)
@@ -241,7 +241,7 @@ namespace Space_Refinery_Game
 			{
 				ImGui.Text("Connector: " + ConnectorSelection);
 				ImGui.Text("Entity: " + EntitySelection);
-				ImGui.Text("Rotation: " + Rotation);
+				ImGui.Text("Rotation: " + RotationIndex);
 
 				if (CurrentlySelectedInformationProvider is not null)
 				{

@@ -32,6 +32,10 @@ public class MainGame
 
 	public bool Paused;
 
+	public FixedDecimalLong8 RotationSnapping = 45 * FixedDecimalLong8.DegreesToRadians;
+
+	public FixedDecimalLong8 RotationSnapped => ui.RotationIndex * RotationSnapping;
+
 	public String SynchronizationObject = "69";
 
 	private Vector2FixedDecimalInt4 previousMousePos;
@@ -145,13 +149,13 @@ public class MainGame
 
 					constructionMarker.SetColor(RgbaFloat.Green);
 
-					constructionMarker.SetTransform(GameWorld.GenerateTransformForConnector(ui.SelectedPipeType.ConnectorPlacements[ui.ConnectorSelection], pipeConnector, ui.Rotation));
+					constructionMarker.SetTransform(GameWorld.GenerateTransformForConnector(ui.SelectedPipeType.ConnectorPlacements[ui.ConnectorSelection], pipeConnector, RotationSnapped));
 
 					constructionMarker.ShouldDraw = true;
 
 					if (InputTracker.GetMouseButtonDown(MouseButton.Left))
 					{
-						GameWorld.AddConstruction(Pipe.Build(pipeConnector, ui.SelectedPipeType, ui.ConnectorSelection, ui.Rotation, PhysicsWorld, GraphicsWorld));
+						GameWorld.AddConstruction(Pipe.Build(pipeConnector, ui.SelectedPipeType, ui.ConnectorSelection, RotationSnapped, PhysicsWorld, GraphicsWorld));
 
 						constructionMarker.ShouldDraw = false;
 					}

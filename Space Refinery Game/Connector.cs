@@ -20,7 +20,7 @@ namespace Space_Refinery_Game
 		{
 			Connectables = (side == ConnectorSide.A ? (initialConnectable, null) : (null, initialConnectable));
 
-			VacantSide = (side == ConnectorSide.A ? ConnectorSide.B : ConnectorSide.A);
+			VacantSide = side.Opposite();
 		}
 
 		protected Connector()
@@ -121,7 +121,7 @@ namespace Space_Refinery_Game
 					return null;
 				}
 
-				return (VacantSide == ConnectorSide.A ? ConnectorSide.B : ConnectorSide.A);
+				return VacantSide.Value.Opposite();
 			}
 		}
 

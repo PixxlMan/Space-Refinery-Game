@@ -14,6 +14,11 @@ public abstract class ResourceType
 
 	public FixedDecimalInt4 Density;
 
+	protected ResourceType()
+	{
+
+	}
+
 	protected ResourceType(ChemicalType chemicalType, string resourceName, FixedDecimalInt4 density)
 	{
 		ChemicalType = chemicalType;

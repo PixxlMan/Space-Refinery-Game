@@ -14,7 +14,7 @@ public static class Program
 {
 	public static void Main()
 	{
-		var chem = new ChemicalType()
+		/*var chem = new ChemicalType()
 		{
 			ChemicalName = "H20",
 		};
@@ -28,7 +28,7 @@ public static class Program
 
 		JsonSerializer.Serialize(stream, chem, new JsonSerializerOptions() { IncludeFields = true, WriteIndented = true });
 
-		stream.Close();
+		stream.Close();*/
 
 		var stream2 = File.OpenRead(@"R:\H20Chem");
 

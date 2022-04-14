@@ -12,7 +12,7 @@ using Veldrid;
 
 namespace Space_Refinery_Game
 {
-	public class Pipe : Entity, IConstruction
+	public class Pipe : Entity, IConstruction, IConnectable
 	{
 		public PhysicsWorld PhysicsWorld;
 

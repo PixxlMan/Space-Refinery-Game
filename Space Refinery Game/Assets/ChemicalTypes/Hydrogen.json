@@ -1,0 +1,19 @@
+{ // https://en.wikipedia.org/wiki/Solid_hydrogen, https://en.wikipedia.org/wiki/Hydrogen
+  "ChemicalName": "Hydrogen",
+  "PlasmaPhaseType": {
+    "ResourceName": "Hydrogen Plasma",
+    "Density": 10000000 // ?
+  },
+  "GasPhaseType": {
+    "ResourceName": "Hydrogen Gas",
+    "Density": 0000898
+  },
+  "LiquidPhaseType": {
+    "ResourceName": "Liquid Hydrogen",
+    "Density": 0700000
+  },
+  "SolidPhaseType": {
+    "ResourceName": "Solid Hydrogen",
+    "Density": 0860000
+  }
+}

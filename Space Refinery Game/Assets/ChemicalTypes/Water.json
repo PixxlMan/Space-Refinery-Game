@@ -1,0 +1,19 @@
+{ // https://en.wikipedia.org/wiki/Water
+  "ChemicalName": "Water",
+  "PlasmaPhaseType": {
+    "ResourceName": "Water Plasma",
+    "Density": 10000000 // ?
+  },
+  "GasPhaseType": {
+    "ResourceName": "Water Vapor",
+    "Density": 20000000
+  },
+  "LiquidPhaseType": {
+    "ResourceName": "Water",
+    "Density": 100000000
+  },
+  "SolidPhaseType": {
+    "ResourceName": "Ice",
+    "Density": 91700000
+  }
+}

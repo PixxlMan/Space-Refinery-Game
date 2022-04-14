@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
@@ -33,5 +34,19 @@ namespace Space_Refinery_Game
 		{
 		
 		}*/
+
+		public void Serialize(string path)
+		{
+			using var stream = File.OpenWrite(path);
+
+			JsonSerializer.Serialize(stream, this, new JsonSerializerOptions() { IncludeFields = true, WriteIndented = true, ReadCommentHandling = JsonCommentHandling.Skip });
+		}
+
+		public static ChemicalType Deserialize(string path)
+		{
+			using var stream = File.OpenRead(path);
+
+			return JsonSerializer.Deserialize<ChemicalType>(stream, new JsonSerializerOptions() { IncludeFields = true, ReadCommentHandling = JsonCommentHandling.Skip });
+		}
 	}
 }

@@ -14,28 +14,6 @@ public static class Program
 {
 	public static void Main()
 	{
-		/*var chem = new ChemicalType()
-		{
-			ChemicalName = "H20",
-		};
-
-		chem.PlasmaPhaseType = new PlasmaType(chem, "Water Plasma", (FixedDecimalInt4).1);
-		chem.GasPhaseType = new GasType(chem, "Water Vapor", (FixedDecimalInt4).2);
-		chem.LiquidPhaseType = new LiquidType(chem, "Water", (FixedDecimalInt4)1);
-		chem.SolidPhaseType = new SolidType(chem, "Ice", (FixedDecimalInt4).7);
-
-		var stream = File.OpenWrite(@"R:\H20Chem");
-
-		JsonSerializer.Serialize(stream, chem, new JsonSerializerOptions() { IncludeFields = true, WriteIndented = true });
-
-		stream.Close();*/
-
-		var stream2 = File.OpenRead(@"R:\H20Chem");
-
-		var chem2 = JsonSerializer.Deserialize<ChemicalType>(stream2, new JsonSerializerOptions() { IncludeFields = true });
-
-		Environment.Exit(1337);
-
 		System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
 		Window window = new("Space Refinery");

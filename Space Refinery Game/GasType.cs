@@ -12,7 +12,7 @@ public class GasType : ResourceType
 
 	}
 
-	public GasType(ChemicalType chemicalType, string gasName, FixedDecimalInt4 density) : base(chemicalType, gasName, density)
+	public GasType(ChemicalType chemicalType, string gasName, FixedDecimalLong8 density) : base(chemicalType, gasName, density)
 	{
 	}
 }

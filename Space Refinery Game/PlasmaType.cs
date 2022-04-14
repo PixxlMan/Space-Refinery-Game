@@ -11,7 +11,7 @@ public class PlasmaType : ResourceType
 	{
 	}
 
-	public PlasmaType(ChemicalType chemicalType, string plasmaName, FixedDecimalInt4 density) : base(chemicalType, plasmaName, density)
+	public PlasmaType(ChemicalType chemicalType, string plasmaName, FixedDecimalLong8 density) : base(chemicalType, plasmaName, density)
 	{
 	}
 }

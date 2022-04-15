@@ -62,19 +62,21 @@ public class MainGame
 
 		ui.PauseStateChanged += UI_PauseStateChanged;
 
-		GameWorld = new();
+		GameWorld = new(this);
 
 		Starfield.Create(GraphicsWorld);
 
 		constructionMarker = ConstructionMarker.Create(GraphicsWorld);
 
-		GameWorld.AddConstruction(Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), PhysicsWorld, GraphicsWorld));
+		GameWorld.AddConstruction(Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), PhysicsWorld, GraphicsWorld, GameWorld));
 
 		InputTracker.IgnoreNextFrameMousePosition = true;
 
 		GraphicsWorld.Run();
 
 		StartUpdating();
+
+		GameWorld.StartTicking();
 	}
 
 	private void UI_PauseStateChanged(bool paused)
@@ -155,7 +157,7 @@ public class MainGame
 
 					if (InputTracker.GetMouseButtonDown(MouseButton.Left))
 					{
-						GameWorld.AddConstruction(Pipe.Build(pipeConnector, ui.SelectedPipeType, ui.ConnectorSelection, RotationSnapped, PhysicsWorld, GraphicsWorld));
+						GameWorld.AddConstruction(Pipe.Build(pipeConnector, ui.SelectedPipeType, ui.ConnectorSelection, RotationSnapped, PhysicsWorld, GraphicsWorld, GameWorld));
 
 						constructionMarker.ShouldDraw = false;
 					}

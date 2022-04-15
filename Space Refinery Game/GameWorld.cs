@@ -2,6 +2,7 @@
 using FXRenderer;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,26 @@ namespace Space_Refinery_Game
 {
 	public class GameWorld
 	{
+		public GameWorld(MainGame mainGame)
+		{
+			MainGame = mainGame;
+		}
+
 		public HashSet<IConstruction> Constructions = new();
+
+		public MainGame MainGame;
+
+		public HashSet<Entity> Entities = new();
+
+		public void AddEntity(Entity entity)
+		{
+			Entities.Add(entity);
+		}
+
+		public void RemoveEntity(Entity entity)
+		{
+			Entities.Remove(entity);
+		}
 
 		public void AddConstruction(IConstruction construction)
 		{
@@ -45,6 +65,47 @@ namespace Space_Refinery_Game
 			transform.Rotation = QuaternionFixedDecimalInt4.Normalize(transform.Rotation);
 
 			return transform;
+		}
+
+		public void StartTicking()
+		{
+			Thread thread = new Thread(new ThreadStart(() =>
+			{
+				Stopwatch stopwatch = new();
+				stopwatch.Start();
+
+				FixedDecimalInt4 timeLastUpdate = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalInt4>();
+				FixedDecimalInt4 time;
+				FixedDecimalInt4 deltaTime;
+				while (/*MainGame.Running*/true)
+				{
+					if (!MainGame.Paused)
+					{
+						time = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalInt4>();
+
+						deltaTime = time - timeLastUpdate;
+
+						timeLastUpdate = time;
+
+						Thread.Sleep((Time.TickInterval * 1000).ToInt32());
+
+						Tick();
+					}
+				}
+			}));
+
+			thread.Start();
+		}
+
+		private void Tick()
+		{
+			//lock (SynchronizationObject)
+			{
+				foreach (var entity in Entities)
+				{
+					entity.Tick();
+				}
+			}
 		}
 	}
 }

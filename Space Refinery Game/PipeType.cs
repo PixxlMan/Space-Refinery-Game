@@ -17,12 +17,16 @@ namespace Space_Refinery_Game
 	{
 		public PositionAndDirection[] ConnectorPlacements;
 
+		public PipeConnectorProperties[] ConnectorProperties;
+
 		public string ModelPath;
 
 		[NonSerialized]
 		public Mesh Mesh;
 
 		public string Name;
+
+		public PipeProperties PipeProperties;
 
 		public void Serialize(string path)
 		{
@@ -66,6 +70,21 @@ namespace Space_Refinery_Game
 							Direction = new(-1, 0, 0),
 						},
 					},
+					ConnectorProperties = new PipeConnectorProperties[]
+					{
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
+						},
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
+						},
+					},
 					Name = "Straight Pipe",
 					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeStraight.obj"),
 				},
@@ -82,6 +101,21 @@ namespace Space_Refinery_Game
 						{
 							Position = new(-(FixedDecimalInt4).25f, 0, 0),
 							Direction = new(-1, 0, 0),
+						},
+					},
+					ConnectorProperties = new PipeConnectorProperties[]
+					{
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
+						},
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
 						},
 					},
 					Name = "Valve Pipe",
@@ -107,6 +141,27 @@ namespace Space_Refinery_Game
 							Direction = new(-1, 0, 0),
 						},
 					},
+					ConnectorProperties = new PipeConnectorProperties[]
+					{
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
+						},
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
+						},
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
+						},
+					},
 					Name = "T Pipe",
 					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeStraightDivergeT.obj"),
 				},
@@ -125,6 +180,21 @@ namespace Space_Refinery_Game
 							Direction = new(-1, 0, 0),
 						},
 					},
+					ConnectorProperties = new PipeConnectorProperties[]
+					{
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
+						},
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
+						},
+					},
 					Name = "90 Bend Pipe",
 					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeBend90.obj"),
 				},
@@ -141,6 +211,21 @@ namespace Space_Refinery_Game
 						{
 							Position = new(0, (FixedDecimalInt4).5f, 0),
 							Direction = new(-1, 0, 0),
+						},
+					},
+					ConnectorProperties = new PipeConnectorProperties[]
+					{
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
+						},
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
 						},
 					},
 					Name = "180 Bend Pipe",
@@ -169,6 +254,33 @@ namespace Space_Refinery_Game
 						{
 							Position = new(-(FixedDecimalInt4).5f, 0, 0),
 							Direction = new(-1, 0, 0),
+						},
+					},
+					ConnectorProperties = new PipeConnectorProperties[]
+					{
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
+						},
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
+						},
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
+						},
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
 						},
 					},
 					Name = "X Pipe",

@@ -11,22 +11,28 @@ namespace Space_Refinery_Game
 {
 	public abstract class Connector : Entity, IDisposable
 	{
-		public Connector((IConnectable connectableA, IConnectable connectableB) connectables) : this()
+		public Connector((IConnectable connectableA, IConnectable connectableB) connectables, GameWorld gameWorld) : this(gameWorld)
 		{
 			Connectables = connectables;
 		}
 
-		public Connector(IConnectable initialConnectable, ConnectorSide side) : this()
+		public Connector(IConnectable initialConnectable, ConnectorSide side, GameWorld gameWorld) : this(gameWorld)
 		{
 			Connectables = (side == ConnectorSide.A ? (initialConnectable, null) : (null, initialConnectable));
 
 			VacantSide = side.Opposite();
 		}
 
-		protected Connector()
+		protected Connector(GameWorld gameWorld)
 		{
 			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
+
+			GameWorld = gameWorld;
+
+			GameWorld.AddEntity(this);
 		}
+
+		public GameWorld GameWorld;
 
 		public (IConnectable? connectableA, IConnectable? connectableB) Connectables { get; protected set; }
 
@@ -137,6 +143,8 @@ namespace Space_Refinery_Game
 
 		public void Dispose()
 		{
+			GameWorld.RemoveEntity(this);
+
 			PhysicsObject.Destroy();
 
 			Proxy.PhysicsObject.Destroy();

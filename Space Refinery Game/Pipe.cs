@@ -22,8 +22,10 @@ namespace Space_Refinery_Game
 
 		public GraphicsWorld GraphicsWorld;
 
-		public EntityRenderable Renderable;
+		public GameWorld GameWorld;
 
+		public EntityRenderable Renderable;
+		
 		public PipeConnector[] Connectors;
 
 		private IInformationProvider informationProvider;
@@ -31,6 +33,8 @@ namespace Space_Refinery_Game
 		public IInformationProvider InformationProvider => informationProvider;
 
 		public PipeType PipeType;
+
+		public ResourceContainer ResourceContainer;
 
 		private Pipe(Transform transform)
 		{
@@ -47,7 +51,7 @@ namespace Space_Refinery_Game
 			MainGame.DebugRender.DrawOrientationMarks(Transform);
 		}
 
-		public static Pipe Create(PipeType pipeType, Transform transform, PhysicsWorld physWorld, GraphicsWorld graphWorld)
+		public static Pipe Create(PipeType pipeType, Transform transform, PhysicsWorld physWorld, GraphicsWorld graphWorld, GameWorld gameWorld)
 		{
 			Pipe pipe = new(transform);
 
@@ -57,9 +61,11 @@ namespace Space_Refinery_Game
 
 			PhysicsObject physObj = CreatePhysicsObject(physWorld, transform, pipe);
 
-			PipeConnector[] connectors = CreateConnectors(pipeType, pipe, physWorld);
+			PipeConnector[] connectors = CreateConnectors(pipeType, pipe, physWorld, gameWorld);
 
-			pipe.SetUp(physWorld, physObj, connectors, graphWorld, renderable);
+			pipe.SetUp(physWorld, physObj, connectors, graphWorld, renderable, gameWorld);
+
+			gameWorld.AddEntity(pipe);
 
 			return pipe;
 		}
@@ -80,7 +86,7 @@ namespace Space_Refinery_Game
 			return physObj;
 		}
 
-		private static PipeConnector[] CreateConnectors(PipeType pipeType, Pipe pipe, PhysicsWorld physWorld)
+		private static PipeConnector[] CreateConnectors(PipeType pipeType, Pipe pipe, PhysicsWorld physWorld, GameWorld gameWorld)
 		{
 			PipeConnector[] connectors = new PipeConnector[pipeType.ConnectorPlacements.Length];
 
@@ -98,7 +104,7 @@ namespace Space_Refinery_Game
 				
 				if (physicsObject is null || physicsObject.Entity is not PipeConnector)
 				{
-					PipeConnector connector = new PipeConnector(pipe, ConnectorSide.A);
+					PipeConnector connector = new PipeConnector(pipe, ConnectorSide.A, pipeType.ConnectorProperties[i], gameWorld);
 
 					QuaternionFixedDecimalInt4 rotation =
 						QuaternionFixedDecimalInt4.Concatenate(
@@ -132,6 +138,8 @@ namespace Space_Refinery_Game
 
 					connectors[i] = connector;
 
+					gameWorld.AddEntity(connector);
+
 					continue;
 				}
 				else if (physicsObject.Entity is PipeConnector pipeConnector)
@@ -147,7 +155,7 @@ namespace Space_Refinery_Game
 			return connectors;
 		}
 
-		public static IConstruction Build(Connector connector, IEntityType entityType, int indexOfSelectedConnector, FixedDecimalLong8 rotation, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld)
+		public static IConstruction Build(Connector connector, IEntityType entityType, int indexOfSelectedConnector, FixedDecimalLong8 rotation, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld)
 		{
 			PipeConnector pipeConnector = (PipeConnector)connector;
 
@@ -163,20 +171,28 @@ namespace Space_Refinery_Game
 
 			PhysicsObject physObj = CreatePhysicsObject(physicsWorld, transform, pipe);
 
-			var connectors = CreateConnectors(pipeType, pipe, physicsWorld);
+			var connectors = CreateConnectors(pipeType, pipe, physicsWorld, gameWorld);
 
-			pipe.SetUp(physicsWorld, physObj, connectors, graphicsWorld, renderable);
+			pipe.SetUp(physicsWorld, physObj, connectors, graphicsWorld, renderable, gameWorld);
+
+			gameWorld.AddEntity(pipe);
 
 			return pipe;
 		}
 
-		private void SetUp(PhysicsWorld physicsWorld, PhysicsObject physicsObject, PipeConnector[] connectors, GraphicsWorld graphicsWorld, EntityRenderable renderable)
+		private void SetUp(PhysicsWorld physicsWorld, PhysicsObject physicsObject, PipeConnector[] connectors, GraphicsWorld graphicsWorld, EntityRenderable renderable, GameWorld gameWorld)
 		{
 			PhysicsWorld = physicsWorld;
 			PhysicsObject = physicsObject;
 			Connectors = connectors;
 			GraphicsWorld = graphicsWorld;
 			Renderable = renderable;
+			GameWorld = gameWorld;
+		}
+
+		void Entity.Tick()
+		{
+
 		}
 
 		public void Deconstruct()

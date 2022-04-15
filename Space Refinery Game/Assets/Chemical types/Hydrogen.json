@@ -7,17 +7,17 @@
   "TemperatureForPlasmaPhaseChange": 100000, // ?
   "GasPhaseType": {
     "ResourceName": "Hydrogen Gas",
-    "Density": 0.00008988
+    "Density": 0.08988 // kg/m3
   },
   "TemperatureForGasPhaseChange": 21,
   "LiquidPhaseType": {
     "ResourceName": "Liquid Hydrogen",
-    "Density": 0.7
+    "Density": 700
   },
   "TemperatureForSolidPhaseChange": 13.99,
   "SolidPhaseType": {
     "ResourceName": "Solid Hydrogen",
-    "Density": 0.86
+    "Density": 860
   }
 }
 // https://en.wikipedia.org/wiki/Hydrogen_embrittlement

@@ -3,5 +3,10 @@
 	public interface Entity
 	{
 		public abstract IInformationProvider InformationProvider { get; }
+
+		public void Tick()
+		{
+
+		}
 	}
 }

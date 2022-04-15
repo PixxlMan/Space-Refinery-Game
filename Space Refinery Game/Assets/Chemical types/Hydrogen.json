@@ -2,18 +2,22 @@
   "ChemicalName": "Hydrogen",
   "PlasmaPhaseType": {
     "ResourceName": "Hydrogen Plasma",
-    "Density": 10000000 // ?
+    "Density": 0 // ?
   },
+  "TemperatureForPlasmaPhaseChange": 100000, // ?
   "GasPhaseType": {
     "ResourceName": "Hydrogen Gas",
-    "Density": 0000898
+    "Density": 0.00008988
   },
+  "TemperatureForGasPhaseChange": 21,
   "LiquidPhaseType": {
     "ResourceName": "Liquid Hydrogen",
-    "Density": 0700000
+    "Density": 0.7
   },
+  "TemperatureForSolidPhaseChange": 13.99,
   "SolidPhaseType": {
     "ResourceName": "Solid Hydrogen",
-    "Density": 0860000
+    "Density": 0.86
   }
 }
+// https://en.wikipedia.org/wiki/Hydrogen_embrittlement

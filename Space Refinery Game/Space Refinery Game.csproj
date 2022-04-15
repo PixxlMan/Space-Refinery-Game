@@ -11,8 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\ChemicalTypes\Hydrogen.json" />
-    <None Remove="Assets\ChemicalTypes\Water.json" />
+    <None Remove="Assets\Chemical types\Hydrogen.json" />
+    <None Remove="Assets\Chemical types\Water.json" />
     <None Remove="Assets\Models\Machinery\MachineryGeneric.obj" />
     <None Remove="Assets\Models\Pipe\CleanedUpPipe.obj" />
     <None Remove="Assets\Models\Pipe\Pipe.obj" />
@@ -31,10 +31,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\ChemicalTypes\Hydrogen.json">
+    <Content Include="Assets\Chemical types\Hydrogen.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\ChemicalTypes\Water.json">
+    <Content Include="Assets\Chemical types\Water.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Models\Machinery\MachineryGeneric.obj">

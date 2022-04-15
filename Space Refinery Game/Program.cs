@@ -14,6 +14,8 @@ public static class Program
 {
 	public static void Main()
 	{
+		var chems = ChemicalType.LoadChemicalTypes(Path.Combine(Environment.CurrentDirectory, "Assets", "Chemical types"));
+
 		System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
 		Window window = new("Space Refinery");

@@ -2,18 +2,21 @@
   "ChemicalName": "Water",
   "PlasmaPhaseType": {
     "ResourceName": "Water Plasma",
-    "Density": 10000000 // ?
+    "Density": 0 // ?
   },
+  "TemperatureForPlasmaPhaseChange": 3273.15,
   "GasPhaseType": {
     "ResourceName": "Water Vapor",
-    "Density": 20000000
+    "Density": 0.2
   },
+  "TemperatureForGasPhaseChange": 373.15,
   "LiquidPhaseType": {
     "ResourceName": "Water",
-    "Density": 100000000
+    "Density": 1
   },
+  "TemperatureForLiquidPhaseChange": 273.15,
   "SolidPhaseType": {
     "ResourceName": "Ice",
-    "Density": 91700000
+    "Density": 0.917
   }
 }

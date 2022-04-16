@@ -34,7 +34,9 @@ namespace Space_Refinery_Game
 
 		public PipeType PipeType;
 
-		public ResourceContainer ResourceContainer;
+		public ResourceContainer ResourceContainer = new();
+
+		public Vector3FixedDecimalInt4 ResourceFlowVelocity;
 
 		private Pipe(Transform transform)
 		{
@@ -49,6 +51,22 @@ namespace Space_Refinery_Game
 				return;
 
 			MainGame.DebugRender.DrawOrientationMarks(Transform);
+
+			if (MainGame.DebugSettings.AccessSetting<BooleanSetting>($"{nameof(Pipe)} flow debug"))
+			{
+				MainGame.DebugRender.DrawRay(Transform.Position, Vector3FixedDecimalInt4.NormalizeOrDefault(Vector3FixedDecimalInt4.Transform(ResourceFlowVelocity, Transform.Rotation)), ResourceFlowVelocity.Length(), RgbaFloat.Pink);
+			}
+		}
+
+		public FixedDecimalInt4 FlowVelocityTowards(PipeConnector pipeConnector) // https://answers.unity.com/questions/1351855/how-do-i-get-an-objects-velocity-in-one-direction.html
+		{
+			Vector3FixedDecimalInt4 direction = Vector3FixedDecimalInt4.Normalize(pipeConnector.Transform.Position - Transform.Position);
+
+			FixedDecimalInt4 dot = Vector3FixedDecimalInt4.Dot(ResourceFlowVelocity, direction);
+
+			Vector3FixedDecimalInt4 v = direction * dot;
+
+			return v.Length();
 		}
 
 		public static Pipe Create(PipeType pipeType, Transform transform, PhysicsWorld physWorld, GraphicsWorld graphWorld, GameWorld gameWorld)
@@ -63,7 +81,7 @@ namespace Space_Refinery_Game
 
 			PipeConnector[] connectors = CreateConnectors(pipeType, pipe, physWorld, gameWorld);
 
-			pipe.SetUp(physWorld, physObj, connectors, graphWorld, renderable, gameWorld);
+			pipe.SetUp(pipeType, physWorld, physObj, connectors, graphWorld, renderable, gameWorld);
 
 			gameWorld.AddEntity(pipe);
 
@@ -173,15 +191,16 @@ namespace Space_Refinery_Game
 
 			var connectors = CreateConnectors(pipeType, pipe, physicsWorld, gameWorld);
 
-			pipe.SetUp(physicsWorld, physObj, connectors, graphicsWorld, renderable, gameWorld);
+			pipe.SetUp(pipeType, physicsWorld, physObj, connectors, graphicsWorld, renderable, gameWorld);
 
 			gameWorld.AddEntity(pipe);
 
 			return pipe;
 		}
 
-		private void SetUp(PhysicsWorld physicsWorld, PhysicsObject physicsObject, PipeConnector[] connectors, GraphicsWorld graphicsWorld, EntityRenderable renderable, GameWorld gameWorld)
+		private void SetUp(PipeType pipeType, PhysicsWorld physicsWorld, PhysicsObject physicsObject, PipeConnector[] connectors, GraphicsWorld graphicsWorld, EntityRenderable renderable, GameWorld gameWorld)
 		{
+			PipeType = pipeType;
 			PhysicsWorld = physicsWorld;
 			PhysicsObject = physicsObject;
 			Connectors = connectors;
@@ -190,9 +209,25 @@ namespace Space_Refinery_Game
 			GameWorld = gameWorld;
 		}
 
+		public FixedDecimalInt4 Pressure => ResourceContainer.GetVolume() / PipeType.PipeProperties.FlowableVolume;
+
 		void Entity.Tick()
 		{
+			foreach (var connector in Connectors)
+			{
+				if (connector.Vacant)
+				{
+					continue;
+				}
 
+				Vector3FixedDecimalInt4 directionTowards = Vector3FixedDecimalInt4.Normalize(Transform.Position - connector.Transform.Position);
+
+				FixedDecimalInt4 pressureDifference = Pressure - ((Pipe)connector.GetOther(this)).Pressure;
+
+				ResourceFlowVelocity += directionTowards * pressureDifference;
+			}
+
+			ResourceFlowVelocity *= PipeType.PipeProperties.Friction;
 		}
 
 		public void Deconstruct()

@@ -14,6 +14,8 @@ public static class Program
 {
 	public static void Main()
 	{
+		FixedDecimalInt4 fix = 1;
+
 		var chems = ChemicalType.LoadChemicalTypes(Path.Combine(Environment.CurrentDirectory, "Assets", "Chemical types"));
 
 		System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;

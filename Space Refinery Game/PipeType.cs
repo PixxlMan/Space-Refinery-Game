@@ -85,6 +85,11 @@ namespace Space_Refinery_Game
 							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
 						},
 					},
+					PipeProperties = new()
+					{
+						FlowableVolume = (FixedDecimalInt4)0.16,
+						Friction = (FixedDecimalInt4)0.04,
+					},
 					Name = "Straight Pipe",
 					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeStraight.obj"),
 				},

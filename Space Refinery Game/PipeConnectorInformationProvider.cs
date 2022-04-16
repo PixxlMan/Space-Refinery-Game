@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FixedPrecision;
 using ImGuiNET;
 
 namespace Space_Refinery_Game
@@ -27,6 +28,10 @@ namespace Space_Refinery_Game
 
 			ImGui.Text($"Pipe A: {(PipeConnector.Pipes.pipeA is null ? "None" : "Connected")}");
 			ImGui.Text($"Pipe B: {(PipeConnector.Pipes.pipeB is null ? "None" : "Connected")}");
+
+			ImGui.Text($"Pipe flow direction: {PipeConnector.ResourceFlowsInto}");
+
+			ImGui.Text($"Pipe flow: {FixedDecimalInt4.Abs(PipeConnector.FlowVelocityIntoA)}");
 		}
 	}
 }

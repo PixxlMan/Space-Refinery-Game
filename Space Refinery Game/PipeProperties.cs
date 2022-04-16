@@ -14,5 +14,7 @@ namespace Space_Refinery_Game
 		public FixedDecimalInt4 FlowableLength;
 
 		public FixedDecimalInt4 FlowableVolume;
+
+		public FixedDecimalInt4 Friction;
 	}
 }

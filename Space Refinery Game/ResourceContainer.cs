@@ -19,8 +19,6 @@ namespace Space_Refinery_Game
 				return cachedVolume;
 			}
 
-			hasVolumeChangedSinceCache = false;
-
 			FixedDecimalLong8 volume = 0;
 
 			foreach (var resourceMassPair in resources)
@@ -29,6 +27,8 @@ namespace Space_Refinery_Game
 			}
 
 			cachedVolume = (FixedDecimalInt4)volume;
+
+			hasVolumeChangedSinceCache = false;
 
 			return (FixedDecimalInt4)volume;
 		}
@@ -56,6 +56,11 @@ namespace Space_Refinery_Game
 
 		public void TransferResource(ResourceContainer transferTarget, FixedDecimalInt4 transferVolume)
 		{
+			if (GetVolume() == 0)
+			{
+				return;
+			}
+
 			var transferPart = transferVolume / GetVolume();
 
 			foreach (var resourceMassPair in resources)
@@ -68,6 +73,21 @@ namespace Space_Refinery_Game
 			}
 
 			hasVolumeChangedSinceCache = true;
+		}
+
+		public override string ToString()
+		{
+			string str = string.Empty;
+
+			str += "ResourceContainer contains: \n";
+
+			foreach (var resourceMassPair in resources)
+			{
+				str += $"{resourceMassPair.Key.ResourceName}: {resourceMassPair.Value} kg";
+				str += "\n";
+			}
+
+			return str;
 		}
 	}
 }

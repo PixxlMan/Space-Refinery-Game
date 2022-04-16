@@ -115,6 +115,8 @@ public class MainGame
 		thread.Start();
 	}
 
+	private ChemicalType WaterChemical = ChemicalType.Deserialize(Path.Combine(Environment.CurrentDirectory, "Assets", "Chemical types", "Water.json"));
+
 	private void Update(FixedDecimalInt4 deltaTime)
 	{
 		lock(SynchronizationObject)
@@ -164,6 +166,14 @@ public class MainGame
 				}
 				else if (physicsObject is not null && physicsObject.Entity is IConstruction construction)
 				{
+					if (construction is Pipe pipe)
+					{
+						if (InputTracker.GetKeyDown(Key.U))
+						{
+							pipe.ResourceContainer.AddResource(WaterChemical.LiquidPhaseType, 10);
+						}
+					}
+
 					if (InputTracker.GetMouseButtonDown(MouseButton.Right))
 					{
 						GameWorld.Deconstruct(construction);

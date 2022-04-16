@@ -100,8 +100,6 @@ namespace Space_Refinery_Game_Renderer
 			BindableResource[] bindableResources = new BindableResource[] { GraphicsWorld.CameraProjViewBuffer };
 			ResourceSetDescription resourceSetDescription = new ResourceSetDescription(sharedLayout, bindableResources);
 			resourceSet = factory.CreateResourceSet(resourceSetDescription);
-
-			RayMesh = Utils.CreateDeviceResources(Utils.GetCubeVertexPositionTexture(new(.1f, .1f, 1f)), Utils.GetCubeIndices(), GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory);
 		}
 
 		private void DrawDebugObjects(CommandList cl)
@@ -201,22 +199,24 @@ namespace Space_Refinery_Game_Renderer
 			debugRenderables.Add(renderable);
 		}
 
-		public Mesh RayMesh;
+		public void DrawRay(Vector3FixedDecimalInt4 origin, Vector3FixedDecimalInt4 direction, RgbaFloat color) => DrawRay(origin, direction, 1, color);
 
-		public void DrawRay(Vector3FixedDecimalInt4 origin, Vector3FixedDecimalInt4 direction, RgbaFloat color)
+		public void DrawRay(Vector3FixedDecimalInt4 origin, Vector3FixedDecimalInt4 direction, FixedDecimalInt4 length, RgbaFloat color)
 		{
-			Transform transform = new(origin, QuaternionFixedDecimalInt4.CreateLookingAt(direction, Vector3FixedDecimalInt4.UnitZ, Vector3FixedDecimalInt4.UnitY));
+			Transform transform = new(origin + (direction * length / 2), QuaternionFixedDecimalInt4.CreateLookingAt(direction, Vector3FixedDecimalInt4.UnitZ, Vector3FixedDecimalInt4.UnitY));
 
 			DeviceBuffer transformationBuffer, colorBuffer;
 
 			GetBuffers(color, transform, out transformationBuffer, out colorBuffer);
 
-			DebugRenderable renderable = new(RayMesh, transformationBuffer, colorBuffer);
+			DebugRenderable renderable = new(GetCubeMesh(new((FixedDecimalInt4).1, (FixedDecimalInt4).1, length)), transformationBuffer, colorBuffer);
 
 			debugRenderables.Add(renderable);
 		}
 
-		public void PersistentRay(Vector3FixedDecimalInt4 origin, Vector3FixedDecimalInt4 direction, RgbaFloat color)
+		public void PersistentRay(Vector3FixedDecimalInt4 origin, Vector3FixedDecimalInt4 direction, RgbaFloat color) => PersistentRay(origin, direction, 1, color);
+
+		public void PersistentRay(Vector3FixedDecimalInt4 origin, Vector3FixedDecimalInt4 direction, FixedDecimalInt4 length, RgbaFloat color)
 		{
 			Transform transform = new(origin, QuaternionFixedDecimalInt4.CreateLookingAt(direction, Vector3FixedDecimalInt4.UnitZ, Vector3FixedDecimalInt4.UnitY));
 
@@ -224,20 +224,20 @@ namespace Space_Refinery_Game_Renderer
 
 			GetBuffers(color, transform, out transformationBuffer, out colorBuffer);
 
-			DebugRenderable renderable = new(RayMesh, transformationBuffer, colorBuffer);
+			DebugRenderable renderable = new(GetCubeMesh(new((FixedDecimalInt4).1, (FixedDecimalInt4).1, length)), transformationBuffer, colorBuffer);
 
 			persistentRenderables.Add(renderable);
 		}
 
 		public void DrawOrientationMarks(Transform transform)
 		{
-			DrawRay(transform.Position + ((ITransformable)transform).LocalUnitX / 2, ((ITransformable)transform).LocalUnitX, RgbaFloat.Red);
-			DrawRay(transform.Position + ((ITransformable)transform).LocalUnitY / 2, ((ITransformable)transform).LocalUnitY, RgbaFloat.Green);
-			DrawRay(transform.Position + ((ITransformable)transform).LocalUnitZ / 2, ((ITransformable)transform).LocalUnitZ, RgbaFloat.Blue);
+			DrawRay(transform.Position, ((ITransformable)transform).LocalUnitX, RgbaFloat.Red);
+			DrawRay(transform.Position, ((ITransformable)transform).LocalUnitY, RgbaFloat.Green);
+			DrawRay(transform.Position, ((ITransformable)transform).LocalUnitZ, RgbaFloat.Blue);
 
-			DrawRay(transform.Position - ((ITransformable)transform).LocalUnitX / 2, -((ITransformable)transform).LocalUnitX, new(.4f, 0, 0, 1));
-			DrawRay(transform.Position - ((ITransformable)transform).LocalUnitY / 2, -((ITransformable)transform).LocalUnitY, new(0, .4f, 0, 1));
-			DrawRay(transform.Position - ((ITransformable)transform).LocalUnitZ / 2, -((ITransformable)transform).LocalUnitZ, new(0, 0, .4f, 1));
+			DrawRay(transform.Position, -((ITransformable)transform).LocalUnitX, new(.4f, 0, 0, 1));
+			DrawRay(transform.Position, -((ITransformable)transform).LocalUnitY, new(0, .4f, 0, 1));
+			DrawRay(transform.Position, -((ITransformable)transform).LocalUnitZ, new(0, 0, .4f, 1));
 		}
 	}
 }

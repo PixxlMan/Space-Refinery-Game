@@ -49,6 +49,43 @@ namespace Space_Refinery_Game
 			}
 		}
 
+		public IConnectable? GetConnectableAtSide(ConnectorSide side)
+		{
+			return side == ConnectorSide.A ? Connectables.connectableA : Connectables.connectableB;
+		}
+
+		public IConnectable? GetOther(IConnectable connectable)
+		{
+			if (connectable == Connectables.connectableA)
+			{
+				return Connectables.connectableB;
+			}
+			else if (connectable == Connectables.connectableB)
+			{
+				return Connectables.connectableA;
+			}
+			else
+			{
+				throw new ArgumentException("Connectable is not present on connector.", nameof(connectable));
+			}
+		}
+
+		public ConnectorSide GetConnectorSide(IConnectable connectable)
+		{
+			if (Connectables.connectableA == connectable)
+			{
+				return ConnectorSide.A;
+			}
+			else if (Connectables.connectableB == connectable)
+			{
+				return ConnectorSide.B;
+			}
+			else
+			{
+				throw new ArgumentException("Connectable is not present on connector.", nameof(connectable));
+			}
+		}
+
 		public void Connect(IConnectable connectable)
 		{
 			if (!Vacant)

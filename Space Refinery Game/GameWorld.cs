@@ -16,6 +16,8 @@ namespace Space_Refinery_Game
 			MainGame = mainGame;
 		}
 
+		public String SynchronizationObject = "69";
+
 		public HashSet<IConstruction> Constructions = new();
 
 		public MainGame MainGame;
@@ -24,24 +26,30 @@ namespace Space_Refinery_Game
 
 		public void AddEntity(Entity entity)
 		{
-			Entities.Add(entity);
+			lock (SynchronizationObject)
+				Entities.Add(entity);
 		}
 
 		public void RemoveEntity(Entity entity)
 		{
-			Entities.Remove(entity);
+			lock (SynchronizationObject)
+				Entities.Remove(entity);
 		}
 
 		public void AddConstruction(IConstruction construction)
 		{
-			Constructions.Add(construction);
+			lock (SynchronizationObject)
+				Constructions.Add(construction);
 		}
 
 		public void Deconstruct(IConstruction construction)
 		{
-			Constructions.Remove(construction);
+			lock (SynchronizationObject)
+			{
+				Constructions.Remove(construction);
 
-			construction.Deconstruct();
+				construction.Deconstruct();
+			}
 		}
 
 		public static Transform GenerateTransformForConnector(PositionAndDirection chosenConnectorTransform, PipeConnector connector, FixedDecimalLong8 rotation)
@@ -99,7 +107,7 @@ namespace Space_Refinery_Game
 
 		private void Tick()
 		{
-			//lock (SynchronizationObject)
+			lock (SynchronizationObject)
 			{
 				foreach (var entity in Entities)
 				{

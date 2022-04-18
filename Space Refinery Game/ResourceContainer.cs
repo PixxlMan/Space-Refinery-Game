@@ -36,10 +36,22 @@ namespace Space_Refinery_Game
 		private FixedDecimalInt4 mass;
 		public FixedDecimalInt4 Mass { get => mass; }
 
+		public FixedDecimalInt4 MaxVolume;
+
 		private Dictionary<ResourceType, FixedDecimalInt4> resources = new();
+
+		public ResourceContainer(FixedDecimalInt4 maxVolume)
+		{
+			MaxVolume = maxVolume;
+		}
 
 		public void AddResource(ResourceType resourceType, FixedDecimalInt4 mass)
 		{
+			if (GetVolume() + ((FixedDecimalLong8)mass / resourceType.Density) > (FixedDecimalLong8)MaxVolume)
+			{
+				throw new Exception("Operation would make volume larger than max volume-");
+			}
+
 			if (resources.ContainsKey(resourceType))
 			{
 				resources[resourceType] += mass;
@@ -56,6 +68,11 @@ namespace Space_Refinery_Game
 
 		public void TransferResource(ResourceContainer transferTarget, FixedDecimalLong8 transferVolume)
 		{
+			if (transferTarget.GetVolume() + transferVolume > (FixedDecimalLong8)transferTarget.MaxVolume)
+			{
+				throw new Exception("Operation would make volume larger than max volume-");
+			}
+
 			if (transferVolume > GetVolume())
 			{
 				throw new ArgumentException("Requested volume to transfer greater than total available volume.", nameof(transferVolume));

@@ -34,7 +34,7 @@ namespace Space_Refinery_Game
 
 		public PipeType PipeType;
 
-		public ResourceContainer ResourceContainer = new();
+		public ResourceContainer ResourceContainer;
 
 		private Pipe(Transform transform)
 		{
@@ -189,6 +189,7 @@ namespace Space_Refinery_Game
 			GraphicsWorld = graphicsWorld;
 			Renderable = renderable;
 			GameWorld = gameWorld;
+			ResourceContainer = new(pipeType.PipeProperties.FlowableVolume);
 		}
 
 		public void Deconstruct()

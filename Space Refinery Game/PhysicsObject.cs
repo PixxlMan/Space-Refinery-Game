@@ -8,7 +8,9 @@ namespace Space_Refinery_Game
 	{
 		public IInformationProvider InformationProvider => Entity.InformationProvider;
 
-		public Entity Entity;
+		public readonly Entity Entity;
+
+		public bool Enabled = true;
 
 		public readonly PhysicsWorld World;
 

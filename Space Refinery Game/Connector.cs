@@ -111,6 +111,8 @@ namespace Space_Refinery_Game
 					VacantSide = null;
 				}
 			}
+
+			Proxy.Disable();
 		}
 
 		public void Disconnect(ConnectorSide side)
@@ -124,6 +126,8 @@ namespace Space_Refinery_Game
 				Connectables = (Connectables.connectableA, null);
 			}
 			VacantSide = side;
+
+			Proxy.Enable();
 
 			if (Connectables.connectableA is null && Connectables.connectableB is null)
 			{

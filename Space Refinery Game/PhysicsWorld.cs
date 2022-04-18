@@ -142,14 +142,17 @@ namespace Space_Refinery_Game
 				{
 					return;
 				}
-				else if (physicsWorld.PhysicsObjectLookup[collidable.BodyHandle].Entity is T)
+
+				var physicsObject = physicsWorld.PhysicsObjectLookup[collidable.BodyHandle];
+
+				if (physicsObject.Entity is T && physicsObject.Enabled)
 				{
 					PhysicsObject = physicsWorld.PhysicsObjectLookup[collidable.BodyHandle];
 				}
 			}
 		}
 
-		public PhysicsObject Raycast(Vector3FixedDecimalInt4 start, Vector3FixedDecimalInt4 direction, FixedDecimalInt4 maxDistance)
+		public PhysicsObject? Raycast(Vector3FixedDecimalInt4 start, Vector3FixedDecimalInt4 direction, FixedDecimalInt4 maxDistance)
 		{
 			var raycastHitHandler = new RaycastHitHandler();
 
@@ -163,7 +166,7 @@ namespace Space_Refinery_Game
 			return PhysicsObjectLookup[raycastHitHandler.BodyHandle.Value];
 		}
 
-		public PhysicsObject Raycast<T>(Vector3FixedDecimalInt4 start, Vector3FixedDecimalInt4 direction, FixedDecimalInt4 maxDistance)
+		public PhysicsObject? Raycast<T>(Vector3FixedDecimalInt4 start, Vector3FixedDecimalInt4 direction, FixedDecimalInt4 maxDistance)
 			where T : Entity
 		{
 			var raycastHitHandler = new RaycastHitHandler<T>(this);

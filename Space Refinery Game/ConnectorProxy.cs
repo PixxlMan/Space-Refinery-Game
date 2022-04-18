@@ -17,6 +17,16 @@ namespace Space_Refinery_Game
 			Connector = connector;
 		}
 
+		public void Enable()
+		{
+			PhysicsObject.Enabled = true;
+		}
+
+		public void Disable()
+		{
+			PhysicsObject.Enabled = false;
+		}
+
 		public IInformationProvider InformationProvider => ((Entity)Connector).InformationProvider;
 	}
 }

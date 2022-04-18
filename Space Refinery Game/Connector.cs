@@ -112,6 +112,7 @@ namespace Space_Refinery_Game
 				}
 			}
 
+			PhysicsObject.Enabled = false;
 			Proxy.Disable();
 		}
 
@@ -127,6 +128,7 @@ namespace Space_Refinery_Game
 			}
 			VacantSide = side;
 
+			PhysicsObject.Enabled = true;
 			Proxy.Enable();
 
 			if (Connectables.connectableA is null && Connectables.connectableB is null)

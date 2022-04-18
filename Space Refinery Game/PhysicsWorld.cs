@@ -89,31 +89,6 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		struct RaycastHitHandler : IRayHitHandler
-		{
-			public BodyHandle? BodyHandle;
-
-			public bool AllowTest(CollidableReference collidable)
-			{
-				return true;
-			}
-
-			public bool AllowTest(CollidableReference collidable, int childIndex)
-			{
-				return true;
-			}
-
-			public void OnRayHit(in RayData ray, ref float maximumT, float t, in Vector3 normal, CollidableReference collidable, int childIndex)
-			{
-				if (BodyHandle.HasValue)
-				{
-					return;
-				}
-
-				BodyHandle = collidable.BodyHandle;
-			}
-		}
-
 		struct RaycastHitHandler<T> : IRayHitHandler
 			where T : Entity
 		{
@@ -154,16 +129,7 @@ namespace Space_Refinery_Game
 
 		public PhysicsObject? Raycast(Vector3FixedDecimalInt4 start, Vector3FixedDecimalInt4 direction, FixedDecimalInt4 maxDistance)
 		{
-			var raycastHitHandler = new RaycastHitHandler();
-
-			simulation.RayCast(start.ToVector3(), direction.ToVector3(), maxDistance.ToFloat(), ref raycastHitHandler);
-
-			if (raycastHitHandler.BodyHandle is null)
-			{
-				return null;
-			}
-
-			return PhysicsObjectLookup[raycastHitHandler.BodyHandle.Value];
+			return Raycast<Entity>(start, direction, maxDistance);
 		}
 
 		public PhysicsObject? Raycast<T>(Vector3FixedDecimalInt4 start, Vector3FixedDecimalInt4 direction, FixedDecimalInt4 maxDistance)

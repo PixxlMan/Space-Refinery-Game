@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Space_Refinery_Game
 {
-	public class ResourceContainer
+	public class ResourceContainer : IUIInspectable
 	{
 		private FixedDecimalLong8 volume;
 		public FixedDecimalLong8 Volume { get => volume; }
@@ -98,6 +98,11 @@ namespace Space_Refinery_Game
 			}
 
 			return str;
+		}
+
+		public void DoUIInspector()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

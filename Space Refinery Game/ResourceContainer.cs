@@ -11,8 +11,8 @@ namespace Space_Refinery_Game
 	{
 		private bool hasVolumeChangedSinceCache = true;
 
-		FixedDecimalInt4 cachedVolume;
-		public FixedDecimalInt4 GetVolume()
+		FixedDecimalLong8 cachedVolume;
+		public FixedDecimalLong8 GetVolume()
 		{
 			if (!hasVolumeChangedSinceCache)
 			{
@@ -23,14 +23,14 @@ namespace Space_Refinery_Game
 
 			foreach (var resourceMassPair in resources)
 			{
-				volume += (FixedDecimalLong8)resourceMassPair.Value * resourceMassPair.Key.Density;
+				volume += (FixedDecimalLong8)resourceMassPair.Value / resourceMassPair.Key.Density;
 			}
 
-			cachedVolume = (FixedDecimalInt4)volume;
+			cachedVolume = volume;
 
 			hasVolumeChangedSinceCache = false;
 
-			return (FixedDecimalInt4)volume;
+			return volume;
 		}
 
 		private FixedDecimalInt4 mass;
@@ -54,9 +54,14 @@ namespace Space_Refinery_Game
 			hasVolumeChangedSinceCache = true;
 		}
 
-		public void TransferResource(ResourceContainer transferTarget, FixedDecimalInt4 transferVolume)
+		public void TransferResource(ResourceContainer transferTarget, FixedDecimalLong8 transferVolume)
 		{
-			if (GetVolume() == 0)
+			if (transferVolume > GetVolume())
+			{
+				throw new ArgumentException("Requested volume to transfer larger than total available volume.", nameof(transferVolume));
+			}
+
+			if (transferVolume == 0 || GetVolume() == 0)
 			{
 				return;
 			}
@@ -65,7 +70,7 @@ namespace Space_Refinery_Game
 
 			foreach (var resourceMassPair in resources)
 			{
-				var massTransfer = resourceMassPair.Value * transferPart;
+				var massTransfer = (FixedDecimalInt4)((FixedDecimalLong8)resourceMassPair.Value * transferPart);
 
 				transferTarget.AddResource(resourceMassPair.Key, massTransfer);
 

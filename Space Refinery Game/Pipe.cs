@@ -206,7 +206,7 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		public FixedDecimalLong8 Fullness => (FixedDecimalLong8)ResourceContainer.GetVolume() / (FixedDecimalLong8)PipeType.PipeProperties.FlowableVolume;
+		public FixedDecimalLong8 Fullness => ResourceContainer.GetVolume() / (FixedDecimalLong8)PipeType.PipeProperties.FlowableVolume;
 
 		void Entity.Tick()
 		{

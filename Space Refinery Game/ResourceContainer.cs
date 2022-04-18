@@ -17,6 +17,8 @@ namespace Space_Refinery_Game
 
 		public FixedDecimalInt4 MaxVolume;
 
+		public FixedDecimalLong8 Fullness => Volume / (FixedDecimalLong8)MaxVolume;
+
 		private Dictionary<ResourceType, FixedDecimalInt4> resources = new();
 
 		public ResourceContainer(FixedDecimalInt4 maxVolume)
@@ -82,11 +84,16 @@ namespace Space_Refinery_Game
 		{
 			string str = string.Empty;
 
+			str += $"Mass: {Mass} kg";
+			str += $"Volume: {Volume} m3";
+			str += $"Max Volume: {MaxVolume} m3";
+			str += $"Fullness: {Fullness}";
+
 			str += "ResourceContainer contains: \n";
 
 			foreach (var resourceMassPair in resources)
 			{
-				str += $"{resourceMassPair.Key.ResourceName}: {resourceMassPair.Value} kg";
+				str += $"{resourceMassPair.Key.ResourceName}: {resourceMassPair.Value} kg ~ {(FixedDecimalLong8)resourceMassPair.Value / resourceMassPair.Key.Density} m3";
 				str += "\n";
 			}
 

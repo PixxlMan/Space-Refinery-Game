@@ -7,12 +7,12 @@
   "TemperatureForPlasmaPhaseChange": 3273.15,
   "GasPhaseType": {
     "ResourceName": "Water Vapor",
-    "Density": 200
+    "Density": 200 // ?
   },
   "TemperatureForGasPhaseChange": 373.15,
   "LiquidPhaseType": {
     "ResourceName": "Water",
-    "Density": 100
+    "Density": 1000
   },
   "TemperatureForLiquidPhaseChange": 273.15,
   "SolidPhaseType": {

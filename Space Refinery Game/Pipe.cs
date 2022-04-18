@@ -12,7 +12,7 @@ using Veldrid;
 
 namespace Space_Refinery_Game
 {
-	public class Pipe : Entity, IConstruction, IConnectable
+	public abstract class Pipe : Entity, IConstruction, IConnectable
 	{
 		public PhysicsWorld PhysicsWorld;
 
@@ -28,22 +28,17 @@ namespace Space_Refinery_Game
 		
 		public PipeConnector[] Connectors;
 
-		private IInformationProvider informationProvider;
+		protected IInformationProvider informationProvider;
 
 		public IInformationProvider InformationProvider => informationProvider;
 
 		public PipeType PipeType;
 
-		public ResourceContainer ResourceContainer;
+		Connector[] IConnectable.Connectors => Connectors;
 
-		private Pipe(Transform transform)
-		{
-			informationProvider = new PipeInformationProvider(this);
+		public abstract void TransferResourceFromConnector(ResourceContainer source, FixedDecimalLong8 volume, Connector transferingConnector);
 
-			Transform = transform;
-		}
-
-		public void AddDebugObjects()
+		public virtual void AddDebugObjects()
 		{
 			if (!MainGame.DebugSettings.AccessSetting<BooleanSetting>($"{nameof(Pipe)} debug objects"))
 				return;
@@ -53,7 +48,9 @@ namespace Space_Refinery_Game
 
 		public static Pipe Create(PipeType pipeType, Transform transform, PhysicsWorld physWorld, GraphicsWorld graphWorld, GameWorld gameWorld)
 		{
-			Pipe pipe = new(transform);
+			Pipe pipe = (Pipe)Activator.CreateInstance(pipeType.TypeOfPipe, true);
+
+			pipe.Transform = transform;
 
 			MainGame.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
 
@@ -69,6 +66,8 @@ namespace Space_Refinery_Game
 
 			return pipe;
 		}
+
+		public abstract ResourceContainer GetResourceContainerForConnector(PipeConnector pipeConnector);
 
 		private static EntityRenderable CreateRenderable(PipeType pipeType, GraphicsWorld graphWorld, Transform transform)
 		{
@@ -163,7 +162,9 @@ namespace Space_Refinery_Game
 
 			Transform transform = GameWorld.GenerateTransformForConnector(pipeType.ConnectorPlacements[indexOfSelectedConnector], pipeConnector, rotation);
 
-			Pipe pipe = new(transform);
+			Pipe pipe = (Pipe)Activator.CreateInstance(pipeType.TypeOfPipe, true);
+
+			pipe.Transform = transform;
 
 			MainGame.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
 
@@ -189,10 +190,16 @@ namespace Space_Refinery_Game
 			GraphicsWorld = graphicsWorld;
 			Renderable = renderable;
 			GameWorld = gameWorld;
-			ResourceContainer = new(pipeType.PipeProperties.FlowableVolume);
+
+			SetUp();
 		}
 
-		public void Deconstruct()
+		protected virtual void SetUp()
+		{
+
+		}
+
+		public virtual void Deconstruct()
 		{
 			DisplaceContents();
 
@@ -209,28 +216,17 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		private void DisplaceContents()
+		protected virtual void DisplaceContents()
 		{
-			List<PipeConnector> connectedConnectors = new();
-			foreach (var connector in Connectors)
-			{
-				if (!connector.Vacant)
-					connectedConnectors.Add(connector);
-			}
-
-			var volumePerConnector = ResourceContainer.Volume / connectedConnectors.Count;
-
-			foreach (var connectedConnector in connectedConnectors)
-			{
-				ResourceContainer.TransferResource(((Pipe)connectedConnector.GetOther(this)).ResourceContainer, volumePerConnector);
-			}
 		}
-
-		public FixedDecimalLong8 Fullness => ResourceContainer.Volume / (FixedDecimalLong8)PipeType.PipeProperties.FlowableVolume;
 
 		void Entity.Tick()
 		{
+			Tick();
+		}
 
+		protected virtual void Tick()
+		{
 		}
 	}
 }

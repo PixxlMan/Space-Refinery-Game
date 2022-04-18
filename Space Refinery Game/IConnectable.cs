@@ -2,5 +2,6 @@
 {
 	public interface IConnectable
 	{
+		public Connector[] Connectors { get; }
 	}
 }

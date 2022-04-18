@@ -166,7 +166,7 @@ public class MainGame
 				}
 				else if (physicsObject is not null && physicsObject.Entity is IConstruction construction)
 				{
-					if (construction is Pipe pipe)
+					if (construction is OrdinaryPipe pipe)
 					{
 						if (InputTracker.GetKeyDown(Key.U))
 						{

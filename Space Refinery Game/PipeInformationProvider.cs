@@ -7,24 +7,20 @@ namespace Space_Refinery_Game
 	{
 		public Pipe Pipe;
 
-		public PipeInformationProvider(Pipe pipeStraght)
+		public PipeInformationProvider(Pipe pipe)
 		{
-			Pipe = pipeStraght;
+			Pipe = pipe;
 		}
 
 		public string Name => "Pipe";
 
-		public void InformationUI()
+		public virtual void InformationUI()
 		{
 			ImGui.Spacing();
 			
 			ImGui.Text("Postition: " + Pipe.Renderable.Position.ToString("", CultureInfo.CurrentCulture));
 
 			ImGui.Text("Orientation: " + Pipe.Renderable.Rotation.ToString());
-
-			ImGui.Text($"Fullness: {Pipe.Fullness}");
-
-			ImGui.Text($"Contents: {Pipe.ResourceContainer.ToString()}");
 		}
 	}
 }

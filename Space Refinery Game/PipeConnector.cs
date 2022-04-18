@@ -1,6 +1,4 @@
 ﻿using FixedPrecision;
-using FXRenderer;
-using Veldrid;
 
 namespace Space_Refinery_Game
 {
@@ -26,6 +24,11 @@ namespace Space_Refinery_Game
 
 		public override IInformationProvider InformationProvider => informationProvider;
 
+		public void TransferResource(Pipe sourcePipe, ResourceContainer sourceContainer, FixedDecimalLong8 volume)
+		{
+			sourceContainer.TransferResource((ResourceContainer)GetOther(sourcePipe), volume);
+		}
+
 		/*Entity.SetTickPriority/Frequency(Low)*/
 		void Entity.Tick()
 		{
@@ -34,17 +37,20 @@ namespace Space_Refinery_Game
 				return;
 			}
 
-			if (FixedDecimalLong8.Abs(Pipes.pipeA.Fullness - Pipes.pipeB.Fullness) > (FixedDecimalLong8)0.0001)
+			var pipeAResourceContainer = Pipes.pipeA.GetResourceContainerForConnector(this);
+			var pipeBResourceContainer = Pipes.pipeB.GetResourceContainerForConnector(this);
+
+			if (FixedDecimalLong8.Abs(pipeAResourceContainer.Fullness - pipeBResourceContainer.Fullness) > (FixedDecimalLong8)0.0001)
 			{
-				ConnectorSide flowDirection = Pipes.pipeA.Fullness - Pipes.pipeB.Fullness > 0 ? ConnectorSide.B : ConnectorSide.A;
+				ConnectorSide flowDirection = pipeAResourceContainer.Fullness - pipeBResourceContainer.Fullness > 0 ? ConnectorSide.B : ConnectorSide.A;
 
-				Pipe recipientPipe = (Pipe)GetConnectableAtSide(flowDirection);
+				var recipientContainer = flowDirection == ConnectorSide.A ? pipeAResourceContainer : pipeBResourceContainer;
 
-				Pipe otherPipe = (Pipe)GetConnectableAtSide(flowDirection.Opposite());
+				var otherContainer = flowDirection == ConnectorSide.A ? pipeBResourceContainer : pipeAResourceContainer;
 
-				var fullnessDifference = FixedDecimalLong8.Abs(recipientPipe.Fullness - otherPipe.Fullness);
+				var fullnessDifference = FixedDecimalLong8.Abs(recipientContainer.Fullness - otherContainer.Fullness);
 
-				otherPipe.ResourceContainer.TransferResource(recipientPipe.ResourceContainer, otherPipe.ResourceContainer.Volume * fullnessDifference * (FixedDecimalLong8)Time.TickInterval);
+				otherContainer.TransferResource(recipientContainer, otherContainer.Volume * fullnessDifference * (FixedDecimalLong8)Time.TickInterval);
 			}
 		}
 	}

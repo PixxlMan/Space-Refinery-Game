@@ -28,6 +28,8 @@ namespace Space_Refinery_Game
 
 		public PipeProperties PipeProperties;
 
+		public Type TypeOfPipe;
+
 		public void Serialize(string path)
 		{
 			using FileStream stream = File.OpenWrite(path);
@@ -90,6 +92,7 @@ namespace Space_Refinery_Game
 						FlowableVolume = (FixedDecimalInt4)0.16,
 						Friction = (FixedDecimalInt4)0.04,
 					},
+					TypeOfPipe = typeof(OrdinaryPipe),
 					Name = "Straight Pipe",
 					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeStraight.obj"),
 				},
@@ -127,6 +130,7 @@ namespace Space_Refinery_Game
 					{
 						FlowableVolume = (FixedDecimalInt4)0.04,
 					},
+					TypeOfPipe = typeof(ValvePipe),
 					Name = "Valve Pipe",
 					ModelPath = Path.Combine("Assets", "Models", "Pipe", "Special", "PipeSpecialValve.obj"),
 				},
@@ -175,6 +179,7 @@ namespace Space_Refinery_Game
 					{
 						FlowableVolume = (FixedDecimalInt4)0.24,
 					},
+					TypeOfPipe = typeof(OrdinaryPipe),
 					Name = "T Pipe",
 					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeStraightDivergeT.obj"),
 				},
@@ -212,42 +217,10 @@ namespace Space_Refinery_Game
 					{
 						FlowableVolume = (FixedDecimalInt4)0.16,
 					},
+					TypeOfPipe = typeof(OrdinaryPipe),
 					Name = "90 Bend Pipe",
 					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeBend90.obj"),
 				},
-				/*new PipeType() // Disabled due to borken
-				{
-					ConnectorPlacements = new PositionAndDirection[]
-					{
-						new PositionAndDirection()
-						{
-							Position = new(0, (FixedDecimalInt4).5f, 0),
-							Direction = new(-1, 0, 0),
-						},
-						new PositionAndDirection()
-						{
-							Position = new(0, (FixedDecimalInt4).5f, 0),
-							Direction = new(-1, 0, 0),
-						},
-					},
-					ConnectorProperties = new PipeConnectorProperties[]
-					{
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
-					},
-					Name = "180 Bend Pipe",
-					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeBend180.obj"),
-				},*/
 				new PipeType()
 				{
 					ConnectorPlacements = new PositionAndDirection[]
@@ -304,6 +277,7 @@ namespace Space_Refinery_Game
 					{
 						FlowableVolume = (FixedDecimalInt4)0.32,
 					},
+					TypeOfPipe = typeof(OrdinaryPipe),
 					Name = "X Pipe",
 					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeStraightDivergeX.obj"),
 				},

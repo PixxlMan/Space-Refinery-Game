@@ -218,7 +218,7 @@ namespace Space_Refinery_Game
 					connectedConnectors.Add(connector);
 			}
 
-			var volumePerConnector = ResourceContainer.GetVolume() / connectedConnectors.Count;
+			var volumePerConnector = ResourceContainer.Volume / connectedConnectors.Count;
 
 			foreach (var connectedConnector in connectedConnectors)
 			{
@@ -226,7 +226,7 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		public FixedDecimalLong8 Fullness => ResourceContainer.GetVolume() / (FixedDecimalLong8)PipeType.PipeProperties.FlowableVolume;
+		public FixedDecimalLong8 Fullness => ResourceContainer.Volume / (FixedDecimalLong8)PipeType.PipeProperties.FlowableVolume;
 
 		void Entity.Tick()
 		{

@@ -9,29 +9,8 @@ namespace Space_Refinery_Game
 {
 	public class ResourceContainer
 	{
-		private bool hasVolumeChangedSinceCache = true;
-
-		FixedDecimalLong8 cachedVolume;
-		public FixedDecimalLong8 GetVolume()
-		{
-			if (!hasVolumeChangedSinceCache)
-			{
-				return cachedVolume;
-			}
-
-			FixedDecimalLong8 volume = 0;
-
-			foreach (var resourceMassPair in resources)
-			{
-				volume += (FixedDecimalLong8)resourceMassPair.Value / resourceMassPair.Key.Density;
-			}
-
-			cachedVolume = volume;
-
-			hasVolumeChangedSinceCache = false;
-
-			return volume;
-		}
+		private FixedDecimalLong8 volume;
+		public FixedDecimalLong8 Volume { get => volume; }
 
 		private FixedDecimalInt4 mass;
 		public FixedDecimalInt4 Mass { get => mass; }
@@ -47,7 +26,7 @@ namespace Space_Refinery_Game
 
 		public void AddResource(ResourceType resourceType, FixedDecimalInt4 mass)
 		{
-			if (GetVolume() + ((FixedDecimalLong8)mass / resourceType.Density) > (FixedDecimalLong8)MaxVolume)
+			if (Volume + ((FixedDecimalLong8)mass / resourceType.Density) > (FixedDecimalLong8)MaxVolume)
 			{
 				throw new Exception("Operation would make volume larger than max volume-");
 			}
@@ -61,29 +40,29 @@ namespace Space_Refinery_Game
 				resources.Add(resourceType, mass);
 			}
 
-			this.mass += mass;
+			volume += (FixedDecimalLong8)mass / resourceType.Density;
 
-			hasVolumeChangedSinceCache = true;
+			this.mass += mass;
 		}
 
 		public void TransferResource(ResourceContainer transferTarget, FixedDecimalLong8 transferVolume)
 		{
-			if (transferTarget.GetVolume() + transferVolume > (FixedDecimalLong8)transferTarget.MaxVolume)
+			if (transferTarget.Volume + transferVolume > (FixedDecimalLong8)transferTarget.MaxVolume)
 			{
-				throw new Exception("Operation would make volume larger than max volume-");
+				throw new Exception("Operation would make volume larger than max volume.");
 			}
 
-			if (transferVolume > GetVolume())
+			if (transferVolume > Volume)
 			{
 				throw new ArgumentException("Requested volume to transfer greater than total available volume.", nameof(transferVolume));
 			}
 
-			if (transferVolume == 0 || GetVolume() == 0)
+			if (transferVolume == 0 || Volume == 0)
 			{
 				return;
 			}
 
-			var transferPart = transferVolume / GetVolume();
+			var transferPart = transferVolume / Volume;
 
 			foreach (var resourceMassPair in resources)
 			{
@@ -92,9 +71,11 @@ namespace Space_Refinery_Game
 				transferTarget.AddResource(resourceMassPair.Key, massTransfer);
 
 				resources[resourceMassPair.Key] -= massTransfer;
+
+				mass -= massTransfer;
 			}
 
-			hasVolumeChangedSinceCache = true;
+			volume -= transferVolume;
 		}
 
 		public override string ToString()

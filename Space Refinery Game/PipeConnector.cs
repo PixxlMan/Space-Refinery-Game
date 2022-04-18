@@ -26,6 +26,7 @@ namespace Space_Refinery_Game
 
 		public override IInformationProvider InformationProvider => informationProvider;
 
+		/*Entity.SetTickPriority/Frequency(Low)*/
 		void Entity.Tick()
 		{
 			if (Vacant)
@@ -43,7 +44,7 @@ namespace Space_Refinery_Game
 
 				var fullnessDifference = FixedDecimalLong8.Abs(recipientPipe.Fullness - otherPipe.Fullness);
 
-				otherPipe.ResourceContainer.TransferResource(recipientPipe.ResourceContainer, otherPipe.ResourceContainer.GetVolume() * fullnessDifference * (FixedDecimalLong8)Time.TickInterval);
+				otherPipe.ResourceContainer.TransferResource(recipientPipe.ResourceContainer, otherPipe.ResourceContainer.Volume * fullnessDifference * (FixedDecimalLong8)Time.TickInterval);
 			}
 		}
 	}

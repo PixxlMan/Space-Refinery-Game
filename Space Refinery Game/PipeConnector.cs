@@ -43,7 +43,7 @@ namespace Space_Refinery_Game
 
 				var fullnessDifference = FixedDecimalLong8.Abs(recipientPipe.Fullness - otherPipe.Fullness);
 
-				otherPipe.ResourceContainer.TransferResource(recipientPipe.ResourceContainer, otherPipe.ResourceContainer.GetVolume() * fullnessDifference);
+				otherPipe.ResourceContainer.TransferResource(recipientPipe.ResourceContainer, otherPipe.ResourceContainer.GetVolume() * fullnessDifference * (FixedDecimalLong8)Time.TickInterval);
 			}
 		}
 	}

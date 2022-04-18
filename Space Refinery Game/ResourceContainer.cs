@@ -58,7 +58,7 @@ namespace Space_Refinery_Game
 		{
 			if (transferVolume > GetVolume())
 			{
-				throw new ArgumentException("Requested volume to transfer larger than total available volume.", nameof(transferVolume));
+				throw new ArgumentException("Requested volume to transfer greater than total available volume.", nameof(transferVolume));
 			}
 
 			if (transferVolume == 0 || GetVolume() == 0)

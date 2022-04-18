@@ -22,6 +22,8 @@ namespace Space_Refinery_Game
 
 			ImGui.Text("Orientation: " + Pipe.Renderable.Rotation.ToString());
 
+			ImGui.Text($"Fullness: {Pipe.Fullness}");
+
 			ImGui.Text($"Contents: {Pipe.ResourceContainer.ToString()}");
 		}
 	}

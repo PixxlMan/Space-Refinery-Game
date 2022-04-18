@@ -123,6 +123,10 @@ namespace Space_Refinery_Game
 							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
 						},
 					},
+					PipeProperties = new()
+					{
+						FlowableVolume = (FixedDecimalInt4)0.04,
+					},
 					Name = "Valve Pipe",
 					ModelPath = Path.Combine("Assets", "Models", "Pipe", "Special", "PipeSpecialValve.obj"),
 				},
@@ -167,6 +171,10 @@ namespace Space_Refinery_Game
 							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
 						},
 					},
+					PipeProperties = new()
+					{
+						FlowableVolume = (FixedDecimalInt4)0.24,
+					},
 					Name = "T Pipe",
 					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeStraightDivergeT.obj"),
 				},
@@ -199,6 +207,10 @@ namespace Space_Refinery_Game
 							ConnectorDiameter = (FixedDecimalInt4).475,
 							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
 						},
+					},
+					PipeProperties = new()
+					{
+						FlowableVolume = (FixedDecimalInt4)0.16,
 					},
 					Name = "90 Bend Pipe",
 					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeBend90.obj"),
@@ -287,6 +299,10 @@ namespace Space_Refinery_Game
 							ConnectorDiameter = (FixedDecimalInt4).475,
 							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
 						},
+					},
+					PipeProperties = new()
+					{
+						FlowableVolume = (FixedDecimalInt4)0.32,
 					},
 					Name = "X Pipe",
 					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeStraightDivergeX.obj"),

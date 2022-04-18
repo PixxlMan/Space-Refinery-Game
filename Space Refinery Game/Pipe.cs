@@ -193,6 +193,8 @@ namespace Space_Refinery_Game
 
 		public void Deconstruct()
 		{
+			DisplaceContents();
+
 			PhysicsObject.Destroy();
 			Renderable.Destroy();
 
@@ -203,6 +205,23 @@ namespace Space_Refinery_Game
 			foreach (var connector in Connectors)
 			{
 				connector.Disconnect(this);
+			}
+		}
+
+		private void DisplaceContents()
+		{
+			List<PipeConnector> connectedConnectors = new();
+			foreach (var connector in Connectors)
+			{
+				if (!connector.Vacant)
+					connectedConnectors.Add(connector);
+			}
+
+			var volumePerConnector = ResourceContainer.GetVolume() / connectedConnectors.Count;
+
+			foreach (var connectedConnector in connectedConnectors)
+			{
+				ResourceContainer.TransferResource(((Pipe)connectedConnector.GetOther(this)).ResourceContainer, volumePerConnector);
 			}
 		}
 

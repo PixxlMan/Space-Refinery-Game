@@ -33,7 +33,7 @@ namespace Space_Refinery_Game
 				return;
 			}
 
-			if (FixedDecimalLong8.Abs(Pipes.pipeA.Fullness - Pipes.pipeB.Fullness) > (FixedDecimalLong8)0.0005)
+			if (FixedDecimalLong8.Abs(Pipes.pipeA.Fullness - Pipes.pipeB.Fullness) > (FixedDecimalLong8)0.0001)
 			{
 				ConnectorSide flowDirection = Pipes.pipeA.Fullness - Pipes.pipeB.Fullness > 0 ? ConnectorSide.B : ConnectorSide.A;
 
@@ -41,10 +41,9 @@ namespace Space_Refinery_Game
 
 				Pipe otherPipe = (Pipe)GetConnectableAtSide(flowDirection.Opposite());
 
-				var pressureDifference = FixedDecimalLong8.Abs(recipientPipe.Fullness - otherPipe.Fullness);
-				//var pressure = otherPipe.Fullness / recipientPipe.Fullness;
+				var fullnessDifference = FixedDecimalLong8.Abs(recipientPipe.Fullness - otherPipe.Fullness);
 
-				otherPipe.ResourceContainer.TransferResource(recipientPipe.ResourceContainer, otherPipe.ResourceContainer.GetVolume() * pressureDifference);
+				otherPipe.ResourceContainer.TransferResource(recipientPipe.ResourceContainer, otherPipe.ResourceContainer.GetVolume() * fullnessDifference);
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-{ // https://en.wikipedia.org/wiki/Solid_hydrogen, https://en.wikipedia.org/wiki/Hydrogen
+{ // https://en.wikipedia.org/wiki/Solid_hydrogen, https://en.wikipedia.org/wiki/Hydrogen, https://www.wolframalpha.com
   "ChemicalName": "Hydrogen",
   "PlasmaPhaseType": {
     "ResourceName": "Hydrogen Plasma",
@@ -9,12 +9,12 @@
     "ResourceName": "Hydrogen Gas",
     "Density": 0.08988 // kg/m3
   },
-  "TemperatureForGasPhaseChange": 21,
+  "TemperatureForGasPhaseChange": 20.3,
   "LiquidPhaseType": {
     "ResourceName": "Liquid Hydrogen",
     "Density": 700
   },
-  "TemperatureForSolidPhaseChange": 13.99,
+  "TemperatureForSolidPhaseChange": 14.01,
   "SolidPhaseType": {
     "ResourceName": "Solid Hydrogen",
     "Density": 860

@@ -26,22 +26,26 @@ namespace Space_Refinery_Game
 
 		public override IInformationProvider InformationProvider => informationProvider;
 
-		public ConnectorSide ResourceFlowsInto => FlowVelocityIntoA >= 0 ? ConnectorSide.A : ConnectorSide.B;
-
-		public FixedDecimalInt4 FlowVelocityIntoA;
-
 		void Entity.Tick()
 		{
-			if (Vacant) // should really lead to loss of contents
+			if (Vacant)
 			{
 				return;
 			}
 
-			FlowVelocityIntoA = Pipes.pipeA.FlowVelocityTowards(this) - Pipes.pipeB.FlowVelocityTowards(this);
+			if (FixedDecimalLong8.Abs(Pipes.pipeA.Fullness - Pipes.pipeB.Fullness) > (FixedDecimalLong8)0.0005)
+			{
+				ConnectorSide flowDirection = Pipes.pipeA.Fullness - Pipes.pipeB.Fullness > 0 ? ConnectorSide.B : ConnectorSide.A;
 
-			((Pipe)GetConnectableAtSide(ResourceFlowsInto.Opposite())).ResourceContainer.TransferResource(((Pipe)GetConnectableAtSide(ResourceFlowsInto)).ResourceContainer, (FixedDecimalInt4.PI * (PipeConnectorProperties.ConnectorFlowAreaDiameter / 2) * (PipeConnectorProperties.ConnectorFlowAreaDiameter / 2) * FlowVelocityIntoA)/*cylinder volume*/);
+				Pipe recipientPipe = (Pipe)GetConnectableAtSide(flowDirection);
 
-			((Pipe)GetConnectableAtSide(ResourceFlowsInto)).ResourceFlowVelocity += ((Pipe)GetConnectableAtSide(ResourceFlowsInto)).ResourceFlowVelocity;
+				Pipe otherPipe = (Pipe)GetConnectableAtSide(flowDirection.Opposite());
+
+				var pressureDifference = FixedDecimalLong8.Abs(recipientPipe.Fullness - otherPipe.Fullness);
+				//var pressure = otherPipe.Fullness / recipientPipe.Fullness;
+
+				otherPipe.ResourceContainer.TransferResource(recipientPipe.ResourceContainer, otherPipe.ResourceContainer.GetVolume() * pressureDifference);
+			}
 		}
 	}
 }

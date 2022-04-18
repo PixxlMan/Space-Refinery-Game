@@ -36,8 +36,6 @@ namespace Space_Refinery_Game
 
 		public ResourceContainer ResourceContainer = new();
 
-		public Vector3FixedDecimalInt4 ResourceFlowVelocity;
-
 		private Pipe(Transform transform)
 		{
 			informationProvider = new PipeInformationProvider(this);
@@ -51,22 +49,6 @@ namespace Space_Refinery_Game
 				return;
 
 			MainGame.DebugRender.DrawOrientationMarks(Transform);
-
-			if (MainGame.DebugSettings.AccessSetting<BooleanSetting>($"{nameof(Pipe)} flow debug"))
-			{
-				MainGame.DebugRender.DrawRay(Transform.Position, Vector3FixedDecimalInt4.NormalizeOrDefault(Vector3FixedDecimalInt4.Transform(ResourceFlowVelocity, Transform.Rotation)), ResourceFlowVelocity.Length(), RgbaFloat.Pink);
-			}
-		}
-
-		public FixedDecimalInt4 FlowVelocityTowards(PipeConnector pipeConnector) // https://answers.unity.com/questions/1351855/how-do-i-get-an-objects-velocity-in-one-direction.html
-		{
-			Vector3FixedDecimalInt4 direction = Vector3FixedDecimalInt4.Normalize(pipeConnector.Transform.Position - Transform.Position);
-
-			FixedDecimalInt4 dot = Vector3FixedDecimalInt4.Dot(ResourceFlowVelocity, direction);
-
-			Vector3FixedDecimalInt4 v = direction * dot;
-
-			return v.Length();
 		}
 
 		public static Pipe Create(PipeType pipeType, Transform transform, PhysicsWorld physWorld, GraphicsWorld graphWorld, GameWorld gameWorld)
@@ -209,27 +191,6 @@ namespace Space_Refinery_Game
 			GameWorld = gameWorld;
 		}
 
-		public FixedDecimalInt4 Pressure => ResourceContainer.GetVolume() / PipeType.PipeProperties.FlowableVolume;
-
-		void Entity.Tick()
-		{
-			foreach (var connector in Connectors)
-			{
-				if (connector.Vacant)
-				{
-					continue;
-				}
-
-				Vector3FixedDecimalInt4 directionTowards = Vector3FixedDecimalInt4.Normalize(Transform.Position - connector.Transform.Position);
-
-				FixedDecimalInt4 pressureDifference = Pressure - ((Pipe)connector.GetOther(this)).Pressure;
-
-				ResourceFlowVelocity += directionTowards * pressureDifference;
-			}
-
-			ResourceFlowVelocity *= PipeType.PipeProperties.Friction;
-		}
-
 		public void Deconstruct()
 		{
 			PhysicsObject.Destroy();
@@ -243,6 +204,13 @@ namespace Space_Refinery_Game
 			{
 				connector.Disconnect(this);
 			}
+		}
+
+		public FixedDecimalLong8 Fullness => (FixedDecimalLong8)ResourceContainer.GetVolume() / (FixedDecimalLong8)PipeType.PipeProperties.FlowableVolume;
+
+		void Entity.Tick()
+		{
+
 		}
 	}
 }

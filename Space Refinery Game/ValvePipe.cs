@@ -1,5 +1,4 @@
-﻿using BepuPhysics.Collidables;
-using FixedPrecision;
+﻿using FixedPrecision;
 using FXRenderer;
 using ImGuiNET;
 using Space_Refinery_Game_Renderer;
@@ -20,6 +19,8 @@ namespace Space_Refinery_Game
 			informationProvider = new ValvePipeInformationProvider(this);
 		}
 
+		private static Mesh InternalBlockerModel;
+
 		public FixedDecimalLong8 Limiter = (FixedDecimalLong8)0.5;
 
 		public override void TransferResourceFromConnector(ResourceContainer source, FixedDecimalLong8 volume, Connector sourceConnector)
@@ -27,10 +28,21 @@ namespace Space_Refinery_Game
 			source.TransferResource(ResourceContainers[sourceConnector], volume);
 		}
 
+		private EntityRenderable InternalBlockerRenderable;
+
 		public Dictionary<Connector, ResourceContainer> ResourceContainers = new();
 
 		protected override void SetUp()
 		{
+			if (InternalBlockerModel is null)
+			{
+				InternalBlockerModel = Mesh.LoadMesh(GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory, Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe", "Special", "PipeSpecialValveInternalBlocker.obj"));
+			}
+
+			InternalBlockerRenderable = EntityRenderable.Create(GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory, Transform, InternalBlockerModel, Utils.GetSolidColoredTexture(RgbaByte.LightGrey, GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory), GraphicsWorld.CameraProjViewBuffer, GraphicsWorld.LightInfoBuffer);
+
+			GraphicsWorld.AddRenderable(InternalBlockerRenderable);
+
 			foreach (var connector in Connectors)
 			{
 				ResourceContainers.Add(connector, new(PipeType.PipeProperties.FlowableVolume / Connectors.Length));
@@ -39,6 +51,8 @@ namespace Space_Refinery_Game
 
 		protected override void Tick()
 		{
+			InternalBlockerRenderable.Rotation = QuaternionFixedDecimalInt4.Concatenate(Transform.Rotation, QuaternionFixedDecimalInt4.CreateFromYawPitchRoll((FixedDecimalInt4)Limiter * 90 * FixedDecimalInt4.DegreesToRadians, 0, 0));
+
 			ResourceContainer lowestFullnessContainer = ResourceContainers.Values.First();
 
 			foreach (var resourceContainer in ResourceContainers.Values)
@@ -76,6 +90,13 @@ namespace Space_Refinery_Game
 			{
 				((PipeConnector)connectorResourceContainerPair.Key).TransferResource(this, connectorResourceContainerPair.Value, connectorResourceContainerPair.Value.Volume);
 			}
+		}
+
+		public override void Deconstruct()
+		{
+			base.Deconstruct();
+
+			InternalBlockerRenderable.Destroy();
 		}
 
 		private float menuLimit = 0;

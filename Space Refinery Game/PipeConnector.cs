@@ -26,7 +26,7 @@ namespace Space_Refinery_Game
 
 		public void TransferResource(Pipe sourcePipe, ResourceContainer sourceContainer, FixedDecimalLong8 volume)
 		{
-			sourceContainer.TransferResource((ResourceContainer)GetOther(sourcePipe), volume);
+			sourceContainer.TransferResource(((Pipe)GetOther(sourcePipe)).GetResourceContainerForConnector(this), volume);
 		}
 
 		/*Entity.SetTickPriority/Frequency(Low)*/

@@ -12,7 +12,7 @@ namespace Space_Refinery_Game
 			Pipe = pipe;
 		}
 
-		public string Name => "Pipe";
+		public string Name => Pipe.PipeType.Name;
 
 		public virtual void InformationUI()
 		{

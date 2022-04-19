@@ -41,7 +41,7 @@ namespace Space_Refinery_Game
 		{
 			if (Volume + ((FixedDecimalLong8)mass / resourceType.Density) > (FixedDecimalLong8)MaxVolume)
 			{
-				throw new Exception("Operation would make volume larger than max volume-");
+				throw new Exception("Operation would make volume larger than max volume.");
 			}
 
 			if (resources.ContainsKey(resourceType))

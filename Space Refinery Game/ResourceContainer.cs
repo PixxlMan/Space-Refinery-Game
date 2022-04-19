@@ -17,7 +17,18 @@ namespace Space_Refinery_Game
 
 		public FixedDecimalInt4 MaxVolume;
 
-		public FixedDecimalLong8 Fullness => Volume / (FixedDecimalLong8)MaxVolume;
+		public FixedDecimalLong8 Fullness
+		{
+			get
+			{
+				if (MaxVolume == 0)
+				{
+					return 1;
+				}
+
+				return Volume / (FixedDecimalLong8)MaxVolume;
+			}
+		}
 
 		private Dictionary<ResourceType, FixedDecimalInt4> resources = new();
 

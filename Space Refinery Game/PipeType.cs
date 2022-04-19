@@ -102,6 +102,40 @@ namespace Space_Refinery_Game
 					{
 						new PositionAndDirection()
 						{
+							Position = new(0, 0, 0),
+							Direction = new(1, 0, 0),
+						},
+					},
+					ConnectorProperties = new PipeConnectorProperties[]
+					{
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
+						},
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
+						},
+					},
+					PipeProperties = new()
+					{
+						FlowableVolume = 0,
+						Friction = (FixedDecimalInt4)0.04,
+					},
+					TypeOfPipe = typeof(OrdinaryPipe),
+					Name = "Pipe End",
+					ModelPath = Path.Combine("Assets", "Models", "Pipe", "Special", "PipeSpecialEnd.obj"),
+				},
+				new PipeType()
+				{
+					ConnectorPlacements = new PositionAndDirection[]
+					{
+						new PositionAndDirection()
+						{
 							Position = new((FixedDecimalInt4).25f, 0, 0),
 							Direction = new(1, 0, 0),
 						},

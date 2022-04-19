@@ -70,6 +70,14 @@ namespace Space_Refinery_Game
 			UI.EnterMenu(DoMenu, "Valve controls");
 		}
 
+		protected override void DisplaceContents()
+		{
+			foreach (var connectorResourceContainerPair in ResourceContainers)
+			{
+				((PipeConnector)connectorResourceContainerPair.Key).TransferResource(this, connectorResourceContainerPair.Value, connectorResourceContainerPair.Value.Volume);
+			}
+		}
+
 		private float menuLimit = 0;
 		private void DoMenu()
 		{

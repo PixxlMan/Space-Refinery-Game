@@ -68,7 +68,7 @@ public class MainGame
 
 		constructionMarker = ConstructionMarker.Create(GraphicsWorld);
 
-		GameWorld.AddConstruction(Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), PhysicsWorld, GraphicsWorld, GameWorld));
+		GameWorld.AddConstruction(Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), ui, PhysicsWorld, GraphicsWorld, GameWorld));
 
 		InputTracker.IgnoreNextFrameMousePosition = true;
 
@@ -132,7 +132,16 @@ public class MainGame
 				DebugRender.ShouldRender = !DebugRender.ShouldRender;
 			}
 
-			if (!Paused)
+			if (ui.InMenu || Paused)
+			{
+				window.CaptureMouse = false;
+			}
+			else
+			{
+				window.CaptureMouse = true;
+			}
+
+			if (!Paused && !ui.InMenu)
 			{
 				var physicsObject = PhysicsWorld.Raycast(GraphicsWorld.Camera.Position, GraphicsWorld.Camera.Forward, 1000);
 
@@ -143,6 +152,14 @@ public class MainGame
 				else
 				{
 					ui.CurrentlySelectedInformationProvider = null;
+				}
+
+				if (physicsObject is not null)
+				{
+					if (InputTracker.GetKey(Key.F))
+					{
+						physicsObject.Entity.Interacted();
+					}
 				}
 
 				if (physicsObject is not null && (((physicsObject.Entity is Connector connector && ((PipeConnector)connector).Vacant) || (physicsObject.Entity is ConnectorProxy connectorProxy && ((PipeConnector)connectorProxy.Connector).Vacant))) && ui.SelectedPipeType is not null)
@@ -159,7 +176,7 @@ public class MainGame
 
 					if (InputTracker.GetMouseButtonDown(MouseButton.Left))
 					{
-						GameWorld.AddConstruction(Pipe.Build(pipeConnector, ui.SelectedPipeType, ui.ConnectorSelection, RotationSnapped, PhysicsWorld, GraphicsWorld, GameWorld));
+						GameWorld.AddConstruction(Pipe.Build(pipeConnector, ui.SelectedPipeType, ui.ConnectorSelection, RotationSnapped, ui, PhysicsWorld, GraphicsWorld, GameWorld));
 
 						constructionMarker.ShouldDraw = false;
 					}

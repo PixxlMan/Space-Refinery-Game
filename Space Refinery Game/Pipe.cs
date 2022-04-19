@@ -34,6 +34,8 @@ namespace Space_Refinery_Game
 
 		public PipeType PipeType;
 
+		protected UI UI;
+
 		Connector[] IConnectable.Connectors => Connectors;
 
 		public abstract void TransferResourceFromConnector(ResourceContainer source, FixedDecimalLong8 volume, Connector transferingConnector);
@@ -46,7 +48,7 @@ namespace Space_Refinery_Game
 			MainGame.DebugRender.DrawOrientationMarks(Transform);
 		}
 
-		public static Pipe Create(PipeType pipeType, Transform transform, PhysicsWorld physWorld, GraphicsWorld graphWorld, GameWorld gameWorld)
+		public static Pipe Create(PipeType pipeType, Transform transform, UI ui, PhysicsWorld physWorld, GraphicsWorld graphWorld, GameWorld gameWorld)
 		{
 			Pipe pipe = (Pipe)Activator.CreateInstance(pipeType.TypeOfPipe, true);
 
@@ -60,7 +62,7 @@ namespace Space_Refinery_Game
 
 			PipeConnector[] connectors = CreateConnectors(pipeType, pipe, physWorld, gameWorld);
 
-			pipe.SetUp(pipeType, physWorld, physObj, connectors, graphWorld, renderable, gameWorld);
+			pipe.SetUp(pipeType, ui, physWorld, physObj, connectors, graphWorld, renderable, gameWorld);
 
 			gameWorld.AddEntity(pipe);
 
@@ -154,7 +156,7 @@ namespace Space_Refinery_Game
 			return connectors;
 		}
 
-		public static IConstruction Build(Connector connector, IEntityType entityType, int indexOfSelectedConnector, FixedDecimalLong8 rotation, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld)
+		public static IConstruction Build(Connector connector, IEntityType entityType, int indexOfSelectedConnector, FixedDecimalLong8 rotation, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld)
 		{
 			PipeConnector pipeConnector = (PipeConnector)connector;
 
@@ -174,16 +176,17 @@ namespace Space_Refinery_Game
 
 			var connectors = CreateConnectors(pipeType, pipe, physicsWorld, gameWorld);
 
-			pipe.SetUp(pipeType, physicsWorld, physObj, connectors, graphicsWorld, renderable, gameWorld);
+			pipe.SetUp(pipeType, ui, physicsWorld, physObj, connectors, graphicsWorld, renderable, gameWorld);
 
 			gameWorld.AddEntity(pipe);
 
 			return pipe;
 		}
 
-		private void SetUp(PipeType pipeType, PhysicsWorld physicsWorld, PhysicsObject physicsObject, PipeConnector[] connectors, GraphicsWorld graphicsWorld, EntityRenderable renderable, GameWorld gameWorld)
+		private void SetUp(PipeType pipeType, UI ui, PhysicsWorld physicsWorld, PhysicsObject physicsObject, PipeConnector[] connectors, GraphicsWorld graphicsWorld, EntityRenderable renderable, GameWorld gameWorld)
 		{
 			PipeType = pipeType;
+			UI = ui;
 			PhysicsWorld = physicsWorld;
 			PhysicsObject = physicsObject;
 			Connectors = connectors;
@@ -227,6 +230,15 @@ namespace Space_Refinery_Game
 
 		protected virtual void Tick()
 		{
+		}
+
+		void Entity.Interacted()
+		{
+			Interacted();
+		}
+
+		protected virtual void Interacted()
+		{ 
 		}
 	}
 }

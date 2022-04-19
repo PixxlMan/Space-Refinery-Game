@@ -78,6 +78,21 @@ namespace Space_Refinery_Game
 			this.gd = gd;
 		}
 
+		public bool InMenu;
+
+		public Action DoMenu;
+
+		public string MenuTitle;
+
+		public void EnterMenu(Action doMenu, string title)
+		{
+			InMenu = true;
+
+			DoMenu = doMenu;
+
+			MenuTitle = title;
+		}
+
 		public static UI Create(GraphicsWorld graphWorld)
 		{
 			ImGui.CreateContext();
@@ -219,6 +234,16 @@ namespace Space_Refinery_Game
 
 		private void DoGameRunningUI()
 		{
+			if (InMenu)
+			{
+				ImGui.Begin(MenuTitle);
+				{
+					DoMenu();
+					InMenu = !ImGui.Button("Close");
+				}
+				ImGui.End();
+			}
+
 			ImGui.Begin("Staus", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
 			ImGui.SetWindowPos(new Vector2(0, 0), ImGuiCond.Always);
 			{

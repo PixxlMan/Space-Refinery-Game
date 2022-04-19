@@ -1,6 +1,7 @@
 ﻿using BepuPhysics.Collidables;
 using FixedPrecision;
 using FXRenderer;
+using ImGuiNET;
 using Space_Refinery_Game_Renderer;
 using System;
 using System.Collections.Generic;
@@ -62,6 +63,21 @@ namespace Space_Refinery_Game
 		public override ResourceContainer GetResourceContainerForConnector(PipeConnector pipeConnector)
 		{
 			return ResourceContainers[pipeConnector];
+		}
+
+		protected override void Interacted()
+		{
+			UI.EnterMenu(DoMenu, "Valve controls");
+		}
+
+		private float menuLimit = 0;
+		private void DoMenu()
+		{
+			menuLimit = Limiter.ToFloat();
+
+			ImGui.SliderFloat("Limit", ref menuLimit, 0, 1);
+
+			Limiter = FixedDecimalLong8.FromDouble(menuLimit);
 		}
 	}
 }

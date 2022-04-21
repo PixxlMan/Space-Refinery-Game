@@ -37,7 +37,7 @@ namespace Space_Refinery_Game
 			threadDispatcher = new ThreadDispatcher(Environment.ProcessorCount);
 		}
 
-		public String SynchronizationObject = "69";
+		public object SynchronizationObject = new();
 
 		public void Run()
 		{

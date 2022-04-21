@@ -16,7 +16,7 @@ namespace Space_Refinery_Game
 			MainGame = mainGame;
 		}
 
-		public String SynchronizationObject = "69";
+		public object SynchronizationObject = new();
 
 		public HashSet<IConstruction> Constructions = new();
 

@@ -51,7 +51,7 @@ namespace Space_Refinery_Game
 
 		protected override void Tick()
 		{
-			InternalBlockerRenderable.Rotation = QuaternionFixedDecimalInt4.Concatenate(Transform.Rotation, QuaternionFixedDecimalInt4.CreateFromYawPitchRoll((FixedDecimalInt4)Limiter * 90 * FixedDecimalInt4.DegreesToRadians, 0, 0));
+			InternalBlockerRenderable.Rotation = QuaternionFixedDecimalInt4.Normalize(QuaternionFixedDecimalInt4.Concatenate(Transform.Rotation, QuaternionFixedDecimalInt4.CreateFromAxisAngle(((ITransformable)Transform).LocalUnitZ, (FixedDecimalInt4)Limiter * 90 * FixedDecimalInt4.DegreesToRadians)));
 
 			ResourceContainer lowestFullnessContainer = ResourceContainers.Values.First();
 
@@ -97,6 +97,8 @@ namespace Space_Refinery_Game
 			base.Deconstruct();
 
 			InternalBlockerRenderable.Destroy();
+
+			GraphicsWorld.UnorderedRenderables.Remove(InternalBlockerRenderable);
 		}
 
 		private float menuLimit = 0;

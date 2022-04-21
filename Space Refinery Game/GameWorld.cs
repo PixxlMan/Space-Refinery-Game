@@ -67,7 +67,7 @@ namespace Space_Refinery_Game
 			Transform transform =
 				new(
 					connector.Transform.Position + Vector3FixedDecimalInt4.Transform(position, QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.CreateLookingAt(direction, connector.VacantSide == ConnectorSide.A ? -pipeConnectorTransformable.LocalUnitZ : pipeConnectorTransformable.LocalUnitZ, connector.VacantSide == ConnectorSide.A ? -pipeConnectorTransformable.LocalUnitY : pipeConnectorTransformable.LocalUnitY))),
-					QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateLookingAt(direction, -pipeConnectorTransformable.LocalUnitZ, -pipeConnectorTransformable.LocalUnitY), QuaternionFixedDecimalInt4.CreateFromAxisAngle(direction, FixedDecimalInt4.FromDecimal(rotation.ToDecimal()))))
+					QuaternionFixedDecimalInt4.Inverse(QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateLookingAt(direction, -pipeConnectorTransformable.LocalUnitZ, -pipeConnectorTransformable.LocalUnitY), QuaternionFixedDecimalInt4.CreateFromAxisAngle(direction, (FixedDecimalInt4)rotation)))
 				);
 
 			transform.Rotation = QuaternionFixedDecimalInt4.Normalize(transform.Rotation);

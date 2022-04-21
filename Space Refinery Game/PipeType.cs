@@ -102,7 +102,7 @@ namespace Space_Refinery_Game
 					{
 						new PositionAndDirection()
 						{
-							Position = new(0, 0, 0),
+							Position = new((FixedDecimalInt4)0.0125, 0, 0),
 							Direction = new(1, 0, 0),
 						},
 					},

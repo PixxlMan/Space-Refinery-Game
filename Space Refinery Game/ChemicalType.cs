@@ -14,83 +14,26 @@ namespace Space_Refinery_Game
 	{
 		public string ChemicalName;
 
-		public PlasmaType PlasmaPhaseType;
+		//public PlasmaType PlasmaPhaseType;
 
-		public FixedDecimalInt4 TemperatureForPlasmaPhaseChange;
+		//public FixedDecimalInt4 EnthalpyOfIonisation;
 
 		public GasType GasPhaseType;
 
-		public FixedDecimalInt4 TemperatureForGasPhaseChange;
+		public FixedDecimalInt4 EnthalpyOfVaporization;
 
 		public LiquidType LiquidPhaseType;
 
-		public FixedDecimalInt4 TemperatureForLiquidPhaseChange;
+		public FixedDecimalInt4 EnthalpyOfFusion;
 
 		public SolidType SolidPhaseType;
 
 		public void OnDeserialized()
 		{
-			PlasmaPhaseType.ChemicalType = this;
+			//PlasmaPhaseType.ChemicalType = this;
 			GasPhaseType.ChemicalType = this;
 			LiquidPhaseType.ChemicalType = this;
 			SolidPhaseType.ChemicalType = this;
-		}
-
-		public ResourceType GetPhaseType(FixedDecimalInt4 temperature/*, FixedDecimalInt4 pressure*/)
-		{
-			if (temperature > TemperatureForPlasmaPhaseChange)
-			{
-				return PlasmaPhaseType;
-			}
-			else if (temperature > TemperatureForGasPhaseChange)
-			{
-				return GasPhaseType;
-			}
-			else if (temperature > TemperatureForLiquidPhaseChange)
-			{
-				return LiquidPhaseType;
-			}
-			else
-			{
-				return SolidPhaseType;
-			}
-		}
-
-		public ChemicalPhase GetPhase(FixedDecimalInt4 temperature/*, FixedDecimalInt4 pressure*/)
-		{
-			if (temperature > TemperatureForPlasmaPhaseChange)
-			{
-				return ChemicalPhase.Plasma;
-			}
-			else if (temperature > TemperatureForGasPhaseChange)
-			{
-				return ChemicalPhase.Gas;
-			}
-			else if (temperature > TemperatureForLiquidPhaseChange)
-			{
-				return ChemicalPhase.Liquid;
-			}
-			else
-			{
-				return ChemicalPhase.Solid;
-			}
-		}
-
-		public ResourceType GetPhaseType(ChemicalPhase chemicalPhase)
-		{
-			switch (chemicalPhase)
-			{
-				case ChemicalPhase.Solid:
-					return SolidPhaseType;
-				case ChemicalPhase.Liquid:
-					return LiquidPhaseType;
-				case ChemicalPhase.Gas:
-					return GasPhaseType;
-				case ChemicalPhase.Plasma:
-					return PlasmaPhaseType;
-				default:
-					throw null;
-			}
 		}
 
 		public void Serialize(string path)

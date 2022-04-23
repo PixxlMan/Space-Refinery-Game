@@ -39,7 +39,7 @@ public class GraphicsWorld
 
 	private Window window;
 
-	public object SynchronizationObject = new();
+	public string SynchronizationObject = "69";
 
 	public Camera Camera;
 
@@ -66,7 +66,7 @@ public class GraphicsWorld
 
 	public void Run()
 	{
-		Thread thread = new Thread(new ParameterizedThreadStart((_) =>
+		Thread thread = new Thread(new ThreadStart(() =>
 		{
 			Stopwatch stopwatch = new();
 			stopwatch.Start();

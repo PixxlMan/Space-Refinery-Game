@@ -12,7 +12,9 @@ public abstract class ResourceType
 
 	public string ResourceName;
 
-	public FixedDecimalLong8 Density;
+	public FixedDecimalLong8 Density; // kg/m3
+
+	public FixedDecimalInt4 SpecificHeatCapacity; // j/k
 
 	protected ResourceType()
 	{

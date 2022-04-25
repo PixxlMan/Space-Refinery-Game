@@ -59,7 +59,7 @@ public class GraphicsWorld
 
 		Camera.FarDistance = 10000;
 
-		Camera.NearDistance = "0.1".Parse<FixedDecimalInt4>();
+		Camera.NearDistance = (FixedDecimalInt4)0.1;
 
 		CreateDeviceObjects(gd, factory, swapchain);
 	}
@@ -102,7 +102,7 @@ public class GraphicsWorld
 		CameraProjViewBuffer = factory.CreateBuffer(
 			new BufferDescription((uint)(Unsafe.SizeOf<Matrix4x4>() * 2), BufferUsage.UniformBuffer | BufferUsage.Dynamic));
 		LightInfoBuffer = factory.CreateBuffer(new BufferDescription(32, BufferUsage.UniformBuffer | BufferUsage.Dynamic));
-		lightDir = Vector3FixedDecimalInt4.Normalize(new Vector3FixedDecimalInt4("0.3".Parse<FixedDecimalInt4>(), "-0.75".Parse<FixedDecimalInt4>(), "-0.3".Parse<FixedDecimalInt4>()));
+		lightDir = Vector3FixedDecimalInt4.Normalize(new Vector3FixedDecimalInt4((FixedDecimalInt4)0.3, -(FixedDecimalInt4)0.75, -(FixedDecimalInt4)0.3));
 
 		ViewInfoBuffer = factory.CreateBuffer(new BufferDescription((uint)Unsafe.SizeOf<MatrixPair>(), BufferUsage.UniformBuffer | BufferUsage.Dynamic));
 	}

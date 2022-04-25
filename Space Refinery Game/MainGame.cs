@@ -187,7 +187,7 @@ public class MainGame
 					{
 						if (InputTracker.GetKeyDown(Key.U))
 						{
-							pipe.ResourceContainer.AddResource(WaterChemical.LiquidPhaseType, 10);
+							pipe.ResourceContainer.AddResource(new(WaterChemical.LiquidPhaseType, 10, 100 * WaterChemical.LiquidPhaseType.SpecificHeatCapacity * 10, 0));
 						}
 					}
 

@@ -58,7 +58,7 @@ namespace Space_Refinery_Game
 
 			EntityRenderable renderable = CreateRenderable(pipeType, graphWorld, transform);
 
-			PhysicsObject physObj = CreatePhysicsObject(physWorld, transform, pipe);
+			PhysicsObject physObj = CreatePhysicsObject(physWorld, transform, pipe, pipeType.Mesh);
 
 			PipeConnector[] connectors = CreateConnectors(pipeType, pipe, physWorld, gameWorld);
 
@@ -76,12 +76,13 @@ namespace Space_Refinery_Game
 			EntityRenderable renderable = EntityRenderable.Create(graphWorld.GraphicsDevice, graphWorld.Factory, transform, pipeType.Mesh, Utils.GetSolidColoredTexture(RgbaByte.LightGrey, graphWorld.GraphicsDevice, graphWorld.Factory), graphWorld.CameraProjViewBuffer, graphWorld.LightInfoBuffer);
 
 			graphWorld.AddRenderable(renderable);
+
 			return renderable;
 		}
 
-		private static PhysicsObject CreatePhysicsObject(PhysicsWorld physWorld, Transform transform, Pipe pipeStraight)
+		private static PhysicsObject CreatePhysicsObject(PhysicsWorld physWorld, Transform transform, Pipe pipeStraight, FXRenderer.Mesh mesh)
 		{
-			PhysicsObjectDescription<Box> physicsObjectDescription = new(new Box(1, .5f, .5f), transform, 0, true);
+			PhysicsObjectDescription<ConvexHull> physicsObjectDescription = new(physWorld.GetConvexHullForMesh(mesh), transform, 0, true);
 
 			PhysicsObject physObj = physWorld.AddPhysicsObject(physicsObjectDescription, pipeStraight);
 			return physObj;
@@ -172,7 +173,7 @@ namespace Space_Refinery_Game
 
 			EntityRenderable renderable = CreateRenderable(pipeType, graphicsWorld, transform);
 
-			PhysicsObject physObj = CreatePhysicsObject(physicsWorld, transform, pipe);
+			PhysicsObject physObj = CreatePhysicsObject(physicsWorld, transform, pipe, pipeType.Mesh);
 
 			var connectors = CreateConnectors(pipeType, pipe, physicsWorld, gameWorld);
 

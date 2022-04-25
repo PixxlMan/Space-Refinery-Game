@@ -264,9 +264,12 @@ namespace Space_Refinery_Game
 			ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize /*| ImGuiWindowFlags.NoBackground */| ImGuiWindowFlags.NoDecoration);
 			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 4 * 3, gd.MainSwapchain.Framebuffer.Height / 2), ImGuiCond.Always);
 			{
-				ImGui.Text("Connector: " + ConnectorSelection);
-				ImGui.Text("Entity: " + EntitySelection);
-				ImGui.Text("Rotation: " + RotationIndex);
+				if (MainGame.DebugSettings.AccessSetting<BooleanSetting>("Show player info"))
+				{
+					ImGui.Text("Connector: " + ConnectorSelection);
+					ImGui.Text("Entity: " + EntitySelection);
+					ImGui.Text("Rotation: " + RotationIndex);
+				}
 
 				if (CurrentlySelectedInformationProvider is not null)
 				{

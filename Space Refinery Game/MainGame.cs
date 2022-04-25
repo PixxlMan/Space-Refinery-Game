@@ -36,7 +36,7 @@ public class MainGame
 
 	public FixedDecimalLong8 RotationSnapped => ui.RotationIndex * RotationSnapping;
 
-	public string SynchronizationObject = "69";
+	public readonly object SynchronizationObject = new();
 
 	private Vector2FixedDecimalInt4 previousMousePos;
 
@@ -119,7 +119,7 @@ public class MainGame
 
 	private void Update(FixedDecimalInt4 deltaTime)
 	{
-		lock(SynchronizationObject)
+		lock(SynchronizationObject) lock(GraphicsWorld.SynchronizationObject)
 		{
 			window.PumpEvents(out var input);
 

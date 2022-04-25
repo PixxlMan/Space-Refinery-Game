@@ -39,7 +39,7 @@ public class GraphicsWorld
 
 	private Window window;
 
-	public string SynchronizationObject = "69";
+	public readonly object SynchronizationObject = new();
 
 	public Camera Camera;
 

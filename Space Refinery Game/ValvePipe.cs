@@ -25,7 +25,10 @@ namespace Space_Refinery_Game
 
 		public override void TransferResourceFromConnector(ResourceContainer source, FixedDecimalLong8 volume, Connector sourceConnector)
 		{
-			source.TransferResource(ResourceContainers[sourceConnector], volume);
+			lock (this)
+			{
+				source.TransferResource(ResourceContainers[sourceConnector], volume);
+			}
 		}
 
 		private EntityRenderable InternalBlockerRenderable;
@@ -34,49 +37,58 @@ namespace Space_Refinery_Game
 
 		protected override void SetUp()
 		{
-			if (InternalBlockerModel is null)
+			lock (this)
 			{
-				InternalBlockerModel = Mesh.LoadMesh(GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory, Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe", "Special", "PipeSpecialValveInternalBlocker.obj"));
-			}
+				if (InternalBlockerModel is null)
+				{
+					InternalBlockerModel = Mesh.LoadMesh(GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory, Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe", "Special", "PipeSpecialValveInternalBlocker.obj"));
+				}
 
-			InternalBlockerRenderable = EntityRenderable.Create(GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory, Transform, InternalBlockerModel, Utils.GetSolidColoredTexture(RgbaByte.LightGrey, GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory), GraphicsWorld.CameraProjViewBuffer, GraphicsWorld.LightInfoBuffer);
+				InternalBlockerRenderable = EntityRenderable.Create(GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory, Transform, InternalBlockerModel, Utils.GetSolidColoredTexture(RgbaByte.LightGrey, GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory), GraphicsWorld.CameraProjViewBuffer, GraphicsWorld.LightInfoBuffer);
 
-			GraphicsWorld.AddRenderable(InternalBlockerRenderable);
+				GraphicsWorld.AddRenderable(InternalBlockerRenderable);
 
-			foreach (var connector in Connectors)
-			{
-				ResourceContainers.Add(connector, new(PipeType.PipeProperties.FlowableVolume / Connectors.Length));
+				foreach (var connector in Connectors)
+				{
+					ResourceContainers.Add(connector, new(PipeType.PipeProperties.FlowableVolume / Connectors.Length));
+				}
 			}
 		}
 
 		protected override void Tick()
 		{
-			InternalBlockerRenderable.Rotation = QuaternionFixedDecimalInt4.Normalize(QuaternionFixedDecimalInt4.Concatenate(Transform.Rotation, QuaternionFixedDecimalInt4.CreateFromAxisAngle(((ITransformable)Transform).LocalUnitZ, (FixedDecimalInt4)Limiter * 90 * FixedDecimalInt4.DegreesToRadians)));
-
-			ResourceContainer lowestFullnessContainer = ResourceContainers.Values.First();
-
-			foreach (var resourceContainer in ResourceContainers.Values)
+			lock (this)
 			{
-				if (resourceContainer.Fullness < lowestFullnessContainer.Fullness)
-				{
-					lowestFullnessContainer = resourceContainer;
-				}
-			}
+				InternalBlockerRenderable.Rotation = QuaternionFixedDecimalInt4.Normalize(QuaternionFixedDecimalInt4.Concatenate(Transform.Rotation, QuaternionFixedDecimalInt4.CreateFromAxisAngle(((ITransformable)Transform).LocalUnitZ, (FixedDecimalInt4)Limiter * 90 * FixedDecimalInt4.DegreesToRadians)));
 
-			foreach (var resourceContainer in ResourceContainers.Values)
-			{
-				if (resourceContainer == lowestFullnessContainer)
+				ResourceContainer lowestFullnessContainer = ResourceContainers.Values.First();
+
+				foreach (var resourceContainer in ResourceContainers.Values)
 				{
-					continue;
+					if (resourceContainer.Fullness < lowestFullnessContainer.Fullness)
+					{
+						lowestFullnessContainer = resourceContainer;
+					}
 				}
 
-				resourceContainer.TransferResource(lowestFullnessContainer, resourceContainer.Volume * Limiter * (FixedDecimalLong8)Time.TickInterval);
+				foreach (var resourceContainer in ResourceContainers.Values)
+				{
+					if (resourceContainer == lowestFullnessContainer)
+					{
+						continue;
+					}
+
+					resourceContainer.TransferResource(lowestFullnessContainer, resourceContainer.Volume * Limiter * (FixedDecimalLong8)Time.TickInterval);
+				}
 			}
 		}
 
 		public override ResourceContainer GetResourceContainerForConnector(PipeConnector pipeConnector)
 		{
-			return ResourceContainers[pipeConnector];
+			lock (this)
+			{
+				return ResourceContainers[pipeConnector];
+			}
 		}
 
 		protected override void Interacted()
@@ -86,19 +98,28 @@ namespace Space_Refinery_Game
 
 		protected override void DisplaceContents()
 		{
-			foreach (var connectorResourceContainerPair in ResourceContainers)
+			lock (this)
 			{
-				((PipeConnector)connectorResourceContainerPair.Key).TransferResource(this, connectorResourceContainerPair.Value, connectorResourceContainerPair.Value.Volume);
+				foreach (var connectorResourceContainerPair in ResourceContainers)
+				{
+					if (connectorResourceContainerPair.Key.Vacant)
+						continue;
+
+					((PipeConnector)connectorResourceContainerPair.Key).TransferResource(this, connectorResourceContainerPair.Value, connectorResourceContainerPair.Value.Volume);
+				}
 			}
 		}
 
 		public override void Deconstruct()
 		{
-			base.Deconstruct();
+			lock (this)
+			{
+				base.Deconstruct();
 
-			InternalBlockerRenderable.Destroy();
+				InternalBlockerRenderable.Destroy();
 
-			GraphicsWorld.UnorderedRenderables.Remove(InternalBlockerRenderable);
+				GraphicsWorld.UnorderedRenderables.Remove(InternalBlockerRenderable);
+			}
 		}
 
 		private float menuLimit = 0;

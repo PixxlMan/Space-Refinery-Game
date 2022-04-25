@@ -126,13 +126,13 @@ namespace Space_Refinery_Game
 
 					connector.Transform  = transform;
 
-					var physicsObjectDescription = new PhysicsObjectDescription<Box>(new Box(.4f, .4f, .25f), transform, 0, true);
+					var physicsObjectDescription = new PhysicsObjectDescription<Box>(new Box(.4f, .4f, .1f), transform, 0, true);
 
 					connector.PhysicsObject = physWorld.AddPhysicsObject(physicsObjectDescription, connector);
 
 					ConnectorProxy connectorProxy = new(connector);
 
-					var userInteractableObjectDescription = new PhysicsObjectDescription<Box>(new Box(.75f, .75f, .75f), transform, 0, true);
+					var userInteractableObjectDescription = new PhysicsObjectDescription<Box>(new Box(.75f, .75f, .75f), new(transform) { Position = transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation) * (FixedDecimalInt4)0.75}, 0, true);
 
 					connectorProxy.PhysicsObject = physWorld.AddPhysicsObject(userInteractableObjectDescription, connector);
 
@@ -186,16 +186,19 @@ namespace Space_Refinery_Game
 
 		private void SetUp(PipeType pipeType, UI ui, PhysicsWorld physicsWorld, PhysicsObject physicsObject, PipeConnector[] connectors, GraphicsWorld graphicsWorld, EntityRenderable renderable, GameWorld gameWorld)
 		{
-			PipeType = pipeType;
-			UI = ui;
-			PhysicsWorld = physicsWorld;
-			PhysicsObject = physicsObject;
-			Connectors = connectors;
-			GraphicsWorld = graphicsWorld;
-			Renderable = renderable;
-			GameWorld = gameWorld;
+			lock (this)
+			{
+				PipeType = pipeType;
+				UI = ui;
+				PhysicsWorld = physicsWorld;
+				PhysicsObject = physicsObject;
+				Connectors = connectors;
+				GraphicsWorld = graphicsWorld;
+				Renderable = renderable;
+				GameWorld = gameWorld;
 
-			SetUp();
+				SetUp();
+			}
 		}
 
 		protected virtual void SetUp()
@@ -205,18 +208,21 @@ namespace Space_Refinery_Game
 
 		public virtual void Deconstruct()
 		{
-			DisplaceContents();
-
-			PhysicsObject.Destroy();
-			Renderable.Destroy();
-
-			MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
-
-			GraphicsWorld.UnorderedRenderables.Remove(Renderable);
-
-			foreach (var connector in Connectors)
+			lock (this)
 			{
-				connector.Disconnect(this);
+				DisplaceContents();
+
+				PhysicsObject.Destroy();
+				Renderable.Destroy();
+
+				MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
+
+				GraphicsWorld.UnorderedRenderables.Remove(Renderable);
+
+				foreach (var connector in Connectors)
+				{
+					connector.Disconnect(this);
+				}
 			}
 		}
 

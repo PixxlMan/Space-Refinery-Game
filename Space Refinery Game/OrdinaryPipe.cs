@@ -19,38 +19,50 @@ namespace Space_Refinery_Game
 			informationProvider = new OrdinaryPipeInformationProvider(this);
 		}
 
+		public ResourceContainer ResourceContainer;
+
 		public override void TransferResourceFromConnector(ResourceContainer source, FixedDecimalLong8 volume, Connector _)
 		{
-			ResourceContainer.TransferResource(source, volume);
+			lock (this)
+			{
+				ResourceContainer.TransferResource(source, volume);
+			}
 		}
-
-		public ResourceContainer ResourceContainer;
 
 		protected override void DisplaceContents()
 		{
-			List<PipeConnector> connectedConnectors = new();
-			foreach (var connector in Connectors)
+			lock (this)
 			{
-				if (!connector.Vacant)
-					connectedConnectors.Add(connector);
-			}
+				List<PipeConnector> connectedConnectors = new();
+				foreach (var connector in Connectors)
+				{
+					if (!connector.Vacant)
+						connectedConnectors.Add(connector);
+				}
 
-			var volumePerConnector = ResourceContainer.Volume / connectedConnectors.Count;
+				var volumePerConnector = ResourceContainer.Volume / connectedConnectors.Count;
 
-			foreach (var connectedConnector in connectedConnectors)
-			{
-				connectedConnector.TransferResource(this, ResourceContainer, volumePerConnector);
+				foreach (var connectedConnector in connectedConnectors)
+				{
+					connectedConnector.TransferResource(this, ResourceContainer, volumePerConnector);
+				}
 			}
 		}
 
 		protected override void SetUp()
 		{
-			ResourceContainer = new(PipeType.PipeProperties.FlowableVolume);
+			lock (this)
+			{
+				ResourceContainer = new(PipeType.PipeProperties.FlowableVolume);
+			}
 		}
 
 		public override ResourceContainer GetResourceContainerForConnector(PipeConnector pipeConnector)
 		{
-			return ResourceContainer;
+			lock (this)
+			{
+				return ResourceContainer;
+			}
 		}
 	}
 }

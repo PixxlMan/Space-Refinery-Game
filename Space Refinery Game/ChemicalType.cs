@@ -14,10 +14,6 @@ namespace Space_Refinery_Game
 	{
 		public string ChemicalName;
 
-		//public PlasmaType PlasmaPhaseType;
-
-		//public FixedDecimalInt4 EnthalpyOfIonisation;
-
 		public GasType GasPhaseType;
 
 		public FixedDecimalInt4 EnthalpyOfVaporization;
@@ -30,7 +26,6 @@ namespace Space_Refinery_Game
 
 		public void OnDeserialized()
 		{
-			//PlasmaPhaseType.ChemicalType = this;
 			GasPhaseType.ChemicalType = this;
 			LiquidPhaseType.ChemicalType = this;
 			SolidPhaseType.ChemicalType = this;

@@ -1,23 +1,24 @@
 { // https://en.wikipedia.org/wiki/Solid_hydrogen, https://en.wikipedia.org/wiki/Hydrogen, https://www.wolframalpha.com
   "ChemicalName": "Hydrogen",
-  "PlasmaPhaseType": {
-    "ResourceName": "Hydrogen Plasma",
-    "Density": 0 // ?
-  },
-  "TemperatureForPlasmaPhaseChange": 100000, // ?
+  //"ChemicalShortForm": "H2",
   "GasPhaseType": {
     "ResourceName": "Hydrogen Gas",
-    "Density": 0.08988 // kg/m3
+    "Density": 0.08988, // kg/m3
+    "SpecificHeatCapacity" : 14.38
   },
-  "TemperatureForGasPhaseChange": 20.3,
   "LiquidPhaseType": {
     "ResourceName": "Liquid Hydrogen",
-    "Density": 700
+    "Density": 700,
+    "SpecificHeatCapacity" : 13.12 // ?
   },
-  "TemperatureForSolidPhaseChange": 14.01,
   "SolidPhaseType": {
     "ResourceName": "Solid Hydrogen",
-    "Density": 860
-  }
+    "Density": 860,
+    "SpecificHeatCapacity": 13.12 // ?
+  },
+  "EnthalpyOfVaporization" : 446.1, // https://en.wikipedia.org/wiki/Enthalpy_of_vaporization
+  "EnthalpyOfFusion" : 58
 }
 // https://en.wikipedia.org/wiki/Hydrogen_embrittlement
+// https://www.engineeringtoolbox.com/hydrogen-d_1419.html
+// https://www.engineeringtoolbox.com/hydrogen-d_976.html

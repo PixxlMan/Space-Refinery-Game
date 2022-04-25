@@ -15,7 +15,7 @@ namespace Space_Refinery_Game
 		private FixedDecimalInt4 mass;
 		public FixedDecimalInt4 Mass { get => mass; }
 
-		public FixedDecimalInt4 MaxVolume;
+		public readonly FixedDecimalInt4 MaxVolume;
 
 		public FixedDecimalLong8 Fullness
 		{
@@ -30,32 +30,37 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		private Dictionary<ResourceType, FixedDecimalInt4> resources = new();
+		private Dictionary<ResourceType, ResourceUnit> resources = new();
 
 		public ResourceContainer(FixedDecimalInt4 maxVolume)
 		{
 			MaxVolume = maxVolume;
 		}
 
-		public void AddResource(ResourceType resourceType, FixedDecimalInt4 mass)
+		public void AddResource(ResourceUnit unit)
 		{
-			if (Volume + ((FixedDecimalLong8)mass / resourceType.Density) > (FixedDecimalLong8)MaxVolume)
+			if (Volume + unit.Volume > (FixedDecimalLong8)MaxVolume)
 			{
 				throw new Exception("Operation would make volume larger than max volume.");
 			}
 
-			if (resources.ContainsKey(resourceType))
+			if (resources.ContainsKey(unit.ResourceType))
 			{
-				resources[resourceType] += mass;
+				resources[unit.ResourceType] += unit;
 			}
 			else
 			{
-				resources.Add(resourceType, mass);
+				resources.Add(unit.ResourceType, unit);
 			}
 
-			volume += (FixedDecimalLong8)mass / resourceType.Density;
+			if (resources[unit.ResourceType].Mass == 0)
+			{
+				resources.Remove(unit.ResourceType);
+			}
 
-			this.mass += mass;
+			volume += unit.Volume;
+
+			mass += unit.Mass;
 		}
 
 		public void TransferResource(ResourceContainer transferTarget, FixedDecimalLong8 transferVolume)
@@ -75,17 +80,22 @@ namespace Space_Refinery_Game
 				return;
 			}
 
-			var transferPart = transferVolume / Volume;
+			FixedDecimalInt4 transferPart = (FixedDecimalInt4)(transferVolume / Volume);
 
-			foreach (var resourceMassPair in resources)
+			foreach (var unit in resources.Values)
 			{
-				var massTransfer = (FixedDecimalInt4)((FixedDecimalLong8)resourceMassPair.Value * transferPart);
+				var transferedResource = ResourceUnit.Part(unit, transferPart);
 
-				transferTarget.AddResource(resourceMassPair.Key, massTransfer);
+				transferTarget.AddResource(transferedResource);
 
-				resources[resourceMassPair.Key] -= massTransfer;
+				resources[unit.ResourceType] -= transferedResource;
 
-				mass -= massTransfer;
+				mass -= transferedResource.Mass;
+
+				if (resources[unit.ResourceType].Mass == 0)
+				{
+					resources.Remove(unit.ResourceType);
+				}
 			}
 
 			volume -= transferVolume;
@@ -93,19 +103,22 @@ namespace Space_Refinery_Game
 
 		public override string ToString()
 		{
-			string str = string.Empty;
+			string str = "\n";
 
-			str += $"Mass: {Mass} kg";
-			str += $"Volume: {Volume} m3";
-			str += $"Max Volume: {MaxVolume} m3";
-			str += $"Fullness: {Fullness}";
+			str += $"Mass: {Mass} kg\n";
+			str += $"Volume: {Volume} m3\n";
+			str += $"Max Volume: {MaxVolume} m3\n";
+			str += $"Fullness: {Fullness}\n";
 
 			str += "ResourceContainer contains: \n";
 
 			foreach (var resourceMassPair in resources)
 			{
-				str += $"{resourceMassPair.Key.ResourceName}: {resourceMassPair.Value} kg ~ {(FixedDecimalLong8)resourceMassPair.Value / resourceMassPair.Key.Density} m3";
-				str += "\n";
+				str += $"{resourceMassPair.Key.ResourceName}: {resourceMassPair.Value.Mass} kg ~ {resourceMassPair.Value.Volume} m3\n";
+				str += $"Enthalpy: {resourceMassPair.Value.Enthalpy} J\n";
+				str += $"Temperature: {resourceMassPair.Value.Temperature} k\n";
+				str += $"Pressure: {resourceMassPair.Value.Pressure} Pa\n";
+				str += $"Internal Energy: {resourceMassPair.Value.InternalEnergy} kJ\n";
 			}
 
 			return str;

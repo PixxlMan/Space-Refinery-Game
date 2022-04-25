@@ -18,6 +18,8 @@ namespace Space_Refinery_Game
 	{
 		public Dictionary<BodyHandle, PhysicsObject> PhysicsObjectLookup = new();
 
+		private Dictionary<FXRenderer.Mesh, ConvexHull> convexHulls = new();
+
 		private BufferPool bufferPool;
 
 		private Simulation simulation;
@@ -77,6 +79,27 @@ namespace Space_Refinery_Game
 			PhysicsObjectLookup.Add(bodyHandle, physicsObject);
 
 			return physicsObject;
+		}
+
+		private ConvexHull AddConvexHullForMesh(FXRenderer.Mesh mesh)
+		{
+			ConvexHull convexHull = new(mesh.Points.AsSpan(), bufferPool, out _);
+
+			convexHulls.Add(mesh, convexHull);
+
+			return convexHull;
+		}
+
+		public ConvexHull GetConvexHullForMesh(FXRenderer.Mesh mesh)
+		{
+			if (convexHulls.ContainsKey(mesh))
+			{
+				return convexHulls[mesh];				
+			}
+			else
+			{
+				return AddConvexHullForMesh(mesh);
+			}
 		}
 
 		public void DestroyPhysicsObject(PhysicsObject physicsObject)

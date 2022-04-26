@@ -31,6 +31,8 @@ namespace Space_Refinery_Game
 
 		public event Action<bool> PauseStateChanged;
 
+		public event Action<IEntityType> SelectedEntityTypeChanged;
+
 		public void ChangeEntitySelection(int selectionDelta)
 		{
 			EntitySelection += selectionDelta;
@@ -48,6 +50,8 @@ namespace Space_Refinery_Game
 			}
 
 			ChangeConnectorSelection(0);
+
+			SelectedEntityTypeChanged?.Invoke(SelectedPipeType);
 		}
 
 		public int ConnectorSelection;

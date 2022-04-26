@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Space_Refinery_Game
 {
-	public static class Time
+	public static class Time // https://fpstoms.com/
 	{
 		public static readonly FixedDecimalInt4 TickInterval = (FixedDecimalInt4)0.016666;
 
-		public static readonly FixedDecimalInt4 UpdateInterval = (FixedDecimalInt4)0.005;
+		public static readonly FixedDecimalInt4 UpdateInterval = (FixedDecimalInt4)0.005; // 200 fps
 
 		public static readonly FixedDecimalInt4 PhysicsInterval = (FixedDecimalInt4)0.016666;
 	}

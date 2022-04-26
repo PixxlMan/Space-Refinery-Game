@@ -4,13 +4,13 @@ namespace Space_Refinery_Game
 {
 	public class PipeConnector : Connector, Entity
 	{
-		public PipeConnector((Pipe connectableA, Pipe connectableB) connectables, PipeConnectorProperties pipeConnectorProperties, GameWorld gameWorld) : base(connectables, gameWorld)
+		public PipeConnector((Pipe connectableA, Pipe connectableB) connectables, PipeConnectorProperties pipeConnectorProperties, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui) : base(connectables, gameWorld, physicsWorld, ui)
 		{
 			PipeConnectorProperties = pipeConnectorProperties;
 			informationProvider = new PipeConnectorInformationProvider(this);
 		}
 
-		public PipeConnector(Pipe initialConnectable, ConnectorSide side, PipeConnectorProperties pipeConnectorProperties, GameWorld gameWorld) : base(initialConnectable, side, gameWorld)
+		public PipeConnector(Pipe initialConnectable, ConnectorSide side, PipeConnectorProperties pipeConnectorProperties, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui) : base(initialConnectable, side, gameWorld, physicsWorld, ui)
 		{
 			PipeConnectorProperties = pipeConnectorProperties;
 			informationProvider = new PipeConnectorInformationProvider(this);

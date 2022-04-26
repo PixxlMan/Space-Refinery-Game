@@ -1,4 +1,5 @@
-﻿using FixedPrecision;
+﻿using BepuPhysics.Collidables;
+using FixedPrecision;
 using FXRenderer;
 using System;
 using System.Collections.Generic;
@@ -11,28 +12,50 @@ namespace Space_Refinery_Game
 {
 	public abstract class Connector : Entity, IDisposable
 	{
-		public Connector((IConnectable connectableA, IConnectable connectableB) connectables, GameWorld gameWorld) : this(gameWorld)
+		public Connector((IConnectable connectableA, IConnectable connectableB) connectables, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui) : this(gameWorld, physicsWorld, ui)
 		{
 			Connectables = connectables;
 		}
 
-		public Connector(IConnectable initialConnectable, ConnectorSide side, GameWorld gameWorld) : this(gameWorld)
+		public Connector(IConnectable initialConnectable, ConnectorSide side, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui) : this(gameWorld, physicsWorld, ui)
 		{
 			Connectables = (side == ConnectorSide.A ? (initialConnectable, null) : (null, initialConnectable));
 
 			VacantSide = side.Opposite();
 		}
 
-		protected Connector(GameWorld gameWorld)
+		protected Connector(GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui)
 		{
 			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
 
 			GameWorld = gameWorld;
 
 			GameWorld.AddEntity(this);
+
+			PhysicsWorld = physicsWorld;
+
+			UI = ui;
+
+			UI.SelectedEntityTypeChanged += (_) => UpdateProxy();
 		}
 
+		public UI UI;
+
 		public GameWorld GameWorld;
+
+		public PhysicsWorld PhysicsWorld;
+
+		public Transform Transform;
+
+		public ConnectorProxy Proxy;
+
+		public PhysicsObject PhysicsObject;
+
+		public ConnectorSide? VacantSide;
+
+		public abstract IInformationProvider InformationProvider { get; }
+
+		public bool Vacant => VacantSide is not null;
 
 		public (IConnectable? connectableA, IConnectable? connectableB) Connectables { get; protected set; }
 
@@ -129,7 +152,7 @@ namespace Space_Refinery_Game
 			VacantSide = side;
 
 			PhysicsObject.Enabled = true;
-			Proxy.Enable();
+			UpdateProxy();
 
 			if (Connectables.connectableA is null && Connectables.connectableB is null)
 			{
@@ -149,17 +172,24 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		public Transform Transform;
+		public void UpdateProxy()
+		{
+			if (Proxy is null)
+			{
+				Proxy = new(this);
+			}
 
-		public ConnectorProxy Proxy;
+			if (Proxy.PhysicsObject is not null)
+			{
+				Proxy.PhysicsObject.Destroy();
+			}
 
-		public PhysicsObject PhysicsObject;
+			var proxyPhysicsObject = new PhysicsObjectDescription<ConvexHull>(PhysicsWorld.GetConvexHullForMesh(UI.SelectedPipeType.Mesh), GameWorld.GenerateTransformForConnector(UI.SelectedPipeType.ConnectorPlacements[UI.ConnectorSelection], this, UI.RotationIndex * 45 * FixedDecimalLong8.DegreesToRadians), 0, true);
 
-		public ConnectorSide? VacantSide;
+			Proxy.PhysicsObject = PhysicsWorld.AddPhysicsObject(proxyPhysicsObject, this);
 
-		public abstract IInformationProvider InformationProvider { get; }
-
-		public bool Vacant => VacantSide is not null;
+			Proxy.Enable();
+		}
 
 		public ConnectorSide? PopulatedSide
 		{

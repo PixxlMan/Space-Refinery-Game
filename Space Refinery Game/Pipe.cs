@@ -60,7 +60,7 @@ namespace Space_Refinery_Game
 
 			PhysicsObject physObj = CreatePhysicsObject(physWorld, transform, pipe, pipeType.Mesh);
 
-			PipeConnector[] connectors = CreateConnectors(pipeType, pipe, physWorld, gameWorld);
+			PipeConnector[] connectors = CreateConnectors(pipeType, pipe, physWorld, gameWorld, ui);
 
 			pipe.SetUp(pipeType, ui, physWorld, physObj, connectors, graphWorld, renderable, gameWorld);
 
@@ -88,7 +88,7 @@ namespace Space_Refinery_Game
 			return physObj;
 		}
 
-		private static PipeConnector[] CreateConnectors(PipeType pipeType, Pipe pipe, PhysicsWorld physWorld, GameWorld gameWorld)
+		private static PipeConnector[] CreateConnectors(PipeType pipeType, Pipe pipe, PhysicsWorld physWorld, GameWorld gameWorld, UI ui)
 		{
 			PipeConnector[] connectors = new PipeConnector[pipeType.ConnectorPlacements.Length];
 
@@ -106,7 +106,7 @@ namespace Space_Refinery_Game
 				
 				if (physicsObject is null || physicsObject.Entity is not PipeConnector)
 				{
-					PipeConnector connector = new PipeConnector(pipe, ConnectorSide.A, pipeType.ConnectorProperties[i], gameWorld);
+					PipeConnector connector = new PipeConnector(pipe, ConnectorSide.A, pipeType.ConnectorProperties[i], gameWorld, physWorld, ui);
 
 					QuaternionFixedDecimalInt4 rotation =
 						QuaternionFixedDecimalInt4.Concatenate(
@@ -129,14 +129,6 @@ namespace Space_Refinery_Game
 					var physicsObjectDescription = new PhysicsObjectDescription<Box>(new Box(.4f, .4f, .1f), transform, 0, true);
 
 					connector.PhysicsObject = physWorld.AddPhysicsObject(physicsObjectDescription, connector);
-
-					ConnectorProxy connectorProxy = new(connector);
-
-					var userInteractableObjectDescription = new PhysicsObjectDescription<Box>(new Box(.75f, .75f, .75f), new(transform) { Position = transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation) * (FixedDecimalInt4)0.75}, 0, true);
-
-					connectorProxy.PhysicsObject = physWorld.AddPhysicsObject(userInteractableObjectDescription, connector);
-
-					connector.Proxy = connectorProxy;
 
 					connectors[i] = connector;
 
@@ -175,7 +167,7 @@ namespace Space_Refinery_Game
 
 			PhysicsObject physObj = CreatePhysicsObject(physicsWorld, transform, pipe, pipeType.Mesh);
 
-			var connectors = CreateConnectors(pipeType, pipe, physicsWorld, gameWorld);
+			var connectors = CreateConnectors(pipeType, pipe, physicsWorld, gameWorld, ui);
 
 			pipe.SetUp(pipeType, ui, physicsWorld, physObj, connectors, graphicsWorld, renderable, gameWorld);
 

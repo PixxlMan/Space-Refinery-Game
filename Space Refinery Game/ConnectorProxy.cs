@@ -12,7 +12,7 @@ namespace Space_Refinery_Game
 
 		public PhysicsObject PhysicsObject;
 
-		public ConnectorProxy(PipeConnector connector)
+		public ConnectorProxy(Connector connector)
 		{
 			Connector = connector;
 		}

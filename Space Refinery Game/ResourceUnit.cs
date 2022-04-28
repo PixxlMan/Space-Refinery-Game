@@ -1,4 +1,5 @@
 ﻿using FixedPrecision;
+using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -20,7 +21,7 @@ namespace Space_Refinery_Game
 
 		public FixedDecimalInt4 InternalEnergy; // kJ
 
-		public FixedDecimalInt4 Temperature
+		public FixedDecimalInt4 Temperature // k
 		{
 			get
 			{
@@ -31,7 +32,7 @@ namespace Space_Refinery_Game
 
 				return InternalEnergy / (Mass * ResourceType.SpecificHeatCapacity);
 			}
-		} // k
+		}
 
 		public FixedDecimalInt4 Pressure => /*temporarily set to 101325 Pa*/ 101325; // Pa or kg/m3
 
@@ -61,6 +62,17 @@ namespace Space_Refinery_Game
 			};
 
 			return resourceUnit;
+		}
+
+		public static void DoCreation(ChemicalType selected, ref ResourceUnit newResourceUnit)
+		{
+			newResourceUnit.ResourceType = selected.LiquidPhaseType;
+
+			float mass = newResourceUnit.Mass.ToFloat();
+			ImGui.SliderFloat("Mass (kg)", ref mass, 0, 100);
+			newResourceUnit.Mass = FixedDecimalInt4.FromFloat(mass);
+
+			ImGui.Text($"Volume: {newResourceUnit.Volume} m3");
 		}
 
 		public static ResourceUnit Remove(ResourceUnit a, ResourceUnit b)
@@ -112,7 +124,12 @@ namespace Space_Refinery_Game
 			return resourceUnit;
 		}
 
-		public void DoUIInspector()
+		public void DoUIInspectorReadonly()
+		{
+			throw new NotImplementedException();
+		}
+
+		public IUIInspectable DoUIInspectorEditable()
 		{
 			throw new NotImplementedException();
 		}

@@ -1,4 +1,5 @@
 ﻿using FixedPrecision;
+using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 namespace Space_Refinery_Game
 {
 	[Serializable]
-	public class ChemicalType : IJsonOnDeserialized
+	public class ChemicalType : IJsonOnDeserialized, IUIInspectable
 	{
 		public string ChemicalName;
 
@@ -57,6 +58,16 @@ namespace Space_Refinery_Game
 			}
 
 			return chemicalTypes.ToArray();
+		}
+
+		public void DoUIInspectorReadonly()
+		{
+			ImGui.Text(ChemicalName);
+		}
+
+		public IUIInspectable DoUIInspectorEditable()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

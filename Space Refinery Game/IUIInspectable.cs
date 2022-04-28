@@ -2,6 +2,8 @@
 {
 	public interface IUIInspectable
 	{
-		public void DoUIInspector();
+		public void DoUIInspectorReadonly();
+
+		public IUIInspectable DoUIInspectorEditable();
 	}
 }

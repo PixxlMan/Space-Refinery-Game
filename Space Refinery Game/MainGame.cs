@@ -76,7 +76,7 @@ public class MainGame
 
 		constructionMarker = ConstructionMarker.Create(GraphicsWorld);
 
-		GameWorld.AddConstruction(Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), ui, PhysicsWorld, GraphicsWorld, GameWorld));
+		GameWorld.AddConstruction(Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), ui, PhysicsWorld, GraphicsWorld, GameWorld, this));
 
 		InputTracker.IgnoreNextFrameMousePosition = true;
 
@@ -182,7 +182,7 @@ public class MainGame
 
 					if (InputTracker.GetMouseButtonDown(MouseButton.Left))
 					{
-						GameWorld.AddConstruction(Pipe.Build(pipeConnector, ui.SelectedPipeType, ui.ConnectorSelection, RotationSnapped, ui, PhysicsWorld, GraphicsWorld, GameWorld));
+						GameWorld.AddConstruction(Pipe.Build(pipeConnector, ui.SelectedPipeType, ui.ConnectorSelection, RotationSnapped, ui, PhysicsWorld, GraphicsWorld, GameWorld, this));
 
 						constructionMarker.ShouldDraw = false;
 					}

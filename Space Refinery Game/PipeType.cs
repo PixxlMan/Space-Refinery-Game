@@ -120,7 +120,7 @@ namespace Space_Refinery_Game
 						FlowableVolume = (FixedDecimalInt4)0.08,
 						Friction = (FixedDecimalInt4)0.04,
 					},
-					TypeOfPipe = typeof(OrdinaryPipe),
+					TypeOfPipe = typeof(SpaceDockPipe),
 					Name = "Space Dock",
 					ModelPath = Path.Combine("Assets", "Models", "Machinery", "SpaceDock.obj"),
 				},

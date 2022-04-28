@@ -59,10 +59,7 @@ namespace Space_Refinery_Game
 
 		public override ResourceContainer GetResourceContainerForConnector(PipeConnector pipeConnector)
 		{
-			lock (this)
-			{
-				return ResourceContainer;
-			}
+			return ResourceContainer;
 		}
 	}
 }

@@ -124,7 +124,12 @@ namespace Space_Refinery_Game
 			return str;
 		}
 
-		public void DoUIInspector()
+		public void DoUIInspectorReadonly()
+		{
+			throw new NotImplementedException();
+		}
+
+		public IUIInspectable DoUIInspectorEditable()
 		{
 			throw new NotImplementedException();
 		}

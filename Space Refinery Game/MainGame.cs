@@ -38,12 +38,20 @@ public class MainGame
 
 	public readonly object SynchronizationObject = new();
 
+	public ChemicalType[] ChemicalTypes;
+
+	public Dictionary<string, ChemicalType> ChemicalTypesDictionary;
+
 	private Vector2FixedDecimalInt4 previousMousePos;
 
 	private ConstructionMarker constructionMarker;
 
 	public void Start(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
+		ChemicalTypes = ChemicalType.LoadChemicalTypes(Path.Combine(Environment.CurrentDirectory, "Assets", "Chemical types"));
+
+		ChemicalTypesDictionary = ChemicalTypes.ToDictionary((cT) => cT.ChemicalName);
+
 		this.window = window;
 
 		GraphicsWorld = new();
@@ -115,8 +123,6 @@ public class MainGame
 		thread.Start();
 	}
 
-	private ChemicalType WaterChemical = ChemicalType.Deserialize(Path.Combine(Environment.CurrentDirectory, "Assets", "Chemical types", "Water.json"));
-
 	private void Update(FixedDecimalInt4 deltaTime)
 	{
 		lock(SynchronizationObject) lock(GraphicsWorld.SynchronizationObject)
@@ -187,7 +193,7 @@ public class MainGame
 					{
 						if (InputTracker.GetKeyDown(Key.U))
 						{
-							pipe.ResourceContainer.AddResource(new(WaterChemical.LiquidPhaseType, 10, 100 * WaterChemical.LiquidPhaseType.SpecificHeatCapacity * 10, 0));
+							pipe.ResourceContainer.AddResource(new(ChemicalTypesDictionary["Water"].LiquidPhaseType, 10, 100 * ChemicalTypesDictionary["Water"].LiquidPhaseType.SpecificHeatCapacity * 10, 0));
 						}
 					}
 

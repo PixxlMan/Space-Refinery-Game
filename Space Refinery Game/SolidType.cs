@@ -15,4 +15,6 @@ public class SolidType : ResourceType
 	public SolidType(ChemicalType chemicalType, string gasName, FixedDecimalLong8 density, FixedDecimalInt4 specificHeatCapacity) : base(chemicalType, gasName, density, specificHeatCapacity)
 	{
 	}
+
+	public override ChemicalPhase ChemicalPhase => ChemicalPhase.Solid;
 }

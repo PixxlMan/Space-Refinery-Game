@@ -1,4 +1,5 @@
 ﻿using FixedPrecision;
+using ImGuiNET;
 using System.Text.Json.Serialization;
 
 namespace Space_Refinery_Game;
@@ -15,4 +16,6 @@ public class GasType : ResourceType
 	public GasType(ChemicalType chemicalType, string gasName, FixedDecimalLong8 density, FixedDecimalInt4 specificHeatCapacity) : base(chemicalType, gasName, density, specificHeatCapacity)
 	{
 	}
+
+	public override ChemicalPhase ChemicalPhase => ChemicalPhase.Gas;
 }

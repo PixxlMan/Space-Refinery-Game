@@ -95,6 +95,12 @@ namespace Space_Refinery_Game
 			DoMenu = doMenu;
 
 			MenuTitle = title;
+
+			ImGui.Begin(title);
+			{
+				ImGui.SetWindowCollapsed(false);
+			}
+			ImGui.End();
 		}
 
 		public static UI Create(GraphicsWorld graphWorld)
@@ -240,15 +246,22 @@ namespace Space_Refinery_Game
 		{
 			if (InMenu)
 			{
-				ImGui.Begin(MenuTitle);
-				{
-					DoMenu();
-					InMenu = !ImGui.Button("Close");
+				if (ImGui.Begin(MenuTitle, ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoMove))
+				{					
+					ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2 - ImGui.GetWindowSize().X / 2, gd.MainSwapchain.Framebuffer.Height / 2 - ImGui.GetWindowSize().Y / 2), ImGuiCond.Always);
+					{
+						DoMenu();
+						//InMenu = !ImGui.Button("Close");
+					}
+					ImGui.End();
 				}
-				ImGui.End();
+				else
+				{
+					InMenu = false;
+				}
 			}
 
-			ImGui.Begin("Staus", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
+			ImGui.Begin("Status", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
 			ImGui.SetWindowPos(new Vector2(0, 0), ImGuiCond.Always);
 			{
 				if (MainGame.DebugRender.ShouldRender)

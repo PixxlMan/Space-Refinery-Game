@@ -76,16 +76,24 @@ namespace Space_Refinery_Game
 		{
 			lock (this)
 			{
-				UIFunctions.DoSelector(MainGame.ChemicalTypes, ref selection, out bool hasSelection, out ChemicalType selected);
-
-				if (hasSelection)
+				if (ImGui.CollapsingHeader("Resource selection"))
 				{
-					ResourceUnit.DoCreation(selected, ref newResourceUnit);
+					UIFunctions.DoSelector(MainGame.ChemicalTypes, ref selection, out bool hasSelection, out ChemicalType selected);
 
-					if (ImGui.Button("Add"))
+					if (hasSelection)
 					{
-						Orders.Add(newResourceUnit);
+						ResourceUnit.DoCreation(selected, ref newResourceUnit);
+
+						if (ImGui.Button("Add"))
+						{
+							Orders.Add(newResourceUnit);
+						}
 					}
+				}
+
+				if (ImGui.CollapsingHeader("Selected orderables"))
+				{
+					UIFunctions.DoListManipulation(Orders, false);
 				}
 
 				if (ImGui.Button("Place order"))

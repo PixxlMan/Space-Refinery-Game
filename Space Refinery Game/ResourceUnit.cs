@@ -130,7 +130,21 @@ namespace Space_Refinery_Game
 
 		public void DoUIInspectorReadonly()
 		{
-			throw new NotImplementedException();
+			UIFunctions.BeginSub();
+			{
+				if (ImGui.CollapsingHeader($"Resource type"))
+				{
+					ResourceType.DoUIInspectorReadonly();
+				}
+
+				ImGui.Text($"Mass: {Mass} kg");
+				ImGui.Text($"Volume: {Volume} m3");
+				ImGui.Text($"Internal Energy: {InternalEnergy} ?");
+				ImGui.Text($"Enthalpy: {Enthalpy} ?");
+				ImGui.Text($"Temperature: {Temperature} K");
+				ImGui.Text($"Pressure: {Pressure} Pa");
+			}
+			UIFunctions.EndSub();
 		}
 
 		public IUIInspectable DoUIInspectorEditable()

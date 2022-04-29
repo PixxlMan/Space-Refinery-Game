@@ -36,7 +36,13 @@ namespace Space_Refinery_Game
 
 			UI = ui;
 
-			UI.SelectedEntityTypeChanged += (_) => UpdateProxy();
+			UI.SelectedEntityTypeChanged += (_) =>
+			{
+				if (Vacant)
+				{
+					UpdateProxy();
+				}
+			};
 		}
 
 		public UI UI;

@@ -17,13 +17,13 @@ namespace Space_Refinery_Game
 
 		public GasType GasPhaseType;
 
-		public FixedDecimalInt4 EnthalpyOfVaporization;
-
 		public LiquidType LiquidPhaseType;
 
-		public FixedDecimalInt4 EnthalpyOfFusion;
-
 		public SolidType SolidPhaseType;
+
+		public FixedDecimalInt4 EnthalpyOfVaporization;
+
+		public FixedDecimalInt4 EnthalpyOfFusion;
 
 		public void OnDeserialized()
 		{
@@ -62,11 +62,34 @@ namespace Space_Refinery_Game
 
 		public void DoUIInspectorReadonly()
 		{
-			ImGui.Indent();
+			UIFunctions.BeginSub();
 			{
-				ImGui.Text(ChemicalName);
+				ImGui.Text($"Chemical name: {ChemicalName}");
+
+				if (ImGui.CollapsingHeader("Resource phases"))
+				{
+					ImGui.Indent();
+					{
+						if (ImGui.CollapsingHeader("Gas phase type"))
+						{
+							GasPhaseType.DoUIInspectorReadonly();
+						}
+						if (ImGui.CollapsingHeader("Liquid phase type"))
+						{
+							LiquidPhaseType.DoUIInspectorReadonly();
+						}
+						if (ImGui.CollapsingHeader("Solid phase type"))
+						{
+							SolidPhaseType.DoUIInspectorReadonly();
+						}
+					}
+					ImGui.Unindent();
+				}
+
+				ImGui.Text($"Enthalpy of vaporization: {EnthalpyOfVaporization}");
+				ImGui.Text($"Enthalpy of fusion: {EnthalpyOfFusion}");
 			}
-			ImGui.Unindent();
+			UIFunctions.EndSub();
 		}
 
 		public IUIInspectable DoUIInspectorEditable()

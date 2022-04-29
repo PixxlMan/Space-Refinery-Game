@@ -62,7 +62,11 @@ namespace Space_Refinery_Game
 
 		public void DoUIInspectorReadonly()
 		{
-			ImGui.Text(ChemicalName);
+			ImGui.Indent();
+			{
+				ImGui.Text(ChemicalName);
+			}
+			ImGui.Unindent();
 		}
 
 		public IUIInspectable DoUIInspectorEditable()

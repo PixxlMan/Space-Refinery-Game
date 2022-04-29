@@ -66,13 +66,17 @@ namespace Space_Refinery_Game
 
 		public static void DoCreation(ChemicalType selected, ref ResourceUnit newResourceUnit)
 		{
-			newResourceUnit.ResourceType = selected.LiquidPhaseType;
+			ImGui.Indent();
+			{
+				newResourceUnit.ResourceType = selected.LiquidPhaseType;
 
-			float mass = newResourceUnit.Mass.ToFloat();
-			ImGui.SliderFloat("Mass (kg)", ref mass, 0, 100);
-			newResourceUnit.Mass = FixedDecimalInt4.FromFloat(mass);
+				float mass = newResourceUnit.Mass.ToFloat();
+				ImGui.SliderFloat("Mass (kg)", ref mass, 0, 100);
+				newResourceUnit.Mass = FixedDecimalInt4.FromFloat(mass);
 
-			ImGui.Text($"Volume: {newResourceUnit.Volume} m3");
+				ImGui.Text($"Volume: {newResourceUnit.Volume} m3");
+			}
+			ImGui.Unindent();
 		}
 
 		public static ResourceUnit Remove(ResourceUnit a, ResourceUnit b)

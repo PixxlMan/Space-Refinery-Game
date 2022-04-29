@@ -10,7 +10,7 @@ namespace Space_Refinery_Game
 
 			selected = default;
 
-			ImGui.BeginGroup();
+			ImGui.Indent();
 			{
 				int selectionIndex = 0;
 				foreach (T selectable in selectables)
@@ -29,7 +29,7 @@ namespace Space_Refinery_Game
 					selectionIndex++;
 				}			
 			}
-			ImGui.EndGroup();
+			ImGui.Unindent();
 
 			if (!hasSelection)
 			{

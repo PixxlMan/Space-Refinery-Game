@@ -18,6 +18,8 @@ namespace Space_Refinery_Game
 	{
 		public Dictionary<BodyHandle, PhysicsObject> PhysicsObjectLookup = new();
 
+		public object SyncRoot = new();
+
 		private Dictionary<FXRenderer.Mesh, ConvexHull> convexHulls = new();
 
 		private BufferPool bufferPool;
@@ -28,18 +30,19 @@ namespace Space_Refinery_Game
 
 		public void SetUp()
 		{
-			//The buffer pool is a source of raw memory blobs for the engine to use.
-			bufferPool = new BufferPool();
+			lock (SyncRoot)
+			{
+				//The buffer pool is a source of raw memory blobs for the engine to use.
+				bufferPool = new BufferPool();
 
-			//The following sets up a simulation with the callbacks defined above, and tells it to use 8 velocity iterations per substep and only one substep per solve.
-			//It uses the default SubsteppingTimestepper. You could use a custom ITimestepper implementation to customize when stages run relative to each other, or to insert more callbacks.         
-			simulation = Simulation.Create(bufferPool, new NarrowPhaseCallbacks(), new PoseIntegratorCallbacks(), new SolveDescription(8, 1));
+				//The following sets up a simulation with the callbacks defined above, and tells it to use 8 velocity iterations per substep and only one substep per solve.
+				//It uses the default SubsteppingTimestepper. You could use a custom ITimestepper implementation to customize when stages run relative to each other, or to insert more callbacks.         
+				simulation = Simulation.Create(bufferPool, new NarrowPhaseCallbacks(), new PoseIntegratorCallbacks(), new SolveDescription(8, 1));
 
-			//Any IThreadDispatcher implementation can be used for multithreading. Here, we use the BepuUtilities.ThreadDispatcher implementation.
-			threadDispatcher = new ThreadDispatcher(Environment.ProcessorCount);
+				//Any IThreadDispatcher implementation can be used for multithreading. Here, we use the BepuUtilities.ThreadDispatcher implementation.
+				threadDispatcher = new ThreadDispatcher(Environment.ProcessorCount);
+			}
 		}
-
-		public object SynchronizationObject = new();
 
 		public void Run()
 		{
@@ -49,7 +52,7 @@ namespace Space_Refinery_Game
 				{
 					Thread.Sleep((Time.PhysicsInterval * 1000).ToInt32());
 
-					lock (SynchronizationObject)
+					lock (SyncRoot)
 					{
 						simulation.Timestep(Time.PhysicsInterval.ToFloat(), threadDispatcher);
 					}
@@ -61,50 +64,59 @@ namespace Space_Refinery_Game
 
 		public PhysicsObject AddPhysicsObject<TShape>(PhysicsObjectDescription<TShape> physicsObjectDescription, Entity entity) where TShape : unmanaged, IConvexShape
 		{
-			var inertia = physicsObjectDescription.Shape.ComputeInertia(physicsObjectDescription.Mass.ToFloat());
-
-			BodyHandle bodyHandle;
-
-			if (!physicsObjectDescription.Kinematic)
+			lock (SyncRoot)
 			{
-				bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(new RigidPose(physicsObjectDescription.InitialTransform.Position.ToVector3(), physicsObjectDescription.InitialTransform.Rotation.ToQuaternion()), inertia, simulation.Shapes.Add(physicsObjectDescription.Shape), 0.01f));
+				var inertia = physicsObjectDescription.Shape.ComputeInertia(physicsObjectDescription.Mass.ToFloat());
+
+				BodyHandle bodyHandle;
+
+				if (!physicsObjectDescription.Kinematic)
+				{
+					bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(new RigidPose(physicsObjectDescription.InitialTransform.Position.ToVector3(), physicsObjectDescription.InitialTransform.Rotation.ToQuaternion()), inertia, simulation.Shapes.Add(physicsObjectDescription.Shape), 0.01f));
+				}
+				else
+				{
+					bodyHandle = simulation.Bodies.Add(BodyDescription.CreateKinematic(new RigidPose(physicsObjectDescription.InitialTransform.Position.ToVector3(), physicsObjectDescription.InitialTransform.Rotation.ToQuaternion()), simulation.Shapes.Add(physicsObjectDescription.Shape), 0.01f));
+				}
+
+				PhysicsObject physicsObject = new PhysicsObject(this, bodyHandle, entity);
+
+				PhysicsObjectLookup.Add(bodyHandle, physicsObject);
+
+				return physicsObject;
 			}
-			else
-			{
-				bodyHandle = simulation.Bodies.Add(BodyDescription.CreateKinematic(new RigidPose(physicsObjectDescription.InitialTransform.Position.ToVector3(), physicsObjectDescription.InitialTransform.Rotation.ToQuaternion()), simulation.Shapes.Add(physicsObjectDescription.Shape), 0.01f));
-			}
-
-			PhysicsObject physicsObject = new PhysicsObject(this, bodyHandle, entity);
-
-			PhysicsObjectLookup.Add(bodyHandle, physicsObject);
-
-			return physicsObject;
 		}
 
 		private ConvexHull AddConvexHullForMesh(FXRenderer.Mesh mesh)
 		{
-			ConvexHull convexHull = new(mesh.Points.AsSpan(), bufferPool, out _);
+			lock (SyncRoot)
+			{
+				ConvexHull convexHull = new(mesh.Points.AsSpan(), bufferPool, out _);
 
-			convexHulls.Add(mesh, convexHull);
+				convexHulls.Add(mesh, convexHull);
 
-			return convexHull;
+				return convexHull;
+			}
 		}
 
 		public ConvexHull GetConvexHullForMesh(FXRenderer.Mesh mesh)
 		{
-			if (convexHulls.ContainsKey(mesh))
+			lock (SyncRoot)
 			{
-				return convexHulls[mesh];				
-			}
-			else
-			{
-				return AddConvexHullForMesh(mesh);
+				if (convexHulls.ContainsKey(mesh))
+				{
+					return convexHulls[mesh];				
+				}
+				else
+				{
+					return AddConvexHullForMesh(mesh);
+				}
 			}
 		}
 
 		public void DestroyPhysicsObject(PhysicsObject physicsObject)
 		{
-			lock (SynchronizationObject)
+			lock (SyncRoot)
 			{
 				simulation.Bodies.Remove(physicsObject.BodyHandle);
 
@@ -152,29 +164,38 @@ namespace Space_Refinery_Game
 
 		public PhysicsObject? Raycast(Vector3FixedDecimalInt4 start, Vector3FixedDecimalInt4 direction, FixedDecimalInt4 maxDistance)
 		{
-			return Raycast<Entity>(start, direction, maxDistance);
+			lock (SyncRoot)
+			{
+				return Raycast<Entity>(start, direction, maxDistance);
+			}
 		}
 
 		public PhysicsObject? Raycast<T>(Vector3FixedDecimalInt4 start, Vector3FixedDecimalInt4 direction, FixedDecimalInt4 maxDistance)
 			where T : Entity
 		{
-			var raycastHitHandler = new RaycastHitHandler<T>(this);
-
-			simulation.RayCast(start.ToVector3(), direction.ToVector3(), maxDistance.ToFloat(), ref raycastHitHandler);
-
-			if (raycastHitHandler.PhysicsObject is null)
+			lock (SyncRoot)
 			{
-				return null;
-			}
+				var raycastHitHandler = new RaycastHitHandler<T>(this);
 
-			return raycastHitHandler.PhysicsObject;
+				simulation.RayCast(start.ToVector3(), direction.ToVector3(), maxDistance.ToFloat(), ref raycastHitHandler);
+
+				if (raycastHitHandler.PhysicsObject is null)
+				{
+					return null;
+				}
+
+				return raycastHitHandler.PhysicsObject;
+			}
 		}
 
 		public Transform GetTransform(BodyHandle bodyHandle)
 		{
-			RigidPose pose = simulation.Bodies[bodyHandle].Pose;
+			lock (SyncRoot)
+			{
+				RigidPose pose = simulation.Bodies[bodyHandle].Pose;
 
-			return new(pose.Position.ToFixed<Vector3FixedDecimalInt4>(), pose.Orientation.ToFixed<QuaternionFixedDecimalInt4>());
+				return new(pose.Position.ToFixed<Vector3FixedDecimalInt4>(), pose.Orientation.ToFixed<QuaternionFixedDecimalInt4>());
+			}
 		}
 	}
 }

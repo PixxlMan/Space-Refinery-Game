@@ -237,7 +237,7 @@ namespace Space_Refinery_Game
 
 		private void DoPauseMenuUI()
 		{
-			ImGui.Begin("Pause menu", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove);
+			ImGui.Begin("Pause menu", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
 			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2 - pauseMenuSize.X / 2, gd.MainSwapchain.Framebuffer.Height / 2 - pauseMenuSize.Y / 2), ImGuiCond.Always);
 			ImGui.SetWindowSize(pauseMenuSize, ImGuiCond.Always);
 			{
@@ -292,7 +292,7 @@ namespace Space_Refinery_Game
 			}
 			ImGui.End();
 
-			ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize /*| ImGuiWindowFlags.NoBackground */| ImGuiWindowFlags.NoDecoration);
+			ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize);
 			ImGui.SetWindowPos(new Vector2((gd.MainSwapchain.Framebuffer.Width / 4 * 3)/* - ImGui.GetWindowSize().X / 2*/, (gd.MainSwapchain.Framebuffer.Height / 2) - ImGui.GetWindowSize().Y / 2), ImGuiCond.Always);
 			{
 				if (MainGame.DebugSettings.AccessSetting<BooleanSetting>("Show player info"))
@@ -314,7 +314,7 @@ namespace Space_Refinery_Game
 			}
 			ImGui.End();
 
-			ImGui.Begin("Hotbar", /*ImGuiWindowFlags.AlwaysAutoResize | */ImGuiWindowFlags.NoDecoration);
+			ImGui.Begin("Hotbar", /*ImGuiWindowFlags.AlwaysAutoResize | */ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize);
 			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2, gd.MainSwapchain.Framebuffer.Height / 5 * 4), ImGuiCond.Always);
 			ImGui.SetWindowSize(new Vector2(500, 50), ImGuiCond.Always);
 			{
@@ -325,7 +325,7 @@ namespace Space_Refinery_Game
 					{
 						if (EntitySelection == i)
 						{
-							ImGui.TextColored(RgbaFloat.Blue.ToVector4(), "None");
+							ImGui.TextColored(RgbaFloat.CornflowerBlue.ToVector4(), "None");
 						}
 						else
 						{
@@ -338,7 +338,7 @@ namespace Space_Refinery_Game
 
 					if (EntitySelection == i)
 					{
-						ImGui.TextColored(RgbaFloat.Blue.ToVector4(), (PipeTypes[i].Name));
+						ImGui.TextColored(RgbaFloat.CornflowerBlue.ToVector4(), (PipeTypes[i].Name));
 					}
 					else
 					{
@@ -373,7 +373,7 @@ namespace Space_Refinery_Game
 			int is3D = 2;
 
 			colors[(int)ImGuiCol.Text] = new(1.00f, 1.00f, 1.00f, 1.00f);
-			colors[(int)ImGuiCol.TextDisabled] = new(0.40f, 0.40f, 0.40f, 1.00f);
+			colors[(int)ImGuiCol.TextDisabled] = new(0.70f, 0.70f, 0.70f, 1.00f);
 			colors[(int)ImGuiCol.ChildBg] = new(0.25f, 0.25f, 0.25f, 1.00f);
 			colors[(int)ImGuiCol.WindowBg] = new(0.25f, 0.25f, 0.25f, 1.00f);
 			colors[(int)ImGuiCol.PopupBg] = new(0.25f, 0.25f, 0.25f, 1.00f);

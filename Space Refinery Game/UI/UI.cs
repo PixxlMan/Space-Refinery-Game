@@ -353,6 +353,18 @@ namespace Space_Refinery_Game
 
 		public void Style() // https://github.com/ocornut/imgui/issues/707
 		{
+			ImGuiIOPtr io = ImGui.GetIO();
+
+			io.Fonts.Clear();
+			io.Fonts.AddFontFromFileTTF(Path.Combine(Environment.CurrentDirectory, "Assets", "External", "Fonts", "OpenSans", "static", "OpenSans", "OpenSans-Light.ttf"), 20/*16*/);
+			io.Fonts.AddFontFromFileTTF(Path.Combine(Environment.CurrentDirectory, "Assets", "External", "Fonts", "OpenSans", "static", "OpenSans", "OpenSans-Regular.ttf"), 20/*16*/);
+			io.Fonts.AddFontFromFileTTF(Path.Combine(Environment.CurrentDirectory, "Assets", "External", "Fonts", "OpenSans", "static", "OpenSans", "OpenSans-Light.ttf"), 32/*32*/);
+			io.Fonts.AddFontFromFileTTF(Path.Combine(Environment.CurrentDirectory, "Assets", "External", "Fonts", "OpenSans", "static", "OpenSans", "OpenSans-Regular.ttf"), 14/*11*/);
+			io.Fonts.AddFontFromFileTTF(Path.Combine(Environment.CurrentDirectory, "Assets", "External", "Fonts", "OpenSans", "static", "OpenSans", "OpenSans-Bold.ttf"), 14/*11*/);
+			io.Fonts.Build();
+
+			imGuiRenderer.RecreateFontDeviceTexture();
+
 			ImGuiStylePtr style = ImGui.GetStyle();
 			var colors = style.Colors;
 

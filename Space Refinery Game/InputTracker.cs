@@ -21,6 +21,20 @@ namespace Space_Refinery_Game
 
         public static bool IgnoreNextFrameMousePosition;
 
+        public static bool CaptureKeyDown(Key key)
+		{
+			if (_newKeysThisFrame.Contains(key))
+			{
+                _newKeysThisFrame.Remove(key);
+
+                return true;
+			}
+			else
+			{
+                return false;
+			}
+        }
+
         public static bool GetKey(Key key)
         {
             return _currentlyPressedKeys.Contains(key);

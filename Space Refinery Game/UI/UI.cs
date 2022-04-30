@@ -84,7 +84,7 @@ namespace Space_Refinery_Game
 
 		public bool InMenu;
 
-		public Action DoMenu;
+		private Action doMenu;
 
 		public string MenuTitle;
 
@@ -92,7 +92,7 @@ namespace Space_Refinery_Game
 		{
 			InMenu = true;
 
-			DoMenu = doMenu;
+			this.doMenu = doMenu;
 
 			MenuTitle = title;
 
@@ -152,9 +152,21 @@ namespace Space_Refinery_Game
 				ChangeEntitySelection(-(int)InputTracker.FrameSnapshot.WheelDelta);
 			}
 
+			if (InMenu && InputTracker.CaptureKeyDown(Key.F))
+			{
+				InMenu = false;
+			}
+
 			if (InputTracker.GetKeyDown(Key.Escape))
 			{
-				TogglePause();
+				if (InMenu)
+				{
+					InMenu = false;
+				}
+				else
+				{
+					TogglePause();
+				}
 			}
 		}
 
@@ -247,10 +259,10 @@ namespace Space_Refinery_Game
 			if (InMenu)
 			{
 				if (ImGui.Begin(MenuTitle, ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoMove))
-				{					
+				{
 					ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2 - ImGui.GetWindowSize().X / 2, gd.MainSwapchain.Framebuffer.Height / 2 - ImGui.GetWindowSize().Y / 2), ImGuiCond.Always);
 					{
-						DoMenu();
+						doMenu();
 						//InMenu = !ImGui.Button("Close");
 					}
 					ImGui.End();

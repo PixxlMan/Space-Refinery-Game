@@ -162,7 +162,7 @@ public class MainGame
 
 				if (physicsObject is not null)
 				{
-					if (InputTracker.GetKey(Key.F))
+					if (InputTracker.GetKeyDown(Key.F))
 					{
 						physicsObject.Entity.Interacted();
 					}

@@ -370,7 +370,7 @@ namespace Space_Refinery_Game
 
 			/// 0 = FLAT APPEARENCE
 			/// 1 = MORE "3D" LOOK
-			int is3D = 1;
+			int is3D = 2;
 
 			colors[(int)ImGuiCol.Text] = new(1.00f, 1.00f, 1.00f, 1.00f);
 			colors[(int)ImGuiCol.TextDisabled] = new(0.40f, 0.40f, 0.40f, 1.00f);

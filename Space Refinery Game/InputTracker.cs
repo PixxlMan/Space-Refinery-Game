@@ -16,10 +16,16 @@ namespace Space_Refinery_Game
 
         public static Vector2FixedDecimalInt4 MousePosition;
 
+        public static Vector2FixedDecimalInt4 PreviousMousePosition;
+
+        public static Vector2FixedDecimalInt4 MouseDelta => MousePosition - PreviousMousePosition;
+
         private static InputSnapshot inputSnapshot;
         public static InputSnapshot FrameSnapshot { get => inputSnapshot is null ? new BogusInputSnapshot() : inputSnapshot; private set => inputSnapshot = value; }
 
         public static bool IgnoreNextFrameMousePosition;
+
+        private static bool ignoredMousePositonLastFrame;
 
         public static bool CaptureKeyDown(Key key)
 		{
@@ -61,19 +67,27 @@ namespace Space_Refinery_Game
             _newKeysThisFrame.Clear();
             _newMouseButtonsThisFrame.Clear();
 
-			if (!IgnoreNextFrameMousePosition)
+            if (!IgnoreNextFrameMousePosition)
 			{
+                PreviousMousePosition = MousePosition;
                 MousePosition = snapshot.MousePosition.ToFixed<Vector2FixedDecimalInt4>();
-			}
+
+                if (ignoredMousePositonLastFrame)
+                {
+                    PreviousMousePosition = MousePosition; // ensure MouseDelta is 0
+                    ignoredMousePositonLastFrame = false;
+                }
+            }
 			else
 			{
+                PreviousMousePosition = Vector2FixedDecimalInt4.Zero;
                 MousePosition = Vector2FixedDecimalInt4.Zero;
-			}
+                ignoredMousePositonLastFrame = true;
+            }
 
-            for (int i = 0; i < snapshot.KeyEvents.Count; i++)
+            foreach (KeyEvent ke in snapshot.KeyEvents)
             {
-                KeyEvent ke = snapshot.KeyEvents[i];
-                if (ke.Down)
+				if (ke.Down)
                 {
                     KeyDown(ke.Key);
                 }
@@ -83,10 +97,9 @@ namespace Space_Refinery_Game
                 }
             }
 
-            for (int i = 0; i < snapshot.MouseEvents.Count; i++)
+            foreach (MouseEvent me in snapshot.MouseEvents)
             {
-                MouseEvent me = snapshot.MouseEvents[i];
-                if (me.Down)
+				if (me.Down)
                 {
                     MouseDown(me.MouseButton);
                 }
@@ -97,9 +110,9 @@ namespace Space_Refinery_Game
             }
 
             IgnoreNextFrameMousePosition = false;
-        }
+		}
 
-        private static void MouseUp(MouseButton mouseButton)
+		private static void MouseUp(MouseButton mouseButton)
         {
             _currentlyPressedMouseButtons.Remove(mouseButton);
             _newMouseButtonsThisFrame.Remove(mouseButton);

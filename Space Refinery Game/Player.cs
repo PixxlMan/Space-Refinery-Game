@@ -26,8 +26,6 @@ namespace Space_Refinery_Game
 
 		private ConstructionMarker constructionMarker;
 
-		private Vector2FixedDecimalInt4 previousMousePos;
-
 		public Player(Camera camera, MainGame mainGame, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, UI ui)
 		{
 			this.camera = camera;
@@ -148,11 +146,8 @@ namespace Space_Refinery_Game
 				graphicsWorld.Camera.Position += (motionDir * sprintFactor * deltaTime).ToVector3().ToFixed<Vector3FixedDecimalInt4>();
 			}
 
-			Vector2FixedDecimalInt4 mouseDelta = InputTracker.MousePosition - previousMousePos;
-			previousMousePos = InputTracker.MousePosition;
-
-			graphicsWorld.Camera.Yaw += -mouseDelta.X / 300;
-			graphicsWorld.Camera.Pitch += -mouseDelta.Y / 300;
+			graphicsWorld.Camera.Yaw += -InputTracker.MouseDelta.X / 300;
+			graphicsWorld.Camera.Pitch += -InputTracker.MouseDelta.Y / 300;
 			graphicsWorld.Camera.Pitch = FixedDecimalInt4.Clamp(graphicsWorld.Camera.Pitch, -(FixedDecimalInt4)1.2f, (FixedDecimalInt4)1.2f);
 		}
 	}

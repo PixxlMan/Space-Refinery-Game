@@ -53,13 +53,13 @@ public class GraphicsWorld
 
 		Camera = new(window.Width, window.Height);
 
-		Camera.Position = new Vector3FixedDecimalInt4(0, 0, 10);
-		Camera.Pitch = 0;
-		Camera.Yaw = 0;
+		Camera.Transform.Position = new Vector3FixedDecimalInt4(0, 0, 10);
 
 		Camera.FarDistance = 10000;
 
 		Camera.NearDistance = (FixedDecimalInt4)0.1;
+
+		//Camera.FieldOfView = 90 * FixedDecimalInt4.DegreesToRadians;
 
 		CreateDeviceObjects(gd, factory, swapchain);
 	}
@@ -131,10 +131,13 @@ public class GraphicsWorld
 			// Begin() must be called before commands can be issued.
 			commandList.Begin();
 
+			Camera.UpdatePerspectiveMatrix();
+			Camera.UpdateViewMatrix();
+
 			// Update per-frame resources.
 			commandList.UpdateBuffer(CameraProjViewBuffer, 0, new MatrixPair(Camera.ViewMatrix.ToMatrix4x4(), Camera.ProjectionMatrix.ToMatrix4x4()));
 
-			commandList.UpdateBuffer(LightInfoBuffer, 0, new LightInfo(lightDir.ToVector3(), Camera.Position.ToVector3()));
+			commandList.UpdateBuffer(LightInfoBuffer, 0, new LightInfo(lightDir.ToVector3(), Camera.Transform.Position.ToVector3()));
 
 			Matrix4x4.Invert(Camera.ProjectionMatrix.ToMatrix4x4(), out Matrix4x4 inverseProjection);
 			Matrix4x4.Invert(Camera.ViewMatrix.ToMatrix4x4(), out Matrix4x4 inverseView);

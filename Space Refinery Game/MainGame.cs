@@ -65,7 +65,7 @@ public class MainGame
 
 		GameWorld = new(this);
 
-		Player = Player.Create(GraphicsWorld.Camera, this, PhysicsWorld, GraphicsWorld, GameWorld, ui);
+		Player = Player.Create(this, PhysicsWorld, GraphicsWorld, GameWorld, ui);
 
 		Starfield.Create(GraphicsWorld);
 
@@ -120,6 +120,10 @@ public class MainGame
 	{
 		lock(SynchronizationObject) lock(GraphicsWorld.SynchronizationObject)
 		{
+			GraphicsWorld.Camera.Transform = Player.Transform;
+
+			GraphicsWorld.Camera.Transform.Rotation = QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(FixedDecimalInt4.Zero, Player.LookPitch, FixedDecimalInt4.Zero), GraphicsWorld.Camera.Transform.Rotation).NormalizeQuaternion();
+
 			window.PumpEvents(out var input); // TODO: modify to only pump input related events and let renderer pump drawing related?
 
 			InputTracker.UpdateFrameInput(input);

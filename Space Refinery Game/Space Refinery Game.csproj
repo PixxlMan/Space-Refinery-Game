@@ -115,6 +115,6 @@
     <Reference Include="FXRenderer">
       <HintPath>..\..\FXPRenderer\FXRenderer\bin\Debug\net6.0\FXRenderer.dll</HintPath>
     </Reference>
-  </ItemGroup>
+  </ItemGroup>	
 
 </Project>

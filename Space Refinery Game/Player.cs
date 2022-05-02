@@ -7,12 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Veldrid;
+using static FixedPrecision.Convenience;
 
 namespace Space_Refinery_Game
 {
 	public class Player
 	{
-		private Camera camera;
+		public Transform Transform = Transform.Identity;
 
 		private MainGame mainGame;
 
@@ -26,9 +27,8 @@ namespace Space_Refinery_Game
 
 		private ConstructionMarker constructionMarker;
 
-		public Player(Camera camera, MainGame mainGame, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, UI ui)
+		public Player(MainGame mainGame, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, UI ui)
 		{
-			this.camera = camera;
 			this.mainGame = mainGame;
 			this.physicsWorld = physicsWorld;
 			this.graphicsWorld = graphicsWorld;
@@ -36,9 +36,9 @@ namespace Space_Refinery_Game
 			this.ui = ui;
 		}
 
-		public static Player Create(Camera camera, MainGame mainGame, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, UI ui)
+		public static Player Create(MainGame mainGame, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, UI ui)
 		{
-			Player player = new(camera, mainGame, physicsWorld, graphicsWorld, gameWorld, ui);
+			Player player = new(mainGame, physicsWorld, graphicsWorld, gameWorld, ui);
 
 			player.constructionMarker = ConstructionMarker.Create(graphicsWorld);
 
@@ -49,9 +49,11 @@ namespace Space_Refinery_Game
 
 		public FixedDecimalLong8 RotationSnapped => ui.RotationIndex * RotationSnapping;
 
+		public FixedDecimalInt4 LookPitch;
+
 		public void Update(FixedDecimalInt4 deltaTime)
 		{
-			var physicsObject = physicsWorld.Raycast(camera.Position, camera.Forward, 1000);
+			var physicsObject = physicsWorld.Raycast(Transform.Position, ((ITransformable)Transform).LocalUnitZ, 1000);
 
 			if (physicsObject is not null)
 			{
@@ -141,14 +143,22 @@ namespace Space_Refinery_Game
 
 			if (motionDir != Vector3FixedDecimalInt4.Zero)
 			{
-				QuaternionFixedDecimalInt4 lookRotation = QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(graphicsWorld.Camera.Yaw, graphicsWorld.Camera.Pitch, FixedDecimalInt4.Zero);
-				motionDir = Vector3FixedDecimalInt4.Transform(motionDir, lookRotation);
-				graphicsWorld.Camera.Position += (motionDir * sprintFactor * deltaTime).ToVector3().ToFixed<Vector3FixedDecimalInt4>();
+				motionDir = Vector3FixedDecimalInt4.Transform(motionDir, Transform.Rotation);
+				Transform.Position += motionDir * sprintFactor * deltaTime;
 			}
 
-			graphicsWorld.Camera.Yaw += -InputTracker.MouseDelta.X / 300;
-			graphicsWorld.Camera.Pitch += -InputTracker.MouseDelta.Y / 300;
-			graphicsWorld.Camera.Pitch = FixedDecimalInt4.Clamp(graphicsWorld.Camera.Pitch, -(FixedDecimalInt4)1.2f, (FixedDecimalInt4)1.2f);
+			FixedDecimalInt4 yawDelta = -InputTracker.MouseDelta.X / 300;
+			FixedDecimalInt4 pitchDelta = -InputTracker.MouseDelta.Y / 300;
+
+			LookPitch += pitchDelta;
+
+			LookPitch = FixedDecimalInt4.Clamp(LookPitch, -80 * FixedDecimalInt4.DegreesToRadians, 80 * FixedDecimalInt4.DegreesToRadians);
+
+			Transform.Rotation = QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(yawDelta, FixedDecimalInt4.Zero, FixedDecimalInt4.Zero), Transform.Rotation).NormalizeQuaternion();
+			//Transform.Rotation = QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(FixedDecimalInt4.Zero, LookPitch, FixedDecimalInt4.Zero), Transform.Rotation).NormalizeQuaternion();
+
+			Console.WriteLine("pos: " + Transform.Position.ToString(null, null));
+			Console.WriteLine("rot: " + Transform.Rotation);
 		}
 	}
 }

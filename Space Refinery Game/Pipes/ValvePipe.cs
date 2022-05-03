@@ -59,7 +59,7 @@ namespace Space_Refinery_Game
 		{
 			lock (this)
 			{
-				InternalBlockerRenderable.Rotation = QuaternionFixedDecimalInt4.Normalize(QuaternionFixedDecimalInt4.Concatenate(Transform.Rotation, QuaternionFixedDecimalInt4.CreateFromAxisAngle(((ITransformable)Transform).LocalUnitZ, (FixedDecimalInt4)Limiter * 90 * FixedDecimalInt4.DegreesToRadians)));
+				InternalBlockerRenderable.Transform.Rotation = QuaternionFixedDecimalInt4.Normalize(QuaternionFixedDecimalInt4.Concatenate(Transform.Rotation, QuaternionFixedDecimalInt4.CreateFromAxisAngle(Transform.LocalUnitZ, (FixedDecimalInt4)Limiter * 90 * FixedDecimalInt4.DegreesToRadians)));
 
 				ResourceContainer lowestFullnessContainer = ResourceContainers.Values.First();
 

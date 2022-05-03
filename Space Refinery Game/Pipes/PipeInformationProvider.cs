@@ -18,9 +18,9 @@ namespace Space_Refinery_Game
 		{
 			ImGui.Spacing();
 			
-			ImGui.Text("Postition: " + Pipe.Renderable.Position.ToString("", CultureInfo.CurrentCulture));
+			ImGui.Text("Postition: " + Pipe.Renderable.Transform.Position.ToString("", CultureInfo.CurrentCulture));
 
-			ImGui.Text("Orientation: " + Pipe.Renderable.Rotation.ToString());
+			ImGui.Text("Orientation: " + Pipe.Renderable.Transform.Rotation.ToString());
 		}
 	}
 }

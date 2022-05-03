@@ -150,7 +150,7 @@ namespace Space_Refinery_Game_Renderer
 			else
 			{
 				transformationBuffer = GraphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes, BufferUsage.VertexBuffer));
-				GraphicsWorld.GraphicsDevice.UpdateBuffer(transformationBuffer, 0, ((ITransformable)transform).GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
+				GraphicsWorld.GraphicsDevice.UpdateBuffer(transformationBuffer, 0, transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
 
 				transformationBuffers.Add(transform, transformationBuffer);
 			}
@@ -231,13 +231,13 @@ namespace Space_Refinery_Game_Renderer
 
 		public void DrawOrientationMarks(Transform transform)
 		{
-			DrawRay(transform.Position, ((ITransformable)transform).LocalUnitX, RgbaFloat.Red);
-			DrawRay(transform.Position, ((ITransformable)transform).LocalUnitY, RgbaFloat.Green);
-			DrawRay(transform.Position, ((ITransformable)transform).LocalUnitZ, RgbaFloat.Blue);
+			DrawRay(transform.Position, transform.LocalUnitX, RgbaFloat.Red);
+			DrawRay(transform.Position, transform.LocalUnitY, RgbaFloat.Green);
+			DrawRay(transform.Position, transform.LocalUnitZ, RgbaFloat.Blue);
 
-			DrawRay(transform.Position, -((ITransformable)transform).LocalUnitX, new(.4f, 0, 0, 1));
-			DrawRay(transform.Position, -((ITransformable)transform).LocalUnitY, new(0, .4f, 0, 1));
-			DrawRay(transform.Position, -((ITransformable)transform).LocalUnitZ, new(0, 0, .4f, 1));
+			DrawRay(transform.Position, -transform.LocalUnitX, new(.4f, 0, 0, 1));
+			DrawRay(transform.Position, -transform.LocalUnitY, new(0, .4f, 0, 1));
+			DrawRay(transform.Position, -transform.LocalUnitZ, new(0, 0, .4f, 1));
 		}
 	}
 }

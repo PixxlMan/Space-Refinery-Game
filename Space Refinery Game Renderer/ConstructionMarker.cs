@@ -107,7 +107,7 @@ namespace Space_Refinery_Game_Renderer
 
 		public void SetTransform(Transform transform)
 		{
-			graphicsWorld.GraphicsDevice.UpdateBuffer(transformationBuffer, 0, ((ITransformable)transform).GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
+			graphicsWorld.GraphicsDevice.UpdateBuffer(transformationBuffer, 0, transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
 		}
 
 		public void SetColor(RgbaFloat color)

@@ -4,7 +4,7 @@ using Veldrid;
 
 namespace Space_Refinery_Game_Renderer;
 
-public class EntityRenderable : IRenderable, ITransformable
+public class EntityRenderable : IRenderable
 {
 	private bool transformChangedSinceDraw;
 
@@ -18,26 +18,18 @@ public class EntityRenderable : IRenderable, ITransformable
 
 	private Pipeline pipeline;
 
-	private Vector3FixedDecimalInt4 position;
-	private QuaternionFixedDecimalInt4 rotation;
-	private Vector3FixedDecimalInt4 scale;
-
-	private EntityRenderable()
+	private EntityRenderable(Transform transform)
 	{
-		TransformChanged += (_) => transformChangedSinceDraw = true;
+		Transform = transform;
+
+		Transform.TransformChanged += (_) => transformChangedSinceDraw = true;
 	}
 
-	public Vector3FixedDecimalInt4 Position { get => position; set { position = value; TransformChanged?.Invoke(this); } }
-	public QuaternionFixedDecimalInt4 Rotation { get => rotation; set { rotation = value; TransformChanged?.Invoke(this); } }
-	public Vector3FixedDecimalInt4 Scale { get => scale; set { scale = value; TransformChanged?.Invoke(this); } }
+	public Transform Transform;
 
-	public event Action<ITransformable> TransformChanged;
-
-	public static EntityRenderable Create(GraphicsDevice gd, ResourceFactory factory, ITransformable transform, Mesh mesh, Texture texture, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
+	public static EntityRenderable Create(GraphicsDevice gd, ResourceFactory factory, Transform transform, Mesh mesh, Texture texture, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
 	{
-		EntityRenderable entityRenderable = new();
-
-		((ITransformable)entityRenderable).CopyTransform(transform);
+		EntityRenderable entityRenderable = new(transform);
 
 		entityRenderable.mesh = mesh;
 
@@ -77,7 +69,7 @@ public class EntityRenderable : IRenderable, ITransformable
 		transformationVertexShaderParameterLayout.InstanceStepRate = 1;
 		entityRenderable.transformationBuffer = factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes, BufferUsage.VertexBuffer));
 
-		gd.UpdateBuffer(entityRenderable.transformationBuffer, 0, ((ITransformable)entityRenderable).GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
+		gd.UpdateBuffer(entityRenderable.transformationBuffer, 0, entityRenderable.Transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
 
 		VertexLayoutDescription vertexLayout = new VertexLayoutDescription(
 			new VertexElementDescription("Position", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3),
@@ -119,7 +111,7 @@ public class EntityRenderable : IRenderable, ITransformable
 	public void AddDrawCommands(CommandList commandList)
 	{
 		if (transformChangedSinceDraw)
-			commandList.UpdateBuffer(transformationBuffer, 0, ((ITransformable)this).GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
+			commandList.UpdateBuffer(transformationBuffer, 0, Transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
 
 		commandList.SetPipeline(pipeline);
 		commandList.SetGraphicsResourceSet(0, resourceSet);

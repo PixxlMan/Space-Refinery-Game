@@ -222,7 +222,7 @@ namespace Space_Refinery_Game
 
 		private void DoDebugSettingsUI()
 		{
-			if (ImGui.Begin("Debug Settings"))
+			if (ImGui.Begin("Debug Settings", ImGuiWindowFlags.AlwaysAutoResize))
 			{
 				foreach (var debugSetting in MainGame.DebugSettings.DebugSettingsDictionary.Values)
 				{

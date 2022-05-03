@@ -59,7 +59,7 @@ public class GraphicsWorld
 
 		Camera.NearDistance = (FixedDecimalInt4)0.1;
 
-		//Camera.FieldOfView = 90 * FixedDecimalInt4.DegreesToRadians;
+		Camera.FieldOfView = 75 * FixedDecimalInt4.DegreesToRadians;
 
 		CreateDeviceObjects(gd, factory, swapchain);
 	}

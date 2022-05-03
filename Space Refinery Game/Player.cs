@@ -27,6 +27,8 @@ namespace Space_Refinery_Game
 
 		private ConstructionMarker constructionMarker;
 
+		public Transform CameraTransform => new(Transform.Position, QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(FixedDecimalInt4.Zero, LookPitch, FixedDecimalInt4.Zero), Transform.Rotation).NormalizeQuaternion());
+
 		public Player(MainGame mainGame, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, UI ui)
 		{
 			this.mainGame = mainGame;
@@ -53,7 +55,7 @@ namespace Space_Refinery_Game
 
 		public void Update(FixedDecimalInt4 deltaTime)
 		{
-			var physicsObject = physicsWorld.Raycast(Transform.Position, ((ITransformable)Transform).LocalUnitZ, 1000);
+			var physicsObject = physicsWorld.Raycast(CameraTransform.Position, ((ITransformable)CameraTransform).LocalUnitZ, 1000);
 
 			if (physicsObject is not null)
 			{
@@ -118,27 +120,27 @@ namespace Space_Refinery_Game
 			Vector3FixedDecimalInt4 motionDir = Vector3FixedDecimalInt4.Zero;
 			if (InputTracker.GetKey(Key.A))
 			{
-				motionDir += -Vector3FixedDecimalInt4.UnitX;
+				motionDir += Vector3FixedDecimalInt4.UnitX;
 			}
 			if (InputTracker.GetKey(Key.D))
 			{
-				motionDir += Vector3FixedDecimalInt4.UnitX;
+				motionDir += -Vector3FixedDecimalInt4.UnitX;
 			}
 			if (InputTracker.GetKey(Key.W))
 			{
-				motionDir += -Vector3FixedDecimalInt4.UnitZ;
+				motionDir += Vector3FixedDecimalInt4.UnitZ;
 			}
 			if (InputTracker.GetKey(Key.S))
 			{
-				motionDir += Vector3FixedDecimalInt4.UnitZ;
+				motionDir += -Vector3FixedDecimalInt4.UnitZ;
 			}
 			if (InputTracker.GetKey(Key.Q))
 			{
-				motionDir += -Vector3FixedDecimalInt4.UnitY;
+				motionDir += Vector3FixedDecimalInt4.UnitY;
 			}
 			if (InputTracker.GetKey(Key.E))
 			{
-				motionDir += Vector3FixedDecimalInt4.UnitY;
+				motionDir += -Vector3FixedDecimalInt4.UnitY;
 			}
 
 			if (motionDir != Vector3FixedDecimalInt4.Zero)
@@ -148,7 +150,7 @@ namespace Space_Refinery_Game
 			}
 
 			FixedDecimalInt4 yawDelta = -InputTracker.MouseDelta.X / 300;
-			FixedDecimalInt4 pitchDelta = -InputTracker.MouseDelta.Y / 300;
+			FixedDecimalInt4 pitchDelta = InputTracker.MouseDelta.Y / 300;
 
 			LookPitch += pitchDelta;
 

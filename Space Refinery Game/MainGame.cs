@@ -120,9 +120,7 @@ public class MainGame
 	{
 		lock(SynchronizationObject) lock(GraphicsWorld.SynchronizationObject)
 		{
-			GraphicsWorld.Camera.Transform = Player.Transform;
-
-			GraphicsWorld.Camera.Transform.Rotation = QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(FixedDecimalInt4.Zero, Player.LookPitch, FixedDecimalInt4.Zero), GraphicsWorld.Camera.Transform.Rotation).NormalizeQuaternion();
+			GraphicsWorld.Camera.Transform = Player.CameraTransform;
 
 			window.PumpEvents(out var input); // TODO: modify to only pump input related events and let renderer pump drawing related?
 

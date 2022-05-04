@@ -15,6 +15,8 @@ namespace Space_Refinery_Game
 		public Connector((IConnectable connectableA, IConnectable connectableB) connectables, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui) : this(gameWorld, physicsWorld, ui)
 		{
 			Connectables = connectables;
+
+			UpdateProxy();
 		}
 
 		public Connector(IConnectable initialConnectable, ConnectorSide side, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui) : this(gameWorld, physicsWorld, ui)
@@ -22,6 +24,8 @@ namespace Space_Refinery_Game
 			Connectables = (side == ConnectorSide.A ? (initialConnectable, null) : (null, initialConnectable));
 
 			VacantSide = side.Opposite();
+
+			UpdateProxy();
 		}
 
 		protected Connector(GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui)
@@ -38,10 +42,7 @@ namespace Space_Refinery_Game
 
 			UI.SelectedEntityTypeChanged += (_) =>
 			{
-				if (Vacant)
-				{
-					UpdateProxy();
-				}
+				UpdateProxy();
 			};
 		}
 
@@ -180,6 +181,11 @@ namespace Space_Refinery_Game
 
 		public void UpdateProxy()
 		{
+			if (!Vacant)
+			{
+				return;
+			}
+
 			if (Proxy is null)
 			{
 				Proxy = new(this);

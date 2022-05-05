@@ -7,7 +7,7 @@ using ImGuiNET;
 
 namespace Space_Refinery_Game
 {
-	public struct BooleanSetting : IDebugSetting
+	public struct BooleanDebugSetting : IDebugSetting
 	{
 		public bool Value;
 
@@ -18,6 +18,6 @@ namespace Space_Refinery_Game
 			ImGui.Checkbox(SettingText, ref Value);
 		}
 
-		public static implicit operator bool(BooleanSetting booleanSetting) => booleanSetting.Value;
+		public static implicit operator bool(BooleanDebugSetting booleanSetting) => booleanSetting.Value;
 	}
 }

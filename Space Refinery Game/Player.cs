@@ -158,9 +158,6 @@ namespace Space_Refinery_Game
 
 			Transform.Rotation = QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(yawDelta, FixedDecimalInt4.Zero, FixedDecimalInt4.Zero), Transform.Rotation).NormalizeQuaternion();
 			//Transform.Rotation = QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(FixedDecimalInt4.Zero, LookPitch, FixedDecimalInt4.Zero), Transform.Rotation).NormalizeQuaternion();
-
-			Console.WriteLine("pos: " + Transform.Position.ToString(null, null));
-			Console.WriteLine("rot: " + Transform.Rotation);
 		}
 	}
 }

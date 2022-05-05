@@ -1,19 +1,9 @@
 ﻿using FixedPrecision;
 using FXRenderer;
 using Space_Refinery_Game_Renderer;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using Veldrid;
 using static FixedPrecision.Convenience;
-using BepuPhysics;
-using BepuUtilities.Memory;
 
 namespace Space_Refinery_Game;
 
@@ -23,6 +13,8 @@ public class MainGame
 	public PhysicsWorld PhysicsWorld;
 	public GameWorld GameWorld;
 	public Player Player;
+
+	public static Settings GlobalSettings;
 
 	public static DebugRender DebugRender;
 
@@ -41,6 +33,11 @@ public class MainGame
 
 	public void Start(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
+		GlobalSettings = new();
+
+		//GlobalSettings.RegisterToSetting<BooleanSetting>("FoV", (se) => GraphicsWorld.Camera.FieldOfView = );
+		GlobalSettings.RegisterToSetting<BooleanSetting>("Checkbox", (setting) => Console.WriteLine(setting.Value ? "true" : "false"), defaultValue: new BooleanSetting() { Value = true });
+
 		ChemicalTypes = ChemicalType.LoadChemicalTypes(Path.Combine(Environment.CurrentDirectory, "Assets", "Chemical types"));
 
 		ChemicalTypesDictionary = ChemicalTypes.ToDictionary((cT) => cT.ChemicalName);

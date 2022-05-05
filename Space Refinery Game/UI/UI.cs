@@ -205,6 +205,8 @@ namespace Space_Refinery_Game
 
 			Paused = false;
 
+			inSettings = false;
+
 			PauseStateChanged?.Invoke(false);
 		}
 
@@ -235,6 +237,10 @@ namespace Space_Refinery_Game
 
 		private Vector2 pauseMenuSize => new Vector2(gd.MainSwapchain.Framebuffer.Width / 3, (gd.MainSwapchain.Framebuffer.Height / 10) * 8);
 
+		private Vector2 settingsMenuSize => new Vector2(gd.MainSwapchain.Framebuffer.Width / 2, (gd.MainSwapchain.Framebuffer.Height / 10) * 8);
+
+		bool inSettings;
+
 		private void DoPauseMenuUI()
 		{
 			ImGui.Begin("Pause menu", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
@@ -244,6 +250,23 @@ namespace Space_Refinery_Game
 				if (ImGui.Button("Resume"))
 				{
 					Unpause();
+				}
+
+				if (ImGui.Button("Settings"))
+				{
+					inSettings = !inSettings;
+				}
+
+				if (inSettings)
+				{
+					inSettings = ImGui.Begin("Settings", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
+					ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2 - settingsMenuSize.X / 2, gd.MainSwapchain.Framebuffer.Height / 2 - settingsMenuSize.Y / 2), ImGuiCond.Always);
+					ImGui.SetWindowSize(settingsMenuSize, ImGuiCond.Always);
+					{
+						MainGame.GlobalSettings.DoSettingsUI();
+					}
+					ImGui.SetWindowCollapsed(false);
+					ImGui.End();
 				}
 
 				if (ImGui.Button("Exit game"))
@@ -295,7 +318,7 @@ namespace Space_Refinery_Game
 			ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize);
 			ImGui.SetWindowPos(new Vector2((gd.MainSwapchain.Framebuffer.Width / 4 * 3)/* - ImGui.GetWindowSize().X / 2*/, (gd.MainSwapchain.Framebuffer.Height / 2) - ImGui.GetWindowSize().Y / 2), ImGuiCond.Always);
 			{
-				if (MainGame.DebugSettings.AccessSetting<BooleanSetting>("Show player info"))
+				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show player info"))
 				{
 					ImGui.Text("Connector: " + ConnectorSelection);
 					ImGui.Text("Entity: " + EntitySelection);

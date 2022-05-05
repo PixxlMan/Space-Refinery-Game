@@ -18,6 +18,17 @@ namespace Space_Refinery_Game
 			ImGui.PopID();
 		}
 
+		public static void PushDisabled()
+		{
+			//ImGui.PushStyleColor(ImGuiCol.Button, RgbaByte.LightGrey);
+			ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.5f);
+		}
+
+		public static void PopDisabled()
+		{
+			ImGui.PopStyleVar();
+		}
+
 		public static void DoSelector<T>(ICollection<T> selectables, ref int selection, out bool hasSelection, out T selected) where T : IUIInspectable
 		{
 			hasSelection = false;

@@ -1,19 +1,30 @@
-﻿using FixedPrecision;
+﻿using BepuPhysics.Collidables;
+using FixedPrecision;
+using FXRenderer;
 
 namespace Space_Refinery_Game
 {
 	public class PipeConnector : Connector, Entity
 	{
-		public PipeConnector((Pipe connectableA, Pipe connectableB) connectables, PipeConnectorProperties pipeConnectorProperties, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui) : base(connectables, gameWorld, physicsWorld, ui)
+		public PipeConnector((Pipe connectableA, Pipe connectableB) connectables, Transform transform, PipeConnectorProperties pipeConnectorProperties, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui) : base(connectables, transform, gameWorld, physicsWorld, ui)
 		{
 			PipeConnectorProperties = pipeConnectorProperties;
 			informationProvider = new PipeConnectorInformationProvider(this);
+			CreatePhysicsObject(transform, physicsWorld);
 		}
 
-		public PipeConnector(Pipe initialConnectable, ConnectorSide side, PipeConnectorProperties pipeConnectorProperties, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui) : base(initialConnectable, side, gameWorld, physicsWorld, ui)
+		public PipeConnector(Pipe initialConnectable, ConnectorSide side, Transform transform, PipeConnectorProperties pipeConnectorProperties, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui) : base(initialConnectable, side, transform, gameWorld, physicsWorld, ui)
 		{
 			PipeConnectorProperties = pipeConnectorProperties;
 			informationProvider = new PipeConnectorInformationProvider(this);
+			CreatePhysicsObject(transform, physicsWorld);
+		}
+
+		private void CreatePhysicsObject(Transform transform, PhysicsWorld physicsWorld)
+		{
+			var physicsObjectDescription = new PhysicsObjectDescription<Box>(new Box(.4f, .4f, .1f), transform, 0, true);
+
+			PhysicsObject = physicsWorld.AddPhysicsObject(physicsObjectDescription, this);
 		}
 
 		public PipeConnectorProperties PipeConnectorProperties;

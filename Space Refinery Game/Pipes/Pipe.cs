@@ -108,8 +108,6 @@ namespace Space_Refinery_Game
 				
 				if (physicsObject is null || physicsObject.Entity is not PipeConnector)
 				{
-					PipeConnector connector = new PipeConnector(pipe, ConnectorSide.A, pipeType.ConnectorProperties[i], gameWorld, physWorld, ui);
-
 					QuaternionFixedDecimalInt4 rotation =
 						QuaternionFixedDecimalInt4.Concatenate(
 							QuaternionFixedDecimalInt4.CreateLookingAt(
@@ -126,15 +124,9 @@ namespace Space_Refinery_Game
 					);
 					transform.Rotation = QuaternionFixedDecimalInt4.Normalize(transform.Rotation);
 
-					connector.Transform  = transform;
-
-					var physicsObjectDescription = new PhysicsObjectDescription<Box>(new Box(.4f, .4f, .1f), transform, 0, true);
-
-					connector.PhysicsObject = physWorld.AddPhysicsObject(physicsObjectDescription, connector);
+					PipeConnector connector = new PipeConnector(pipe, ConnectorSide.A, transform, pipeType.ConnectorProperties[i], gameWorld, physWorld, ui);
 
 					connectors[i] = connector;
-
-					gameWorld.AddEntity(connector);
 
 					continue;
 				}

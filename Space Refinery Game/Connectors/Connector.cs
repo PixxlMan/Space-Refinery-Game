@@ -12,14 +12,14 @@ namespace Space_Refinery_Game
 {
 	public abstract class Connector : Entity, IDisposable
 	{
-		public Connector((IConnectable connectableA, IConnectable connectableB) connectables, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui) : this(gameWorld, physicsWorld, ui)
+		public Connector((IConnectable connectableA, IConnectable connectableB) connectables, Transform transform, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui) : this(transform, gameWorld, physicsWorld, ui)
 		{
 			Connectables = connectables;
 
 			UpdateProxy();
 		}
 
-		public Connector(IConnectable initialConnectable, ConnectorSide side, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui) : this(gameWorld, physicsWorld, ui)
+		public Connector(IConnectable initialConnectable, ConnectorSide side, Transform transform, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui) : this(transform, gameWorld, physicsWorld, ui)
 		{
 			Connectables = (side == ConnectorSide.A ? (initialConnectable, null) : (null, initialConnectable));
 
@@ -28,13 +28,15 @@ namespace Space_Refinery_Game
 			UpdateProxy();
 		}
 
-		protected Connector(GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui)
+		protected Connector(Transform transform, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui)
 		{
 			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
 
 			GameWorld = gameWorld;
 
 			GameWorld.AddEntity(this);
+
+			Transform = transform;
 
 			PhysicsWorld = physicsWorld;
 
@@ -218,7 +220,7 @@ namespace Space_Refinery_Game
 
 		private void AddDebugObjects()
 		{
-			if (!MainGame.DebugSettings.AccessSetting<BooleanSetting>($"{nameof(Connector)} debug objects"))
+			if (!MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>($"{nameof(Connector)} debug objects"))
 				return;
 
 			MainGame.DebugRender.DrawOrientationMarks(PhysicsObject.Transform);

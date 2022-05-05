@@ -15,6 +15,22 @@ namespace Space_Refinery_Game
 		[DataMember]
 		private Dictionary<string, ISetting> settings = new();
 
+		[DataMember]
+		private Dictionary<string, ISettingOptions> settingsOptions = new();
+
+		public void SetSettingOptions(string name, ISettingOptions options)
+		{
+			if (!settingsOptions.ContainsKey(name))
+			{
+				settingsOptions.Add(name, options);
+			}
+
+			if (settings.ContainsKey(name))
+			{
+				settings[name].Options = options;
+			}
+		}
+
 		public void RegisterToSetting<TSetting>(string name, Action<TSetting> settingChangeAcceptedHandler, Action<TSetting>? settingChangedHandler = null, ISetting? defaultValue = null)
 			where TSetting : ISetting
 		{
@@ -29,6 +45,11 @@ namespace Space_Refinery_Game
 				else
 				{
 					setting = TSetting.Create();
+				}
+
+				if (settingsOptions.ContainsKey(name))
+				{
+					setting.Options = settingsOptions[name];
 				}
 
 				settings.Add(name, setting);

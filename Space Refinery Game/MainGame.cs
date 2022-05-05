@@ -35,8 +35,9 @@ public class MainGame
 	{
 		GlobalSettings = new();
 
-		//GlobalSettings.RegisterToSetting<BooleanSetting>("FoV", (se) => GraphicsWorld.Camera.FieldOfView = );
-		GlobalSettings.RegisterToSetting<BooleanSetting>("Checkbox", (setting) => Console.WriteLine(setting.Value ? "true" : "false"), defaultValue: new BooleanSetting() { Value = true });
+		GlobalSettings.SetSettingOptions("FoV", new SliderSettingOptions(30, 120));
+
+		GlobalSettings.RegisterToSetting<SliderSetting>("FoV", (se) => GraphicsWorld.Camera.FieldOfView = se.Value * FixedDecimalInt4.DegreesToRadians);
 
 		ChemicalTypes = ChemicalType.LoadChemicalTypes(Path.Combine(Environment.CurrentDirectory, "Assets", "Chemical types"));
 

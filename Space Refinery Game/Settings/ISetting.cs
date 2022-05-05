@@ -6,6 +6,8 @@ namespace Space_Refinery_Game
 	{
 		public bool Dirty { get; }
 
+		ISettingOptions Options { get; set; }
+
 		public static abstract ISetting Create();
 
 		public void DoUI();

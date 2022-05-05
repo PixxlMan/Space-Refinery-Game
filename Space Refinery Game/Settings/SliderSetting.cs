@@ -1,4 +1,5 @@
-﻿using ImGuiNET;
+﻿using FixedPrecision;
+using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,21 +8,21 @@ using System.Threading.Tasks;
 
 namespace Space_Refinery_Game
 {
-	public struct BooleanSetting : ISetting
+	public struct SliderSetting : ISetting
 	{
 		public event Action<ISetting> AcceptedSettingChange;
 		public event Action<ISetting> SettingChanged;
 
 		public static ISetting Create()
 		{
-			return new BooleanSetting();
+			return new SliderSetting();
 		}
 
 		public void Accept()
 		{
 			if (Dirty)
 			{
-				Value = uiValue;
+				Value = (FixedDecimalInt4)uiValue;
 
 				AcceptedSettingChange?.Invoke(this);
 			}
@@ -29,12 +30,12 @@ namespace Space_Refinery_Game
 
 		public void Cancel()
 		{
-			uiValue = Value;
+			uiValue = Value.ToFloat();
 		}
 
 		public void DoUI()
 		{
-			ImGui.Checkbox(string.Empty, ref uiValue);
+			ImGui.SliderFloat(string.Empty, ref uiValue, ((SliderSettingOptions)Options).Min.ToFloat(), ((SliderSettingOptions)Options).Max.ToFloat());
 
 			if (uiValue != lastValue)
 			{
@@ -44,14 +45,14 @@ namespace Space_Refinery_Game
 			lastValue = uiValue;
 		}
 
-		public bool Value;
+		public FixedDecimalInt4 Value;
 
-		bool uiValue;
+		float uiValue;
 
-		bool lastValue;
+		float lastValue;
 
-		public bool Dirty => uiValue != Value;
+		public bool Dirty => (FixedDecimalInt4)uiValue != Value;
 
-		public ISettingOptions Options { get; set; }
+		public ISettingOptions Options { get; set; } = new SliderSettingOptions(0, 1000);
 	}
 }

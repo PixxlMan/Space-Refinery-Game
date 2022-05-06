@@ -19,6 +19,8 @@ namespace Space_Refinery_Game
 
 		public PipeConnectorProperties[] ConnectorProperties;
 
+		public string[] ConnectorNames;
+
 		public string ModelPath;
 
 		[NonSerialized]
@@ -57,6 +59,62 @@ namespace Space_Refinery_Game
 		{
 			PipeType[] entityTypes =
 			{
+				new PipeType()
+				{
+					ConnectorPlacements = new PositionAndDirection[]
+					{
+						new PositionAndDirection()
+						{
+							Position = new((FixedDecimalInt4).9f, 0, -(FixedDecimalInt4).35),
+							Direction = new(1, 0, 0),
+						},
+						new PositionAndDirection()
+						{
+							Position = new((FixedDecimalInt4).9f, 0, (FixedDecimalInt4).35),
+							Direction = new(1, 0, 0),
+						},
+						new PositionAndDirection()
+						{
+							Position = new(-(FixedDecimalInt4).9f, 0, 0),
+							Direction = new(-1, 0, 0),
+						},
+					},
+					ConnectorProperties = new PipeConnectorProperties[]
+					{
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
+						},
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
+						},
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
+						},
+					},
+					ConnectorNames = new string[]
+					{
+						"HydrogenOutput",
+						"OxygenOutput",
+						"WaterInput",
+					},
+					PipeProperties = new()
+					{
+						FlowableVolume = (FixedDecimalInt4)0.16,
+						Friction = (FixedDecimalInt4)0.04,
+					},
+					TypeOfPipe = typeof(ElectrolysisMachinery),
+					Name = "Electrolysis Machine",
+					ModelPath = Path.Combine("Assets", "Models", "Machinery", "MachineryElectrolysis.obj"),
+				},
 				new PipeType()
 				{
 					ConnectorPlacements = new PositionAndDirection[]

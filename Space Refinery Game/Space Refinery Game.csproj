@@ -17,6 +17,7 @@
     <None Remove="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Bold.ttf" />
     <None Remove="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Light.ttf" />
     <None Remove="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Regular.ttf" />
+    <None Remove="Assets\Models\Machinery\MachineryElectrolysis.obj" />
     <None Remove="Assets\Models\Machinery\MachineryGeneric.obj" />
     <None Remove="Assets\Models\Machinery\SpaceDock.obj" />
     <None Remove="Assets\Models\Pipe\CleanedUpPipe.obj" />
@@ -53,6 +54,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Models\Machinery\MachineryElectrolysis.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Models\Machinery\MachineryGeneric.obj">

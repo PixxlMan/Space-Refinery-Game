@@ -27,13 +27,13 @@ namespace Space_Refinery_Game
 		{
 			lock (this)
 			{
-				source.TransferResource(ResourceContainers[sourceConnector], volume);
+				source.TransferResource(ResourceContainers[(PipeConnector)sourceConnector], volume);
 			}
 		}
 
 		private EntityRenderable InternalBlockerRenderable;
 
-		public Dictionary<Connector, ResourceContainer> ResourceContainers = new();
+		public Dictionary<PipeConnector, ResourceContainer> ResourceContainers = new();
 
 		protected override void SetUp()
 		{

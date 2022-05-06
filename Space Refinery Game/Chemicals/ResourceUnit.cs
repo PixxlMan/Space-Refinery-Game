@@ -115,13 +115,13 @@ namespace Space_Refinery_Game
 			return HashCode.Combine(ResourceType, Mass, InternalEnergy, Pressure);
 		}
 
-		public static ResourceUnit Part(ResourceUnit unit, FixedDecimalInt4 transferPart)
+		public static ResourceUnit Part(ResourceUnit unit, FixedDecimalInt4 part)
 		{
 			ResourceUnit resourceUnit = new()
 			{
 				ResourceType = unit.ResourceType,
-				Mass = unit.Mass * transferPart,
-				InternalEnergy = unit.InternalEnergy * transferPart,
+				Mass = unit.Mass * part,
+				InternalEnergy = unit.InternalEnergy * part,
 				//Pressure = unit.Pressure * transferPart, // ?
 			};
 

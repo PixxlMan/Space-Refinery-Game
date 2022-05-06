@@ -63,6 +63,36 @@ namespace Space_Refinery_Game
 			mass += unit.Mass;
 		}
 
+		public ResourceUnit GetResourceUnitForResourceType(ResourceType resourceType)
+		{
+			return resources[resourceType];
+		}
+
+		public bool ContainsResourceType(ResourceType resourceType)
+		{
+			return resources.ContainsKey(resourceType);
+		}
+
+		public ResourceUnit ExtractResource(ResourceType resourceType, FixedDecimalLong8 extractionVolume)
+		{
+			FixedDecimalInt4 transferPart = (FixedDecimalInt4)(extractionVolume / resources[resourceType].Volume);
+
+			var extractedResource = ResourceUnit.Part(resources[resourceType], transferPart);
+
+			resources[resourceType] -= extractedResource;
+
+			mass -= extractedResource.Mass;
+
+			if (resources[resourceType].Mass == 0)
+			{
+				resources.Remove(resourceType);
+			}
+
+			volume -= extractionVolume;
+
+			return extractedResource;
+		}
+
 		public void TransferResource(ResourceContainer transferTarget, FixedDecimalLong8 transferVolume)
 		{
 			if (transferTarget.Volume + transferVolume > (FixedDecimalLong8)transferTarget.MaxVolume)

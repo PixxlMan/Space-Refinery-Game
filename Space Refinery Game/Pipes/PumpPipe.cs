@@ -15,6 +15,11 @@ namespace Space_Refinery_Game
 
 		public FixedDecimalLong8 MaxFlowRate = 1; // m3/s
 
+		public PumpPipe()
+		{
+			informationProvider = new PumpPipeInformationProvider(this);
+		}
+
 		public override ResourceContainer GetResourceContainerForConnector(PipeConnector pipeConnector)
 		{
 			if (NamedConnectors["A"] == pipeConnector)
@@ -54,7 +59,7 @@ namespace Space_Refinery_Game
 
 			lock (this)
 			{
-				var transferVolume = FixedDecimalLong8.Min(Transferer.Volume * (FixedDecimalLong8)Time.TickInterval, FixedDecimalLong8.Min(MaxFlowRate * (FixedDecimalLong8)Time.TickInterval, (FixedDecimalLong8)Recipient.MaxVolume - Recipient.Volume - (FixedDecimalLong8)0.05));
+				var transferVolume = FixedDecimalLong8.Min(Transferer.Volume * (FixedDecimalLong8)Time.TickInterval, FixedDecimalLong8.Min(MaxFlowRate * (FixedDecimalLong8)Time.TickInterval, Recipient.MaxVolume - Recipient.Volume - (FixedDecimalLong8)0.0001));
 
 				Transferer.TransferResource(Recipient, transferVolume);
 			}
@@ -74,7 +79,7 @@ namespace Space_Refinery_Game
 				DirectionAToB = !DirectionAToB;
 			}
 
-			ImGui.Text(DirectionAToB ? "A-B" : "B-A");
+			ImGui.Text(DirectionAToB ? "A->B" : "B->A");
 		}
 	}
 }

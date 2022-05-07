@@ -1,0 +1,24 @@
+// is in this case 02 or Dioxygen
+// https://www.wolframalpha.com/input?i=oxygen&assumption=%7B%22C%22%2C+%22oxygen%22%7D+-%3E+%7B%22Chemical%22%7D
+{
+  "ChemicalName": "Oxygen",
+  //"ChemicalShortForm": "02",
+  "GasPhaseType": {
+    "ResourceName": "Oxygen Gas",
+    "Density": 1.429, // kg/m3
+    "SpecificHeatCapacity" : 14.38
+  },
+  "LiquidPhaseType": {
+    "ResourceName": "Liquid Oxygen",
+    "Density": 700,
+    "SpecificHeatCapacity" : 13.12 // ?
+  },
+  "SolidPhaseType": {
+    "ResourceName": "Solid Oxygen",
+    "Density": 860,
+    "SpecificHeatCapacity": 13.12 // ?
+  },
+  "EnthalpyOfVaporization" : 446.1,
+  "EnthalpyOfFusion" : 58
+}
+// oxidation!

@@ -21,9 +21,9 @@ namespace Space_Refinery_Game
 
 		public SolidType SolidPhaseType;
 
-		public FixedDecimalInt4 EnthalpyOfVaporization;
+		public FixedDecimalLong8 EnthalpyOfVaporization;
 
-		public FixedDecimalInt4 EnthalpyOfFusion;
+		public FixedDecimalLong8 EnthalpyOfFusion;
 
 		public void OnDeserialized()
 		{

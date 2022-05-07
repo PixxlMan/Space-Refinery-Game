@@ -20,11 +20,11 @@ namespace Space_Refinery_Game
 
 		public ResourceContainer OxygenOutput;
 
-		public static readonly FixedDecimalInt4 ProcessingContainerVolume = 1;
+		public static readonly FixedDecimalLong8 ProcessingContainerVolume = 1;
 
 		public ResourceContainer ProcessingContainer = new(ProcessingContainerVolume);
 
-		public static readonly FixedDecimalInt4 InOutPipeVolume = (FixedDecimalInt4).2;
+		public static readonly FixedDecimalLong8 InOutPipeVolume = (FixedDecimalLong8).2;
 
 		public static readonly FixedDecimalLong8 ElectrolyzationRate = (FixedDecimalLong8).05; // m3/s
 
@@ -73,9 +73,9 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		static readonly FixedDecimalInt4 hydrogenPart = ((FixedDecimalInt4)1 / (FixedDecimalInt4)3) * (FixedDecimalInt4)2;
+		static readonly FixedDecimalLong8 hydrogenPart = ((FixedDecimalLong8)1 / (FixedDecimalLong8)3) * (FixedDecimalLong8)2;
 
-		static readonly FixedDecimalInt4 oxygenPart = ((FixedDecimalInt4)1 / (FixedDecimalInt4)3);
+		static readonly FixedDecimalLong8 oxygenPart = ((FixedDecimalLong8)1 / (FixedDecimalLong8)3);
 
 		bool blocked;
 

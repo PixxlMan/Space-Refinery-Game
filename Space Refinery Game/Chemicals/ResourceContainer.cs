@@ -12,10 +12,10 @@ namespace Space_Refinery_Game
 		private FixedDecimalLong8 volume;
 		public FixedDecimalLong8 Volume { get => volume; }
 
-		private FixedDecimalInt4 mass;
-		public FixedDecimalInt4 Mass { get => mass; }
+		private FixedDecimalLong8 mass;
+		public FixedDecimalLong8 Mass { get => mass; }
 
-		public readonly FixedDecimalInt4 MaxVolume;
+		public readonly FixedDecimalLong8 MaxVolume;
 
 		public FixedDecimalLong8 Fullness
 		{
@@ -32,14 +32,14 @@ namespace Space_Refinery_Game
 
 		private Dictionary<ResourceType, ResourceUnit> resources = new();
 
-		public ResourceContainer(FixedDecimalInt4 maxVolume)
+		public ResourceContainer(FixedDecimalLong8 maxVolume)
 		{
 			MaxVolume = maxVolume;
 		}
 
 		public void AddResource(ResourceUnit unit)
 		{
-			if (Volume + unit.Volume > (FixedDecimalLong8)MaxVolume)
+			if (Volume + unit.Volume > MaxVolume)
 			{
 				throw new Exception("Operation would make volume larger than max volume.");
 			}
@@ -75,7 +75,7 @@ namespace Space_Refinery_Game
 
 		public ResourceUnit ExtractResource(ResourceType resourceType, FixedDecimalLong8 extractionVolume)
 		{
-			FixedDecimalInt4 transferPart = (FixedDecimalInt4)(extractionVolume / resources[resourceType].Volume);
+			FixedDecimalLong8 transferPart = extractionVolume / resources[resourceType].Volume;
 
 			var extractedResource = ResourceUnit.Part(resources[resourceType], transferPart);
 
@@ -95,7 +95,7 @@ namespace Space_Refinery_Game
 
 		public void TransferResource(ResourceContainer transferTarget, FixedDecimalLong8 transferVolume)
 		{
-			if (transferTarget.Volume + transferVolume > (FixedDecimalLong8)transferTarget.MaxVolume)
+			if (transferTarget.Volume + transferVolume > transferTarget.MaxVolume)
 			{
 				throw new Exception("Operation would make volume larger than max volume.");
 			}

@@ -7,14 +7,14 @@ namespace Space_Refinery_Game
 	{
 		public PipeShape Shape;
 
-		public FixedDecimalInt4 WallInsulation;
+		public FixedDecimalLong8 WallInsulation;
 
-		public FixedDecimalInt4 FlowableRadius;
+		public FixedDecimalLong8 FlowableRadius;
 
-		public FixedDecimalInt4 FlowableLength;
+		public FixedDecimalLong8 FlowableLength;
 
-		public FixedDecimalInt4 FlowableVolume;
+		public FixedDecimalLong8 FlowableVolume;
 
-		public FixedDecimalInt4 Friction;
+		public FixedDecimalLong8 Friction;
 	}
 }

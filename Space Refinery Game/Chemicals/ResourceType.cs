@@ -15,7 +15,7 @@ public abstract class ResourceType : IUIInspectable
 
 	public FixedDecimalLong8 Density; // kg/m3
 
-	public FixedDecimalInt4 SpecificHeatCapacity; // kJ/k
+	public FixedDecimalLong8 SpecificHeatCapacity; // kJ/k
 
 	public abstract ChemicalPhase ChemicalPhase { get; }
 
@@ -24,7 +24,7 @@ public abstract class ResourceType : IUIInspectable
 
 	}
 
-	protected ResourceType(ChemicalType chemicalType, string resourceName, FixedDecimalLong8 density, FixedDecimalInt4 specificHeatCapacity)
+	protected ResourceType(ChemicalType chemicalType, string resourceName, FixedDecimalLong8 density, FixedDecimalLong8 specificHeatCapacity)
 	{
 		ChemicalType = chemicalType;
 		ResourceName = resourceName;

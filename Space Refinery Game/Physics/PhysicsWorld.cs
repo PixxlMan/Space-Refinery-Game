@@ -118,9 +118,9 @@ namespace Space_Refinery_Game
 		{
 			lock (SyncRoot)
 			{
-				simulation.Bodies.Remove(physicsObject.BodyHandle);
-
 				PhysicsObjectLookup.Remove(physicsObject.BodyHandle);
+
+				simulation.Bodies.Remove(physicsObject.BodyHandle);
 			}
 		}
 

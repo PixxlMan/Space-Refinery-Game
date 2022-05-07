@@ -23,11 +23,11 @@ namespace Space_Refinery_Game
 
 		public FixedDecimalLong8 Limiter = (FixedDecimalLong8)0.5;
 
-		public override void TransferResourceFromConnector(ResourceContainer source, FixedDecimalLong8 volume, Connector sourceConnector)
+		public override void TransferResourceFromConnector(ResourceContainer source, FixedDecimalLong8 volume, PipeConnector sourceConnector)
 		{
 			lock (this)
 			{
-				source.TransferResource(ResourceContainers[(PipeConnector)sourceConnector], volume);
+				source.TransferResource(ResourceContainers[sourceConnector], volume);
 			}
 		}
 
@@ -105,7 +105,7 @@ namespace Space_Refinery_Game
 					if (connectorResourceContainerPair.Key.Vacant)
 						continue;
 
-					((PipeConnector)connectorResourceContainerPair.Key).TransferResource(this, connectorResourceContainerPair.Value, connectorResourceContainerPair.Value.Volume);
+					(connectorResourceContainerPair.Key).TransferResource(this, connectorResourceContainerPair.Value, connectorResourceContainerPair.Value.Volume);
 				}
 			}
 		}

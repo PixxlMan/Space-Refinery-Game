@@ -42,7 +42,7 @@ namespace Space_Refinery_Game
 
 		protected Dictionary<string, PipeConnector> NamedConnectors = new();
 
-		public abstract void TransferResourceFromConnector(ResourceContainer source, FixedDecimalLong8 volume, Connector transferingConnector);
+		public abstract void TransferResourceFromConnector(ResourceContainer source, FixedDecimalLong8 volume, PipeConnector transferingConnector);
 
 		public virtual void AddDebugObjects()
 		{
@@ -142,6 +142,11 @@ namespace Space_Refinery_Game
 					pipeConnector.Connect(pipe);
 
 					connectors[i] = pipeConnector;
+
+					if (pipeType.ConnectorNames is not null && pipeType.ConnectorNames[i] is not null)
+					{
+						pipe.NamedConnectors.Add(pipeType.ConnectorNames[i], pipeConnector);
+					}
 
 					continue;
 				}

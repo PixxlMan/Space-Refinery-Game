@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Space_Refinery_Game
 {
-	public class SpaceDockPipe : Pipe
+	public sealed class SpaceDockPipe : Pipe
 	{
 		private SpaceDockPipe()
 		{
@@ -24,7 +24,7 @@ namespace Space_Refinery_Game
 			return ResourceContainer;
 		}
 
-		public override void TransferResourceFromConnector(ResourceContainer source, FixedDecimalLong8 volume, Connector transferingConnector)
+		public override void TransferResourceFromConnector(ResourceContainer source, FixedDecimalLong8 volume, PipeConnector transferingConnector)
 		{
 			lock (this)
 			{

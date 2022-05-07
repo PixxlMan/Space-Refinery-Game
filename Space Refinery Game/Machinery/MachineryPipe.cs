@@ -27,11 +27,11 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		public override void TransferResourceFromConnector(ResourceContainer source, FixedDecimalLong8 volume, Connector transferingConnector)
+		public override void TransferResourceFromConnector(ResourceContainer source, FixedDecimalLong8 volume, PipeConnector transferingConnector)
 		{
 			lock (this)
 			{
-				source.TransferResource(ResourceContainers[(PipeConnector)transferingConnector], volume);
+				source.TransferResource(ResourceContainers[transferingConnector], volume);
 			}
 		}
 

@@ -21,7 +21,7 @@ namespace Space_Refinery_Game
 
 		public ResourceContainer ResourceContainer;
 
-		public override void TransferResourceFromConnector(ResourceContainer source, FixedDecimalLong8 volume, Connector _)
+		public override void TransferResourceFromConnector(ResourceContainer source, FixedDecimalLong8 volume, PipeConnector _)
 		{
 			lock (this)
 			{

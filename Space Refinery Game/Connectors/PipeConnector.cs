@@ -37,31 +37,37 @@ namespace Space_Refinery_Game
 
 		public void TransferResource(Pipe sourcePipe, ResourceContainer sourceContainer, FixedDecimalLong8 volume)
 		{
-			sourceContainer.TransferResource(((Pipe)GetOther(sourcePipe)).GetResourceContainerForConnector(this), volume);
+			lock (this)
+			{
+				sourceContainer.TransferResource(((Pipe)GetOther(sourcePipe)).GetResourceContainerForConnector(this), volume);
+			}
 		}
 
 		/*Entity.SetTickPriority/Frequency(Low)*/
 		void Entity.Tick()
 		{
-			if (Vacant)
+			lock (this)
 			{
-				return;
-			}
+				if (Vacant)
+				{
+					return;
+				}
 
-			var pipeAResourceContainer = Pipes.pipeA.GetResourceContainerForConnector(this);
-			var pipeBResourceContainer = Pipes.pipeB.GetResourceContainerForConnector(this);
+				var pipeAResourceContainer = Pipes.pipeA.GetResourceContainerForConnector(this);
+				var pipeBResourceContainer = Pipes.pipeB.GetResourceContainerForConnector(this);
 
-			if (FixedDecimalLong8.Abs(pipeAResourceContainer.Fullness - pipeBResourceContainer.Fullness) > (FixedDecimalLong8)0.0001)
-			{
-				ConnectorSide flowDirection = pipeAResourceContainer.Fullness - pipeBResourceContainer.Fullness > 0 ? ConnectorSide.B : ConnectorSide.A;
+				if (FixedDecimalLong8.Abs(pipeAResourceContainer.Fullness - pipeBResourceContainer.Fullness) > (FixedDecimalLong8)0.0001)
+				{
+					ConnectorSide flowDirection = pipeAResourceContainer.Fullness - pipeBResourceContainer.Fullness > 0 ? ConnectorSide.B : ConnectorSide.A;
 
-				var recipientContainer = flowDirection == ConnectorSide.A ? pipeAResourceContainer : pipeBResourceContainer;
+					var recipientContainer = flowDirection == ConnectorSide.A ? pipeAResourceContainer : pipeBResourceContainer;
 
-				var otherContainer = flowDirection == ConnectorSide.A ? pipeBResourceContainer : pipeAResourceContainer;
+					var otherContainer = flowDirection == ConnectorSide.A ? pipeBResourceContainer : pipeAResourceContainer;
 
-				var fullnessDifference = FixedDecimalLong8.Abs(recipientContainer.Fullness - otherContainer.Fullness);
+					var fullnessDifference = FixedDecimalLong8.Abs(recipientContainer.Fullness - otherContainer.Fullness);
 
-				otherContainer.TransferResource(recipientContainer, otherContainer.Volume * fullnessDifference * (FixedDecimalLong8)Time.TickInterval);
+					otherContainer.TransferResource(recipientContainer, otherContainer.Volume * fullnessDifference * (FixedDecimalLong8)Time.TickInterval);
+				}
 			}
 		}
 	}

@@ -65,6 +65,45 @@ namespace Space_Refinery_Game
 					{
 						new PositionAndDirection()
 						{
+							Position = new((FixedDecimalInt4).5f, 0, 0),
+							Direction = new(1, 0, 0),
+						},
+						new PositionAndDirection()
+						{
+							Position = new(-(FixedDecimalInt4).5f, 0, 0),
+							Direction = new(-1, 0, 0),
+						},
+					},
+					ConnectorProperties = new PipeConnectorProperties[]
+					{
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
+						},
+						new PipeConnectorProperties()
+						{
+							Shape = PipeShape.Cylindrical,
+							ConnectorDiameter = (FixedDecimalInt4).475,
+							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
+						},
+					},
+					PipeProperties = new()
+					{
+						FlowableVolume = (FixedDecimalLong8)0.16,
+						Friction = (FixedDecimalLong8)0.04,
+					},
+					TypeOfPipe = typeof(OrdinaryPipe),
+					Name = "Straight Pipe",
+					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeStraight.obj"),
+				},
+								new PipeType()
+				{
+					ConnectorPlacements = new PositionAndDirection[]
+					{
+						new PositionAndDirection()
+						{
 							Position = new((FixedDecimalInt4).9f, 0, -(FixedDecimalInt4).35),
 							Direction = new(1, 0, 0),
 						},
@@ -108,51 +147,12 @@ namespace Space_Refinery_Game
 					},
 					PipeProperties = new()
 					{
-						FlowableVolume = (FixedDecimalInt4)0.16,
-						Friction = (FixedDecimalInt4)0.04,
+						FlowableVolume = (FixedDecimalLong8)0.16,
+						Friction = (FixedDecimalLong8)0.04,
 					},
 					TypeOfPipe = typeof(ElectrolysisMachinery),
 					Name = "Electrolysis Machine",
 					ModelPath = Path.Combine("Assets", "Models", "Machinery", "MachineryElectrolysis.obj"),
-				},
-				new PipeType()
-				{
-					ConnectorPlacements = new PositionAndDirection[]
-					{
-						new PositionAndDirection()
-						{
-							Position = new((FixedDecimalInt4).5f, 0, 0),
-							Direction = new(1, 0, 0),
-						},
-						new PositionAndDirection()
-						{
-							Position = new(-(FixedDecimalInt4).5f, 0, 0),
-							Direction = new(-1, 0, 0),
-						},
-					},
-					ConnectorProperties = new PipeConnectorProperties[]
-					{
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
-					},
-					PipeProperties = new()
-					{
-						FlowableVolume = (FixedDecimalInt4)0.16,
-						Friction = (FixedDecimalInt4)0.04,
-					},
-					TypeOfPipe = typeof(OrdinaryPipe),
-					Name = "Straight Pipe",
-					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeStraight.obj"),
 				},
 				new PipeType()
 				{
@@ -191,8 +191,8 @@ namespace Space_Refinery_Game
 					},
 					PipeProperties = new()
 					{
-						FlowableVolume = (FixedDecimalInt4)0.16,
-						Friction = (FixedDecimalInt4)0.04,
+						FlowableVolume = (FixedDecimalLong8)0.1,
+						Friction = (FixedDecimalLong8)0.04,
 					},
 					TypeOfPipe = typeof(PumpPipe),
 					Name = "Pump",
@@ -219,8 +219,8 @@ namespace Space_Refinery_Game
 					},
 					PipeProperties = new()
 					{
-						FlowableVolume = (FixedDecimalInt4)0.08,
-						Friction = (FixedDecimalInt4)0.04,
+						FlowableVolume = (FixedDecimalLong8)0.08,
+						Friction = (FixedDecimalLong8)0.04,
 					},
 					TypeOfPipe = typeof(SpaceDockPipe),
 					Name = "Space Dock",
@@ -254,7 +254,7 @@ namespace Space_Refinery_Game
 					PipeProperties = new()
 					{
 						FlowableVolume = 0,
-						Friction = (FixedDecimalInt4)0.04,
+						Friction = (FixedDecimalLong8)0.04,
 					},
 					TypeOfPipe = typeof(OrdinaryPipe),
 					Name = "Pipe End",
@@ -292,7 +292,7 @@ namespace Space_Refinery_Game
 					},
 					PipeProperties = new()
 					{
-						FlowableVolume = (FixedDecimalInt4)0.04,
+						FlowableVolume = (FixedDecimalLong8)0.04,
 					},
 					TypeOfPipe = typeof(ValvePipe),
 					Name = "Valve Pipe",
@@ -341,7 +341,7 @@ namespace Space_Refinery_Game
 					},
 					PipeProperties = new()
 					{
-						FlowableVolume = (FixedDecimalInt4)0.24,
+						FlowableVolume = (FixedDecimalLong8)0.24,
 					},
 					TypeOfPipe = typeof(OrdinaryPipe),
 					Name = "T Pipe",
@@ -379,7 +379,7 @@ namespace Space_Refinery_Game
 					},
 					PipeProperties = new()
 					{
-						FlowableVolume = (FixedDecimalInt4)0.16,
+						FlowableVolume = (FixedDecimalLong8)0.16,
 					},
 					TypeOfPipe = typeof(OrdinaryPipe),
 					Name = "90 Bend Pipe",
@@ -439,7 +439,7 @@ namespace Space_Refinery_Game
 					},
 					PipeProperties = new()
 					{
-						FlowableVolume = (FixedDecimalInt4)0.32,
+						FlowableVolume = (FixedDecimalLong8)0.32,
 					},
 					TypeOfPipe = typeof(OrdinaryPipe),
 					Name = "X Pipe",

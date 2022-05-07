@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Veldrid;
 
 namespace Space_Refinery_Game
 {
@@ -56,23 +57,34 @@ namespace Space_Refinery_Game
 		{
 			base.DoMenu();
 
-			if (!Activated)
+			if (blocked)
+			{
+				ImGui.TextColored(RgbaFloat.Red.ToVector4(), "Blocked");
+			}
+
+			if (!Activated || blocked)
 			{
 				UIFunctions.PushDisabled();
 			}
 
-			if (!Activated)
+			if (!Activated || blocked)
 			{
 				UIFunctions.PopDisabled();
 			}
 		}
 
+		static readonly FixedDecimalInt4 hydrogenPart = ((FixedDecimalInt4)1 / (FixedDecimalInt4)3) * (FixedDecimalInt4)2;
+
+		static readonly FixedDecimalInt4 oxygenPart = ((FixedDecimalInt4)1 / (FixedDecimalInt4)3);
+
+		bool blocked;
+
 		protected override void Tick()
 		{
+			base.Tick();
+
 			lock (this)
 			{
-				base.Tick();
-
 				if (Activated)
 				{
 					WaterInput.TransferResource(ProcessingContainer, FixedDecimalLong8.Clamp(WaterInput.Volume * WaterInput.Fullness * (FixedDecimalLong8)Time.TickInterval, 0, WaterInput.Volume));
@@ -83,9 +95,23 @@ namespace Space_Refinery_Game
 
 						var electrolyzedUnit = ProcessingContainer.ExtractResource(MainGame.ChemicalTypesDictionary["Water"].LiquidPhaseType, electrolyzedVolume);
 
-						HydrogenOutput.AddResource(ResourceUnit.Part(electrolyzedUnit, (electrolyzedUnit.Mass / 3) * 2)); // use molar or atom mass later? this isnt really correct since dihydrogen and dioxygen weigh differently...
+						ResourceUnit hydrogenUnit = new(MainGame.ChemicalTypesDictionary["Hydrogen"].GasPhaseType, electrolyzedUnit.Mass * hydrogenPart, electrolyzedUnit.InternalEnergy * hydrogenPart, electrolyzedUnit.Pressure * hydrogenPart);
 
-						OxygenOutput.AddResource(ResourceUnit.Part(electrolyzedUnit, electrolyzedUnit.Mass / 3));
+						ResourceUnit oxygenUnit = new(MainGame.ChemicalTypesDictionary["Oxygen"].GasPhaseType, electrolyzedUnit.Mass * oxygenPart, electrolyzedUnit.InternalEnergy * oxygenPart, electrolyzedUnit.Pressure * oxygenPart);
+
+						if (HydrogenOutput.Volume + hydrogenUnit.Volume > (FixedDecimalLong8)HydrogenOutput.MaxVolume  || OxygenOutput.Volume + oxygenUnit.Volume > (FixedDecimalLong8)OxygenOutput.MaxVolume)
+						{
+							blocked = true;
+							return;
+						}
+						else
+						{
+							blocked = false;
+						}
+
+						HydrogenOutput.AddResource(hydrogenUnit); // use molar or atom mass later? this isnt really correct since dihydrogen and dioxygen weigh differently...
+
+						OxygenOutput.AddResource(oxygenUnit);
 
 						//ElectricityInput.ConsumeElectricity();
 					}

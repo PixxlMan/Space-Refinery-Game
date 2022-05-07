@@ -24,9 +24,9 @@ namespace Space_Refinery_Game
 
 		public ResourceContainer ProcessingContainer = new(ProcessingContainerVolume);
 
-		public static readonly FixedDecimalLong8 InOutPipeVolume = (FixedDecimalLong8).2;
+		public static readonly FixedDecimalLong8 InOutPipeVolume = (FixedDecimalLong8).4;
 
-		public static readonly FixedDecimalLong8 ElectrolyzationRate = (FixedDecimalLong8).05; // m3/s
+		public static readonly FixedDecimalLong8 ElectrolyzationRate = (FixedDecimalLong8).0005; // m3/s
 
 		protected override void SetUp()
 		{
@@ -99,7 +99,7 @@ namespace Space_Refinery_Game
 
 						ResourceUnit oxygenUnit = new(MainGame.ChemicalTypesDictionary["Oxygen"].GasPhaseType, electrolyzedUnit.Mass * oxygenPart, electrolyzedUnit.InternalEnergy * oxygenPart, electrolyzedUnit.Pressure * oxygenPart);
 
-						if (HydrogenOutput.Volume + hydrogenUnit.Volume > (FixedDecimalLong8)HydrogenOutput.MaxVolume  || OxygenOutput.Volume + oxygenUnit.Volume > (FixedDecimalLong8)OxygenOutput.MaxVolume)
+						if (HydrogenOutput.Volume + hydrogenUnit.Volume > HydrogenOutput.MaxVolume  || OxygenOutput.Volume + oxygenUnit.Volume > OxygenOutput.MaxVolume)
 						{
 							blocked = true;
 							return;

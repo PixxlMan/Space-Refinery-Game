@@ -18,6 +18,8 @@ namespace Space_Refinery_Game
 
 		public readonly BodyHandle BodyHandle;
 
+		public bool Destroyed;
+
 		public PhysicsObject(PhysicsWorld world, BodyHandle bodyHandle, Entity entity)
 		{
 			World = world;
@@ -27,6 +29,13 @@ namespace Space_Refinery_Game
 
 		public void Destroy()
 		{
+			if (Destroyed)
+			{
+				throw new Exception("Already destroyed");
+			}
+
+			Destroyed = true;
+
 			World.DestroyPhysicsObject(this);
 		}
 	}

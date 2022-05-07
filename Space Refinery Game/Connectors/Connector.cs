@@ -42,10 +42,12 @@ namespace Space_Refinery_Game
 
 			UI = ui;
 
-			UI.SelectedEntityTypeChanged += (_) =>
-			{
-				UpdateProxy();
-			};
+			UI.SelectedEntityTypeChanged += UpdateProxyOnEntityTypeChanged;
+		}
+
+		private void UpdateProxyOnEntityTypeChanged(IEntityType _)
+		{
+			UpdateProxy();
 		}
 
 		public UI UI;
@@ -235,6 +237,8 @@ namespace Space_Refinery_Game
 			PhysicsObject.Destroy();
 
 			Proxy.PhysicsObject.Destroy();
+
+			UI.SelectedEntityTypeChanged -= UpdateProxyOnEntityTypeChanged;
 
 			MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
 		}

@@ -315,7 +315,7 @@ namespace Space_Refinery_Game
 			}
 			ImGui.End();
 
-			ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize);
+			ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoInputs);
 			ImGui.SetWindowPos(new Vector2((gd.MainSwapchain.Framebuffer.Width / 4 * 3)/* - ImGui.GetWindowSize().X / 2*/, (gd.MainSwapchain.Framebuffer.Height / 2) - ImGui.GetWindowSize().Y / 2), ImGuiCond.Always);
 			{
 				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show player info"))
@@ -337,8 +337,8 @@ namespace Space_Refinery_Game
 			}
 			ImGui.End();
 
-			ImGui.Begin("Hotbar", /*ImGuiWindowFlags.AlwaysAutoResize | */ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize);
-			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2, gd.MainSwapchain.Framebuffer.Height / 5 * 4), ImGuiCond.Always);
+			ImGui.Begin("Hotbar", /*ImGuiWindowFlags.AlwaysAutoResize | */ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
+			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2 - ImGui.GetWindowWidth() / 2, gd.MainSwapchain.Framebuffer.Height / 5 * 4 - ImGui.GetWindowHeight() / 2), ImGuiCond.Always);
 			ImGui.SetWindowSize(new Vector2(500, 50), ImGuiCond.Always);
 			{
 				ImGui.Columns(PipeTypes.Count);

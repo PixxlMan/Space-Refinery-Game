@@ -110,7 +110,7 @@ namespace Space_Refinery_Game
 				return;
 			}
 
-			FixedDecimalInt4 transferPart = (FixedDecimalInt4)(transferVolume / Volume);
+			FixedDecimalLong8 transferPart = (transferVolume / Volume);
 
 			foreach (var unit in resources.Values)
 			{

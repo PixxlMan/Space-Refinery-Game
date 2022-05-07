@@ -128,6 +128,19 @@ namespace Space_Refinery_Game
 			return resourceUnit;
 		}
 
+		public static ResourceUnit Part(ResourceUnit unit, FixedDecimalLong8 part)
+		{
+			ResourceUnit resourceUnit = new()
+			{
+				ResourceType = unit.ResourceType,
+				Mass = (FixedDecimalInt4)((FixedDecimalLong8)unit.Mass * part),
+				InternalEnergy = (FixedDecimalInt4)((FixedDecimalLong8)unit.InternalEnergy * part),
+				//Pressure = unit.Pressure * transferPart, // ?
+			};
+
+			return resourceUnit;
+		}
+
 		public void DoUIInspectorReadonly()
 		{
 			UIFunctions.BeginSub();

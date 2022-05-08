@@ -44,6 +44,11 @@ namespace Space_Refinery_Game
 			lastValue = uiValue;
 		}
 
+		public void SetUp()
+		{
+			uiValue = Value;
+		}
+
 		public bool Value;
 
 		bool uiValue;

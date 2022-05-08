@@ -16,6 +16,8 @@ namespace Space_Refinery_Game
 
 		public void Cancel();
 
+		public void SetUp();
+
 		public event Action<ISetting> AcceptedSettingChange;
 
 		public event Action<ISetting> SettingChanged;

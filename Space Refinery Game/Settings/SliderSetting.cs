@@ -45,6 +45,11 @@ namespace Space_Refinery_Game
 			lastValue = uiValue;
 		}
 
+		public void SetUp()
+		{
+			uiValue = Value.ToFloat();
+		}
+
 		public FixedDecimalInt4 Value;
 
 		float uiValue;

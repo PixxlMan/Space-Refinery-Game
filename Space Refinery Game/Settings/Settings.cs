@@ -41,10 +41,12 @@ namespace Space_Refinery_Game
 				if (defaultValue is not null)
 				{
 					setting = defaultValue;
+					setting.SetUp();
 				}
 				else
 				{
 					setting = TSetting.Create();
+					setting.SetUp();
 				}
 
 				if (settingsOptions.ContainsKey(name))

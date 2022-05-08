@@ -37,7 +37,7 @@ public class MainGame
 
 		GlobalSettings.SetSettingOptions("FoV", new SliderSettingOptions(30, 120));
 
-		GlobalSettings.RegisterToSetting<SliderSetting>("FoV", (se) => GraphicsWorld.Camera.FieldOfView = se.Value * FixedDecimalInt4.DegreesToRadians);
+		GlobalSettings.RegisterToSetting<SliderSetting>("FoV", (se) => GraphicsWorld.Camera.FieldOfView = se.Value * FixedDecimalInt4.DegreesToRadians, defaultValue: new SliderSetting() { Value = 65 });
 
 		ChemicalTypes = ChemicalType.LoadChemicalTypes(Path.Combine(Environment.CurrentDirectory, "Assets", "Chemical types"));
 

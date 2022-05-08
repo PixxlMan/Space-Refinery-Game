@@ -13,7 +13,9 @@ namespace Space_Refinery_Game
 
 		public ResourceContainer Recipient => DirectionAToB ? ContainerB : ContainerA;
 
-		public FixedDecimalLong8 MaxFlowRate = 1; // m3/s
+		public PipeConnector ConnectorA, ConnectorB;
+
+		public static readonly FixedDecimalLong8 MaxFlowRate = 1; // m3/s
 
 		public PumpPipe()
 		{
@@ -22,11 +24,11 @@ namespace Space_Refinery_Game
 
 		public override ResourceContainer GetResourceContainerForConnector(PipeConnector pipeConnector)
 		{
-			if (NamedConnectors["A"] == pipeConnector)
+			if (ConnectorA == pipeConnector)
 			{
 				return ContainerA;
 			}
-			else if(NamedConnectors["B"] == pipeConnector)
+			else if(ConnectorB == pipeConnector)
 			{
 				return ContainerB;
 			}
@@ -50,6 +52,9 @@ namespace Space_Refinery_Game
 			{
 				ContainerA = new(PipeType.PipeProperties.FlowableVolume / 2);
 				ContainerB = new(PipeType.PipeProperties.FlowableVolume / 2);
+
+				ConnectorA = NamedConnectors["A"];
+				ConnectorB = NamedConnectors["B"];
 			}
 		}
 
@@ -70,6 +75,32 @@ namespace Space_Refinery_Game
 			base.Interacted();
 
 			UI.EnterMenu(DoMenu, "Pump");
+		}
+
+		protected override void DisplaceContents()
+		{
+			base.DisplaceContents();
+
+			if (ConnectorA.Vacant && ConnectorB.Vacant)
+			{
+				return;
+			}
+
+			if (ConnectorA.Vacant)
+			{
+				ConnectorB.TransferResource(this, ContainerA, ContainerA.Volume);
+				ConnectorB.TransferResource(this, ContainerB, ContainerB.Volume);
+			}
+			else if (ConnectorB.Vacant)
+			{
+				ConnectorA.TransferResource(this, ContainerA, ContainerA.Volume);
+				ConnectorA.TransferResource(this, ContainerB, ContainerB.Volume);
+			}
+			else
+			{
+				ConnectorA.TransferResource(this, ContainerA, ContainerA.Volume);
+				ConnectorB.TransferResource(this, ContainerB, ContainerB.Volume);
+			}
 		}
 
 		protected void DoMenu()

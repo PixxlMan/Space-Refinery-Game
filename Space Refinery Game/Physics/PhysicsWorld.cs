@@ -57,7 +57,8 @@ namespace Space_Refinery_Game
 						simulation.Timestep(Time.PhysicsInterval.ToFloat(), threadDispatcher);
 					}
 				}
-			}));
+			}))
+			{ Name = "Physics Update Thread" };
 
 			thread.Start();
 		}

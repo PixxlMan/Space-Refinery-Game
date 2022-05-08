@@ -100,7 +100,8 @@ namespace Space_Refinery_Game
 						Tick();
 					}
 				}
-			}));
+			}))
+			{ Name = "Tick Update Thread" };
 
 			thread.Start();
 		}

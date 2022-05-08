@@ -109,7 +109,8 @@ public class MainGame
 
 				Update(deltaTime);
 			}
-		}));
+		}))
+		{ Name = "Update Thread" };
 
 		thread.Start();
 	}

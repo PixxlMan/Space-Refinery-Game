@@ -86,7 +86,8 @@ public class GraphicsWorld
 
 				RenderScene(deltaTime);
 			}
-		}));
+		}))
+		{ Name = "Render Thread" };
 
 		thread.Start();
 	}

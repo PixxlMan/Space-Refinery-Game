@@ -79,13 +79,46 @@ namespace Space_Refinery_Game
 
 		bool blocked;
 
+		public ResourceContainer OutputBuffer = new(FixedDecimalLong8.MaxValue);
+
+		protected override void DisplaceContents()
+		{
+			//throw new NotImplementedException();
+		}
+
 		protected override void Tick()
 		{
 			base.Tick();
 
 			lock (this)
 			{
-				if (Activated)
+				if (blocked)
+				{
+					if (OutputBuffer.ContainsResourceType(MainGame.ChemicalTypesDictionary["Hydrogen"].GasPhaseType))
+					{
+						ResourceUnit bufferedHydrogen = OutputBuffer.GetResourceUnitForResourceType(MainGame.ChemicalTypesDictionary["Hydrogen"].GasPhaseType);
+						if (HydrogenOutput.Volume + bufferedHydrogen.Volume < HydrogenOutput.MaxVolume)
+						{
+							HydrogenOutput.AddResource(OutputBuffer.ExtractResource(bufferedHydrogen.ResourceType, bufferedHydrogen.Volume));
+						}
+					}
+
+					if (OutputBuffer.ContainsResourceType(MainGame.ChemicalTypesDictionary["Water"].GasPhaseType))
+					{
+						ResourceUnit bufferedOxygen = OutputBuffer.GetResourceUnitForResourceType(MainGame.ChemicalTypesDictionary["Oxygen"].GasPhaseType);
+						if (OxygenOutput.Volume + bufferedOxygen.Volume < OxygenOutput.MaxVolume)
+						{
+							OxygenOutput.AddResource(OutputBuffer.ExtractResource(bufferedOxygen.ResourceType, bufferedOxygen.Volume));
+						}
+					}
+
+					/*if (!OutputBuffer.ContainsResourceType(MainGame.ChemicalTypesDictionary["Hydrogen"].GasPhaseType) || !OutputBuffer.ContainsResourceType(MainGame.ChemicalTypesDictionary["Water"].GasPhaseType))
+					{
+						blocked = false;
+					}*/
+				}
+
+				if (Activated/* && !blocked*/)
 				{
 					WaterInput.TransferResource(ProcessingContainer, FixedDecimalLong8.Clamp(WaterInput.Volume * WaterInput.Fullness * (FixedDecimalLong8)Time.TickInterval, 0, WaterInput.Volume));
 
@@ -101,6 +134,9 @@ namespace Space_Refinery_Game
 
 						if (HydrogenOutput.Volume + hydrogenUnit.Volume > HydrogenOutput.MaxVolume  || OxygenOutput.Volume + oxygenUnit.Volume > OxygenOutput.MaxVolume)
 						{
+							OutputBuffer.AddResource(hydrogenUnit);
+							OutputBuffer.AddResource(oxygenUnit);
+
 							blocked = true;
 							return;
 						}

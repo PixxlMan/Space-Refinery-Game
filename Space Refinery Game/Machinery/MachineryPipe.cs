@@ -35,11 +35,6 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		protected override void DisplaceContents()
-		{
-			throw new NotImplementedException();
-		}
-
 		protected override void SetUp()
 		{
 

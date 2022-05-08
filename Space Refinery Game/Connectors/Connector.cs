@@ -32,10 +32,6 @@ namespace Space_Refinery_Game
 		{
 			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
 
-			GameWorld = gameWorld;
-
-			GameWorld.AddEntity(this);
-
 			Transform = transform;
 
 			PhysicsWorld = physicsWorld;
@@ -43,6 +39,10 @@ namespace Space_Refinery_Game
 			UI = ui;
 
 			UI.SelectedEntityTypeChanged += UpdateProxyOnEntityTypeChanged;
+
+			GameWorld = gameWorld;
+
+			GameWorld.AddEntity(this);
 		}
 
 		private void UpdateProxyOnEntityTypeChanged(IEntityType _)

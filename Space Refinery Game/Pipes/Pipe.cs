@@ -54,23 +54,26 @@ namespace Space_Refinery_Game
 
 		public static Pipe Create(PipeType pipeType, Transform transform, UI ui, PhysicsWorld physWorld, GraphicsWorld graphWorld, GameWorld gameWorld, MainGame mainGame)
 		{
-			Pipe pipe = (Pipe)Activator.CreateInstance(pipeType.TypeOfPipe, true);
+			lock (gameWorld.TickSyncObject)
+			{
+				Pipe pipe = (Pipe)Activator.CreateInstance(pipeType.TypeOfPipe, true);
 
-			pipe.Transform = transform;
+				pipe.Transform = transform;
 
-			MainGame.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
+				MainGame.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
 
-			EntityRenderable renderable = CreateRenderable(pipeType, graphWorld, transform);
+				EntityRenderable renderable = CreateRenderable(pipeType, graphWorld, transform);
 
-			PhysicsObject physObj = CreatePhysicsObject(physWorld, transform, pipe, pipeType.Mesh);
+				PhysicsObject physObj = CreatePhysicsObject(physWorld, transform, pipe, pipeType.Mesh);
 
-			PipeConnector[] connectors = CreateConnectors(pipeType, pipe, physWorld, gameWorld, ui);
+				PipeConnector[] connectors = CreateConnectors(pipeType, pipe, physWorld, gameWorld, ui);
 
-			pipe.SetUp(pipeType, ui, physWorld, physObj, connectors, graphWorld, renderable, gameWorld, mainGame);
+				pipe.SetUp(pipeType, ui, physWorld, physObj, connectors, graphWorld, renderable, gameWorld, mainGame);
 
-			gameWorld.AddEntity(pipe);
+				gameWorld.AddEntity(pipe);
 
-			return pipe;
+				return pipe;
+			}
 		}
 
 		public abstract ResourceContainer GetResourceContainerForConnector(PipeConnector pipeConnector);
@@ -157,29 +160,32 @@ namespace Space_Refinery_Game
 
 		public static IConstruction Build(Connector connector, IEntityType entityType, int indexOfSelectedConnector, FixedDecimalLong8 rotation, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame)
 		{
-			PipeConnector pipeConnector = (PipeConnector)connector;
+			lock (gameWorld.TickSyncObject)
+			{
+				PipeConnector pipeConnector = (PipeConnector)connector;
 
-			PipeType pipeType = (PipeType)entityType;
+				PipeType pipeType = (PipeType)entityType;
 
-			Transform transform = GameWorld.GenerateTransformForConnector(pipeType.ConnectorPlacements[indexOfSelectedConnector], pipeConnector, rotation);
+				Transform transform = GameWorld.GenerateTransformForConnector(pipeType.ConnectorPlacements[indexOfSelectedConnector], pipeConnector, rotation);
 
-			Pipe pipe = (Pipe)Activator.CreateInstance(pipeType.TypeOfPipe, true);
+				Pipe pipe = (Pipe)Activator.CreateInstance(pipeType.TypeOfPipe, true);
 
-			pipe.Transform = transform;
+				pipe.Transform = transform;
 
-			MainGame.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
+				MainGame.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
 
-			EntityRenderable renderable = CreateRenderable(pipeType, graphicsWorld, transform);
+				EntityRenderable renderable = CreateRenderable(pipeType, graphicsWorld, transform);
 
-			PhysicsObject physObj = CreatePhysicsObject(physicsWorld, transform, pipe, pipeType.Mesh);
+				PhysicsObject physObj = CreatePhysicsObject(physicsWorld, transform, pipe, pipeType.Mesh);
 
-			var connectors = CreateConnectors(pipeType, pipe, physicsWorld, gameWorld, ui);
+				var connectors = CreateConnectors(pipeType, pipe, physicsWorld, gameWorld, ui);
 
-			pipe.SetUp(pipeType, ui, physicsWorld, physObj, connectors, graphicsWorld, renderable, gameWorld, mainGame);
+				pipe.SetUp(pipeType, ui, physicsWorld, physObj, connectors, graphicsWorld, renderable, gameWorld, mainGame);
 
-			gameWorld.AddEntity(pipe);
+				gameWorld.AddEntity(pipe);
 
-			return pipe;
+				return pipe;
+			}
 		}
 
 		private void SetUp(PipeType pipeType, UI ui, PhysicsWorld physicsWorld, PhysicsObject physicsObject, PipeConnector[] connectors, GraphicsWorld graphicsWorld, EntityRenderable renderable, GameWorld gameWorld, MainGame mainGame)

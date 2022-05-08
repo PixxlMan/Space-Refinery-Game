@@ -18,6 +18,8 @@ namespace Space_Refinery_Game
 
 		public object SynchronizationObject = new();
 
+		public object TickSyncObject = new();
+
 		public HashSet<IConstruction> Constructions = new();
 
 		public MainGame MainGame;
@@ -108,7 +110,7 @@ namespace Space_Refinery_Game
 
 		private void Tick()
 		{
-			lock (SynchronizationObject)
+			lock (TickSyncObject) lock (SynchronizationObject)
 			{
 				foreach (var entity in Entities)
 				{

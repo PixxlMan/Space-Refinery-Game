@@ -101,17 +101,23 @@ namespace Space_Refinery_Game
 
 			for (int i = 0; i < pipeType.ConnectorPlacements.Length; i++)
 			{
-				PhysicsObject physicsObject = physWorld.Raycast<PipeConnector>(
-					pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation) * (FixedDecimalInt4)1.25f,
-					-Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Direction, pipe.Transform.Rotation),
-					(FixedDecimalInt4).125f);
+				MainGame.DebugRender.PersistentCube(new (pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation), pipe.Transform.Rotation, new((FixedDecimalInt4).3, (FixedDecimalInt4).3, (FixedDecimalInt4).3)), RgbaFloat.Yellow);
+				if (physWorld.OverlapBox<PipeConnector>(pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation), pipe.Transform.Rotation, new((FixedDecimalInt4).125, (FixedDecimalInt4).125, (FixedDecimalInt4).125), out PhysicsObject physicsObject))
+				{
+					PipeConnector pipeConnector = (PipeConnector)physicsObject.Entity;
 
-				MainGame.DebugRender.PersistentRay(
-					pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation) * (FixedDecimalInt4)1.25f,
-					-Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Direction, pipe.Transform.Rotation),
-					RgbaFloat.Yellow);
-				
-				if (physicsObject is null || physicsObject.Entity is not PipeConnector)
+					pipeConnector.Connect(pipe);
+
+					connectors[i] = pipeConnector;
+
+					if (pipeType.ConnectorNames is not null && pipeType.ConnectorNames[i] is not null)
+					{
+						pipe.NamedConnectors.Add(pipeType.ConnectorNames[i], pipeConnector);
+					}
+
+					continue;
+				}
+				else
 				{
 					QuaternionFixedDecimalInt4 rotation =
 						QuaternionFixedDecimalInt4.Concatenate(
@@ -136,19 +142,6 @@ namespace Space_Refinery_Game
 					if (pipeType.ConnectorNames is not null && pipeType.ConnectorNames[i] is not null)
 					{
 						pipe.NamedConnectors.Add(pipeType.ConnectorNames[i], connector);
-					}
-
-					continue;
-				}
-				else if (physicsObject.Entity is PipeConnector pipeConnector)
-				{
-					pipeConnector.Connect(pipe);
-
-					connectors[i] = pipeConnector;
-
-					if (pipeType.ConnectorNames is not null && pipeType.ConnectorNames[i] is not null)
-					{
-						pipe.NamedConnectors.Add(pipeType.ConnectorNames[i], pipeConnector);
 					}
 
 					continue;

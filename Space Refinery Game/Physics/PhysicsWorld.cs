@@ -130,7 +130,7 @@ namespace Space_Refinery_Game
 		{
 			public PhysicsObject? PhysicsObject;
 
-			public PhysicsWorld physicsWorld;
+			private PhysicsWorld physicsWorld;
 
 			public RaycastHitHandler(PhysicsWorld physicsWorld) : this()
 			{
@@ -187,6 +187,61 @@ namespace Space_Refinery_Game
 
 				return raycastHitHandler.PhysicsObject;
 			}
+		}
+
+		public struct OverlapBoxHandler<T> : ISweepHitHandler
+			where T : Entity
+		{
+			public PhysicsObject? PhysicsObject;
+
+			private PhysicsWorld physicsWorld;
+
+			public OverlapBoxHandler(PhysicsWorld physicsWorld) : this()
+			{
+				this.physicsWorld = physicsWorld;
+			}
+
+			public bool AllowTest(CollidableReference collidable)
+			{
+				PhysicsObject physicsObject = physicsWorld.PhysicsObjectLookup[collidable.BodyHandle];
+
+				return physicsObject.Entity is T && physicsObject.Enabled;
+			}
+
+			public bool AllowTest(CollidableReference collidable, int child)
+			{
+				PhysicsObject physicsObject = physicsWorld.PhysicsObjectLookup[collidable.BodyHandle];
+
+				return physicsObject.Entity is T && physicsObject.Enabled;
+			}
+
+			public void OnHit(ref float maximumT, float t, in Vector3 hitLocation, in Vector3 hitNormal, CollidableReference collidable)
+			{
+				if (PhysicsObject is null)	
+					PhysicsObject = physicsWorld.PhysicsObjectLookup[collidable.BodyHandle];
+			}
+
+			public void OnHitAtZeroT(ref float maximumT, CollidableReference collidable)
+			{
+				if (PhysicsObject is null)
+					PhysicsObject = physicsWorld.PhysicsObjectLookup[collidable.BodyHandle];
+			}
+		}
+
+		public bool OverlapBox<T>(Vector3FixedDecimalInt4 position, QuaternionFixedDecimalInt4 rotation, Vector3FixedDecimalInt4 box, out PhysicsObject? physicsObject)
+			where T : Entity
+		{
+			Box detectBox = new Box((float)box.X, (float)box.Y, (float)box.Z);
+
+			RigidPose pose = new(position.ToVector3(), rotation.ToQuaternion());
+
+			OverlapBoxHandler<T> overlapBoxHandler = new(this);
+
+			simulation.Sweep(detectBox, pose, new BodyVelocity(), 1, bufferPool, ref overlapBoxHandler);
+
+			physicsObject = overlapBoxHandler.PhysicsObject;
+
+			return overlapBoxHandler.PhysicsObject is not null;
 		}
 
 		public Transform GetTransform(BodyHandle bodyHandle)

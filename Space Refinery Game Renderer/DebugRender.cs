@@ -199,6 +199,17 @@ namespace Space_Refinery_Game_Renderer
 			debugRenderables.Add(renderable);
 		}
 
+		public void PersistentCube(Transform transform, RgbaFloat color)
+		{
+			DeviceBuffer transformationBuffer, colorBuffer;
+
+			GetBuffers(color, new(transform) { Scale = Vector3FixedDecimalInt4.One }, out transformationBuffer, out colorBuffer);
+
+			DebugRenderable renderable = new(GetCubeMesh(transform.Scale), transformationBuffer, colorBuffer);
+
+			persistentRenderables.Add(renderable);
+		}
+
 		public void DrawRay(Vector3FixedDecimalInt4 origin, Vector3FixedDecimalInt4 direction, RgbaFloat color) => DrawRay(origin, direction, 1, color);
 
 		public void DrawRay(Vector3FixedDecimalInt4 origin, Vector3FixedDecimalInt4 direction, FixedDecimalInt4 length, RgbaFloat color)

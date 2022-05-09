@@ -98,7 +98,7 @@ namespace Space_Refinery_Game
 					Name = "Straight Pipe",
 					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeStraight.obj"),
 				},
-								new PipeType()
+				new PipeType()
 				{
 					ConnectorPlacements = new PositionAndDirection[]
 					{

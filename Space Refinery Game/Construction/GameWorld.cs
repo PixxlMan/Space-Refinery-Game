@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Space_Refinery_Game
 {
@@ -117,6 +118,24 @@ namespace Space_Refinery_Game
 					entity.Tick();
 				}
 			}
+		}
+
+		public void SerializeConstructions(XmlWriter writer)
+		{
+			writer.WriteStartElement("GameWorld");
+			{
+				//Constructions.First().Serialize(writer);
+			}
+			writer.WriteEndElement();
+		}
+
+		public void DeserializeConstructions(XmlReader reader)
+		{
+			reader.ReadStartElement("GameWorld");
+			{
+				//Constructions.Add(IConstruction.Deserialize(reader));
+			}
+			reader.ReadEndElement();
 		}
 	}
 }

@@ -19,6 +19,8 @@ namespace Space_Refinery_Game
 
 		private GraphicsDevice gd;
 
+		private MainGame mainGame;
+
 		public List<PipeType> PipeTypes = new();
 
 		public PipeType SelectedPipeType => PipeTypes[EntitySelection];
@@ -103,7 +105,7 @@ namespace Space_Refinery_Game
 			ImGui.End();
 		}
 
-		public static UI Create(GraphicsWorld graphWorld)
+		public static UI Create(GraphicsWorld graphWorld, MainGame mainGame)
 		{
 			ImGui.CreateContext();
 
@@ -114,6 +116,8 @@ namespace Space_Refinery_Game
 			ui.PipeTypes.AddRange(PipeType.GetAllPipeTypes(graphWorld));
 
 			ui.Style();
+
+			ui.mainGame = mainGame;
 
 			return ui;
 		}
@@ -252,6 +256,19 @@ namespace Space_Refinery_Game
 					Unpause();
 				}
 
+				if (ImGui.Button("Save"))
+				{
+					mainGame.Serialize(@"R:\save.xml");
+				}
+
+				if (ImGui.Button("Load"))
+				{
+					lock (mainGame.GameWorld.TickSyncObject)
+					{
+						mainGame.Deserialize(@"R:\save.xml");
+					}
+				}
+
 				if (ImGui.Button("Settings"))
 				{
 					inSettings = !inSettings;
@@ -271,6 +288,7 @@ namespace Space_Refinery_Game
 
 				if (ImGui.Button("Exit game"))
 				{
+					GC.WaitForPendingFinalizers();
 					Environment.Exit(69);
 				}
 			}

@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Veldrid;
 using static FixedPrecision.Convenience;
 
 namespace Space_Refinery_Game
 {
-	public class Player
+	public class Player : IDisposable
 	{
 		public Transform Transform = Transform.Identity;
 
@@ -29,7 +30,7 @@ namespace Space_Refinery_Game
 
 		public Transform CameraTransform => new(Transform.Position, QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(FixedDecimalInt4.Zero, LookPitch, FixedDecimalInt4.Zero), Transform.Rotation).NormalizeQuaternion());
 
-		public Player(MainGame mainGame, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, UI ui)
+		private Player(MainGame mainGame, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, UI ui)
 		{
 			this.mainGame = mainGame;
 			this.physicsWorld = physicsWorld;
@@ -158,6 +159,42 @@ namespace Space_Refinery_Game
 
 			Transform.Rotation = QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(yawDelta, FixedDecimalInt4.Zero, FixedDecimalInt4.Zero), Transform.Rotation).NormalizeQuaternion();
 			//Transform.Rotation = QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(FixedDecimalInt4.Zero, LookPitch, FixedDecimalInt4.Zero), Transform.Rotation).NormalizeQuaternion();
+		}
+
+		public bool Disposed = false;
+
+		public void Dispose()
+		{
+			if (Disposed)
+				return;
+
+			constructionMarker.Destroy();
+		}
+
+		public void Serialize(XmlWriter writer)
+		{
+			writer.WriteStartElement("Player");
+			{
+				Transform.Serialize(writer);
+
+				LookPitch.Serialize(writer);
+			}
+			writer.WriteEndElement();
+		}
+
+		public static Player Deserialize(XmlReader reader, MainGame mainGame, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, UI ui)
+		{
+			Player player = Create(mainGame, physicsWorld, graphicsWorld, gameWorld, ui);
+
+			reader.ReadStartElement("Player");
+			{
+				player.Transform = reader.DeserializeTransform();
+
+				player.LookPitch = reader.DeserializeFixedDecimalInt4();
+			}
+			reader.ReadEndElement();
+
+			return player;
 		}
 	}
 }

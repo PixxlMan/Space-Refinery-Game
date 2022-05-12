@@ -8,6 +8,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Veldrid;
 
 namespace Space_Refinery_Game
@@ -245,5 +246,27 @@ namespace Space_Refinery_Game
 		protected virtual void Interacted()
 		{ 
 		}
+
+		/*void IConstruction.SerializeImpl(XmlWriter writer)
+		{
+			writer.WriteStartElement(nameof(Pipe));
+			{
+				foreach (var connector in Connectors)
+				{
+					writer.WriteElementString(nameof(connector.Vacant), connector.Vacant.ToString());
+
+					if (!connector.Vacant)
+					{
+						((IConstruction)connector.GetOther(this)).Serialize(writer);
+					}
+				}
+			}
+			writer.WriteEndElement();
+		}
+
+		static IConstruction IConstruction.DeserializeImpl(XmlReader reader)
+		{
+			throw new NotImplementedException();
+		}*/
 	}
 }

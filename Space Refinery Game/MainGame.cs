@@ -2,6 +2,7 @@
 using FXRenderer;
 using Space_Refinery_Game_Renderer;
 using System.Diagnostics;
+using System.Xml;
 using Veldrid;
 using static FixedPrecision.Convenience;
 
@@ -57,7 +58,7 @@ public class MainGame
 
 		PhysicsWorld.Run(); 
 
-		ui = UI.Create(GraphicsWorld);
+		ui = UI.Create(GraphicsWorld, this);
 
 		ui.PauseStateChanged += UI_PauseStateChanged;
 
@@ -146,5 +147,49 @@ public class MainGame
 				Player.Update(deltaTime);
 			}
 		}
+	}
+
+	public void Serialize(string path)
+	{
+		File.Delete(path);
+
+		using Stream stream = File.OpenWrite(path);
+
+		using XmlWriter writer = XmlWriter.Create(stream, new XmlWriterSettings() { Indent = true });
+
+		writer.WriteStartDocument();
+		writer.WriteStartElement(nameof(MainGame));
+		{
+			Player.Serialize(writer);
+
+			GameWorld.SerializeConstructions(writer);
+		}
+		writer.WriteEndElement();
+		writer.WriteEndDocument();
+
+		writer.Flush();
+
+		writer.Close();
+
+		stream.Close();
+	}
+
+	public void Deserialize(string path)
+	{
+		using Stream stream = File.OpenRead(path);
+
+		using XmlReader reader = XmlReader.Create(stream);
+
+		reader.ReadStartElement(nameof(MainGame));
+		{
+			Player = Player.Deserialize(reader, this, PhysicsWorld, GraphicsWorld, GameWorld, ui);
+
+			GameWorld.DeserializeConstructions(reader);
+		}
+		//reader.ReadEndElement();
+
+		reader.Close();
+
+		stream.Close();
 	}
 }

@@ -143,5 +143,10 @@ namespace Space_Refinery_Game_Renderer
 
 			cl.DrawIndexed(mesh.IndexCount);
 		}
+
+		public void Destroy()
+		{
+			graphicsWorld.UnorderedRenderables.Remove(this);
+		}
 	}
 }

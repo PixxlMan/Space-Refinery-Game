@@ -131,6 +131,8 @@ namespace Space_Refinery_Game
 
 		public void DeserializeConstructions(XmlReader reader)
 		{
+			Constructions.Clear();
+
 			reader.ReadStartElement("GameWorld");
 			{
 				Constructions.Add(IConstructionSerialization.Deserialize(reader));

@@ -3,6 +3,7 @@ using FXRenderer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -11,6 +12,18 @@ namespace Space_Refinery_Game
 {
 	public static class SerializationExtensions
 	{
+		public static MethodInfo GetImplementedMethod(this Type targetType, MethodInfo interfaceMethod) // https://stackoverflow.com/questions/1113635/how-to-get-methodinfo-of-interface-method-having-implementing-methodinfo-of-cla
+		{
+			if (targetType is null) throw new ArgumentNullException(nameof(targetType));
+			if (interfaceMethod is null) throw new ArgumentNullException(nameof(interfaceMethod));
+
+			var map = targetType.GetInterfaceMap(interfaceMethod.DeclaringType);
+			var index = Array.IndexOf(map.InterfaceMethods, interfaceMethod);
+			if (index < 0) return null;
+
+			return map.TargetMethods[index];
+		}
+
 		public static void Serialize(this Transform transform, XmlWriter writer)
 		{
 			writer.WriteStartElement(nameof(Transform));

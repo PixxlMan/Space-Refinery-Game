@@ -11,58 +11,20 @@ namespace Space_Refinery_Game
 
 		public void Deconstruct();
 
-/*		public sealed void Serialize(XmlWriter writer)
+		public void Serialize(XmlWriter writer, Connector? sourceConnector)
 		{
 			writer.WriteStartElement(nameof(IConstruction));
 			{
-				writer.WriteElementString("Construction type", GetType().AssemblyQualifiedName);
+				writer.WriteElementString("ConstructionType", GetType().AssemblyQualifiedName);
 
-				SerializeImpl(writer);
+				SerializeImpl(writer, sourceConnector);
 			}
 			writer.WriteEndElement();
 		}
 
-		protected void SerializeImpl(XmlWriter writer);
+		public void SerializeImpl(XmlWriter writer, Connector? sourceConnector);
 
-		public sealed static IConstruction Deserialize(XmlReader reader)
-		{
-			IConstruction construction;
-
-			reader.ReadStartElement(nameof(IConstruction));
-			{
-				string typeName;
-
-				reader.ReadStartElement("Construction type");
-				{ 
-					typeName = reader.ReadContentAsString();
-				}
-				reader.ReadEndElement();
-
-				if (DeserializeImplMethods.ContainsKey(typeName))
-				{
-					construction = DeserializeImplMethods[typeName](reader);
-				}
-				else
-				{
-					Type type = Type.GetType(typeName);
-
-					MethodInfo deserializeImplMethod = type.GetMethod(nameof(DeserializeImpl));
-
-					Func<XmlReader, IConstruction> func = (Func<XmlReader, IConstruction>)deserializeImplMethod.CreateDelegate(typeof(Func<XmlReader, IConstruction>));
-
-					DeserializeImplMethods.Add(typeName, func);
-
-					construction = func(reader);
-				}
-			}
-			reader.ReadEndElement();
-
-			return construction;
-		}
-
-		protected sealed static Dictionary<string, Func<XmlReader, IConstruction>> DeserializeImplMethods { get; set; } = new();
-
-		protected static abstract IConstruction DeserializeImpl(XmlReader reader);*/
+		public static abstract IConstruction DeserializeImpl(XmlReader reader);
 
 		//public static abstract bool VerifyCompatibility(Connector connector);
 	}

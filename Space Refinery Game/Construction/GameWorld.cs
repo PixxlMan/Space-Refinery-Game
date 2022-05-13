@@ -124,7 +124,7 @@ namespace Space_Refinery_Game
 		{
 			writer.WriteStartElement("GameWorld");
 			{
-				//Constructions.First().Serialize(writer);
+				Constructions.First().Serialize(writer, null);
 			}
 			writer.WriteEndElement();
 		}
@@ -133,7 +133,7 @@ namespace Space_Refinery_Game
 		{
 			reader.ReadStartElement("GameWorld");
 			{
-				//Constructions.Add(IConstruction.Deserialize(reader));
+				Constructions.Add(IConstructionSerialization.Deserialize(reader));
 			}
 			reader.ReadEndElement();
 		}

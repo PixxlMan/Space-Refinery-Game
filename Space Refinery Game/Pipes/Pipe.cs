@@ -247,18 +247,22 @@ namespace Space_Refinery_Game
 		{ 
 		}
 
-		/*void IConstruction.SerializeImpl(XmlWriter writer)
+		void IConstruction.SerializeImpl(XmlWriter writer, Connector? sourceConnector)
 		{
 			writer.WriteStartElement(nameof(Pipe));
 			{
 				foreach (var connector in Connectors)
 				{
-					writer.WriteElementString(nameof(connector.Vacant), connector.Vacant.ToString());
-
-					if (!connector.Vacant)
+					writer.WriteStartElement(nameof(Connector));
 					{
-						((IConstruction)connector.GetOther(this)).Serialize(writer);
+						writer.WriteElementString(nameof(connector.Vacant), (connector.Vacant || connector == sourceConnector).ToString());
+
+						if (!connector.Vacant && connector != sourceConnector)
+						{
+							((IConstruction)connector.GetOther(this)).Serialize(writer, connector);
+						}
 					}
+					writer.WriteEndElement();
 				}
 			}
 			writer.WriteEndElement();
@@ -267,6 +271,6 @@ namespace Space_Refinery_Game
 		static IConstruction IConstruction.DeserializeImpl(XmlReader reader)
 		{
 			throw new NotImplementedException();
-		}*/
+		}
 	}
 }

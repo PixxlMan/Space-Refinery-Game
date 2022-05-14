@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Veldrid;
 
 namespace Space_Refinery_Game
@@ -153,6 +154,28 @@ namespace Space_Refinery_Game
 					}
 				}
 			}
+		}
+
+		protected override void SerializeState(XmlWriter writer)
+		{
+			writer.WriteElementString(nameof(Activated), Activated.ToString());
+
+			WaterInput.Serialize(writer);
+			OxygenOutput.Serialize(writer);
+			HydrogenOutput.Serialize(writer);
+		}
+
+		protected override void DeserializeState(XmlReader reader)
+		{
+			reader.ReadStartElement(nameof(Activated));
+			{
+				Activated = reader.ReadElementContentAsBoolean();
+			}
+			reader.ReadEndElement();
+
+			WaterInput = ResourceContainer.Deserialize(reader, MainGame);
+			OxygenOutput = ResourceContainer.Deserialize(reader, MainGame);
+			HydrogenOutput = ResourceContainer.Deserialize(reader, MainGame);
 		}
 	}
 }

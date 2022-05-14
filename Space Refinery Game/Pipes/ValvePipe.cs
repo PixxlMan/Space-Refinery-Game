@@ -8,6 +8,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Veldrid;
 
 namespace Space_Refinery_Game
@@ -130,6 +131,22 @@ namespace Space_Refinery_Game
 			ImGui.SliderFloat("Limit", ref menuLimit, 0, 1);
 
 			Limiter = FixedDecimalLong8.FromDouble(menuLimit);
+		}
+
+
+		protected override void SerializeState(XmlWriter writer)
+		{
+			/*writer.WriteElementString(nameof(ResourceContainers.Count), ResourceContainers.Count.ToString());
+
+			foreach (var resourceContainer in ResourceContainers)
+			{
+
+			}*/
+		}
+
+		protected override void DeserializeState(XmlReader reader)
+		{
+			//ResourceContainer = ResourceContainer.Deserialize(reader, MainGame);
 		}
 	}
 }

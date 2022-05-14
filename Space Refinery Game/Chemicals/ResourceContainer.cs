@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Space_Refinery_Game
 {
@@ -15,7 +16,8 @@ namespace Space_Refinery_Game
 		private FixedDecimalLong8 mass;
 		public FixedDecimalLong8 Mass { get => mass; }
 
-		public readonly FixedDecimalLong8 MaxVolume;
+		private FixedDecimalLong8 maxVolume;
+		public FixedDecimalLong8 MaxVolume => maxVolume;
 
 		public FixedDecimalLong8 Fullness
 		{
@@ -34,7 +36,12 @@ namespace Space_Refinery_Game
 
 		public ResourceContainer(FixedDecimalLong8 maxVolume)
 		{
-			MaxVolume = maxVolume;
+			this.maxVolume = maxVolume;
+		}
+
+		private ResourceContainer()
+		{
+
 		}
 
 		public void AddResource(ResourceUnit unit)
@@ -162,6 +169,49 @@ namespace Space_Refinery_Game
 		public IUIInspectable DoUIInspectorEditable()
 		{
 			throw new NotImplementedException();
+		}
+
+		public void Serialize(XmlWriter writer)
+		{
+			writer.WriteStartElement(nameof(ResourceContainer));
+			{
+				MaxVolume.Serialize(writer);
+
+				writer.WriteElementString(nameof(resources.Count), resources.Count.ToString());
+
+				foreach (var resource in resources)
+				{
+					resource.Value.Serialize(writer);
+				}
+			}
+			writer.WriteEndElement();
+		}
+
+		public static ResourceContainer Deserialize(XmlReader reader, MainGame mainGame)
+		{
+			ResourceContainer resourceContainer = new();
+
+			reader.ReadStartElement(nameof(ResourceContainer));
+			{
+				resourceContainer.maxVolume = reader.DeserializeFixedDecimalLong8();
+
+				int resourceCount;
+				reader.ReadStartElement(nameof(Dictionary<ResourceType, ResourceUnit>.Count));
+				{
+					resourceCount = int.Parse(reader.ReadContentAsString());
+				}
+				reader.ReadEndElement();
+
+				for (int i = 0; i < resourceCount; i++)
+				{
+					ResourceUnit resourceUnit = ResourceUnit.Deserialize(reader, mainGame);
+
+					resourceContainer.AddResource(resourceUnit);
+				}
+			}
+			reader.ReadEndElement();
+
+			return resourceContainer;
 		}
 	}
 }

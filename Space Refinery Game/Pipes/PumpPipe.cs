@@ -1,5 +1,6 @@
 ﻿using FixedPrecision;
 using ImGuiNET;
+using System.Xml;
 
 namespace Space_Refinery_Game
 {
@@ -111,6 +112,26 @@ namespace Space_Refinery_Game
 			}
 
 			ImGui.Text(DirectionAToB ? "A->B" : "B->A");
+		}
+
+		protected override void SerializeState(XmlWriter writer)
+		{
+			writer.WriteElementString(nameof(DirectionAToB), DirectionAToB.ToString());
+
+			ContainerA.Serialize(writer);
+			ContainerB.Serialize(writer);
+		}
+
+		protected override void DeserializeState(XmlReader reader)
+		{
+			reader.ReadStartElement(nameof(DirectionAToB));
+			{
+				DirectionAToB = reader.ReadElementContentAsBoolean();
+			}
+			reader.ReadEndElement();
+
+			ContainerA = ResourceContainer.Deserialize(reader, MainGame);
+			ContainerB = ResourceContainer.Deserialize(reader, MainGame);
 		}
 	}
 }

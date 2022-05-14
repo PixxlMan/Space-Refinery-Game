@@ -8,6 +8,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Veldrid;
 
 namespace Space_Refinery_Game
@@ -65,6 +66,16 @@ namespace Space_Refinery_Game
 		public override ResourceContainer GetResourceContainerForConnector(PipeConnector pipeConnector)
 		{
 			return ResourceContainer;
+		}
+
+		protected override void SerializeState(XmlWriter writer)
+		{
+			ResourceContainer.Serialize(writer);
+		}
+
+		protected override void DeserializeState(XmlReader reader)
+		{
+			ResourceContainer = ResourceContainer.Deserialize(reader, MainGame);
 		}
 	}
 }

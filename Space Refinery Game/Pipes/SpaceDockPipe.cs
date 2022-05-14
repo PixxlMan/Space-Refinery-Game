@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Space_Refinery_Game
 {
@@ -109,6 +110,16 @@ namespace Space_Refinery_Game
 					}
 				}
 			}
+		}
+
+		protected override void SerializeState(XmlWriter writer)
+		{
+			ResourceContainer.Serialize(writer);
+		}
+
+		protected override void DeserializeState(XmlReader reader)
+		{
+			ResourceContainer = ResourceContainer.Deserialize(reader, MainGame);
 		}
 	}
 }

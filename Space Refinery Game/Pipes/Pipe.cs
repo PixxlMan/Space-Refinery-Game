@@ -254,6 +254,8 @@ namespace Space_Refinery_Game
 		{ 
 		}
 
+		protected abstract void SerializeState(XmlWriter writer);
+
 		void IConstruction.SerializeImpl(XmlWriter writer, Connector? sourceConnector)
 		{
 			writer.WriteStartElement(nameof(Pipe));
@@ -284,9 +286,17 @@ namespace Space_Refinery_Game
 					}
 					writer.WriteEndElement();
 				}
+
+				writer.WriteStartElement("State");
+				{
+					SerializeState(writer);
+				}
+				writer.WriteEndElement();
 			}
 			writer.WriteEndElement();
 		}
+
+		protected abstract void DeserializeState(XmlReader reader);
 
 		static void IConstruction.DeserializeImpl(XmlReader reader, Connector? sourceConnector, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame)
 		{
@@ -324,6 +334,12 @@ namespace Space_Refinery_Game
 					}
 					reader.ReadEndElement();
 				}
+
+				reader.ReadStartElement("State");
+				{
+					pipe.DeserializeState(reader);
+				}
+				reader.ReadEndElement();
 			}
 			reader.ReadEndElement();
 		}

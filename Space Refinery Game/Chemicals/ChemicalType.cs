@@ -96,5 +96,22 @@ namespace Space_Refinery_Game
 		{
 			throw new NotImplementedException();
 		}
+
+		public ResourceType GetResourceTypeForPhase(ChemicalPhase chemicalPhase)
+		{
+			switch (chemicalPhase)
+			{
+				case ChemicalPhase.Solid:
+					return SolidPhaseType;
+				case ChemicalPhase.Liquid:
+					return LiquidPhaseType;
+				case ChemicalPhase.Gas:
+					return GasPhaseType;
+				case ChemicalPhase.Plasma:
+					throw new NotSupportedException("Plasma isn't supported.");
+				default:
+					throw new ArgumentException(nameof(chemicalPhase));
+			}
+		}
 	}
 }

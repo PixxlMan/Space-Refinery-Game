@@ -11,6 +11,8 @@ namespace Space_Refinery_Game
 
 		public void Deconstruct();
 
+		public ConstructionInfo? ConstructionInfo { get; }
+
 		public void Serialize(XmlWriter writer, Connector? sourceConnector)
 		{
 			writer.WriteStartElement(nameof(IConstruction));
@@ -24,7 +26,9 @@ namespace Space_Refinery_Game
 
 		public void SerializeImpl(XmlWriter writer, Connector? sourceConnector);
 
-		public static abstract IConstruction DeserializeImpl(XmlReader reader);
+		public static abstract void DeserializeImpl(XmlReader reader, Connector? sourceConnector, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame);
+
+		public delegate void DeserializeImplDelegate(XmlReader reader, Connector? sourceConnector, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame);
 
 		//public static abstract bool VerifyCompatibility(Connector connector);
 	}

@@ -89,7 +89,7 @@ namespace Space_Refinery_Game
 
 				if (InputTracker.GetMouseButtonDown(MouseButton.Left))
 				{
-					gameWorld.AddConstruction(Pipe.Build(pipeConnector, ui.SelectedPipeType, ui.ConnectorSelection, RotationSnapped, ui, physicsWorld, graphicsWorld, gameWorld, mainGame));
+					Pipe.Build(pipeConnector, ui.SelectedPipeType, ui.ConnectorSelection, RotationSnapped, ui, physicsWorld, graphicsWorld, gameWorld, mainGame);
 
 					constructionMarker.ShouldDraw = false;
 				}

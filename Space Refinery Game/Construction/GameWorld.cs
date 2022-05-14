@@ -1,5 +1,6 @@
 ﻿using FixedPrecision;
 using FXRenderer;
+using Space_Refinery_Game_Renderer;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -129,13 +130,16 @@ namespace Space_Refinery_Game
 			writer.WriteEndElement();
 		}
 
-		public void DeserializeConstructions(XmlReader reader)
+		public void DeserializeConstructions(XmlReader reader, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld)
 		{
-			Constructions.Clear();
+			foreach (var construction in Constructions.ToArray())
+			{
+				Deconstruct(construction);
+			}
 
 			reader.ReadStartElement("GameWorld");
 			{
-				Constructions.Add(IConstructionSerialization.Deserialize(reader));
+				IConstructionSerialization.Deserialize(reader, null, ui, physicsWorld, graphicsWorld, this, MainGame);
 			}
 			reader.ReadEndElement();
 		}

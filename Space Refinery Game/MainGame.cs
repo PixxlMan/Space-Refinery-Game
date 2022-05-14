@@ -32,6 +32,10 @@ public class MainGame
 
 	public Dictionary<string, ChemicalType> ChemicalTypesDictionary;
 
+	public PipeType[] PipeTypes;
+
+	public Dictionary<string, PipeType> PipeTypesDictionary;
+
 	public void Start(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
 		GlobalSettings = new();
@@ -49,6 +53,10 @@ public class MainGame
 		GraphicsWorld = new();
 
 		GraphicsWorld.SetUp(window, gd, factory, swapchain);
+
+		PipeTypes = PipeType.GetAllPipeTypes(GraphicsWorld);
+
+		PipeTypesDictionary = PipeTypes.ToDictionary((pipeType) => pipeType.Name);
 
 		DebugRender = DebugRender.Create(GraphicsWorld);
 
@@ -182,9 +190,11 @@ public class MainGame
 
 		reader.ReadStartElement(nameof(MainGame));
 		{
+			Player.Dispose();
+
 			Player = Player.Deserialize(reader, this, PhysicsWorld, GraphicsWorld, GameWorld, ui);
 
-			GameWorld.DeserializeConstructions(reader);
+			GameWorld.DeserializeConstructions(reader, ui, PhysicsWorld, GraphicsWorld);
 		}
 		//reader.ReadEndElement();
 

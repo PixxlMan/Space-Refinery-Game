@@ -150,5 +150,22 @@ namespace Space_Refinery_Game
 				return result;
 			}
 		}
+
+		public static void Serialize(this FixedDecimalLong8 fixedDecimalLong8, XmlWriter writer)
+		{
+			writer.WriteElementString(nameof(FixedDecimalLong8), fixedDecimalLong8.ToDecimal().ToString());
+		}
+
+		public static FixedDecimalLong8 DeserializeFixedDecimalLong8(this XmlReader reader)
+		{
+			reader.ReadStartElement(nameof(FixedDecimalLong8));
+			{
+				FixedDecimalLong8 result = FixedDecimalLong8.FromDecimal(decimal.Parse(reader.ReadContentAsString()));
+
+				reader.ReadEndElement();
+
+				return result;
+			}
+		}
 	}
 }

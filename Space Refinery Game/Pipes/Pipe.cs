@@ -41,6 +41,8 @@ namespace Space_Refinery_Game
 
 		Connector[] IConnectable.Connectors => Connectors;
 
+		public ConstructionInfo? ConstructionInfo { get; private set; }
+
 		protected Dictionary<string, PipeConnector> NamedConnectors = new();
 
 		public abstract void TransferResourceFromConnector(ResourceContainer source, FixedDecimalLong8 volume, PipeConnector transferingConnector);
@@ -69,9 +71,11 @@ namespace Space_Refinery_Game
 
 				PipeConnector[] connectors = CreateConnectors(pipeType, pipe, physWorld, gameWorld, ui);
 
-				pipe.SetUp(pipeType, ui, physWorld, physObj, connectors, graphWorld, renderable, gameWorld, mainGame);
+				pipe.SetUp(pipeType, null, ui, physWorld, physObj, connectors, graphWorld, renderable, gameWorld, mainGame);
 
 				gameWorld.AddEntity(pipe);
+
+				gameWorld.AddConstruction(pipe);
 
 				return pipe;
 			}
@@ -174,19 +178,22 @@ namespace Space_Refinery_Game
 
 				var connectors = CreateConnectors(pipeType, pipe, physicsWorld, gameWorld, ui);
 
-				pipe.SetUp(pipeType, ui, physicsWorld, physObj, connectors, graphicsWorld, renderable, gameWorld, mainGame);
+				pipe.SetUp(pipeType, new(indexOfSelectedConnector, rotation), ui, physicsWorld, physObj, connectors, graphicsWorld, renderable, gameWorld, mainGame);
 
 				gameWorld.AddEntity(pipe);
+
+				gameWorld.AddConstruction(pipe);
 
 				return pipe;
 			}
 		}
 
-		private void SetUp(PipeType pipeType, UI ui, PhysicsWorld physicsWorld, PhysicsObject physicsObject, PipeConnector[] connectors, GraphicsWorld graphicsWorld, EntityRenderable renderable, GameWorld gameWorld, MainGame mainGame)
+		private void SetUp(PipeType pipeType, ConstructionInfo? constructionInfo, UI ui, PhysicsWorld physicsWorld, PhysicsObject physicsObject, PipeConnector[] connectors, GraphicsWorld graphicsWorld, EntityRenderable renderable, GameWorld gameWorld, MainGame mainGame)
 		{
 			lock (this)
 			{
 				PipeType = pipeType;
+				ConstructionInfo = constructionInfo;
 				UI = ui;
 				PhysicsWorld = physicsWorld;
 				PhysicsObject = physicsObject;
@@ -251,6 +258,19 @@ namespace Space_Refinery_Game
 		{
 			writer.WriteStartElement(nameof(Pipe));
 			{
+				writer.WriteElementString("PipeType", PipeType.Name);
+
+				if (sourceConnector is not null && ConstructionInfo.HasValue)
+				{
+					ConstructionInfo.Value.Serialize(writer);
+				}
+				else
+				{
+					Transform.Serialize(writer);
+				}
+
+				writer.WriteElementString("ConnectorCount", Connectors.Length.ToString());
+
 				foreach (var connector in Connectors)
 				{
 					writer.WriteStartElement(nameof(Connector));
@@ -268,9 +288,44 @@ namespace Space_Refinery_Game
 			writer.WriteEndElement();
 		}
 
-		static IConstruction IConstruction.DeserializeImpl(XmlReader reader)
+		static void IConstruction.DeserializeImpl(XmlReader reader, Connector? sourceConnector, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame)
 		{
-			throw new NotImplementedException();
+			reader.ReadStartElement(nameof(Pipe));
+			{
+				PipeType pipeType = mainGame.PipeTypesDictionary[reader.ReadElementString("PipeType")];
+
+				Pipe pipe;
+
+				if (sourceConnector is null)
+				{
+					Transform transform = reader.DeserializeTransform();
+
+					pipe = Create(pipeType, transform, ui, physicsWorld, graphicsWorld, gameWorld, mainGame);
+				}
+				else
+				{
+					ConstructionInfo constructionInfo = Space_Refinery_Game.ConstructionInfo.Deserialize(reader);
+
+					pipe = (Pipe)Build(sourceConnector, pipeType, constructionInfo.IndexOfSelectedConnector, constructionInfo.Rotation, ui, physicsWorld, graphicsWorld, gameWorld, mainGame);
+				}
+
+				int count = int.Parse(reader.ReadElementString("ConnectorCount"));
+
+				for (int i = 0; i < count; i++)
+				{
+					reader.ReadStartElement(nameof(Connector));
+					{
+						bool vacant = bool.Parse(reader.ReadElementString(nameof(Connector.Vacant)));
+
+						if (!vacant)
+						{
+							IConstructionSerialization.Deserialize(reader, pipe.Connectors[i], ui, physicsWorld, graphicsWorld, gameWorld, mainGame);
+						}
+					}
+					reader.ReadEndElement();
+				}
+			}
+			reader.ReadEndElement();
 		}
 	}
 }

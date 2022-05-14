@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Space_Refinery_Game_Renderer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,10 +11,8 @@ namespace Space_Refinery_Game
 {
 	public static class IConstructionSerialization
 	{
-		public static IConstruction Deserialize(XmlReader reader)
+		public static void Deserialize(XmlReader reader, Connector? sourceConnector, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame)
 		{
-			IConstruction construction;
-
 			reader.ReadStartElement(nameof(IConstruction));
 			{
 				string typeName;
@@ -26,7 +25,7 @@ namespace Space_Refinery_Game
 
 				if (DeserializeImplMethods.ContainsKey(typeName))
 				{
-					construction = DeserializeImplMethods[typeName](reader);
+					DeserializeImplMethods[typeName](reader, sourceConnector, ui, physicsWorld, graphicsWorld, gameWorld, mainGame);
 				}
 				else
 				{
@@ -39,20 +38,18 @@ namespace Space_Refinery_Game
 
 					MethodInfo? deserializeImplMethod = type.GetImplementedMethod(DeserializeImplInterfaceMethod);
 
-					Func<XmlReader, IConstruction> func = (Func<XmlReader, IConstruction>)deserializeImplMethod.CreateDelegate(typeof(Func<XmlReader, IConstruction>));
+					IConstruction.DeserializeImplDelegate func = (IConstruction.DeserializeImplDelegate)deserializeImplMethod.CreateDelegate(typeof(IConstruction.DeserializeImplDelegate));
 
 					DeserializeImplMethods.Add(typeName, func);
 
-					construction = func(reader);
+					func(reader, sourceConnector, ui, physicsWorld, graphicsWorld, gameWorld, mainGame);
 				}
 			}
 			reader.ReadEndElement();
-
-			return construction;
 		}
 
 		private static MethodInfo DeserializeImplInterfaceMethod = typeof(IConstruction).GetMethod(nameof(IConstruction.DeserializeImpl));
 
-		private static Dictionary<string, Func<XmlReader, IConstruction>> DeserializeImplMethods { get; set; } = new();
+		private static Dictionary<string, IConstruction.DeserializeImplDelegate> DeserializeImplMethods { get; set; } = new();
 	}
 }

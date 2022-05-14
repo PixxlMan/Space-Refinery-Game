@@ -143,7 +143,7 @@ namespace Space_Refinery_Game
 		{
 			reader.ReadStartElement(nameof(FixedDecimalInt4));
 			{
-				FixedDecimalInt4 result = FixedDecimalInt4.FromDecimal(decimal.Parse(reader.ReadContentAsString()));
+				FixedDecimalInt4 result = FixedDecimalInt4.FromDecimal(reader.ReadContentAsDecimal());
 
 				reader.ReadEndElement();
 
@@ -160,7 +160,7 @@ namespace Space_Refinery_Game
 		{
 			reader.ReadStartElement(nameof(FixedDecimalLong8));
 			{
-				FixedDecimalLong8 result = FixedDecimalLong8.FromDecimal(decimal.Parse(reader.ReadContentAsString()));
+				FixedDecimalLong8 result = FixedDecimalLong8.FromDecimal(reader.ReadContentAsDecimal());
 
 				reader.ReadEndElement();
 

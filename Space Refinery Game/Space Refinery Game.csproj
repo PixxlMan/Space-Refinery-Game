@@ -5,7 +5,9 @@
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>Space_Refinery_Game</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+	  <!--
+	  <Nullable>enable</Nullable>
+	  -->
 	<EnablePreviewFeatures>True</EnablePreviewFeatures>
 	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>

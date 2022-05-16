@@ -4,7 +4,9 @@
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>Space_Refinery_Game_Renderer</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
+	<!--
     <Nullable>enable</Nullable>
+	-->
 	<EnablePreviewFeatures>True</EnablePreviewFeatures>
   </PropertyGroup>
 

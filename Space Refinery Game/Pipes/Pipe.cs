@@ -43,6 +43,10 @@ namespace Space_Refinery_Game
 
 		public ConstructionInfo? ConstructionInfo { get; private set; }
 
+		public bool Created;
+
+		public bool Constructed => !Created;
+
 		protected Dictionary<string, PipeConnector> NamedConnectors = new();
 
 		public abstract void TransferResourceFromConnector(ResourceContainer source, FixedDecimalLong8 volume, PipeConnector transferingConnector);
@@ -70,6 +74,8 @@ namespace Space_Refinery_Game
 				PhysicsObject physObj = CreatePhysicsObject(physWorld, transform, pipe, pipeType.Mesh);
 
 				PipeConnector[] connectors = CreateConnectors(pipeType, pipe, physWorld, gameWorld, ui);
+
+				pipe.Created = true;
 
 				pipe.SetUp(pipeType, null, ui, physWorld, physObj, connectors, graphWorld, renderable, gameWorld, mainGame);
 
@@ -180,6 +186,8 @@ namespace Space_Refinery_Game
 
 				pipe.SetUp(pipeType, new(indexOfSelectedConnector, rotation), ui, physicsWorld, physObj, connectors, graphicsWorld, renderable, gameWorld, mainGame);
 
+				pipe.Created = false;
+
 				gameWorld.AddEntity(pipe);
 
 				gameWorld.AddConstruction(pipe);
@@ -256,19 +264,21 @@ namespace Space_Refinery_Game
 
 		protected abstract void SerializeState(XmlWriter writer);
 
-		void IConstruction.SerializeImpl(XmlWriter writer, Connector? sourceConnector)
+		void IConstruction.SerializeImpl(XmlWriter writer, Connector? sourceConnector, HashSet<IConstruction> serializedConstructions)
 		{
 			writer.WriteStartElement(nameof(Pipe));
 			{
 				writer.WriteElementString("PipeType", PipeType.Name);
 
-				if (sourceConnector is not null && ConstructionInfo.HasValue)
+				writer.WriteElementString("CustomTransformed", (Created || sourceConnector is null).ToString());
+
+				if (!ConstructionInfo.HasValue || sourceConnector is null)
 				{
-					ConstructionInfo.Value.Serialize(writer);
+					Transform.Serialize(writer);
 				}
 				else
 				{
-					Transform.Serialize(writer);
+					ConstructionInfo.Value.Serialize(writer);
 				}
 
 				writer.WriteElementString("ConnectorCount", Connectors.Length.ToString());
@@ -277,11 +287,27 @@ namespace Space_Refinery_Game
 				{
 					writer.WriteStartElement(nameof(Connector));
 					{
-						writer.WriteElementString(nameof(connector.Vacant), (connector.Vacant || connector == sourceConnector).ToString());
+						bool ignore = connector.Vacant || connector == sourceConnector;
 
-						if (!connector.Vacant && connector != sourceConnector)
+						IConstruction construction = null;
+
+						if (!ignore)
 						{
-							((IConstruction)connector.GetOther(this)).Serialize(writer, connector);
+							construction = (IConstruction)connector.GetOther(this);
+
+							if (serializedConstructions.Contains(construction))
+							{
+								ignore = true;
+							}
+						}
+
+						writer.WriteElementString(nameof(ignore), ignore.ToString());
+
+						if (!ignore)
+						{
+							serializedConstructions.Add(construction);
+
+							construction.Serialize(writer, connector, serializedConstructions);
 						}
 					}
 					writer.WriteEndElement();
@@ -306,7 +332,7 @@ namespace Space_Refinery_Game
 
 				Pipe pipe;
 
-				if (sourceConnector is null)
+				if (bool.Parse(reader.ReadElementString("CustomTransformed")))
 				{
 					Transform transform = reader.DeserializeTransform();
 
@@ -325,9 +351,9 @@ namespace Space_Refinery_Game
 				{
 					reader.ReadStartElement(nameof(Connector));
 					{
-						bool vacant = bool.Parse(reader.ReadElementString(nameof(Connector.Vacant)));
+						bool ignore = bool.Parse(reader.ReadElementString(nameof(ignore)));
 
-						if (!vacant)
+						if (!ignore)
 						{
 							IConstructionSerialization.Deserialize(reader, pipe.Connectors[i], ui, physicsWorld, graphicsWorld, gameWorld, mainGame);
 						}

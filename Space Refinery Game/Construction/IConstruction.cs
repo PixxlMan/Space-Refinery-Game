@@ -13,18 +13,18 @@ namespace Space_Refinery_Game
 
 		public ConstructionInfo? ConstructionInfo { get; }
 
-		public void Serialize(XmlWriter writer, Connector? sourceConnector)
+		public void Serialize(XmlWriter writer, Connector? sourceConnector, HashSet<IConstruction> serializedConstructions)
 		{
 			writer.WriteStartElement(nameof(IConstruction));
 			{
 				writer.WriteElementString("ConstructionType", GetType().AssemblyQualifiedName);
 
-				SerializeImpl(writer, sourceConnector);
+				SerializeImpl(writer, sourceConnector, serializedConstructions);
 			}
 			writer.WriteEndElement();
 		}
 
-		public void SerializeImpl(XmlWriter writer, Connector? sourceConnector);
+		public void SerializeImpl(XmlWriter writer, Connector? sourceConnector, HashSet<IConstruction> serializedConstructions);
 
 		public static abstract void DeserializeImpl(XmlReader reader, Connector? sourceConnector, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame);
 

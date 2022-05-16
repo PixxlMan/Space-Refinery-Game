@@ -125,7 +125,7 @@ namespace Space_Refinery_Game
 		{
 			writer.WriteStartElement("GameWorld");
 			{
-				Constructions.First().Serialize(writer, null);
+				Constructions.First().Serialize(writer, null, new());
 			}
 			writer.WriteEndElement();
 		}

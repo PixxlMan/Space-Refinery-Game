@@ -104,7 +104,7 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		protected void DoMenu()
+		private void DoMenu()
 		{
 			if (ImGui.Button("Direction toggle"))
 			{

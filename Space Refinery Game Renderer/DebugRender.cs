@@ -186,7 +186,6 @@ namespace Space_Refinery_Game_Renderer
 			return mesh;
 		}
 
-
 		// TODO: use separate size? instead of using transform.scale...
 		public void DrawCube(Transform transform, RgbaFloat color)
 		{

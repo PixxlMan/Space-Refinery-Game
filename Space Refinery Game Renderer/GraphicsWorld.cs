@@ -51,7 +51,7 @@ public class GraphicsWorld
 
 		window.Resized += () => Camera.WindowResized(window.Width, window.Height);
 
-		Camera = new(window.Width, window.Height);
+		Camera = new(window.Width, window.Height, Perspective.Perspective);
 
 		Camera.Transform.Position = new Vector3FixedDecimalInt4(0, 0, 10);
 
@@ -83,6 +83,8 @@ public class GraphicsWorld
 				timeLastUpdate = time;
 
 				Thread.Sleep(1);
+
+				window.PumpEvents(out var inputSnapshot);
 
 				RenderScene(deltaTime);
 			}

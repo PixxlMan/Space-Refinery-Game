@@ -84,8 +84,6 @@ public class GraphicsWorld
 
 				Thread.Sleep(1);
 
-				window.PumpEvents(out var inputSnapshot);
-
 				RenderScene(deltaTime);
 			}
 		}))

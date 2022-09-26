@@ -58,7 +58,7 @@ namespace Space_Refinery_Game
 
 		public Transform Transform;
 
-		public ConnectorProxy Proxy;
+		public InformationProxy Proxy;
 
 		public PhysicsObject PhysicsObject;
 
@@ -202,7 +202,7 @@ namespace Space_Refinery_Game
 
 			var proxyPhysicsObject = new PhysicsObjectDescription<ConvexHull>(PhysicsWorld.GetConvexHullForMesh(UI.SelectedPipeType.Mesh), GameWorld.GenerateTransformForConnector(UI.SelectedPipeType.ConnectorPlacements[UI.ConnectorSelection], this, UI.RotationIndex * 45 * FixedDecimalLong8.DegreesToRadians), 0, true);
 
-			Proxy.PhysicsObject = PhysicsWorld.AddPhysicsObject(proxyPhysicsObject, this);
+			Proxy.PhysicsObject = PhysicsWorld.AddPhysicsObject(proxyPhysicsObject, Proxy);
 
 			Proxy.Enable();
 		}

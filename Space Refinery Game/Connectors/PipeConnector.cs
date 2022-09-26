@@ -4,7 +4,7 @@ using FXRenderer;
 
 namespace Space_Refinery_Game
 {
-	public class PipeConnector : Connector, Entity
+	public sealed class PipeConnector : Connector, Entity
 	{
 		public PipeConnector((Pipe connectableA, Pipe connectableB) connectables, Transform transform, PipeConnectorProperties pipeConnectorProperties, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui) : base(connectables, transform, gameWorld, physicsWorld, ui)
 		{

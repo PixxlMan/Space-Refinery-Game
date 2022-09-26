@@ -2,6 +2,6 @@
 {
 	public interface ISerializableReference
 	{
-		public Guid SerializableReferenceGUID { get; init; }
+		public Guid SerializableReferenceGUID { get; }
 	}
 }

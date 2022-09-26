@@ -5,9 +5,9 @@ using System.Xml;
 
 namespace Space_Refinery_Game
 {
-	public interface IConstruction//<TConnector> where TConnector : Connector
+	public interface IConstruction : ISerializableReference//<TConnector> where TConnector : Connector
 	{
-		public static abstract IConstruction/*<TConnector>*/ Build(/*TConnector*/ Connector connector, IEntityType entityType, int indexOfSelectedConnector, FixedDecimalLong8 rotation, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame);
+		public static abstract IConstruction/*<TConnector>*/ Build(/*TConnector*/ Connector connector, IEntityType entityType, int indexOfSelectedConnector, FixedDecimalLong8 rotation, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler);
 
 		public void Deconstruct();
 
@@ -26,9 +26,9 @@ namespace Space_Refinery_Game
 
 		public void SerializeImpl(XmlWriter writer, Connector? sourceConnector, HashSet<IConstruction> serializedConstructions);
 
-		public static abstract void DeserializeImpl(XmlReader reader, Connector? sourceConnector, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame);
+		public static abstract void DeserializeImpl(XmlReader reader, Connector? sourceConnector, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler);
 
-		public delegate void DeserializeImplDelegate(XmlReader reader, Connector? sourceConnector, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame);
+		public delegate void DeserializeImplDelegate(XmlReader reader, Connector? sourceConnector, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler);
 
 		//public static abstract bool VerifyCompatibility(Connector connector);
 	}

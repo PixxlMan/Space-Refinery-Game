@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace Space_Refinery_Game
 {
-	public class ConnectorProxy : Entity
+	public class InformationProxy : Entity
 	{
-		public Connector Connector;
+		public Entity ProxiedEntity;
 
 		public PhysicsObject PhysicsObject;
 
-		public ConnectorProxy(Connector connector)
+		public InformationProxy(Connector connector)
 		{
-			Connector = connector;
+			ProxiedEntity = connector;
 		}
 
 		public void Enable()
@@ -27,6 +27,6 @@ namespace Space_Refinery_Game
 			PhysicsObject.Enabled = false;
 		}
 
-		public IInformationProvider InformationProvider => ((Entity)Connector).InformationProvider;
+		public IInformationProvider InformationProvider => ((Entity)ProxiedEntity).InformationProvider;
 	}
 }

@@ -21,122 +21,156 @@ namespace Space_Refinery_Game
         public static Vector2FixedDecimalInt4 MouseDelta => MousePosition - PreviousMousePosition;
 
         private static InputSnapshot inputSnapshot;
-        public static InputSnapshot FrameSnapshot { get => inputSnapshot is null ? new BogusInputSnapshot() : inputSnapshot; private set => inputSnapshot = value; }
+        public static InputSnapshot FrameSnapshot { get => inputSnapshot is null ? new BogusInputSnapshot() : inputSnapshot; }
 
         public static bool IgnoreNextFrameMousePosition;
 
         private static bool ignoredMousePositonLastFrame;
 
+        private static object SyncRoot = new();
+
         public static bool CaptureKeyDown(Key key)
 		{
-			if (_newKeysThisFrame.Contains(key))
+			lock (SyncRoot)
 			{
-                _newKeysThisFrame.Remove(key);
+                if (_newKeysThisFrame.Contains(key))
+                {
+                    _newKeysThisFrame.Remove(key);
 
-                return true;
-			}
-			else
-			{
-                return false;
-			}
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
 
         public static bool GetKey(Key key)
-        {
-            return _currentlyPressedKeys.Contains(key);
+		{
+			lock (SyncRoot)
+			{
+                return _currentlyPressedKeys.Contains(key);
+			}
         }
 
         public static bool GetKeyDown(Key key)
         {
-            return _newKeysThisFrame.Contains(key);
+			lock (SyncRoot)
+			{
+                return _newKeysThisFrame.Contains(key);
+			}
         }
 
         public static bool GetMouseButton(MouseButton button)
         {
-            return _currentlyPressedMouseButtons.Contains(button);
+			lock (SyncRoot)
+			{
+                return _currentlyPressedMouseButtons.Contains(button);
+			}
         }
 
         public static bool GetMouseButtonDown(MouseButton button)
         {
-            return _newMouseButtonsThisFrame.Contains(button);
+            lock (SyncRoot)
+            {
+                return _newMouseButtonsThisFrame.Contains(button);
+            }
         }
 
         public static void UpdateFrameInput(InputSnapshot snapshot)
         {
-            FrameSnapshot = snapshot;
-            _newKeysThisFrame.Clear();
-            _newMouseButtonsThisFrame.Clear();
-
-            if (!IgnoreNextFrameMousePosition)
-			{
-                PreviousMousePosition = MousePosition;
-                MousePosition = snapshot.MousePosition.ToFixed<Vector2FixedDecimalInt4>();
-
-                if (ignoredMousePositonLastFrame)
-                {
-                    PreviousMousePosition = MousePosition; // ensure MouseDelta is 0
-                    ignoredMousePositonLastFrame = false;
-                }
-            }
-			else
-			{
-                PreviousMousePosition = Vector2FixedDecimalInt4.Zero;
-                MousePosition = Vector2FixedDecimalInt4.Zero;
-                ignoredMousePositonLastFrame = true;
-            }
-
-            foreach (KeyEvent ke in snapshot.KeyEvents)
+            lock (SyncRoot)
             {
-				if (ke.Down)
+                inputSnapshot = snapshot;
+                _newKeysThisFrame.Clear();
+                _newMouseButtonsThisFrame.Clear();
+
+                if (!IgnoreNextFrameMousePosition)
                 {
-                    KeyDown(ke.Key);
+                    PreviousMousePosition = MousePosition;
+                    MousePosition = snapshot.MousePosition.ToFixed<Vector2FixedDecimalInt4>();
+
+                    if (ignoredMousePositonLastFrame)
+                    {
+                        PreviousMousePosition = MousePosition; // ensure MouseDelta is 0
+                        ignoredMousePositonLastFrame = false;
+                    }
                 }
                 else
                 {
-                    KeyUp(ke.Key);
+                    PreviousMousePosition = Vector2FixedDecimalInt4.Zero;
+                    MousePosition = Vector2FixedDecimalInt4.Zero;
+                    ignoredMousePositonLastFrame = true;
                 }
-            }
 
-            foreach (MouseEvent me in snapshot.MouseEvents)
-            {
-				if (me.Down)
+				for (int i = 0; i < snapshot.KeyEvents.Count; i++)
                 {
-                    MouseDown(me.MouseButton);
+					KeyEvent ke = snapshot.KeyEvents[i];
+					if (ke.Down)
+                    {
+                        KeyDown(ke.Key);
+                    }
+                    else
+                    {
+                        KeyUp(ke.Key);
+                    }
                 }
-                else
-                {
-                    MouseUp(me.MouseButton);
-                }
-            }
 
-            IgnoreNextFrameMousePosition = false;
+				for (int i = 0; i < snapshot.MouseEvents.Count; i++)
+                {
+					MouseEvent me = snapshot.MouseEvents[i];
+					if (me.Down)
+                    {
+                        MouseDown(me.MouseButton);
+                    }
+                    else
+                    {
+                        MouseUp(me.MouseButton);
+                    }
+                }
+
+                IgnoreNextFrameMousePosition = false;
+            }
 		}
 
 		private static void MouseUp(MouseButton mouseButton)
         {
-            _currentlyPressedMouseButtons.Remove(mouseButton);
-            _newMouseButtonsThisFrame.Remove(mouseButton);
+            lock (SyncRoot)
+            {
+                _currentlyPressedMouseButtons.Remove(mouseButton);
+                _newMouseButtonsThisFrame.Remove(mouseButton);
+            }
         }
 
         private static void MouseDown(MouseButton mouseButton)
         {
-            if (_currentlyPressedMouseButtons.Add(mouseButton))
+            lock (SyncRoot)
             {
-                _newMouseButtonsThisFrame.Add(mouseButton);
+                if (_currentlyPressedMouseButtons.Add(mouseButton))
+                {
+                    _newMouseButtonsThisFrame.Add(mouseButton);
+                }
             }
         }
 
         private static void KeyUp(Key key)
         {
-            _currentlyPressedKeys.Remove(key);
-            _newKeysThisFrame.Remove(key);
+            lock (SyncRoot)
+            {
+                _currentlyPressedKeys.Remove(key);
+                _newKeysThisFrame.Remove(key);
+            }
         }
 
         private static void KeyDown(Key key)
         {
-            if (_currentlyPressedKeys.Add(key))
+            lock (SyncRoot)
             {
-                _newKeysThisFrame.Add(key);
+                if (_currentlyPressedKeys.Add(key))
+                {
+                    _newKeysThisFrame.Add(key);
+                }
             }
         }
     }

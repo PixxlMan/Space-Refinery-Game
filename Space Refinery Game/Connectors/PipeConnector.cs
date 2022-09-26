@@ -22,7 +22,7 @@ namespace Space_Refinery_Game
 
 		private void CreatePhysicsObject(Transform transform, PhysicsWorld physicsWorld)
 		{
-			var physicsObjectDescription = new PhysicsObjectDescription<Box>(new Box(.4f, .4f, .1f), transform, 0, true);
+			var physicsObjectDescription = new PhysicsObjectDescription<Box>(new Box(.1f, .1f, .1f), transform, 0, true);
 
 			PhysicsObject = physicsWorld.AddPhysicsObject(physicsObjectDescription, this);
 		}

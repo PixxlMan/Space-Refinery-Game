@@ -80,6 +80,8 @@ public class MainGame
 
 		InputTracker.IgnoreNextFrameMousePosition = true;
 
+		//DebugRender.ShouldRender = true;
+
 		GraphicsWorld.Run();
 
 		StartUpdating();
@@ -159,27 +161,30 @@ public class MainGame
 
 	public void Serialize(string path)
 	{
-		File.Delete(path);
-
-		using Stream stream = File.OpenWrite(path);
-
-		using XmlWriter writer = XmlWriter.Create(stream, new XmlWriterSettings() { Indent = true });
-
-		writer.WriteStartDocument();
-		writer.WriteStartElement(nameof(MainGame));
+		lock (GameWorld.TickSyncObject)
 		{
-			Player.Serialize(writer);
+			File.Delete(path);
 
-			GameWorld.SerializeConstructions(writer);
+			using Stream stream = File.OpenWrite(path);
+
+			using XmlWriter writer = XmlWriter.Create(stream, new XmlWriterSettings() { Indent = true });
+
+			writer.WriteStartDocument();
+			writer.WriteStartElement(nameof(MainGame));
+			{
+				Player.Serialize(writer);
+
+				GameWorld.SerializeConstructions(writer);
+			}
+			writer.WriteEndElement();
+			writer.WriteEndDocument();
+
+			writer.Flush();
+
+			writer.Close();
+
+			stream.Close();
 		}
-		writer.WriteEndElement();
-		writer.WriteEndDocument();
-
-		writer.Flush();
-
-		writer.Close();
-
-		stream.Close();
 	}
 
 	public void Deserialize(string path)

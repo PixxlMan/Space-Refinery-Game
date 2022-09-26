@@ -124,11 +124,7 @@ namespace Space_Refinery_Game
 
 		protected override void DeserializeState(XmlReader reader)
 		{
-			reader.ReadStartElement(nameof(DirectionAToB));
-			{
-				DirectionAToB = reader.ReadElementContentAsBoolean();
-			}
-			reader.ReadEndElement();
+			DirectionAToB = bool.Parse(reader.ReadElementContentAsString());
 
 			ContainerA = ResourceContainer.Deserialize(reader, MainGame);
 			ContainerB = ResourceContainer.Deserialize(reader, MainGame);

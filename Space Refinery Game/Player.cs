@@ -56,28 +56,28 @@ namespace Space_Refinery_Game
 
 		public void Update(FixedDecimalInt4 deltaTime)
 		{
-			var physicsObject = physicsWorld.Raycast(CameraTransform.Position, -CameraTransform.LocalUnitZ, 1000);
+			var lookedAtPhysicsObject = physicsWorld.Raycast(CameraTransform.Position, -CameraTransform.LocalUnitZ, 1000);
 
-			if (physicsObject is not null)
+			if (lookedAtPhysicsObject is not null)
 			{
-				ui.CurrentlySelectedInformationProvider = physicsObject.InformationProvider;
+				ui.CurrentlySelectedInformationProvider = lookedAtPhysicsObject.InformationProvider;
 			}
 			else
 			{
 				ui.CurrentlySelectedInformationProvider = null;
 			}
 
-			if (physicsObject is not null)
+			if (lookedAtPhysicsObject is not null)
 			{
 				if (InputTracker.GetKeyDown(Key.F))
 				{
-					physicsObject.Entity.Interacted();
+					lookedAtPhysicsObject.Entity.Interacted();
 				}
 			}
 
-			if (physicsObject is not null && (((physicsObject.Entity is Connector connector && ((PipeConnector)connector).Vacant) || (physicsObject.Entity is ConnectorProxy connectorProxy && ((PipeConnector)connectorProxy.Connector).Vacant))) && ui.SelectedPipeType is not null)
+			if (ShouldShowConstructionMarker(lookedAtPhysicsObject))
 			{
-				PipeConnector pipeConnector = physicsObject.Entity is Connector con ? (PipeConnector)con : ((PipeConnector)((ConnectorProxy)physicsObject.Entity).Connector);
+				PipeConnector pipeConnector = lookedAtPhysicsObject.Entity is Connector con ? (PipeConnector)con : (PipeConnector)(((InformationProxy)lookedAtPhysicsObject.Entity).ProxiedEntity);
 
 				constructionMarker.SetMesh(ui.SelectedPipeType.Mesh);
 
@@ -94,7 +94,7 @@ namespace Space_Refinery_Game
 					constructionMarker.ShouldDraw = false;
 				}
 			}
-			else if (physicsObject is not null && physicsObject.Entity is IConstruction construction)
+			else if (lookedAtPhysicsObject is not null && lookedAtPhysicsObject.Entity is IConstruction construction)
 			{
 				if (construction is OrdinaryPipe pipe)
 				{
@@ -110,7 +110,7 @@ namespace Space_Refinery_Game
 				}
 			}
 
-			if (physicsObject is null || physicsObject.Entity is not Connector)
+			if (!ShouldShowConstructionMarker(lookedAtPhysicsObject))
 			{
 				constructionMarker.ShouldDraw = false;
 			}
@@ -159,6 +159,11 @@ namespace Space_Refinery_Game
 
 			Transform.Rotation = QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(yawDelta, FixedDecimalInt4.Zero, FixedDecimalInt4.Zero), Transform.Rotation).NormalizeQuaternion();
 			//Transform.Rotation = QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(FixedDecimalInt4.Zero, LookPitch, FixedDecimalInt4.Zero), Transform.Rotation).NormalizeQuaternion();
+		}
+
+		private bool ShouldShowConstructionMarker(PhysicsObject lookedAtPhysicsObject)
+		{
+			return lookedAtPhysicsObject is not null && (((lookedAtPhysicsObject.Entity is Connector connector && (connector).Vacant) || (lookedAtPhysicsObject.Entity is InformationProxy informationProxy && informationProxy.ProxiedEntity is Connector proxiedConnector && proxiedConnector.Vacant))) && ui.SelectedPipeType is not null;
 		}
 
 		public bool Disposed = false;

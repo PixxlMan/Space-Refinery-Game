@@ -167,5 +167,30 @@ namespace Space_Refinery_Game
 				return result;
 			}
 		}
+
+		public static void SerializeReference(this ISerializableReference serializableReference, XmlWriter writer)
+		{
+			writer.WriteElementString("GUID", serializableReference.SerializableReferenceGUID.ToString());
+		}
+
+		public static Guid ReadRefereceGUID(this XmlReader reader, SerializationReferenceHandler referenceHandler)
+		{
+			Guid guid = Guid.Parse(reader.ReadElementString("GUID"));
+
+			return guid;
+		}
+
+		public async static Task<ISerializableReference> DeserializeReference(this XmlReader reader, SerializationReferenceHandler referenceHandler)
+		{
+			Guid guid = Guid.Parse(reader.ReadElementString("GUID"));
+
+			return await referenceHandler.AwaitEventualReference(guid);
+		}
+
+		public async static Task<T> DeserializeReference<T>(this XmlReader reader, SerializationReferenceHandler referenceHandler)
+			where T : ISerializableReference
+		{
+			return (T)await DeserializeReference(reader, referenceHandler);
+		}
 	}
 }

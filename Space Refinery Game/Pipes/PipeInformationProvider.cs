@@ -17,10 +17,15 @@ namespace Space_Refinery_Game
 		public virtual void InformationUI()
 		{
 			ImGui.Spacing();
-			
-			ImGui.Text("Postition: " + Pipe.Renderable.Transform.Position.ToString("", CultureInfo.CurrentCulture));
 
-			ImGui.Text("Orientation: " + Pipe.Renderable.Transform.Rotation.ToString());
+			if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show debug information in information provider"))
+			{
+				ImGui.Text("GUID: " + Pipe.SerializableReferenceGUID.ToString());
+
+				ImGui.Text("Postition: " + Pipe.Transform.Position.ToString());
+
+				ImGui.Text("Orientation: " + Pipe.Transform.Rotation.ToString());
+			}
 		}
 	}
 }

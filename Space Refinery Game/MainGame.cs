@@ -76,7 +76,7 @@ public class MainGame
 
 		Starfield.Create(GraphicsWorld);
 
-		GameWorld.AddConstruction(Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), ui, PhysicsWorld, GraphicsWorld, GameWorld, this));
+		GameWorld.AddConstruction(Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), ui, PhysicsWorld, GraphicsWorld, GameWorld, this, GameWorld.SerializationReferenceHandler));
 
 		InputTracker.IgnoreNextFrameMousePosition = true;
 
@@ -199,9 +199,9 @@ public class MainGame
 
 			Player = Player.Deserialize(reader, this, PhysicsWorld, GraphicsWorld, GameWorld, ui);
 
-			GameWorld.DeserializeConstructions(reader, ui, PhysicsWorld, GraphicsWorld);
+			GameWorld.DeserializeConstructions(reader, ui, PhysicsWorld, GraphicsWorld, GameWorld.SerializationReferenceHandler);
 		}
-		//reader.ReadEndElement();
+		reader.ReadEndElement();
 
 		reader.Close();
 

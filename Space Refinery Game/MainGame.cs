@@ -189,22 +189,25 @@ public class MainGame
 
 	public void Deserialize(string path)
 	{
-		using Stream stream = File.OpenRead(path);
-
-		using XmlReader reader = XmlReader.Create(stream);
-
-		reader.ReadStartElement(nameof(MainGame));
+		lock (GameWorld.TickSyncObject)
 		{
-			Player.Dispose();
+			using Stream stream = File.OpenRead(path);
 
-			Player = Player.Deserialize(reader, this, PhysicsWorld, GraphicsWorld, GameWorld, ui);
+			using XmlReader reader = XmlReader.Create(stream);
 
-			GameWorld.DeserializeConstructions(reader, ui, PhysicsWorld, GraphicsWorld, GameWorld.SerializationReferenceHandler);
+			reader.ReadStartElement(nameof(MainGame));
+			{
+				Player.Dispose();
+
+				Player = Player.Deserialize(reader, this, PhysicsWorld, GraphicsWorld, GameWorld, ui);
+
+				GameWorld.DeserializeConstructions(reader, ui, PhysicsWorld, GraphicsWorld, GameWorld.SerializationReferenceHandler);
+			}
+			reader.ReadEndElement();
+
+			reader.Close();
+
+			stream.Close();
 		}
-		reader.ReadEndElement();
-
-		reader.Close();
-
-		stream.Close();
 	}
 }

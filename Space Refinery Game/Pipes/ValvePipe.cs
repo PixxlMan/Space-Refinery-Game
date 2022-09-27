@@ -136,17 +136,16 @@ namespace Space_Refinery_Game
 
 		protected override void SerializeState(XmlWriter writer)
 		{
-			/*writer.WriteElementString(nameof(ResourceContainers.Count), ResourceContainers.Count.ToString());
+			/*Limiter.Serialize(writer, "Limiter");
 
-			foreach (var resourceContainer in ResourceContainers)
-			{
-
-			}*/
+			writer.Serialize(ResourceContainers, (w, c) => c.Value.Serialize(w));*/
 		}
 
 		protected override void DeserializeState(XmlReader reader)
 		{
-			//ResourceContainer = ResourceContainer.Deserialize(reader, MainGame);
+			/*Limiter = reader.DeserializeFixedDecimalLong8("Limiter");
+
+			reader.DeserializeCollection((r) => );*/
 		}
 	}
 }

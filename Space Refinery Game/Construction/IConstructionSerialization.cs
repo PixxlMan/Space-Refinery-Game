@@ -11,7 +11,7 @@ namespace Space_Refinery_Game
 {
 	public static class IConstructionSerialization
 	{
-		public static void Deserialize(XmlReader reader, Connector? sourceConnector, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler)
+		public static void Deserialize(XmlReader reader, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler)
 		{
 			reader.ReadStartElement(nameof(IConstruction));
 			{
@@ -25,7 +25,7 @@ namespace Space_Refinery_Game
 
 				if (DeserializeImplMethods.ContainsKey(typeName))
 				{
-					DeserializeImplMethods[typeName](reader, sourceConnector, ui, physicsWorld, graphicsWorld, gameWorld, mainGame, referenceHandler);
+					DeserializeImplMethods[typeName](reader, ui, physicsWorld, graphicsWorld, gameWorld, mainGame, referenceHandler);
 				}
 				else
 				{
@@ -42,7 +42,7 @@ namespace Space_Refinery_Game
 
 					DeserializeImplMethods.Add(typeName, func);
 
-					func(reader, sourceConnector, ui, physicsWorld, graphicsWorld, gameWorld, mainGame, referenceHandler);
+					func(reader, ui, physicsWorld, graphicsWorld, gameWorld, mainGame, referenceHandler);
 				}
 			}
 			reader.ReadEndElement();

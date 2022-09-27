@@ -177,9 +177,9 @@ namespace Space_Refinery_Game
 		{
 			writer.WriteElementString(nameof(ChemicalType.ChemicalName), ChemicalType.ChemicalName);
 			writer.WriteElementString(nameof(ResourceType.ChemicalPhase), ResourceType.ChemicalPhase.ToString());
-			Mass.Serialize(writer);
-			InternalEnergy.Serialize(writer);
-			Pressure.Serialize(writer);
+			writer.Serialize(Mass, nameof(Mass));
+			writer.Serialize(InternalEnergy, nameof(InternalEnergy));
+			writer.Serialize(Pressure, nameof(Pressure));
 		}
 
 		public static ResourceUnit Deserialize(XmlReader reader, MainGame mainGame)
@@ -202,9 +202,9 @@ namespace Space_Refinery_Game
 				resourceType = chemicalType.GetResourceTypeForPhase(chemicalPhase);
 			}
 			reader.ReadEndElement();
-			mass = reader.DeserializeFixedDecimalLong8();
-			internalEnergy = reader.DeserializeFixedDecimalLong8();
-			pressure = reader.DeserializeFixedDecimalLong8();
+			mass = reader.DeserializeFixedDecimalLong8(nameof(Mass));
+			internalEnergy = reader.DeserializeFixedDecimalLong8(nameof(InternalEnergy));
+			pressure = reader.DeserializeFixedDecimalLong8(nameof(Pressure));
 
 			return new(resourceType, mass, internalEnergy, pressure);
 		}

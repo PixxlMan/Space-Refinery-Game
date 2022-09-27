@@ -13,22 +13,22 @@ namespace Space_Refinery_Game
 
 		public ConstructionInfo? ConstructionInfo { get; }
 
-		public void Serialize(XmlWriter writer, Connector? sourceConnector, HashSet<IConstruction> serializedConstructions)
+		public void Serialize(XmlWriter writer)
 		{
 			writer.WriteStartElement(nameof(IConstruction));
 			{
 				writer.WriteElementString("ConstructionType", GetType().AssemblyQualifiedName);
 
-				SerializeImpl(writer, sourceConnector, serializedConstructions);
+				SerializeImpl(writer);
 			}
 			writer.WriteEndElement();
 		}
 
-		public void SerializeImpl(XmlWriter writer, Connector? sourceConnector, HashSet<IConstruction> serializedConstructions);
+		public void SerializeImpl(XmlWriter writer);
 
-		public static abstract void DeserializeImpl(XmlReader reader, Connector? sourceConnector, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler);
+		public static abstract void DeserializeImpl(XmlReader reader, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler);
 
-		public delegate void DeserializeImplDelegate(XmlReader reader, Connector? sourceConnector, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler);
+		public delegate void DeserializeImplDelegate(XmlReader reader, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler);
 
 		//public static abstract bool VerifyCompatibility(Connector connector);
 	}

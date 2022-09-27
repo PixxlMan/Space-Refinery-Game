@@ -125,25 +125,36 @@ namespace Space_Refinery_Game
 
 		public void SerializeConstructions(XmlWriter writer)
 		{
-			writer.WriteStartElement("GameWorld");
+			lock (SynchronizationObject)
 			{
-				Constructions.First().Serialize(writer, null, new());
+				writer.WriteStartElement("GameWorld");
+				{
+					writer.Serialize(Constructions, (w, c) => c.Serialize(w), "Constructions");
+				}
+				writer.WriteEndElement();
 			}
-			writer.WriteEndElement();
 		}
 
 		public void DeserializeConstructions(XmlReader reader, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, SerializationReferenceHandler referenceHandler)
 		{
-			foreach (var construction in Constructions.ToArray())
+			lock (SynchronizationObject)
 			{
-				Deconstruct(construction);
-			}
+				foreach (var construction in Constructions.ToArray())
+				{
+					Deconstruct(construction);
+				}
 
-			reader.ReadStartElement("GameWorld");
-			{
-				IConstructionSerialization.Deserialize(reader, null, ui, physicsWorld, graphicsWorld, this, MainGame, referenceHandler);
+				reader.ReadStartElement("GameWorld");
+				{
+					reader.DeserializeCollection<IConstruction>((r) =>
+					{
+						IConstructionSerialization.Deserialize(reader, ui, physicsWorld, graphicsWorld, this, MainGame, referenceHandler);
+
+						return null;
+					}, "Constructions");
+				}
+				reader.ReadEndElement();
 			}
-			reader.ReadEndElement();
 		}
 	}
 }

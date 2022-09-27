@@ -175,7 +175,7 @@ namespace Space_Refinery_Game
 		{
 			writer.WriteStartElement(nameof(ResourceContainer));
 			{
-				MaxVolume.Serialize(writer);
+				writer.Serialize(MaxVolume, nameof(MaxVolume));
 
 				writer.WriteElementString(nameof(resources.Count), resources.Count.ToString());
 
@@ -193,7 +193,7 @@ namespace Space_Refinery_Game
 
 			reader.ReadStartElement(nameof(ResourceContainer));
 			{
-				resourceContainer.maxVolume = reader.DeserializeFixedDecimalLong8();
+				resourceContainer.maxVolume = reader.DeserializeFixedDecimalLong8(nameof(MaxVolume));
 
 				int resourceCount;
 				reader.ReadStartElement(nameof(Dictionary<ResourceType, ResourceUnit>.Count));

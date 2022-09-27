@@ -20,7 +20,7 @@ namespace Space_Refinery_Game
 			{
 				writer.WriteElementString(nameof(IndexOfSelectedConnector), IndexOfSelectedConnector.ToString());
 
-				Rotation.Serialize(writer);
+				writer.Serialize(Rotation);
 			}
 			writer.WriteEndElement();
 		}

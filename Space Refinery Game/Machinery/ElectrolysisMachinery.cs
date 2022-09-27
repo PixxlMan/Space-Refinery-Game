@@ -158,7 +158,7 @@ namespace Space_Refinery_Game
 
 		protected override void SerializeState(XmlWriter writer)
 		{
-			writer.WriteElementString(nameof(Activated), Activated.ToString());
+			writer.Serialize(Activated, nameof(Activated));
 
 			WaterInput.Serialize(writer);
 			OxygenOutput.Serialize(writer);
@@ -167,11 +167,7 @@ namespace Space_Refinery_Game
 
 		protected override void DeserializeState(XmlReader reader)
 		{
-			reader.ReadStartElement(nameof(Activated));
-			{
-				Activated = reader.ReadElementContentAsBoolean();
-			}
-			reader.ReadEndElement();
+			Activated = reader.DeserializeBoolean(nameof(Activated));
 
 			WaterInput = ResourceContainer.Deserialize(reader, MainGame);
 			OxygenOutput = ResourceContainer.Deserialize(reader, MainGame);

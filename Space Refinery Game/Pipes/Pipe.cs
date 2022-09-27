@@ -61,6 +61,36 @@ namespace Space_Refinery_Game
 			MainGame.DebugRender.DrawOrientationMarks(Transform);
 		}
 
+		//public static Pipe DeserializationCreate(PipeType pipeType, Transform transform, UI ui, PhysicsWorld physWorld, GraphicsWorld graphWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler)
+		//{
+		//	lock (gameWorld.TickSyncObject)
+		//	{
+		//		Pipe pipe = (Pipe)Activator.CreateInstance(pipeType.TypeOfPipe, true);
+
+		//		pipe.Transform = transform;
+
+		//		MainGame.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
+
+		//		EntityRenderable renderable = CreateRenderable(pipeType, graphWorld, transform);
+
+		//		PhysicsObject physObj = CreatePhysicsObject(physWorld, transform, pipe, pipeType.Mesh);
+
+		//		PipeConnector[] connectors = CreateConnectors(pipeType, pipe, physWorld, gameWorld, ui);
+
+		//		pipe.Created = true;
+
+		//		pipe.SetUp(pipeType, null, ui, physWorld, physObj, connectors, graphWorld, renderable, gameWorld, mainGame);
+
+		//		gameWorld.AddEntity(pipe);
+
+		//		gameWorld.AddConstruction(pipe);
+
+		//		referenceHandler.RegisterReference(pipe);
+
+		//		return pipe;
+		//	}
+		//}
+
 		public static Pipe Create(PipeType pipeType, Transform transform, UI ui, PhysicsWorld physWorld, GraphicsWorld graphWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler)
 		{
 			lock (gameWorld.TickSyncObject)
@@ -270,54 +300,13 @@ namespace Space_Refinery_Game
 
 		protected abstract void SerializeState(XmlWriter writer);
 
-		void IConstruction.SerializeImpl(XmlWriter writer, Connector? sourceConnector, HashSet<IConstruction> serializedConstructions)
+		void IConstruction.SerializeImpl(XmlWriter writer)
 		{
-			if (!serializedConstructions.Contains(this))
-			{
-				serializedConstructions.Add(this);
-			}
-
 			writer.WriteStartElement(nameof(Pipe));
 			{
 				writer.WriteElementString("PipeType", PipeType.Name);
 
-				writer.WriteElementString("CustomTransformed", (Created || sourceConnector is null).ToString());
-
-				if (!ConstructionInfo.HasValue || sourceConnector is null)
-				{
-					Transform.Serialize(writer);
-				}
-				else
-				{
-					ConstructionInfo.Value.Serialize(writer);
-				}
-
-				writer.WriteElementString("ConnectorCount", Connectors.Length.ToString());
-
-				foreach (var connector in Connectors)
-				{
-					writer.WriteStartElement(nameof(Connector));
-					{
-						bool ignore = connector.Vacant || connector == sourceConnector || serializedConstructions.Contains((IConstruction)connector.GetOther(this));
-
-						IConstruction construction = null;
-
-						if (!ignore)
-						{
-							construction = (IConstruction)connector.GetOther(this);
-						}
-
-						writer.WriteElementString(nameof(ignore), ignore.ToString());
-
-						if (!ignore)
-						{
-							serializedConstructions.Add(construction);
-
-							construction.Serialize(writer, connector, serializedConstructions);
-						}
-					}
-					writer.WriteEndElement();
-				}
+				writer.Serialize(Transform);
 
 				writer.WriteStartElement("State");
 				{
@@ -330,7 +319,7 @@ namespace Space_Refinery_Game
 
 		protected abstract void DeserializeState(XmlReader reader);
 
-		static void IConstruction.DeserializeImpl(XmlReader reader, Connector? sourceConnector, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler)
+		static void IConstruction.DeserializeImpl(XmlReader reader, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler)
 		{
 			reader.ReadStartElement(nameof(Pipe));
 			{
@@ -338,34 +327,9 @@ namespace Space_Refinery_Game
 
 				Pipe pipe;
 
-				if (bool.Parse(reader.ReadElementString("CustomTransformed")))
-				{
-					Transform transform = reader.DeserializeTransform();
+				Transform transform = reader.DeserializeTransform();
 
-					pipe = Create(pipeType, transform, ui, physicsWorld, graphicsWorld, gameWorld, mainGame, referenceHandler);
-				}
-				else
-				{
-					ConstructionInfo constructionInfo = Space_Refinery_Game.ConstructionInfo.Deserialize(reader);
-
-					pipe = (Pipe)Build(sourceConnector, pipeType, constructionInfo.IndexOfSelectedConnector, constructionInfo.Rotation, ui, physicsWorld, graphicsWorld, gameWorld, mainGame, referenceHandler);
-				}
-
-				int count = int.Parse(reader.ReadElementString("ConnectorCount"));
-
-				for (int i = 0; i < count; i++)
-				{
-					reader.ReadStartElement(nameof(Connector));
-					{
-						bool ignore = bool.Parse(reader.ReadElementString(nameof(ignore)));
-
-						if (!ignore)
-						{
-							IConstructionSerialization.Deserialize(reader, pipe.Connectors[i], ui, physicsWorld, graphicsWorld, gameWorld, mainGame, referenceHandler);
-						}
-					}
-					reader.ReadEndElement();
-				}
+				pipe = Create(pipeType, transform, ui, physicsWorld, graphicsWorld, gameWorld, mainGame, referenceHandler);
 
 				reader.ReadStartElement("State");
 				{

@@ -180,9 +180,9 @@ namespace Space_Refinery_Game
 		{
 			writer.WriteStartElement("Player");
 			{
-				Transform.Serialize(writer);
+				writer.Serialize(Transform);
 
-				LookPitch.Serialize(writer);
+				writer.Serialize(LookPitch);
 			}
 			writer.WriteEndElement();
 		}

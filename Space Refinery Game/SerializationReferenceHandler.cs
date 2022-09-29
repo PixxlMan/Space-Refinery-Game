@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Space_Refinery_Game
 {
@@ -84,6 +85,20 @@ namespace Space_Refinery_Game
 					return this[guid];
 				}
 			}
+		}
+
+		public void Serialize(XmlWriter writer)
+		{
+			writer.Serialize(guidToSerializableReference.Values, (w, s) => w.SerializeWithEmbeddedType(s));
+		}
+		
+		public static SerializationReferenceHandler Deserialize(XmlReader reader, GameData gameData)
+		{
+			SerializationReferenceHandler referenceHandler = new();
+
+			reader.DeserializeCollection((r) => referenceHandler.RegisterReference((ISerializableReference)r.DeserializeEntitySerializableWithEmbeddedType(gameData, referenceHandler)));
+
+			return referenceHandler;
 		}
 	}
 }

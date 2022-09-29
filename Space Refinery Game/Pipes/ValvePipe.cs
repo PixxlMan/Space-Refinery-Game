@@ -134,15 +134,19 @@ namespace Space_Refinery_Game
 		}
 
 
-		protected override void SerializeState(XmlWriter writer)
+		public override void SerializeState(XmlWriter writer)
 		{
+			base.SerializeState(writer);
+
 			/*Limiter.Serialize(writer, "Limiter");
 
 			writer.Serialize(ResourceContainers, (w, c) => c.Value.Serialize(w));*/
 		}
 
-		protected override void DeserializeState(XmlReader reader)
+		public override void DeserializeState(XmlReader reader, GameData gameData, SerializationReferenceHandler referenceHandler)
 		{
+			base.DeserializeState(reader, gameData, referenceHandler);
+
 			/*Limiter = reader.DeserializeFixedDecimalLong8("Limiter");
 
 			reader.DeserializeCollection((r) => );*/

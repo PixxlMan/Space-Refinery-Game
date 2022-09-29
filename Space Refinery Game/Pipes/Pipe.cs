@@ -61,39 +61,9 @@ namespace Space_Refinery_Game
 			MainGame.DebugRender.DrawOrientationMarks(Transform);
 		}
 
-		//public static Pipe DeserializationCreate(PipeType pipeType, Transform transform, UI ui, PhysicsWorld physWorld, GraphicsWorld graphWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler)
-		//{
-		//	lock (gameWorld.TickSyncObject)
-		//	{
-		//		Pipe pipe = (Pipe)Activator.CreateInstance(pipeType.TypeOfPipe, true);
-
-		//		pipe.Transform = transform;
-
-		//		MainGame.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
-
-		//		EntityRenderable renderable = CreateRenderable(pipeType, graphWorld, transform);
-
-		//		PhysicsObject physObj = CreatePhysicsObject(physWorld, transform, pipe, pipeType.Mesh);
-
-		//		PipeConnector[] connectors = CreateConnectors(pipeType, pipe, physWorld, gameWorld, ui);
-
-		//		pipe.Created = true;
-
-		//		pipe.SetUp(pipeType, null, ui, physWorld, physObj, connectors, graphWorld, renderable, gameWorld, mainGame);
-
-		//		gameWorld.AddEntity(pipe);
-
-		//		gameWorld.AddConstruction(pipe);
-
-		//		referenceHandler.RegisterReference(pipe);
-
-		//		return pipe;
-		//	}
-		//}
-
-		public static Pipe Create(PipeType pipeType, Transform transform, UI ui, PhysicsWorld physWorld, GraphicsWorld graphWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler)
+		public static Pipe Create(PipeType pipeType, Transform transform, GameData gameData, SerializationReferenceHandler referenceHandler)
 		{
-			lock (gameWorld.TickSyncObject)
+			lock (gameData.GameWorld.TickSyncObject)
 			{
 				Pipe pipe = (Pipe)Activator.CreateInstance(pipeType.TypeOfPipe, true);
 
@@ -101,19 +71,19 @@ namespace Space_Refinery_Game
 
 				MainGame.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
 
-				EntityRenderable renderable = CreateRenderable(pipeType, graphWorld, transform);
+				EntityRenderable renderable = CreateRenderable(pipeType, gameData.GraphicsWorld, transform);
 
-				PhysicsObject physObj = CreatePhysicsObject(physWorld, transform, pipe, pipeType.Mesh);
+				PhysicsObject physObj = CreatePhysicsObject(gameData.PhysicsWorld, transform, pipe, pipeType.Mesh);
 
-				PipeConnector[] connectors = CreateConnectors(pipeType, pipe, physWorld, gameWorld, ui);
+				PipeConnector[] connectors = CreateConnectors(pipeType, pipe, gameData);
 
 				pipe.Created = true;
 
-				pipe.SetUp(pipeType, null, ui, physWorld, physObj, connectors, graphWorld, renderable, gameWorld, mainGame);
+				pipe.SetUp(pipeType, null, connectors, renderable, physObj, gameData);
 
-				gameWorld.AddEntity(pipe);
+				gameData.GameWorld.AddEntity(pipe);
 
-				gameWorld.AddConstruction(pipe);
+				gameData.GameWorld.AddConstruction(pipe);
 
 				referenceHandler.RegisterReference(pipe);
 
@@ -140,14 +110,14 @@ namespace Space_Refinery_Game
 			return physObj;
 		}
 
-		private static PipeConnector[] CreateConnectors(PipeType pipeType, Pipe pipe, PhysicsWorld physWorld, GameWorld gameWorld, UI ui)
+		private static PipeConnector[] CreateConnectors(PipeType pipeType, Pipe pipe, GameData gameData)
 		{
 			PipeConnector[] connectors = new PipeConnector[pipeType.ConnectorPlacements.Length];
 
 			for (int i = 0; i < pipeType.ConnectorPlacements.Length; i++)
 			{
 				MainGame.DebugRender.PersistentCube(new (pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation), pipe.Transform.Rotation, new((FixedDecimalInt4).125, (FixedDecimalInt4).125, (FixedDecimalInt4).125)), new RgbaFloat((float)i / (float)pipeType.ConnectorPlacements.Length, (float)i / 10f + .1f, 0, 1));
-				if (physWorld.ApproxOverlapPoint<PipeConnector>(pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation), out PhysicsObject physicsObject))
+				if (gameData.PhysicsWorld.ApproxOverlapPoint<PipeConnector>(pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation), out PhysicsObject physicsObject))
 				{
 					PipeConnector pipeConnector = (PipeConnector)physicsObject.Entity;
 
@@ -180,7 +150,7 @@ namespace Space_Refinery_Game
 					);
 					transform.Rotation = QuaternionFixedDecimalInt4.Normalize(transform.Rotation);
 
-					PipeConnector connector = new PipeConnector(pipe, ConnectorSide.A, transform, pipeType.ConnectorProperties[i], gameWorld, physWorld, ui);
+					PipeConnector connector = new PipeConnector(pipe, ConnectorSide.A, transform, pipeType.ConnectorProperties[i], gameData);
 
 					connectors[i] = connector;
 
@@ -196,9 +166,9 @@ namespace Space_Refinery_Game
 			return connectors;
 		}
 
-		public static IConstruction Build(Connector connector, IEntityType entityType, int indexOfSelectedConnector, FixedDecimalLong8 rotation, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler)
+		public static IConstruction Build(Connector connector, IEntityType entityType, int indexOfSelectedConnector, FixedDecimalLong8 rotation, GameData gameData, SerializationReferenceHandler referenceHandler)
 		{
-			lock (gameWorld.TickSyncObject)
+			lock (gameData.GameWorld.TickSyncObject)
 			{
 				PipeConnector pipeConnector = (PipeConnector)connector;
 
@@ -212,19 +182,19 @@ namespace Space_Refinery_Game
 
 				MainGame.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
 
-				EntityRenderable renderable = CreateRenderable(pipeType, graphicsWorld, transform);
+				EntityRenderable renderable = CreateRenderable(pipeType, gameData.GraphicsWorld, transform);
 
-				PhysicsObject physObj = CreatePhysicsObject(physicsWorld, transform, pipe, pipeType.Mesh);
+				PhysicsObject physObj = CreatePhysicsObject(gameData.PhysicsWorld, transform, pipe, pipeType.Mesh);
 
-				var connectors = CreateConnectors(pipeType, pipe, physicsWorld, gameWorld, ui);
+				var connectors = CreateConnectors(pipeType, pipe, gameData);
 
-				pipe.SetUp(pipeType, new(indexOfSelectedConnector, rotation), ui, physicsWorld, physObj, connectors, graphicsWorld, renderable, gameWorld, mainGame);
+				pipe.SetUp(pipeType, new(indexOfSelectedConnector, rotation), connectors, renderable, physObj, gameData);
 
 				pipe.Created = false;
 
-				gameWorld.AddEntity(pipe);
+				gameData.GameWorld.AddEntity(pipe);
 
-				gameWorld.AddConstruction(pipe);
+				gameData.GameWorld.AddConstruction(pipe);
 
 				referenceHandler.RegisterReference(pipe);
 
@@ -232,20 +202,20 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		private void SetUp(PipeType pipeType, ConstructionInfo? constructionInfo, UI ui, PhysicsWorld physicsWorld, PhysicsObject physicsObject, PipeConnector[] connectors, GraphicsWorld graphicsWorld, EntityRenderable renderable, GameWorld gameWorld, MainGame mainGame)
+		private void SetUp(PipeType pipeType, ConstructionInfo? constructionInfo, PipeConnector[] connectors, EntityRenderable renderable, PhysicsObject physicsObject, GameData gameData)
 		{
 			lock (this)
 			{
 				PipeType = pipeType;
 				ConstructionInfo = constructionInfo;
-				UI = ui;
-				PhysicsWorld = physicsWorld;
+				UI = gameData.UI;
+				PhysicsWorld = gameData.PhysicsWorld;
 				PhysicsObject = physicsObject;
 				Connectors = connectors;
-				GraphicsWorld = graphicsWorld;
+				GraphicsWorld = gameData.GraphicsWorld;
 				Renderable = renderable;
-				GameWorld = gameWorld;
-				MainGame = mainGame;
+				GameWorld = gameData.GameWorld;
+				MainGame = gameData.MainGame;
 
 				SetUp();
 			}
@@ -298,46 +268,55 @@ namespace Space_Refinery_Game
 		{ 
 		}
 
-		protected abstract void SerializeState(XmlWriter writer);
-
-		void IConstruction.SerializeImpl(XmlWriter writer)
+		public virtual void SerializeState(XmlWriter writer)
 		{
 			writer.WriteStartElement(nameof(Pipe));
 			{
+				writer.SerializeReference(this);
+
 				writer.WriteElementString("PipeType", PipeType.Name);
 
 				writer.Serialize(Transform);
-
-				writer.WriteStartElement("State");
-				{
-					SerializeState(writer);
-				}
-				writer.WriteEndElement();
 			}
 			writer.WriteEndElement();
 		}
 
-		protected abstract void DeserializeState(XmlReader reader);
-
-		static void IConstruction.DeserializeImpl(XmlReader reader, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler)
+		public virtual void DeserializeState(XmlReader reader, GameData gameData, SerializationReferenceHandler referenceHandler)
 		{
 			reader.ReadStartElement(nameof(Pipe));
 			{
-				PipeType pipeType = mainGame.PipeTypesDictionary[reader.ReadElementString("PipeType")];
+				Guid guid = reader.ReadRefereceGUID();
 
-				Pipe pipe;
+				PipeType pipeType = gameData.MainGame.PipeTypesDictionary[reader.ReadElementString("PipeType")];
 
 				Transform transform = reader.DeserializeTransform();
 
-				pipe = Create(pipeType, transform, ui, physicsWorld, graphicsWorld, gameWorld, mainGame, referenceHandler);
-
-				reader.ReadStartElement("State");
-				{
-					pipe.DeserializeState(reader);
-				}
-				reader.ReadEndElement();
+				SetupDeserialized(pipeType, transform, gameData, guid);
 			}
 			reader.ReadEndElement();
+
+			void SetupDeserialized(PipeType pipeType, Transform transform, GameData gameData, Guid guid)
+			{
+				Transform = transform;
+
+				MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
+
+				EntityRenderable renderable = CreateRenderable(pipeType, gameData.GraphicsWorld, transform);
+
+				PhysicsObject physObj = CreatePhysicsObject(gameData.PhysicsWorld, transform, this, pipeType.Mesh);
+
+				PipeConnector[] connectors = CreateConnectors(pipeType, this, gameData);
+
+				Created = true;
+
+				SerializableReferenceGUID = guid;
+
+				SetUp(pipeType, null, connectors, renderable, physObj, gameData);
+
+				gameData.GameWorld.AddEntity(this);
+
+				gameData.GameWorld.AddConstruction(this);
+			}
 		}
 	}
 }

@@ -1,23 +1,31 @@
 ﻿using BepuPhysics.Collidables;
 using FixedPrecision;
 using FXRenderer;
+using System.Xml;
 
 namespace Space_Refinery_Game
 {
 	public sealed class PipeConnector : Connector, Entity
 	{
-		public PipeConnector((Pipe connectableA, Pipe connectableB) connectables, Transform transform, PipeConnectorProperties pipeConnectorProperties, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui) : base(connectables, transform, gameWorld, physicsWorld, ui)
+		private PipeConnector()
 		{
-			PipeConnectorProperties = pipeConnectorProperties;
 			informationProvider = new PipeConnectorInformationProvider(this);
-			CreatePhysicsObject(transform, physicsWorld);
 		}
 
-		public PipeConnector(Pipe initialConnectable, ConnectorSide side, Transform transform, PipeConnectorProperties pipeConnectorProperties, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui) : base(initialConnectable, side, transform, gameWorld, physicsWorld, ui)
+		public PipeConnector((Pipe connectableA, Pipe connectableB) connectables, Transform transform, PipeConnectorProperties pipeConnectorProperties, GameData gameData) : base(connectables, transform, gameData)
 		{
 			PipeConnectorProperties = pipeConnectorProperties;
 			informationProvider = new PipeConnectorInformationProvider(this);
-			CreatePhysicsObject(transform, physicsWorld);
+			CreatePhysicsObject(transform, gameData.PhysicsWorld);
+			gameData.GameWorld.AddEntity(this);
+		}
+
+		public PipeConnector(Pipe initialConnectable, ConnectorSide side, Transform transform, PipeConnectorProperties pipeConnectorProperties, GameData gameData) : base(initialConnectable, side, transform, gameData)
+		{
+			PipeConnectorProperties = pipeConnectorProperties;
+			informationProvider = new PipeConnectorInformationProvider(this);
+			CreatePhysicsObject(transform, gameData.PhysicsWorld);
+			gameData.GameWorld.AddEntity(this);
 		}
 
 		private void CreatePhysicsObject(Transform transform, PhysicsWorld physicsWorld)
@@ -69,6 +77,16 @@ namespace Space_Refinery_Game
 					otherContainer.TransferResource(recipientContainer, otherContainer.Volume * fullnessDifference * (FixedDecimalLong8)Time.TickInterval);
 				}
 			}
+		}
+
+		public override void SerializeState(XmlWriter writer)
+		{
+			base.SerializeState(writer);
+		}
+
+		public override void DeserializeState(XmlReader reader, GameData gameData, SerializationReferenceHandler referenceHandler)
+		{
+			base.DeserializeState(reader, gameData, referenceHandler);
 		}
 	}
 }

@@ -24,27 +24,28 @@ namespace Space_Refinery_Game
 			return map.TargetMethods[index];
 		}
 
+		public static string ReadString(this XmlReader reader, string? name = null)
+		{
+			string value;
+
+			reader.ReadStartElement(name);
+			{
+				value = reader.ReadString();
+			}
+			reader.ReadEndElement();
+
+			return value;
+		}
+
 		public static void Serialize(this XmlWriter writer, Transform transform, string? name = null)
 		{
 			writer.WriteStartElement(name ?? nameof(Transform));
 			{
-				writer.WriteStartElement(nameof(Transform.Position));
-				{
-					Serialize(writer, transform.Position);
-				}
-				writer.WriteEndElement();
+				Serialize(writer, transform.Position, nameof(Transform.Position));
 
-				writer.WriteStartElement(nameof(Transform.Rotation));
-				{
-					Serialize(writer, transform.Rotation);
-				}
-				writer.WriteEndElement();
+				Serialize(writer, transform.Rotation, nameof(Transform.Rotation));
 
-				writer.WriteStartElement(nameof(Transform.Scale));
-				{
-					Serialize(writer, transform.Scale);
-				}
-				writer.WriteEndElement();
+				Serialize(writer, transform.Scale, nameof(Transform.Scale));
 			}
 			writer.WriteEndElement();
 		}
@@ -55,23 +56,11 @@ namespace Space_Refinery_Game
 			{
 				Transform transform;
 
-				Vector3FixedDecimalInt4 position;
+				Vector3FixedDecimalInt4 position = reader.DeserializeVector3FixedDecimalInt4(nameof(Transform.Position));
 
-				reader.ReadStartElement(nameof(Transform.Position));
-					position = reader.DeserializeVector3FixedDecimalInt4();
-				reader.ReadEndElement();
+				QuaternionFixedDecimalInt4 rotation = reader.DeserializeQuaternionFixedDecimalInt4(nameof(Transform.Rotation));
 
-				QuaternionFixedDecimalInt4 rotation;
-				
-				reader.ReadStartElement(nameof(Transform.Rotation));
-					rotation = reader.DeserializeQuaternionFixedDecimalInt4();
-				reader.ReadEndElement();
-
-				Vector3FixedDecimalInt4 scale;
-
-				reader.ReadStartElement(nameof(Transform.Scale));
-					scale = reader.DeserializeVector3FixedDecimalInt4();
-				reader.ReadEndElement();
+				Vector3FixedDecimalInt4 scale = reader.DeserializeVector3FixedDecimalInt4(nameof(Transform.Scale));
 
 				transform = new(position, rotation, scale);
 
@@ -224,6 +213,25 @@ namespace Space_Refinery_Game
 			reader.ReadEndElement();
 
 			return array;
+		}
+
+
+		public static void DeserializeCollection(this XmlReader reader, Action<XmlReader> deserializationAction, string? name = null)
+		{
+			reader.ReadStartElement(name ?? "Collection");
+			{
+				int count = int.Parse(reader.ReadElementString("Count"));
+
+				reader.ReadStartElement("Elements");
+				{
+					for (int i = 0; i < count; i++)
+					{
+						deserializationAction(reader);
+					}
+				}
+				reader.ReadEndElement();
+			}
+			reader.ReadEndElement();
 		}
 
 		public static void SerializeReference(this XmlWriter writer, ISerializableReference serializableReference, string? name = null)

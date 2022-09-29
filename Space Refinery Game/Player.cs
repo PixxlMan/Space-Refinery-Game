@@ -16,55 +16,43 @@ namespace Space_Refinery_Game
 	{
 		public Transform Transform = Transform.Identity;
 
-		private MainGame mainGame;
-
-		private PhysicsWorld physicsWorld;
-
-		private GraphicsWorld graphicsWorld;
-
-		private GameWorld gameWorld;
-
-		private UI ui;
+		private GameData gameData;
 
 		private ConstructionMarker constructionMarker;
 
 		public Transform CameraTransform => new(Transform.Position, QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(FixedDecimalInt4.Zero, LookPitch, FixedDecimalInt4.Zero), Transform.Rotation).NormalizeQuaternion());
 
-		private Player(MainGame mainGame, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, UI ui)
+		private Player(GameData gameData)
 		{
-			this.mainGame = mainGame;
-			this.physicsWorld = physicsWorld;
-			this.graphicsWorld = graphicsWorld;
-			this.gameWorld = gameWorld;
-			this.ui = ui;
+			this.gameData = gameData;
 		}
 
-		public static Player Create(MainGame mainGame, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, UI ui)
+		public static Player Create(GameData gameData)
 		{
-			Player player = new(mainGame, physicsWorld, graphicsWorld, gameWorld, ui);
+			Player player = new(gameData);
 
-			player.constructionMarker = ConstructionMarker.Create(graphicsWorld);
+			player.constructionMarker = ConstructionMarker.Create(gameData.GraphicsWorld);
 
 			return player;
 		}
 
 		public FixedDecimalLong8 RotationSnapping => 45 * FixedDecimalLong8.DegreesToRadians;
 
-		public FixedDecimalLong8 RotationSnapped => ui.RotationIndex * RotationSnapping;
+		public FixedDecimalLong8 RotationSnapped => gameData.UI.RotationIndex * RotationSnapping;
 
 		public FixedDecimalInt4 LookPitch;
 
 		public void Update(FixedDecimalInt4 deltaTime)
 		{
-			var lookedAtPhysicsObject = physicsWorld.Raycast(CameraTransform.Position, -CameraTransform.LocalUnitZ, 1000);
+			var lookedAtPhysicsObject = gameData.PhysicsWorld.Raycast(CameraTransform.Position, -CameraTransform.LocalUnitZ, 1000);
 
 			if (lookedAtPhysicsObject is not null)
 			{
-				ui.CurrentlySelectedInformationProvider = lookedAtPhysicsObject.InformationProvider;
+				gameData.UI.CurrentlySelectedInformationProvider = lookedAtPhysicsObject.InformationProvider;
 			}
 			else
 			{
-				ui.CurrentlySelectedInformationProvider = null;
+				gameData.UI.CurrentlySelectedInformationProvider = null;
 			}
 
 			if (lookedAtPhysicsObject is not null)
@@ -79,17 +67,17 @@ namespace Space_Refinery_Game
 			{
 				PipeConnector pipeConnector = lookedAtPhysicsObject.Entity is Connector con ? (PipeConnector)con : (PipeConnector)(((InformationProxy)lookedAtPhysicsObject.Entity).ProxiedEntity);
 
-				constructionMarker.SetMesh(ui.SelectedPipeType.Mesh);
+				constructionMarker.SetMesh(gameData.UI.SelectedPipeType.Mesh);
 
 				constructionMarker.SetColor(RgbaFloat.Green);
 
-				constructionMarker.SetTransform(GameWorld.GenerateTransformForConnector(ui.SelectedPipeType.ConnectorPlacements[ui.ConnectorSelection], pipeConnector, RotationSnapped));
+				constructionMarker.SetTransform(GameWorld.GenerateTransformForConnector(gameData.UI.SelectedPipeType.ConnectorPlacements[gameData.UI.ConnectorSelection], pipeConnector, RotationSnapped));
 
 				constructionMarker.ShouldDraw = true;
 
 				if (InputTracker.GetMouseButtonDown(MouseButton.Left))
 				{
-					Pipe.Build(pipeConnector, ui.SelectedPipeType, ui.ConnectorSelection, RotationSnapped, ui, physicsWorld, graphicsWorld, gameWorld, mainGame, gameWorld.SerializationReferenceHandler);
+					Pipe.Build(pipeConnector, gameData.UI.SelectedPipeType, gameData.UI.ConnectorSelection, RotationSnapped, gameData, gameData.ReferenceHandler);
 
 					constructionMarker.ShouldDraw = false;
 				}
@@ -100,13 +88,13 @@ namespace Space_Refinery_Game
 				{
 					if (InputTracker.GetKeyDown(Key.U))
 					{
-						pipe.ResourceContainer.AddResource(new(mainGame.ChemicalTypesDictionary["Water"].LiquidPhaseType, 10, 100 * mainGame.ChemicalTypesDictionary["Water"].LiquidPhaseType.SpecificHeatCapacity * 10, 0));
+						pipe.ResourceContainer.AddResource(new(gameData.MainGame.ChemicalTypesDictionary["Water"].LiquidPhaseType, 10, 100 * gameData.MainGame.ChemicalTypesDictionary["Water"].LiquidPhaseType.SpecificHeatCapacity * 10, 0));
 					}
 				}
 
 				if (InputTracker.GetMouseButtonDown(MouseButton.Right))
 				{
-					gameWorld.Deconstruct(construction);
+					gameData.GameWorld.Deconstruct(construction);
 				}
 			}
 
@@ -163,7 +151,7 @@ namespace Space_Refinery_Game
 
 		private bool ShouldShowConstructionMarker(PhysicsObject lookedAtPhysicsObject)
 		{
-			return lookedAtPhysicsObject is not null && (((lookedAtPhysicsObject.Entity is Connector connector && (connector).Vacant) || (lookedAtPhysicsObject.Entity is InformationProxy informationProxy && informationProxy.ProxiedEntity is Connector proxiedConnector && proxiedConnector.Vacant))) && ui.SelectedPipeType is not null;
+			return lookedAtPhysicsObject is not null && (((lookedAtPhysicsObject.Entity is Connector connector && (connector).Vacant) || (lookedAtPhysicsObject.Entity is InformationProxy informationProxy && informationProxy.ProxiedEntity is Connector proxiedConnector && proxiedConnector.Vacant))) && gameData.UI.SelectedPipeType is not null;
 		}
 
 		public bool Disposed = false;
@@ -182,20 +170,20 @@ namespace Space_Refinery_Game
 			{
 				writer.Serialize(Transform);
 
-				writer.Serialize(LookPitch);
+				writer.Serialize(LookPitch, nameof(LookPitch));
 			}
 			writer.WriteEndElement();
 		}
 
-		public static Player Deserialize(XmlReader reader, MainGame mainGame, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, UI ui)
+		public static Player Deserialize(XmlReader reader, GameData gameData)
 		{
-			Player player = Create(mainGame, physicsWorld, graphicsWorld, gameWorld, ui);
+			Player player = Create(gameData);
 
 			reader.ReadStartElement("Player");
 			{
 				player.Transform = reader.DeserializeTransform();
 
-				player.LookPitch = reader.DeserializeFixedDecimalInt4();
+				player.LookPitch = reader.DeserializeFixedDecimalInt4(nameof(LookPitch));
 			}
 			reader.ReadEndElement();
 

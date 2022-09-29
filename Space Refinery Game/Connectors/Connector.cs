@@ -6,20 +6,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Veldrid;
 
 namespace Space_Refinery_Game
 {
-	public abstract class Connector : Entity, IDisposable
+	public abstract class Connector : Entity, ISerializableReference, IDisposable, IEntitySerializable
 	{
-		public Connector((IConnectable connectableA, IConnectable connectableB) connectables, Transform transform, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui) : this(transform, gameWorld, physicsWorld, ui)
+		protected Connector()
+		{
+
+		}
+
+		public Connector((IConnectable connectableA, IConnectable connectableB) connectables, Transform transform, GameData gameData) : this(transform, gameData)
 		{
 			Connectables = connectables;
 
 			UpdateProxy();
 		}
 
-		public Connector(IConnectable initialConnectable, ConnectorSide side, Transform transform, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui) : this(transform, gameWorld, physicsWorld, ui)
+		public Connector(IConnectable initialConnectable, ConnectorSide side, Transform transform, GameData gameData) : this(transform, gameData)
 		{
 			Connectables = (side == ConnectorSide.A ? (initialConnectable, null) : (null, initialConnectable));
 
@@ -28,21 +34,19 @@ namespace Space_Refinery_Game
 			UpdateProxy();
 		}
 
-		protected Connector(Transform transform, GameWorld gameWorld, PhysicsWorld physicsWorld, UI ui)
+		protected Connector(Transform transform, GameData gameData)
 		{
 			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
 
 			Transform = transform;
 
-			PhysicsWorld = physicsWorld;
+			this.gameData = gameData;
 
-			UI = ui;
+			gameData.UI.SelectedEntityTypeChanged += UpdateProxyOnEntityTypeChanged;
 
-			UI.SelectedEntityTypeChanged += UpdateProxyOnEntityTypeChanged;
+			gameData.GameWorld.AddEntity(this);
 
-			GameWorld = gameWorld;
-
-			GameWorld.AddEntity(this);
+			gameData.ReferenceHandler.RegisterReference(this);
 		}
 
 		private void UpdateProxyOnEntityTypeChanged(IEntityType _)
@@ -50,11 +54,7 @@ namespace Space_Refinery_Game
 			UpdateProxy();
 		}
 
-		public UI UI;
-
-		public GameWorld GameWorld;
-
-		public PhysicsWorld PhysicsWorld;
+		private GameData gameData;
 
 		public Transform Transform;
 
@@ -67,6 +67,8 @@ namespace Space_Refinery_Game
 		public abstract IInformationProvider InformationProvider { get; }
 
 		public bool Vacant => VacantSide is not null;
+
+		public Guid SerializableReferenceGUID { get; private set; } = Guid.NewGuid();
 
 		public (IConnectable? connectableA, IConnectable? connectableB) Connectables { get; protected set; }
 
@@ -200,9 +202,9 @@ namespace Space_Refinery_Game
 				Proxy.PhysicsObject.Destroy();
 			}
 
-			var proxyPhysicsObject = new PhysicsObjectDescription<ConvexHull>(PhysicsWorld.GetConvexHullForMesh(UI.SelectedPipeType.Mesh), GameWorld.GenerateTransformForConnector(UI.SelectedPipeType.ConnectorPlacements[UI.ConnectorSelection], this, UI.RotationIndex * 45 * FixedDecimalLong8.DegreesToRadians), 0, true);
+			var proxyPhysicsObject = new PhysicsObjectDescription<ConvexHull>(gameData.PhysicsWorld.GetConvexHullForMesh(gameData.UI.SelectedPipeType.Mesh), GameWorld.GenerateTransformForConnector(gameData.UI.SelectedPipeType.ConnectorPlacements[gameData.UI.ConnectorSelection], this, gameData.UI.RotationIndex * 45 * FixedDecimalLong8.DegreesToRadians), 0, true);
 
-			Proxy.PhysicsObject = PhysicsWorld.AddPhysicsObject(proxyPhysicsObject, Proxy);
+			Proxy.PhysicsObject = gameData.PhysicsWorld.AddPhysicsObject(proxyPhysicsObject, Proxy);
 
 			Proxy.Enable();
 		}
@@ -230,15 +232,70 @@ namespace Space_Refinery_Game
 			MainGame.DebugRender.DrawCube(new Transform(PhysicsObject.Transform) { Scale = new((FixedDecimalInt4).4f, (FixedDecimalInt4).4f, (FixedDecimalInt4).25f) }, VacantSide is null ? RgbaFloat.Green : RgbaFloat.Cyan);
 		}
 
+		public virtual void SerializeState(XmlWriter writer)
+		{
+			writer.WriteStartElement(nameof(Connector));
+			{
+				writer.SerializeReference(this);
+
+				writer.Serialize(Transform);
+
+				writer.Serialize(Connectables.connectableA is not null, "HasA");
+				writer.Serialize(Connectables.connectableB is not null, "HasB");
+
+				if (Connectables.connectableA is not null)
+				{
+					writer.SerializeReference(Connectables.connectableA, $"{nameof(Connectables.connectableA)}_GUID");
+				}
+
+				if (Connectables.connectableB is not null)
+				{
+					writer.SerializeReference(Connectables.connectableB, $"{nameof(Connectables.connectableB)}_GUID");
+				}
+			}
+			writer.WriteEndElement();
+		}
+
+		public virtual void DeserializeState(XmlReader reader, GameData gameData, SerializationReferenceHandler referenceHandler)
+		{
+			reader.ReadStartElement(nameof(Connector));
+			{
+				Guid guid = reader.ReadRefereceGUID();
+
+				SerializableReferenceGUID = guid;
+
+				Connector connector;
+
+				Transform transform = reader.DeserializeTransform();
+
+				IConnectable a = null, b = null;
+				bool hasA = reader.DeserializeBoolean("HasA");
+				bool hasB = reader.DeserializeBoolean("HasB");
+
+				if (hasA)
+				{
+					a = reader.DeserializeReference<IConnectable>(referenceHandler, $"{nameof(connector.Connectables.connectableA)}_GUID").Result;
+				}
+
+				if (hasB)
+				{
+					b = reader.DeserializeReference<IConnectable>(referenceHandler, $"{nameof(connector.Connectables.connectableB)}_GUID").Result;
+				}
+
+				Connectables = (a, b);
+			}
+			reader.ReadEndElement();
+		}
+
 		public void Dispose()
 		{
-			GameWorld.RemoveEntity(this);
+			gameData.GameWorld.RemoveEntity(this);
 
 			PhysicsObject.Destroy();
 
 			Proxy.PhysicsObject.Destroy();
 
-			UI.SelectedEntityTypeChanged -= UpdateProxyOnEntityTypeChanged;
+			gameData.UI.SelectedEntityTypeChanged -= UpdateProxyOnEntityTypeChanged;
 
 			MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
 		}

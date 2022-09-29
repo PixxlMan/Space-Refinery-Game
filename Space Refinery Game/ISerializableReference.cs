@@ -1,6 +1,6 @@
 ﻿namespace Space_Refinery_Game
 {
-	public interface ISerializableReference
+	public interface ISerializableReference : IEntitySerializable
 	{
 		public Guid SerializableReferenceGUID { get; }
 	}

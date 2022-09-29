@@ -10,10 +10,12 @@ namespace Space_Refinery_Game;
 
 public class MainGame
 {
-	public GraphicsWorld GraphicsWorld;
-	public PhysicsWorld PhysicsWorld;
-	public GameWorld GameWorld;
-	public Player Player;
+	public GraphicsWorld GraphicsWorld { get; private set; }
+	public PhysicsWorld PhysicsWorld { get; private set; }
+	public GameWorld GameWorld { get; private set; }
+	public Player Player { get; private set; }
+	public SerializationReferenceHandler ReferenceHandler { get; private set; }
+	public GameData GameData { get; private set; }
 
 	public static Settings GlobalSettings;
 
@@ -72,11 +74,15 @@ public class MainGame
 
 		GameWorld = new(this);
 
-		Player = Player.Create(this, PhysicsWorld, GraphicsWorld, GameWorld, ui);
+		ReferenceHandler = new();
+
+		GameData = new(ui, PhysicsWorld, GraphicsWorld, GameWorld, this, ReferenceHandler);
+
+		Player = Player.Create(GameData);
 
 		Starfield.Create(GraphicsWorld);
 
-		GameWorld.AddConstruction(Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), ui, PhysicsWorld, GraphicsWorld, GameWorld, this, GameWorld.SerializationReferenceHandler));
+		GameWorld.AddConstruction(Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), GameData, ReferenceHandler));
 
 		InputTracker.IgnoreNextFrameMousePosition = true;
 
@@ -174,7 +180,7 @@ public class MainGame
 			{
 				Player.Serialize(writer);
 
-				GameWorld.SerializeConstructions(writer);
+				ReferenceHandler.Serialize(writer);
 			}
 			writer.WriteEndElement();
 			writer.WriteEndDocument();
@@ -199,9 +205,9 @@ public class MainGame
 			{
 				Player.Dispose();
 
-				Player = Player.Deserialize(reader, this, PhysicsWorld, GraphicsWorld, GameWorld, ui);
+				Player = Player.Deserialize(reader, GameData);
 
-				GameWorld.DeserializeConstructions(reader, ui, PhysicsWorld, GraphicsWorld, GameWorld.SerializationReferenceHandler);
+				ReferenceHandler = SerializationReferenceHandler.Deserialize(reader, GameData);
 			}
 			reader.ReadEndElement();
 

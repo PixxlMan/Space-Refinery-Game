@@ -68,13 +68,17 @@ namespace Space_Refinery_Game
 			return ResourceContainer;
 		}
 
-		protected override void SerializeState(XmlWriter writer)
+		public override void SerializeState(XmlWriter writer)
 		{
+			base.SerializeState(writer);
+
 			ResourceContainer.Serialize(writer);
 		}
 
-		protected override void DeserializeState(XmlReader reader)
+		public override void DeserializeState(XmlReader reader, GameData gameData, SerializationReferenceHandler referenceHandler)
 		{
+			base.DeserializeState(reader, gameData, referenceHandler);
+
 			ResourceContainer = ResourceContainer.Deserialize(reader, MainGame);
 		}
 	}

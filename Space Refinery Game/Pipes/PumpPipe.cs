@@ -114,16 +114,20 @@ namespace Space_Refinery_Game
 			ImGui.Text(DirectionAToB ? "A->B" : "B->A");
 		}
 
-		protected override void SerializeState(XmlWriter writer)
+		public override void SerializeState(XmlWriter writer)
 		{
+			base.SerializeState(writer);
+
 			writer.WriteElementString(nameof(DirectionAToB), DirectionAToB.ToString());
 
 			ContainerA.Serialize(writer);
 			ContainerB.Serialize(writer);
 		}
 
-		protected override void DeserializeState(XmlReader reader)
+		public override void DeserializeState(XmlReader reader, GameData gameData, SerializationReferenceHandler referenceHandler)
 		{
+			base.DeserializeState(reader, gameData, referenceHandler);
+
 			DirectionAToB = bool.Parse(reader.ReadElementContentAsString());
 
 			ContainerA = ResourceContainer.Deserialize(reader, MainGame);

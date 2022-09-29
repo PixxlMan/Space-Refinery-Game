@@ -22,8 +22,6 @@ namespace Space_Refinery_Game
 
 		public object TickSyncObject = new();
 
-		public SerializationReferenceHandler SerializationReferenceHandler { get; private set; } = new();
-
 		public HashSet<IConstruction> Constructions = new();
 
 		public MainGame MainGame;
@@ -120,40 +118,6 @@ namespace Space_Refinery_Game
 				{
 					entity.Tick();
 				}
-			}
-		}
-
-		public void SerializeConstructions(XmlWriter writer)
-		{
-			lock (SynchronizationObject)
-			{
-				writer.WriteStartElement("GameWorld");
-				{
-					writer.Serialize(Constructions, (w, c) => c.Serialize(w), "Constructions");
-				}
-				writer.WriteEndElement();
-			}
-		}
-
-		public void DeserializeConstructions(XmlReader reader, UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, SerializationReferenceHandler referenceHandler)
-		{
-			lock (SynchronizationObject)
-			{
-				foreach (var construction in Constructions.ToArray())
-				{
-					Deconstruct(construction);
-				}
-
-				reader.ReadStartElement("GameWorld");
-				{
-					reader.DeserializeCollection<IConstruction>((r) =>
-					{
-						IConstructionSerialization.Deserialize(reader, ui, physicsWorld, graphicsWorld, this, MainGame, referenceHandler);
-
-						return null;
-					}, "Constructions");
-				}
-				reader.ReadEndElement();
 			}
 		}
 	}

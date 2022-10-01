@@ -190,7 +190,7 @@ namespace Space_Refinery_Game
 			{
 				resourceContainer.maxVolume = reader.DeserializeFixedDecimalLong8(nameof(MaxVolume));
 
-				reader.DeserializeCollection((r) => resourceContainer.AddResource(ResourceUnit.Deserialize(r, mainGame)));
+				reader.DeserializeCollection((r) => resourceContainer.AddResource(ResourceUnit.Deserialize(r, mainGame)), nameof(resources));
 			}
 			reader.ReadEndElement();
 

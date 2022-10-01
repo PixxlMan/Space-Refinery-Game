@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Space_Refinery_Game
 {
-	public class InformationProxy : Entity
+	public sealed class InformationProxy : Entity
 	{
 		public Entity ProxiedEntity;
 

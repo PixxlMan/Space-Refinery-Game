@@ -8,7 +8,7 @@ using static FixedPrecision.Convenience;
 
 namespace Space_Refinery_Game;
 
-public class MainGame
+public sealed class MainGame
 {
 	public GraphicsWorld GraphicsWorld { get; private set; }
 	public PhysicsWorld PhysicsWorld { get; private set; }

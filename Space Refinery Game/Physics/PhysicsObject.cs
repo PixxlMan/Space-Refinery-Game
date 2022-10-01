@@ -4,7 +4,7 @@ using FXRenderer;
 
 namespace Space_Refinery_Game
 {
-	public class PhysicsObject
+	public sealed class PhysicsObject
 	{
 		public IInformationProvider InformationProvider => Entity.InformationProvider;
 

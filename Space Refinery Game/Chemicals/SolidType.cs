@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace Space_Refinery_Game;
 
 [Serializable]
-public class SolidType : ResourceType
+public sealed class SolidType : ResourceType
 {
 	[JsonConstructor]
 	public SolidType()

@@ -12,7 +12,7 @@ using static FixedPrecision.Convenience;
 
 namespace Space_Refinery_Game
 {
-	public class Player : IDisposable
+	public sealed class Player : IDisposable
 	{
 		public Transform Transform = Transform.Identity;
 

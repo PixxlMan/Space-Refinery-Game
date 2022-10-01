@@ -11,7 +11,7 @@ using System.Xml;
 
 namespace Space_Refinery_Game
 {
-	public class GameWorld
+	public sealed class GameWorld
 	{
 		public GameWorld(MainGame mainGame)
 		{

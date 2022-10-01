@@ -11,7 +11,7 @@ using Space_Refinery_Game_Renderer;
 
 namespace Space_Refinery_Game
 {
-	public class UI : IRenderable
+	public sealed class UI : IRenderable
 	{
 		public IInformationProvider CurrentlySelectedInformationProvider;
 

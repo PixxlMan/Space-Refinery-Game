@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace Space_Refinery_Game
 {
-	public class ResourceContainer : IUIInspectable
+	public sealed class ResourceContainer : IUIInspectable
 	{
 		private FixedDecimalLong8 volume;
 		public FixedDecimalLong8 Volume { get => volume; }

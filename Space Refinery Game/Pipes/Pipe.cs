@@ -51,6 +51,8 @@ namespace Space_Refinery_Game
 
 		protected Dictionary<string, PipeConnector> NamedConnectors = new();
 
+		public bool Destroyed { get; private set; }
+
 		public abstract void TransferResourceFromConnector(ResourceContainer source, FixedDecimalLong8 volume, PipeConnector transferingConnector);
 
 		public virtual void AddDebugObjects()
@@ -230,6 +232,11 @@ namespace Space_Refinery_Game
 		{
 			lock (this)
 			{
+				if (Destroyed)
+				{
+					return;
+				}
+
 				DisplaceContents();
 
 				PhysicsObject.Destroy();
@@ -243,6 +250,8 @@ namespace Space_Refinery_Game
 				{
 					connector.Disconnect(this);
 				}
+
+				Destroyed = true;
 			}
 		}
 
@@ -250,14 +259,7 @@ namespace Space_Refinery_Game
 		{
 		}
 
-		void Entity.Tick()
-		{
-			Tick();
-		}
-
-		protected virtual void Tick()
-		{
-		}
+		public virtual void Tick() { }
 
 		void Entity.Interacted()
 		{
@@ -277,6 +279,8 @@ namespace Space_Refinery_Game
 				writer.WriteElementString("PipeType", PipeType.Name);
 
 				writer.Serialize(Transform);
+
+				writer.Serialize(Connectors, (w, c) => w.SerializeReference(c), nameof(Connectors));
 			}
 			writer.WriteEndElement();
 		}
@@ -285,17 +289,17 @@ namespace Space_Refinery_Game
 		{
 			reader.ReadStartElement(nameof(Pipe));
 			{
-				Guid guid = reader.ReadRefereceGUID();
+				SerializableReferenceGUID = reader.ReadRefereceGUID();
 
 				PipeType pipeType = gameData.MainGame.PipeTypesDictionary[reader.ReadElementString("PipeType")];
 
 				Transform transform = reader.DeserializeTransform();
 
-				SetupDeserialized(pipeType, transform, gameData, guid);
+				SetupDeserialized(pipeType, transform, gameData);
 			}
 			reader.ReadEndElement();
 
-			void SetupDeserialized(PipeType pipeType, Transform transform, GameData gameData, Guid guid)
+			void SetupDeserialized(PipeType pipeType, Transform transform, GameData gameData)
 			{
 				Transform = transform;
 
@@ -305,18 +309,30 @@ namespace Space_Refinery_Game
 
 				PhysicsObject physObj = CreatePhysicsObject(gameData.PhysicsWorld, transform, this, pipeType.Mesh);
 
-				PipeConnector[] connectors = CreateConnectors(pipeType, this, gameData);
+				PipeConnector[] connectors = (PipeConnector[])reader.DeserializeCollection<PipeConnector>((r, setAction, i) => r.DeserializeReference(referenceHandler,
+					(s) =>
+					{
+						if (pipeType.ConnectorNames is not null && pipeType.ConnectorNames[i] is not null)
+						{
+							NamedConnectors.Add(pipeType.ConnectorNames[i], (PipeConnector)s);
+						}
+
+						setAction((PipeConnector)s);
+					}), nameof(Connectors));
+
+				gameData.MainGame.SetUpAfterDeserialization += () =>
+				{
+					SetUp(pipeType, null, connectors, renderable, physObj, gameData);
+				};
 
 				Created = true;
-
-				SerializableReferenceGUID = guid;
-
-				SetUp(pipeType, null, connectors, renderable, physObj, gameData);
 
 				gameData.GameWorld.AddEntity(this);
 
 				gameData.GameWorld.AddConstruction(this);
 			}
 		}
+
+		void Entity.Destroyed() => Deconstruct();
 	}
 }

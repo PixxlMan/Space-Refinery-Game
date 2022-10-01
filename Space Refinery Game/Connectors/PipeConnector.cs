@@ -52,7 +52,7 @@ namespace Space_Refinery_Game
 		}
 
 		/*Entity.SetTickPriority/Frequency(Low)*/
-		void Entity.Tick()
+		public override void Tick()
 		{
 			lock (this)
 			{
@@ -82,11 +82,17 @@ namespace Space_Refinery_Game
 		public override void SerializeState(XmlWriter writer)
 		{
 			base.SerializeState(writer);
+
+			//PipeConnectorProperties
 		}
 
 		public override void DeserializeState(XmlReader reader, GameData gameData, SerializationReferenceHandler referenceHandler)
 		{
 			base.DeserializeState(reader, gameData, referenceHandler);
+
+			CreatePhysicsObject(Transform, gameData.PhysicsWorld);
+
+			UpdateProxy();
 		}
 	}
 }

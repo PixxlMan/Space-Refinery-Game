@@ -66,9 +66,9 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		protected override void Tick()
+		public override void Tick()
 		{
-
+			base.Tick();
 		}
 
 		protected override void Interacted()

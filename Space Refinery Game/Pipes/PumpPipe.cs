@@ -59,7 +59,7 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		protected override void Tick()
+		public override void Tick()
 		{
 			base.Tick();
 
@@ -118,7 +118,7 @@ namespace Space_Refinery_Game
 		{
 			base.SerializeState(writer);
 
-			writer.WriteElementString(nameof(DirectionAToB), DirectionAToB.ToString());
+			writer.Serialize(DirectionAToB, nameof(DirectionAToB));
 
 			ContainerA.Serialize(writer);
 			ContainerB.Serialize(writer);
@@ -128,7 +128,7 @@ namespace Space_Refinery_Game
 		{
 			base.DeserializeState(reader, gameData, referenceHandler);
 
-			DirectionAToB = bool.Parse(reader.ReadElementContentAsString());
+			DirectionAToB = reader.DeserializeBoolean(nameof(DirectionAToB));
 
 			ContainerA = ResourceContainer.Deserialize(reader, MainGame);
 			ContainerB = ResourceContainer.Deserialize(reader, MainGame);

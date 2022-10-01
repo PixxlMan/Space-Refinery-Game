@@ -27,6 +27,12 @@ namespace Space_Refinery_Game
 			PhysicsObject.Enabled = false;
 		}
 
+		public void Tick() { }
+
+		public void Interacted() { }
+
+		public void Destroyed() { }
+
 		public IInformationProvider InformationProvider => ((Entity)ProxiedEntity).InformationProvider;
 	}
 }

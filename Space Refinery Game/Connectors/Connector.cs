@@ -11,7 +11,7 @@ using Veldrid;
 
 namespace Space_Refinery_Game
 {
-	public abstract class Connector : Entity, ISerializableReference, IDisposable, IEntitySerializable
+	public abstract class Connector : Entity, ISerializableReference, IEntitySerializable
 	{
 		protected Connector()
 		{
@@ -28,8 +28,6 @@ namespace Space_Refinery_Game
 		public Connector(IConnectable initialConnectable, ConnectorSide side, Transform transform, GameData gameData) : this(transform, gameData)
 		{
 			Connectables = (side == ConnectorSide.A ? (initialConnectable, null) : (null, initialConnectable));
-
-			VacantSide = side.Opposite();
 
 			UpdateProxy();
 		}
@@ -62,7 +60,24 @@ namespace Space_Refinery_Game
 
 		public PhysicsObject PhysicsObject;
 
-		public ConnectorSide? VacantSide;
+		public ConnectorSide? VacantSide
+		{
+			get
+			{
+				if (Connectables.connectableA is null)
+				{
+					return ConnectorSide.A;
+				}
+				else if (Connectables.connectableB is null)
+				{
+					return ConnectorSide.B;
+				}
+				else
+				{
+					return null;
+				}
+			}
+		}
 
 		public abstract IInformationProvider InformationProvider { get; }
 
@@ -132,20 +147,10 @@ namespace Space_Refinery_Game
 			if (VacantSide == ConnectorSide.A)
 			{
 				Connectables = (connectable, Connectables.connectableB);
-
-				if (Connectables.connectableB is not null)
-				{
-					VacantSide = null;
-				}
 			}
 			else if (VacantSide == ConnectorSide.B)
 			{
 				Connectables = (Connectables.connectableA, connectable);
-
-				if (Connectables.connectableA is not null)
-				{
-					VacantSide = null;
-				}
 			}
 
 			PhysicsObject.Enabled = false;
@@ -162,14 +167,13 @@ namespace Space_Refinery_Game
 			{
 				Connectables = (Connectables.connectableA, null);
 			}
-			VacantSide = side;
 
 			PhysicsObject.Enabled = true;
 			UpdateProxy();
 
 			if (Connectables.connectableA is null && Connectables.connectableB is null)
 			{
-				Dispose();
+				gameData.GameWorld.RemoveEntity(this);
 			}
 		}
 
@@ -260,13 +264,9 @@ namespace Space_Refinery_Game
 		{
 			reader.ReadStartElement(nameof(Connector));
 			{
-				Guid guid = reader.ReadRefereceGUID();
+				SerializableReferenceGUID = reader.ReadRefereceGUID();
 
-				SerializableReferenceGUID = guid;
-
-				Connector connector;
-
-				Transform transform = reader.DeserializeTransform();
+				Transform = reader.DeserializeTransform();
 
 				IConnectable a = null, b = null;
 				bool hasA = reader.DeserializeBoolean("HasA");
@@ -274,23 +274,28 @@ namespace Space_Refinery_Game
 
 				if (hasA)
 				{
-					a = reader.DeserializeReference<IConnectable>(referenceHandler, $"{nameof(connector.Connectables.connectableA)}_GUID").Result;
+					reader.DeserializeReference<IConnectable>(referenceHandler, (es) => a = (IConnectable)es, $"{nameof(Connectables.connectableA)}_GUID");
 				}
 
 				if (hasB)
 				{
-					b = reader.DeserializeReference<IConnectable>(referenceHandler, $"{nameof(connector.Connectables.connectableB)}_GUID").Result;
+					reader.DeserializeReference<IConnectable>(referenceHandler, (es) => b = (IConnectable)es, $"{nameof(Connectables.connectableB)}_GUID");
 				}
 
-				Connectables = (a, b);
+				gameData.MainGame.SetUpAfterDeserialization += () =>
+				{
+					Connectables = (a, b);
+				};
+
+				this.gameData = gameData;
+
+				gameData.GameWorld.AddEntity(this);
 			}
 			reader.ReadEndElement();
 		}
 
-		public void Dispose()
+		void Entity.Destroyed()
 		{
-			gameData.GameWorld.RemoveEntity(this);
-
 			PhysicsObject.Destroy();
 
 			Proxy.PhysicsObject.Destroy();
@@ -299,5 +304,9 @@ namespace Space_Refinery_Game
 
 			MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
 		}
+
+		public abstract void Tick();
+
+		public virtual void Interacted() { }
 	}
 }

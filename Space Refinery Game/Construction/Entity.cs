@@ -4,14 +4,10 @@
 	{
 		public abstract IInformationProvider InformationProvider { get; }
 
-		public void Tick()
-		{
+		public void Tick();
 
-		}
+		public void Interacted();
 
-		public void Interacted()
-		{
-
-		}
+		public void Destroyed();
 	}
 }

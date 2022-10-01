@@ -10,7 +10,7 @@ using Veldrid;
 
 namespace Space_Refinery_Game
 {
-	public class ElectrolysisMachinery : MachineryPipe
+	public sealed class ElectrolysisMachinery : MachineryPipe
 	{
 		protected ElectrolysisMachinery() : base()
 		{ }
@@ -87,7 +87,7 @@ namespace Space_Refinery_Game
 			//throw new NotImplementedException();
 		}
 
-		protected override void Tick()
+		public override void Tick()
 		{
 			base.Tick();
 

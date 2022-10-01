@@ -15,7 +15,7 @@ public class MainGame
 	public GameWorld GameWorld { get; private set; }
 	public Player Player { get; private set; }
 	public SerializationReferenceHandler ReferenceHandler { get; private set; }
-	public GameData GameData { get; private set; }
+	public GameData GameData => new(ui, PhysicsWorld, GraphicsWorld, GameWorld, this, ReferenceHandler);
 
 	public static Settings GlobalSettings;
 
@@ -75,8 +75,6 @@ public class MainGame
 		GameWorld = new(this);
 
 		ReferenceHandler = new();
-
-		GameData = new(ui, PhysicsWorld, GraphicsWorld, GameWorld, this, ReferenceHandler);
 
 		Player = Player.Create(GameData);
 
@@ -171,6 +169,10 @@ public class MainGame
 		{
 			File.Delete(path);
 
+			Stopwatch stopwatch = new();
+
+			stopwatch.Start();
+
 			using Stream stream = File.OpenWrite(path);
 
 			using XmlWriter writer = XmlWriter.Create(stream, new XmlWriterSettings() { Indent = true });
@@ -189,7 +191,13 @@ public class MainGame
 
 			writer.Close();
 
+			stream.Flush();
+
 			stream.Close();
+
+			stopwatch.Stop();
+
+			Console.WriteLine(stopwatch.Elapsed.TotalMilliseconds);
 		}
 	}
 
@@ -197,6 +205,10 @@ public class MainGame
 	{
 		lock (GameWorld.TickSyncObject)
 		{
+			Stopwatch stopwatch = new();
+
+			stopwatch.Start();
+
 			using Stream stream = File.OpenRead(path);
 
 			using XmlReader reader = XmlReader.Create(stream);
@@ -207,13 +219,25 @@ public class MainGame
 
 				Player = Player.Deserialize(reader, GameData);
 
+				GameWorld.ClearAll();
+
 				ReferenceHandler = SerializationReferenceHandler.Deserialize(reader, GameData);
 			}
-			reader.ReadEndElement();
+			//reader.ReadEndElement();
+
+			SetUpAfterDeserialization();
+
+			SetUpAfterDeserialization = null;
 
 			reader.Close();
 
 			stream.Close();
+
+			stopwatch.Stop();
+
+			Console.WriteLine(stopwatch.Elapsed.TotalMilliseconds);
 		}
 	}
+
+	public event Action SetUpAfterDeserialization;
 }

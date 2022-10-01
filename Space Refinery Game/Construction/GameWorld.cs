@@ -37,7 +37,11 @@ namespace Space_Refinery_Game
 		public void RemoveEntity(Entity entity)
 		{
 			lock (SynchronizationObject)
+			{
 				Entities.Remove(entity);
+
+				entity.Destroyed();
+			}
 		}
 
 		public void AddConstruction(IConstruction construction)
@@ -117,6 +121,24 @@ namespace Space_Refinery_Game
 				foreach (var entity in Entities)
 				{
 					entity.Tick();
+				}
+			}
+		}
+
+		public void ClearAll()
+		{
+			foreach (var constructable in Constructions)
+			{
+				Deconstruct(constructable);
+			}
+
+			foreach (var entity in Entities)
+			{
+				RemoveEntity(entity);
+
+				if (entity is IDisposable disposable)
+				{
+					disposable.Dispose();
 				}
 			}
 		}

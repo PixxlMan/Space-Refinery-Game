@@ -203,6 +203,13 @@ namespace Space_Refinery_Game
 
 				reader.ReadStartElement("Elements");
 				{
+					if (count == 0)
+					{
+						reader.ReadEndElement();
+
+						return Array.Empty<T>();
+					}
+
 					for (int i = 0; i < count; i++)
 					{
 						array[i] = deserializationAction(reader);
@@ -214,7 +221,68 @@ namespace Space_Refinery_Game
 
 			return array;
 		}
+		
+		public static ICollection<T> DeserializeCollection<T>(this XmlReader reader, Action<XmlReader, Action<T>> deserializationAction, string? name = null)
+		{
+			T[] array;
 
+			reader.ReadStartElement(name ?? "Collection");
+			{
+				int count = int.Parse(reader.ReadElementString("Count"));
+
+				array = new T[count];
+
+				reader.ReadStartElement("Elements");
+				{
+					if (count == 0)
+					{
+						reader.ReadEndElement();
+
+						return Array.Empty<T>();
+					}
+
+					for (int i = 0; i < count; i++)
+					{						
+						deserializationAction(reader, (t) => array[i] = t);
+					}
+				}
+				reader.ReadEndElement();
+			}
+			reader.ReadEndElement();
+
+			return array;
+		}
+		
+		public static ICollection<T> DeserializeCollection<T>(this XmlReader reader, Action<XmlReader, Action<T>, int> deserializationAction, string? name = null)
+		{
+			T[] array;
+
+			reader.ReadStartElement(name ?? "Collection");
+			{
+				int count = int.Parse(reader.ReadElementString("Count"));
+
+				array = new T[count];
+
+				reader.ReadStartElement("Elements");
+				{
+					if (count == 0)
+					{
+						reader.ReadEndElement();
+
+						return Array.Empty<T>();
+					}
+
+					for (int i = 0; i < count; i++)
+					{						
+						deserializationAction(reader, (t) => array[i] = t, i);
+					}
+				}
+				reader.ReadEndElement();
+			}
+			reader.ReadEndElement();
+
+			return array;
+		}
 
 		public static void DeserializeCollection(this XmlReader reader, Action<XmlReader> deserializationAction, string? name = null)
 		{
@@ -224,6 +292,13 @@ namespace Space_Refinery_Game
 
 				reader.ReadStartElement("Elements");
 				{
+					if (count == 0)
+					{
+						reader.ReadEndElement();
+
+						return;
+					}
+
 					for (int i = 0; i < count; i++)
 					{
 						deserializationAction(reader);
@@ -246,17 +321,17 @@ namespace Space_Refinery_Game
 			return guid;
 		}
 
-		public async static Task<ISerializableReference> DeserializeReference(this XmlReader reader, SerializationReferenceHandler referenceHandler, string? name = null)
+		public static void DeserializeReference(this XmlReader reader, SerializationReferenceHandler referenceHandler, Action<ISerializableReference> referenceRegisteredCallback, string? name = null)
 		{
 			Guid guid = Guid.Parse(reader.ReadElementString(name ?? "GUID"));
 
-			return await referenceHandler.AwaitEventualReference(guid);
+			referenceHandler.GetEventualReference(guid, referenceRegisteredCallback);
 		}
 
-		public async static Task<T> DeserializeReference<T>(this XmlReader reader, SerializationReferenceHandler referenceHandler, string? name = null)
+		public static void DeserializeReference<T>(this XmlReader reader, SerializationReferenceHandler referenceHandler, Action<T> refrenceRegisteredCallback, string? name = null)
 			where T : ISerializableReference
 		{
-			return (T)await DeserializeReference(reader, referenceHandler, name);
+			DeserializeReference(reader, referenceHandler, (s) => refrenceRegisteredCallback((T)s), name);
 		}
 	}
 }

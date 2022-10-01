@@ -59,7 +59,7 @@ namespace Space_Refinery_Game
 		{
 			lock (this)
 			{
-				ResourceContainer = new(PipeType.PipeProperties.FlowableVolume);
+				ResourceContainer ??= new(PipeType.PipeProperties.FlowableVolume);
 			}
 		}
 

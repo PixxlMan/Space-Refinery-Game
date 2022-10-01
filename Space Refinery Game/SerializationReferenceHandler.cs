@@ -1,14 +1,17 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
 namespace Space_Refinery_Game
 {
-	public class SerializationReferenceHandler
+	public unsafe class SerializationReferenceHandler
 	{
 		public ISerializableReference this[Guid guid]
 		{
@@ -19,7 +22,30 @@ namespace Space_Refinery_Game
 
 		private Dictionary<Guid, ISerializableReference> guidToSerializableReference = new();
 
-		private Dictionary<Guid, List<YieldAwaitable>> awaitedEventuallyResolvedReferences = new();
+		private Dictionary<Guid, List<Action<ISerializableReference>>> eventualReferencesToFulfill = new();
+
+		public bool AllowUnresolvedEventualReferences { get; private set; }
+
+		public void EnterAllowEventualReferenceMode()
+		{
+			lock (SyncRoot)
+			{
+				AllowUnresolvedEventualReferences = true;
+			}
+		}
+
+		public void ExitAllowEventualReferenceMode()
+		{
+			lock (SyncRoot)
+			{
+				AllowUnresolvedEventualReferences = false;
+
+				if (eventualReferencesToFulfill.Count > 0)
+				{
+					throw new Exception("Not all eventual references have been resolved yet! Either this was called too early, or there is a missing reference.");
+				}
+			}
+		}
 
 		public bool ContainsReference(ISerializableReference serializableReference)
 		{
@@ -46,57 +72,72 @@ namespace Space_Refinery_Game
 					throw new ArgumentException($"The GUID of this {nameof(ISerializableReference)} is not initialized!", nameof(serializableReference));
 				}
 
-				if (awaitedEventuallyResolvedReferences.ContainsKey(serializableReference.SerializableReferenceGUID))
+				if (AllowUnresolvedEventualReferences)
 				{
-					AwaitYieldAwaitables(awaitedEventuallyResolvedReferences[serializableReference.SerializableReferenceGUID]);
+					if (eventualReferencesToFulfill.ContainsKey(serializableReference.SerializableReferenceGUID))
+					{
+						foreach (var eventualReferenceCallback in eventualReferencesToFulfill[serializableReference.SerializableReferenceGUID])
+						{
+							eventualReferenceCallback(serializableReference);
+						}
+
+						eventualReferencesToFulfill.Remove(serializableReference.SerializableReferenceGUID);
+					}
 				}
 
 				guidToSerializableReference.Add(serializableReference.SerializableReferenceGUID, serializableReference);
 			}
-
-			async static void AwaitYieldAwaitables(List<YieldAwaitable> awaitables)
-			{
-				foreach (var awaitable in awaitables)
-				{
-					await awaitable;
-				}
-			}
 		}
 
-		public async Task<ISerializableReference> AwaitEventualReference(Guid guid)
+		public void GetEventualReference(Guid guid, Action<ISerializableReference> referenceRegisteredCallback)
 		{
 			lock (SyncRoot)
 			{
+				if (!AllowUnresolvedEventualReferences)
+				{
+					throw new InvalidOperationException($"Cannot use eventual references when {nameof(AllowUnresolvedEventualReferences)} mode is not active!");
+				}
+
 				if (ContainsReference(guid))
 				{
-					return this[guid];
+					referenceRegisteredCallback(this[guid]);
 				}
 				else
 				{
-					if (awaitedEventuallyResolvedReferences.ContainsKey(guid))
+					if (eventualReferencesToFulfill.ContainsKey(guid))
 					{
-						awaitedEventuallyResolvedReferences[guid].Add(Task.Yield());
+						eventualReferencesToFulfill[guid].Add(referenceRegisteredCallback);
 					}
 					else
 					{
-						awaitedEventuallyResolvedReferences.Add(guid, new List<YieldAwaitable>() { Task.Yield() });
+						eventualReferencesToFulfill.TryAdd(guid, new List<Action<ISerializableReference>>() { referenceRegisteredCallback });
 					}
-
-					return this[guid];
 				}
 			}
 		}
 
 		public void Serialize(XmlWriter writer)
 		{
-			writer.Serialize(guidToSerializableReference.Values, (w, s) => w.SerializeWithEmbeddedType(s));
+			lock (SyncRoot)
+			{
+				if (AllowUnresolvedEventualReferences)
+				{
+					throw new InvalidOperationException($"Cannot serialize when {nameof(AllowUnresolvedEventualReferences)} mode is active!");
+				}
+
+				writer.Serialize(guidToSerializableReference.Values, (w, s) => w.SerializeWithEmbeddedType(s), nameof(SerializationReferenceHandler));
+			}
 		}
 		
 		public static SerializationReferenceHandler Deserialize(XmlReader reader, GameData gameData)
 		{
 			SerializationReferenceHandler referenceHandler = new();
 
-			reader.DeserializeCollection((r) => referenceHandler.RegisterReference((ISerializableReference)r.DeserializeEntitySerializableWithEmbeddedType(gameData, referenceHandler)));
+			referenceHandler.EnterAllowEventualReferenceMode();
+
+			reader.DeserializeCollection((r) => referenceHandler.RegisterReference((ISerializableReference)r.DeserializeEntitySerializableWithEmbeddedType(gameData, referenceHandler)), nameof(SerializationReferenceHandler));
+
+			referenceHandler.ExitAllowEventualReferenceMode();
 
 			return referenceHandler;
 		}

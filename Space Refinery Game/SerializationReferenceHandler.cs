@@ -93,17 +93,17 @@ namespace Space_Refinery_Game
 		{
 			lock (SyncRoot)
 			{
-				if (!AllowUnresolvedEventualReferences)
-				{
-					throw new InvalidOperationException($"Cannot use eventual references when {nameof(AllowUnresolvedEventualReferences)} mode is not active!");
-				}
-
 				if (ContainsReference(guid))
 				{
 					referenceRegisteredCallback(this[guid]);
 				}
 				else
 				{
+					if (!AllowUnresolvedEventualReferences)
+					{
+						throw new InvalidOperationException($"Cannot use eventual references when {nameof(AllowUnresolvedEventualReferences)} mode is not active!");
+					}
+
 					if (eventualReferencesToFulfill.ContainsKey(guid))
 					{
 						eventualReferencesToFulfill[guid].Add(referenceRegisteredCallback);

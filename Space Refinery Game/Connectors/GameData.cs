@@ -2,7 +2,7 @@
 
 namespace Space_Refinery_Game
 {
-	public class GameData
+	public sealed class GameData
 	{
 		public GameData(UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler)
 		{

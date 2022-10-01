@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Space_Refinery_Game
 {
 	[Serializable]
-	public class ChemicalType : IJsonOnDeserialized, IUIInspectable
+	public sealed class ChemicalType : IJsonOnDeserialized, IUIInspectable
 	{
 		public string ChemicalName;
 

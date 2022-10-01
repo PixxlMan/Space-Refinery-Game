@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace Space_Refinery_Game
 {
 	[Serializable]
-	public class LiquidType : ResourceType
+	public sealed class LiquidType : ResourceType
 	{
 		[JsonConstructor]
 		public LiquidType()

@@ -14,7 +14,7 @@ using Veldrid.Utilities;
 
 namespace Space_Refinery_Game
 {
-	public partial class PhysicsWorld
+	public sealed partial class PhysicsWorld
 	{
 		public Dictionary<BodyHandle, PhysicsObject> PhysicsObjectLookup = new();
 

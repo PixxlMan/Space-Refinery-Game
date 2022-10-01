@@ -2,7 +2,7 @@
 
 namespace Space_Refinery_Game
 {
-	public class SpaceDockPipeInformationProvider : PipeInformationProvider
+	public sealed class SpaceDockPipeInformationProvider : PipeInformationProvider
 	{
 		public SpaceDockPipeInformationProvider(SpaceDockPipe pipe) : base(pipe)
 		{

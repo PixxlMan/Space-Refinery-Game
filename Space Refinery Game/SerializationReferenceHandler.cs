@@ -11,7 +11,7 @@ using System.Xml;
 
 namespace Space_Refinery_Game
 {
-	public unsafe class SerializationReferenceHandler
+	public sealed unsafe class SerializationReferenceHandler
 	{
 		public ISerializableReference this[Guid guid]
 		{

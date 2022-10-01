@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Space_Refinery_Game
 {
-	public class DebugSettings
+	public sealed class DebugSettings
 	{
 		public Dictionary<string, IDebugSetting> DebugSettingsDictionary = new();
 

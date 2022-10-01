@@ -8,7 +8,7 @@ using ImGuiNET;
 
 namespace Space_Refinery_Game
 {
-	public class PipeConnectorInformationProvider : IInformationProvider
+	public sealed class PipeConnectorInformationProvider : IInformationProvider
 	{
 		public PipeConnector PipeConnector;
 

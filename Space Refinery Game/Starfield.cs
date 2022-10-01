@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Space_Refinery_Game
 {
-	public class Starfield
+	public sealed class Starfield
 	{
 		public GraphicsWorld GraphicsWorld;
 

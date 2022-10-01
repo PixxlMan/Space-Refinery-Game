@@ -55,6 +55,8 @@ namespace Space_Refinery_Game
 			Mesh = Mesh.LoadMesh(gd, factory, ModelPath);
 		}
 
+		public static PipeConnectorProperties StandardConnectorProperties { get; } = (PipeConnectorProperties)MainGame.GlobalReferenceHandler[Guid.Parse("a2f1a2e0-529e-41e3-bb90-544104b85d2a")];
+
 		public static PipeType[] GetAllPipeTypes(GraphicsWorld graphicsWorld)
 		{
 			PipeType[] entityTypes =
@@ -76,18 +78,8 @@ namespace Space_Refinery_Game
 					},
 					ConnectorProperties = new PipeConnectorProperties[]
 					{
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
+						StandardConnectorProperties,
+						StandardConnectorProperties,
 					},
 					PipeProperties = new()
 					{
@@ -120,24 +112,9 @@ namespace Space_Refinery_Game
 					},
 					ConnectorProperties = new PipeConnectorProperties[]
 					{
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
+						StandardConnectorProperties,
+						StandardConnectorProperties,
+						StandardConnectorProperties,
 					},
 					ConnectorNames = new string[]
 					{
@@ -171,18 +148,8 @@ namespace Space_Refinery_Game
 					},
 					ConnectorProperties = new PipeConnectorProperties[]
 					{
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
+						StandardConnectorProperties,
+						StandardConnectorProperties,
 					},
 					ConnectorNames = new string[]
 					{
@@ -210,12 +177,7 @@ namespace Space_Refinery_Game
 					},
 					ConnectorProperties = new PipeConnectorProperties[]
 					{
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
+						StandardConnectorProperties,
 					},
 					PipeProperties = new()
 					{
@@ -238,18 +200,8 @@ namespace Space_Refinery_Game
 					},
 					ConnectorProperties = new PipeConnectorProperties[]
 					{
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
+						StandardConnectorProperties,
+						StandardConnectorProperties,
 					},
 					PipeProperties = new()
 					{
@@ -277,18 +229,8 @@ namespace Space_Refinery_Game
 					},
 					ConnectorProperties = new PipeConnectorProperties[]
 					{
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
+						StandardConnectorProperties,
+						StandardConnectorProperties,
 					},
 					PipeProperties = new()
 					{
@@ -320,24 +262,9 @@ namespace Space_Refinery_Game
 					},
 					ConnectorProperties = new PipeConnectorProperties[]
 					{
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
+						StandardConnectorProperties,
+						StandardConnectorProperties,
+						StandardConnectorProperties,
 					},
 					PipeProperties = new()
 					{
@@ -364,18 +291,8 @@ namespace Space_Refinery_Game
 					},
 					ConnectorProperties = new PipeConnectorProperties[]
 					{
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
+						StandardConnectorProperties,
+						StandardConnectorProperties,
 					},
 					PipeProperties = new()
 					{
@@ -412,30 +329,10 @@ namespace Space_Refinery_Game
 					},
 					ConnectorProperties = new PipeConnectorProperties[]
 					{
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
-						new PipeConnectorProperties()
-						{
-							Shape = PipeShape.Cylindrical,
-							ConnectorDiameter = (FixedDecimalInt4).475,
-							ConnectorFlowAreaDiameter = (FixedDecimalInt4).425,
-						},
+						StandardConnectorProperties,
+						StandardConnectorProperties,
+						StandardConnectorProperties,
+						StandardConnectorProperties,
 					},
 					PipeProperties = new()
 					{

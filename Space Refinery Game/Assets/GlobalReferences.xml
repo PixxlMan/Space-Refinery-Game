@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<GlobalReferences>
+	<SerializationReferenceHandler>
+		<Count>1</Count>
+		<Elements>
+			<IEntitySerializable>
+				<Type>Space_Refinery_Game.PipeConnectorProperties, Space Refinery Game, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</Type>
+				<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
+				<Shape>Cylindrical</Shape>
+				<ConnectorDiameter>0.475</ConnectorDiameter>
+				<ConnectorFlowAreaDiameter>0.425</ConnectorFlowAreaDiameter>
+			</IEntitySerializable>
+		</Elements>
+	</SerializationReferenceHandler>
+</GlobalReferences>

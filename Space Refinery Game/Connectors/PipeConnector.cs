@@ -83,16 +83,21 @@ namespace Space_Refinery_Game
 		{
 			base.SerializeState(writer);
 
-			//PipeConnectorProperties
+			writer.SerializeReference(PipeConnectorProperties, nameof(PipeConnectorProperties));
 		}
 
 		public override void DeserializeState(XmlReader reader, GameData gameData, SerializationReferenceHandler referenceHandler)
 		{
 			base.DeserializeState(reader, gameData, referenceHandler);
 
+			reader.DeserializeReference<PipeConnectorProperties>(MainGame.GlobalReferenceHandler, (p) => PipeConnectorProperties = p, nameof(PipeConnectorProperties));
+
 			CreatePhysicsObject(Transform, gameData.PhysicsWorld);
 
-			UpdateProxy();
+			gameData.MainGame.SetUpAfterDeserialization += () =>
+			{
+				UpdateProxy();
+			};
 		}
 	}
 }

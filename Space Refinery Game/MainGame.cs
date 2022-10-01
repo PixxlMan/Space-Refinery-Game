@@ -17,6 +17,21 @@ public class MainGame
 	public SerializationReferenceHandler ReferenceHandler { get; private set; }
 	public GameData GameData => new(ui, PhysicsWorld, GraphicsWorld, GameWorld, this, ReferenceHandler);
 
+	public static SerializationReferenceHandler GlobalReferenceHandler = DeserializeGlobalReferenceHandler();
+
+	private static SerializationReferenceHandler DeserializeGlobalReferenceHandler()
+	{
+		using var reader = XmlReader.Create(Path.Combine(Environment.CurrentDirectory, "Assets", "GlobalReferences.xml"));
+
+		reader.ReadStartElement("GlobalReferences");
+
+		var globalReferenceHanlder = SerializationReferenceHandler.Deserialize(reader, new GameData(null, null, null, null, null, null));
+
+		reader.ReadEndElement();
+
+		return globalReferenceHanlder;
+	}
+
 	public static Settings GlobalSettings;
 
 	public static DebugRender DebugRender;
@@ -66,7 +81,7 @@ public class MainGame
 
 		PhysicsWorld.SetUp();
 
-		PhysicsWorld.Run(); 
+		PhysicsWorld.Run();
 
 		ui = UI.Create(GraphicsWorld, this);
 
@@ -104,7 +119,7 @@ public class MainGame
 
 	private void StartUpdating()
 	{
-		Thread thread = new Thread(new ThreadStart(() => 
+		Thread thread = new Thread(new ThreadStart(() =>
 		{
 			Stopwatch stopwatch = new();
 			stopwatch.Start();
@@ -132,7 +147,7 @@ public class MainGame
 
 	private void Update(FixedDecimalInt4 deltaTime)
 	{
-		lock(SynchronizationObject) lock(GraphicsWorld.SynchronizationObject)
+		lock (SynchronizationObject) lock (GraphicsWorld.SynchronizationObject)
 		{
 			GraphicsWorld.Camera.Transform = Player.CameraTransform;
 
@@ -175,7 +190,7 @@ public class MainGame
 
 			using Stream stream = File.OpenWrite(path);
 
-			using XmlWriter writer = XmlWriter.Create(stream, new XmlWriterSettings() { Indent = true });
+			using XmlWriter writer = XmlWriter.Create(stream, new XmlWriterSettings() { Indent = true, IndentChars = "\t" });
 
 			writer.WriteStartDocument();
 			writer.WriteStartElement(nameof(MainGame));

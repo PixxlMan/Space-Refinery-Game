@@ -24,6 +24,17 @@ namespace Space_Refinery_Game
 			return map.TargetMethods[index];
 		}
 
+		public static void Serialize(this XmlWriter writer, Enum @enum, string name = "Enum")
+		{
+			writer.WriteElementString(name, @enum.ToString());
+		}
+
+		public static T DeserializeEnum<T>(this XmlReader reader, string name = "Enum")
+			where T : struct, Enum
+		{
+			return Enum.Parse<T>(reader.ReadString(name));
+		}
+
 		public static string ReadString(this XmlReader reader, string? name = null)
 		{
 			string value;

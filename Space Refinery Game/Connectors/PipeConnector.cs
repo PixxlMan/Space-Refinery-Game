@@ -94,7 +94,7 @@ namespace Space_Refinery_Game
 
 			CreatePhysicsObject(Transform, gameData.PhysicsWorld);
 
-			gameData.MainGame.SetUpAfterDeserialization += () =>
+			gameData.SerializationCompleteEvent += () =>
 			{
 				UpdateProxy();
 			};

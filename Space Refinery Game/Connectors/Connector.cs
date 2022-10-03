@@ -282,7 +282,7 @@ namespace Space_Refinery_Game
 					reader.DeserializeReference<IConnectable>(referenceHandler, (es) => b = (IConnectable)es, $"{nameof(Connectables.connectableB)}_GUID");
 				}
 
-				gameData.MainGame.SetUpAfterDeserialization += () =>
+				gameData.SerializationCompleteEvent += () =>
 				{
 					Connectables = (a, b);
 				};

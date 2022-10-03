@@ -141,5 +141,14 @@ namespace Space_Refinery_Game
 
 			return referenceHandler;
 		}
+
+		public void DeserializeInto(XmlReader reader, GameData gameData)
+		{
+			EnterAllowEventualReferenceMode();
+
+			reader.DeserializeCollection((r) => RegisterReference((ISerializableReference)r.DeserializeEntitySerializableWithEmbeddedType(gameData, this)), nameof(SerializationReferenceHandler));
+
+			ExitAllowEventualReferenceMode();
+		}
 	}
 }

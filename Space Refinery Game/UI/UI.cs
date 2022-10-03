@@ -113,7 +113,7 @@ namespace Space_Refinery_Game
 
 			graphWorld.AddRenderable(ui, 1);
 
-			ui.PipeTypes.AddRange(PipeType.GetAllPipeTypes(graphWorld));
+			ui.PipeTypes.AddRange(PipeType.PipeTypes.Values);
 
 			ui.Style();
 

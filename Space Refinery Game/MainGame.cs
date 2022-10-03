@@ -15,17 +15,23 @@ public sealed class MainGame
 	public GameWorld GameWorld { get; private set; }
 	public Player Player { get; private set; }
 	public SerializationReferenceHandler ReferenceHandler { get; private set; }
-	public GameData GameData => new(ui, PhysicsWorld, GraphicsWorld, GameWorld, this, ReferenceHandler);
 
-	public static SerializationReferenceHandler GlobalReferenceHandler = DeserializeGlobalReferenceHandler();
+	public GameData GetGameData()
+	{
+		return new(ui, PhysicsWorld, GraphicsWorld, GameWorld, this, ReferenceHandler);
+	}
 
-	private static SerializationReferenceHandler DeserializeGlobalReferenceHandler()
+	public static SerializationReferenceHandler GlobalReferenceHandler;
+
+	private static SerializationReferenceHandler DeserializeGlobalReferenceHandler(GameData gameData)
 	{
 		using var reader = XmlReader.Create(Path.Combine(Environment.CurrentDirectory, "Assets", "GlobalReferences.xml"));
 
 		reader.ReadStartElement("GlobalReferences");
 
-		var globalReferenceHanlder = SerializationReferenceHandler.Deserialize(reader, new GameData(null, null, null, null, null, null));
+		var globalReferenceHanlder = SerializationReferenceHandler.Deserialize(reader, gameData);
+
+		gameData.SerializationComplete();
 
 		reader.ReadEndElement();
 
@@ -51,8 +57,6 @@ public sealed class MainGame
 
 	public PipeType[] PipeTypes;
 
-	public Dictionary<string, PipeType> PipeTypesDictionary;
-
 	public void Start(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
 		GlobalSettings = new();
@@ -71,11 +75,12 @@ public sealed class MainGame
 
 		GraphicsWorld.SetUp(window, gd, factory, swapchain);
 
-		PipeTypes = PipeType.GetAllPipeTypes(GraphicsWorld);
-
-		PipeTypesDictionary = PipeTypes.ToDictionary((pipeType) => pipeType.Name);
-
 		DebugRender = DebugRender.Create(GraphicsWorld);
+
+		if (GlobalReferenceHandler is null)
+		{
+			GlobalReferenceHandler = DeserializeGlobalReferenceHandler(GetGameData());
+		}
 
 		PhysicsWorld = new();
 
@@ -91,11 +96,11 @@ public sealed class MainGame
 
 		ReferenceHandler = new();
 
-		Player = Player.Create(GameData);
+		Player = Player.Create(GetGameData());
 
 		Starfield.Create(GraphicsWorld);
 
-		GameWorld.AddConstruction(Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), GameData, ReferenceHandler));
+		GameWorld.AddConstruction(Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), GetGameData(), ReferenceHandler));
 
 		InputTracker.IgnoreNextFrameMousePosition = true;
 
@@ -228,21 +233,21 @@ public sealed class MainGame
 
 			using XmlReader reader = XmlReader.Create(stream);
 
+			var gameData = GetGameData();
+
 			reader.ReadStartElement(nameof(MainGame));
 			{
 				Player.Dispose();
 
-				Player = Player.Deserialize(reader, GameData);
+				Player = Player.Deserialize(reader, gameData);
 
 				GameWorld.ClearAll();
 
-				ReferenceHandler = SerializationReferenceHandler.Deserialize(reader, GameData);
+				ReferenceHandler = SerializationReferenceHandler.Deserialize(reader, gameData);
 			}
 			//reader.ReadEndElement();
 
-			SetUpAfterDeserialization();
-
-			SetUpAfterDeserialization = null;
+			gameData.SerializationComplete();
 
 			reader.Close();
 
@@ -253,6 +258,4 @@ public sealed class MainGame
 			Console.WriteLine(stopwatch.Elapsed.TotalMilliseconds);
 		}
 	}
-
-	public event Action SetUpAfterDeserialization;
 }

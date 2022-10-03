@@ -2,19 +2,22 @@
 using FXRenderer;
 using Space_Refinery_Game_Renderer;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Serialization;
 using Veldrid;
 
 namespace Space_Refinery_Game
 {
-	[Serializable]
-	public class PipeType : IEntityType
+	public sealed class PipeType : IEntityType, ISerializableReference
 	{
+		public static ConcurrentDictionary<string, PipeType> PipeTypes = new();
+
 		public PositionAndDirection[] ConnectorPlacements;
 
 		public PipeConnectorProperties[] ConnectorProperties;
@@ -23,333 +26,117 @@ namespace Space_Refinery_Game
 
 		public string ModelPath;
 
-		[NonSerialized]
-		public Mesh Mesh;
-
-		public string Name;
+		public Mesh Mesh { get; private set; }
 
 		public PipeProperties PipeProperties;
 
 		public Type TypeOfPipe;
 
-		public void Serialize(string path)
+		public Guid SerializableReferenceGUID { get; private set; }
+
+		private static PipeConnectorProperties standardPipeConnectorProperties;
+		public static PipeConnectorProperties StandardConnectorProperties
 		{
-			using FileStream stream = File.OpenWrite(path);
-
-			JsonSerializer.Serialize(stream, this, new JsonSerializerOptions() { IncludeFields = true });
-		}
-
-		public static PipeType Deserialize(string path, GraphicsDevice gd, ResourceFactory factory)
-		{
-			using FileStream stream = File.OpenRead(path);
-
-			var pipeType = JsonSerializer.Deserialize<PipeType>(stream, new JsonSerializerOptions() { IncludeFields = true });
-
-			pipeType.AssignModel(gd, factory);
-
-			return pipeType;
-		}
-
-		public void AssignModel(GraphicsDevice gd, ResourceFactory factory)
-		{
-			Mesh = Mesh.LoadMesh(gd, factory, ModelPath);
-		}
-
-		public static PipeConnectorProperties StandardConnectorProperties { get; } = (PipeConnectorProperties)MainGame.GlobalReferenceHandler[Guid.Parse("a2f1a2e0-529e-41e3-bb90-544104b85d2a")];
-
-		public static PipeType[] GetAllPipeTypes(GraphicsWorld graphicsWorld)
-		{
-			PipeType[] entityTypes =
+			get
 			{
-				new PipeType()
+				if (standardPipeConnectorProperties is null)
 				{
-					ConnectorPlacements = new PositionAndDirection[]
-					{
-						new PositionAndDirection()
-						{
-							Position = new((FixedDecimalInt4).5f, 0, 0),
-							Direction = new(1, 0, 0),
-						},
-						new PositionAndDirection()
-						{
-							Position = new(-(FixedDecimalInt4).5f, 0, 0),
-							Direction = new(-1, 0, 0),
-						},
-					},
-					ConnectorProperties = new PipeConnectorProperties[]
-					{
-						StandardConnectorProperties,
-						StandardConnectorProperties,
-					},
-					PipeProperties = new()
-					{
-						FlowableVolume = (FixedDecimalLong8)0.16,
-						Friction = (FixedDecimalLong8)0.04,
-					},
-					TypeOfPipe = typeof(OrdinaryPipe),
-					Name = "Straight Pipe",
-					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeStraight.obj"),
-				},
-				new PipeType()
-				{
-					ConnectorPlacements = new PositionAndDirection[]
-					{
-						new PositionAndDirection()
-						{
-							Position = new((FixedDecimalInt4).9f, 0, -(FixedDecimalInt4).35),
-							Direction = new(1, 0, 0),
-						},
-						new PositionAndDirection()
-						{
-							Position = new((FixedDecimalInt4).9f, 0, (FixedDecimalInt4).35),
-							Direction = new(1, 0, 0),
-						},
-						new PositionAndDirection()
-						{
-							Position = new(-(FixedDecimalInt4).9f, 0, 0),
-							Direction = new(-1, 0, 0),
-						},
-					},
-					ConnectorProperties = new PipeConnectorProperties[]
-					{
-						StandardConnectorProperties,
-						StandardConnectorProperties,
-						StandardConnectorProperties,
-					},
-					ConnectorNames = new string[]
-					{
-						"HydrogenOutput",
-						"OxygenOutput",
-						"WaterInput",
-					},
-					PipeProperties = new()
-					{
-						FlowableVolume = (FixedDecimalLong8)0.16,
-						Friction = (FixedDecimalLong8)0.04,
-					},
-					TypeOfPipe = typeof(ElectrolysisMachinery),
-					Name = "Electrolysis Machine",
-					ModelPath = Path.Combine("Assets", "Models", "Machinery", "MachineryElectrolysis.obj"),
-				},
-				new PipeType()
-				{
-					ConnectorPlacements = new PositionAndDirection[]
-					{
-						new PositionAndDirection()
-						{
-							Position = new((FixedDecimalInt4).375, 0, 0),
-							Direction = new(1, 0, 0),
-						},
-						new PositionAndDirection()
-						{
-							Position = new(-(FixedDecimalInt4).375, 0, 0),
-							Direction = new(-1, 0, 0),
-						},
-					},
-					ConnectorProperties = new PipeConnectorProperties[]
-					{
-						StandardConnectorProperties,
-						StandardConnectorProperties,
-					},
-					ConnectorNames = new string[]
-					{
-						"A",
-						"B",
-					},
-					PipeProperties = new()
-					{
-						FlowableVolume = (FixedDecimalLong8)0.1,
-						Friction = (FixedDecimalLong8)0.04,
-					},
-					TypeOfPipe = typeof(PumpPipe),
-					Name = "Pump",
-					ModelPath = Path.Combine("Assets", "Models", "Pipe", "Special", "PipeSpecialPump.obj"),
-				},
-				new PipeType()
-				{
-					ConnectorPlacements = new PositionAndDirection[]
-					{
-						new PositionAndDirection()
-						{
-							Position = new((FixedDecimalInt4).5f, 0, 0),
-							Direction = new(1, 0, 0),
-						},
-					},
-					ConnectorProperties = new PipeConnectorProperties[]
-					{
-						StandardConnectorProperties,
-					},
-					PipeProperties = new()
-					{
-						FlowableVolume = (FixedDecimalLong8)0.08,
-						Friction = (FixedDecimalLong8)0.04,
-					},
-					TypeOfPipe = typeof(SpaceDockPipe),
-					Name = "Space Dock",
-					ModelPath = Path.Combine("Assets", "Models", "Machinery", "SpaceDock.obj"),
-				},
-				new PipeType()
-				{
-					ConnectorPlacements = new PositionAndDirection[]
-					{
-						new PositionAndDirection()
-						{
-							Position = new((FixedDecimalInt4)0.0125, 0, 0),
-							Direction = new(1, 0, 0),
-						},
-					},
-					ConnectorProperties = new PipeConnectorProperties[]
-					{
-						StandardConnectorProperties,
-						StandardConnectorProperties,
-					},
-					PipeProperties = new()
-					{
-						FlowableVolume = 0,
-						Friction = (FixedDecimalLong8)0.04,
-					},
-					TypeOfPipe = typeof(OrdinaryPipe),
-					Name = "Pipe End",
-					ModelPath = Path.Combine("Assets", "Models", "Pipe", "Special", "PipeSpecialEnd.obj"),
-				},
-				new PipeType()
-				{
-					ConnectorPlacements = new PositionAndDirection[]
-					{
-						new PositionAndDirection()
-						{
-							Position = new((FixedDecimalInt4).25f, 0, 0),
-							Direction = new(1, 0, 0),
-						},
-						new PositionAndDirection()
-						{
-							Position = new(-(FixedDecimalInt4).25f, 0, 0),
-							Direction = new(-1, 0, 0),
-						},
-					},
-					ConnectorProperties = new PipeConnectorProperties[]
-					{
-						StandardConnectorProperties,
-						StandardConnectorProperties,
-					},
-					PipeProperties = new()
-					{
-						FlowableVolume = (FixedDecimalLong8)0.04,
-					},
-					TypeOfPipe = typeof(ValvePipe),
-					Name = "Valve Pipe",
-					ModelPath = Path.Combine("Assets", "Models", "Pipe", "Special", "PipeSpecialValve.obj"),
-				},
-				new PipeType()
-				{
-					ConnectorPlacements = new PositionAndDirection[]
-					{
-						new PositionAndDirection()
-						{
-							Position = new(0, -(FixedDecimalInt4).5f, 0),
-							Direction = new(0, -1, 0),
-						},
-						new PositionAndDirection()
-						{
-							Position = new((FixedDecimalInt4).5f, 0, 0),
-							Direction = new(1, 0, 0),
-						},
-						new PositionAndDirection()
-						{
-							Position = new(-(FixedDecimalInt4).5f, 0, 0),
-							Direction = new(-1, 0, 0),
-						},
-					},
-					ConnectorProperties = new PipeConnectorProperties[]
-					{
-						StandardConnectorProperties,
-						StandardConnectorProperties,
-						StandardConnectorProperties,
-					},
-					PipeProperties = new()
-					{
-						FlowableVolume = (FixedDecimalLong8)0.24,
-					},
-					TypeOfPipe = typeof(OrdinaryPipe),
-					Name = "T Pipe",
-					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeStraightDivergeT.obj"),
-				},
-				new PipeType()
-				{
-					ConnectorPlacements = new PositionAndDirection[]
-					{
-						new PositionAndDirection()
-						{
-							Position = new(0, -(FixedDecimalInt4).5f, 0),
-							Direction = new(0, -1, 0),
-						},
-						new PositionAndDirection()
-						{
-							Position = new(-(FixedDecimalInt4).5f, 0, 0),
-							Direction = new(-1, 0, 0),
-						},
-					},
-					ConnectorProperties = new PipeConnectorProperties[]
-					{
-						StandardConnectorProperties,
-						StandardConnectorProperties,
-					},
-					PipeProperties = new()
-					{
-						FlowableVolume = (FixedDecimalLong8)0.16,
-					},
-					TypeOfPipe = typeof(OrdinaryPipe),
-					Name = "90 Bend Pipe",
-					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeBend90.obj"),
-				},
-				new PipeType()
-				{
-					ConnectorPlacements = new PositionAndDirection[]
-					{
-						new PositionAndDirection()
-						{
-							Position = new(0, -(FixedDecimalInt4).5f, 0),
-							Direction = new(0, -1, 0),
-						},
-						new PositionAndDirection()
-						{
-							Position = new(0, (FixedDecimalInt4).5f, 0),
-							Direction = new(0, 1, 0),
-						},
-						new PositionAndDirection()
-						{
-							Position = new((FixedDecimalInt4).5f, 0, 0),
-							Direction = new(1, 0, 0),
-						},
-						new PositionAndDirection()
-						{
-							Position = new(-(FixedDecimalInt4).5f, 0, 0),
-							Direction = new(-1, 0, 0),
-						},
-					},
-					ConnectorProperties = new PipeConnectorProperties[]
-					{
-						StandardConnectorProperties,
-						StandardConnectorProperties,
-						StandardConnectorProperties,
-						StandardConnectorProperties,
-					},
-					PipeProperties = new()
-					{
-						FlowableVolume = (FixedDecimalLong8)0.32,
-					},
-					TypeOfPipe = typeof(OrdinaryPipe),
-					Name = "X Pipe",
-					ModelPath = Path.Combine("Assets", "Models", "Pipe", "PipeStraightDivergeX.obj"),
-				},
-			};
+					standardPipeConnectorProperties = (PipeConnectorProperties)MainGame.GlobalReferenceHandler[Guid.Parse("a2f1a2e0-529e-41e3-bb90-544104b85d2a")];
+				}
 
-			foreach (PipeType pipeType in entityTypes)
+				return standardPipeConnectorProperties;
+			}
+		}
+
+		public string Name;
+
+		public PipeType(string name, PositionAndDirection[] connectorPlacements, PipeConnectorProperties[] connectorProperties, string[] connectorNames, string modelPath, Mesh mesh, PipeProperties pipeProperties, Type typeOfPipe)
+		{
+			Name = name;
+			ConnectorPlacements = connectorPlacements;
+			ConnectorProperties = connectorProperties;
+			ConnectorNames = connectorNames;
+			ModelPath = modelPath;
+			Mesh = mesh;
+			PipeProperties = pipeProperties;
+			TypeOfPipe = typeOfPipe;
+
+			SerializableReferenceGUID = Guid.NewGuid();
+
+			if (!PipeTypes.TryAdd(Name, this))
 			{
-				pipeType.AssignModel(graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
+				throw new Exception($"Couldn't add {nameof(PipeType)} '{Name}' to dictionary of all available PipeTypes.");
+			}
+		}
+
+		private PipeType()
+		{
+
+		}
+
+		public void SerializeState(XmlWriter writer)
+		{
+			writer.SerializeReference(this);
+
+			writer.WriteElementString(nameof(Name), Name);
+
+			PipeProperties.SerializeState(writer);
+
+			writer.Serialize(ConnectorPlacements, (w, pd) => pd.SerializeState(w), nameof(ConnectorPlacements));
+
+			writer.Serialize(ConnectorProperties, (w, cp) => w.SerializeReference(cp), nameof(ConnectorProperties));
+
+			writer.Serialize(ConnectorNames is not null, "HasConnectorNames");
+
+			if (ConnectorNames is not null)
+			{
+				writer.Serialize(ConnectorNames, (w, s) => w.WriteElementString("ConnectorName", s));
 			}
 
-			return entityTypes;
+			writer.WriteElementString(nameof(ModelPath), ModelPath);
+
+			writer.Serialize(TypeOfPipe);
+		}
+
+		public void DeserializeState(XmlReader reader, GameData gameData, SerializationReferenceHandler referenceHandler)
+		{
+			SerializableReferenceGUID = reader.ReadRefereceGUID();
+
+			Name = reader.ReadString(nameof(Name));
+
+			PipeProperties.DeserializeState(reader, gameData, referenceHandler);
+
+			ConnectorPlacements = (PositionAndDirection[])reader.DeserializeCollection(
+				(r) =>
+				{
+					PositionAndDirection positionAndDirection = new();
+					positionAndDirection.DeserializeState(reader, gameData, referenceHandler);
+					return positionAndDirection;
+				}, nameof(ConnectorPlacements));
+
+			List<PipeConnectorProperties> pipeConnectorProperties = new();
+			reader.DeserializeCollection(
+				(r) =>
+				{
+					r.DeserializeReference<PipeConnectorProperties>(referenceHandler, (pcp) => pipeConnectorProperties.Add(pcp));
+				}, nameof(ConnectorProperties));
+			gameData.SerializationCompleteEvent += () => ConnectorProperties = pipeConnectorProperties.ToArray();
+
+			if (reader.DeserializeBoolean("HasConnectorNames"))
+			{
+				ConnectorNames = (string[])reader.DeserializeCollection((r) => r.ReadString("ConnectorName"));
+			}
+
+			ModelPath = reader.ReadString(nameof(ModelPath));
+
+			Mesh = Mesh.LoadMesh(gameData.GraphicsWorld.GraphicsDevice, gameData.GraphicsWorld.Factory, ModelPath);
+
+			TypeOfPipe = reader.DeserializeType();
+
+			if (!PipeTypes.TryAdd(Name, this))
+			{
+				throw new Exception($"Couldn't add {nameof(PipeType)} '{Name}' to dictionary of all available PipeTypes.");
+			}
 		}
 	}
 }

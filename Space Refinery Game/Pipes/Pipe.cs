@@ -291,7 +291,7 @@ namespace Space_Refinery_Game
 			{
 				SerializableReferenceGUID = reader.ReadRefereceGUID();
 
-				PipeType pipeType = gameData.MainGame.PipeTypesDictionary[reader.ReadElementString("PipeType")];
+				PipeType pipeType = PipeType.PipeTypes[reader.ReadElementString("PipeType")];
 
 				Transform transform = reader.DeserializeTransform();
 
@@ -320,7 +320,9 @@ namespace Space_Refinery_Game
 						setAction((PipeConnector)s);
 					}), nameof(Connectors));
 
-				gameData.MainGame.SetUpAfterDeserialization += () =>
+				PipeType = pipeType;
+
+				gameData.SerializationCompleteEvent += () =>
 				{
 					SetUp(pipeType, null, connectors, renderable, physObj, gameData);
 				};

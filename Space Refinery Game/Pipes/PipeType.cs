@@ -98,19 +98,19 @@ namespace Space_Refinery_Game
 			writer.Serialize(TypeOfPipe);
 		}
 
-		public void DeserializeState(XmlReader reader, GameData gameData, SerializationReferenceHandler referenceHandler)
+		public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 		{
 			SerializableReferenceGUID = reader.ReadRefereceGUID();
 
 			Name = reader.ReadString(nameof(Name));
 
-			PipeProperties.DeserializeState(reader, gameData, referenceHandler);
+			PipeProperties.DeserializeState(reader, serializationData, referenceHandler);
 
 			ConnectorPlacements = (PositionAndDirection[])reader.DeserializeCollection(
 				(r) =>
 				{
 					PositionAndDirection positionAndDirection = new();
-					positionAndDirection.DeserializeState(reader, gameData, referenceHandler);
+					positionAndDirection.DeserializeState(reader, serializationData, referenceHandler);
 					return positionAndDirection;
 				}, nameof(ConnectorPlacements));
 
@@ -120,7 +120,7 @@ namespace Space_Refinery_Game
 				{
 					r.DeserializeReference<PipeConnectorProperties>(referenceHandler, (pcp) => pipeConnectorProperties.Add(pcp));
 				}, nameof(ConnectorProperties));
-			gameData.SerializationCompleteEvent += () => ConnectorProperties = pipeConnectorProperties.ToArray();
+			serializationData.SerializationCompleteEvent += () => ConnectorProperties = pipeConnectorProperties.ToArray();
 
 			if (reader.DeserializeBoolean("HasConnectorNames"))
 			{
@@ -129,7 +129,7 @@ namespace Space_Refinery_Game
 
 			ModelPath = reader.ReadString(nameof(ModelPath));
 
-			Mesh = Mesh.LoadMesh(gameData.GraphicsWorld.GraphicsDevice, gameData.GraphicsWorld.Factory, ModelPath);
+			Mesh = Mesh.LoadMesh(serializationData.GameData.GraphicsWorld.GraphicsDevice, serializationData.GameData.GraphicsWorld.Factory, ModelPath);
 
 			TypeOfPipe = reader.DeserializeType();
 

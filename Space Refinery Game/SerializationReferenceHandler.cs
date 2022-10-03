@@ -129,24 +129,24 @@ namespace Space_Refinery_Game
 			}
 		}
 		
-		public static SerializationReferenceHandler Deserialize(XmlReader reader, GameData gameData)
+		public static SerializationReferenceHandler Deserialize(XmlReader reader, SerializationData serializationData)
 		{
 			SerializationReferenceHandler referenceHandler = new();
 
 			referenceHandler.EnterAllowEventualReferenceMode();
 
-			reader.DeserializeCollection((r) => referenceHandler.RegisterReference((ISerializableReference)r.DeserializeEntitySerializableWithEmbeddedType(gameData, referenceHandler)), nameof(SerializationReferenceHandler));
+			reader.DeserializeCollection((r) => referenceHandler.RegisterReference((ISerializableReference)r.DeserializeEntitySerializableWithEmbeddedType(serializationData, referenceHandler)), nameof(SerializationReferenceHandler));
 
 			referenceHandler.ExitAllowEventualReferenceMode();
 
 			return referenceHandler;
 		}
 
-		public void DeserializeInto(XmlReader reader, GameData gameData)
+		public void DeserializeInto(XmlReader reader, SerializationData serializationData)
 		{
 			EnterAllowEventualReferenceMode();
 
-			reader.DeserializeCollection((r) => RegisterReference((ISerializableReference)r.DeserializeEntitySerializableWithEmbeddedType(gameData, this)), nameof(SerializationReferenceHandler));
+			reader.DeserializeCollection((r) => RegisterReference((ISerializableReference)r.DeserializeEntitySerializableWithEmbeddedType(serializationData, this)), nameof(SerializationReferenceHandler));
 
 			ExitAllowEventualReferenceMode();
 		}

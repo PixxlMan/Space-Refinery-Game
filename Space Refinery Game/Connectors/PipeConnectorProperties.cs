@@ -41,7 +41,7 @@ namespace Space_Refinery_Game
 			writer.Serialize(ConnectorFlowAreaDiameter, nameof(ConnectorFlowAreaDiameter));
 		}
 
-		public void DeserializeState(XmlReader reader, GameData gameData, SerializationReferenceHandler referenceHandler)
+		public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 		{
 			SerializableReferenceGUID = reader.ReadRefereceGUID();
 

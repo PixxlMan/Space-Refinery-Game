@@ -23,15 +23,15 @@ public sealed class MainGame
 
 	public static SerializationReferenceHandler GlobalReferenceHandler;
 
-	private static SerializationReferenceHandler DeserializeGlobalReferenceHandler(GameData gameData)
+	private static SerializationReferenceHandler DeserializeGlobalReferenceHandler(SerializationData serializationData)
 	{
 		using var reader = XmlReader.Create(Path.Combine(Environment.CurrentDirectory, "Assets", "GlobalReferences.xml"));
 
 		reader.ReadStartElement("GlobalReferences");
 
-		var globalReferenceHanlder = SerializationReferenceHandler.Deserialize(reader, gameData);
+		var globalReferenceHanlder = SerializationReferenceHandler.Deserialize(reader, serializationData);
 
-		gameData.SerializationComplete();
+		serializationData.SerializationComplete();
 
 		reader.ReadEndElement();
 
@@ -79,7 +79,7 @@ public sealed class MainGame
 
 		if (GlobalReferenceHandler is null)
 		{
-			GlobalReferenceHandler = DeserializeGlobalReferenceHandler(GetGameData());
+			GlobalReferenceHandler = DeserializeGlobalReferenceHandler(new SerializationData(GetGameData()));
 		}
 
 		PhysicsWorld = new();
@@ -233,21 +233,21 @@ public sealed class MainGame
 
 			using XmlReader reader = XmlReader.Create(stream);
 
-			var gameData = GetGameData();
+			var serializationData = new SerializationData(GetGameData());
 
 			reader.ReadStartElement(nameof(MainGame));
 			{
 				Player.Dispose();
 
-				Player = Player.Deserialize(reader, gameData);
+				Player = Player.Deserialize(reader, serializationData);
 
 				GameWorld.ClearAll();
 
-				ReferenceHandler = SerializationReferenceHandler.Deserialize(reader, gameData);
+				ReferenceHandler = SerializationReferenceHandler.Deserialize(reader, serializationData);
 			}
 			//reader.ReadEndElement();
 
-			gameData.SerializationComplete();
+			serializationData.SerializationComplete();
 
 			reader.Close();
 

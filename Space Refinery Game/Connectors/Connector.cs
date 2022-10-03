@@ -15,7 +15,6 @@ namespace Space_Refinery_Game
 	{
 		protected Connector()
 		{
-
 		}
 
 		public Connector((IConnectable connectableA, IConnectable connectableB) connectables, Transform transform, GameData gameData) : this(transform, gameData)
@@ -260,7 +259,7 @@ namespace Space_Refinery_Game
 			writer.WriteEndElement();
 		}
 
-		public virtual void DeserializeState(XmlReader reader, GameData gameData, SerializationReferenceHandler referenceHandler)
+		public virtual void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 		{
 			reader.ReadStartElement(nameof(Connector));
 			{
@@ -282,14 +281,14 @@ namespace Space_Refinery_Game
 					reader.DeserializeReference<IConnectable>(referenceHandler, (es) => b = (IConnectable)es, $"{nameof(Connectables.connectableB)}_GUID");
 				}
 
-				gameData.SerializationCompleteEvent += () =>
+				serializationData.SerializationCompleteEvent += () =>
 				{
 					Connectables = (a, b);
 				};
 
-				this.gameData = gameData;
+				this.gameData = serializationData.GameData;
 
-				gameData.GameWorld.AddEntity(this);
+				serializationData.GameData.GameWorld.AddEntity(this);
 			}
 			reader.ReadEndElement();
 		}

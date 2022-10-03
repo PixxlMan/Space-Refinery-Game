@@ -175,9 +175,9 @@ namespace Space_Refinery_Game
 			writer.WriteEndElement();
 		}
 
-		public static Player Deserialize(XmlReader reader, GameData gameData)
+		public static Player Deserialize(XmlReader reader, SerializationData serializationData)
 		{
-			Player player = Create(gameData);
+			Player player = Create(serializationData.GameData);
 
 			reader.ReadStartElement("Player");
 			{

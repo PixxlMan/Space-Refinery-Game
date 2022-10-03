@@ -25,12 +25,5 @@ namespace Space_Refinery_Game
 		public MainGame MainGame { get; }
 
 		public SerializationReferenceHandler ReferenceHandler { get; }
-
-		public event Action SerializationCompleteEvent;
-
-		public void SerializationComplete()
-		{
-			SerializationCompleteEvent?.Invoke();
-		}
 	}
 }

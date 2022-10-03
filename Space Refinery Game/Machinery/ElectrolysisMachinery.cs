@@ -167,9 +167,9 @@ namespace Space_Refinery_Game
 			HydrogenOutput.Serialize(writer);
 		}
 
-		public override void DeserializeState(XmlReader reader, GameData gameData, SerializationReferenceHandler referenceHandler)
+		public override void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 		{
-			base.DeserializeState(reader, gameData, referenceHandler);
+			base.DeserializeState(reader, serializationData, referenceHandler);
 
 			Activated = reader.DeserializeBoolean(nameof(Activated));
 

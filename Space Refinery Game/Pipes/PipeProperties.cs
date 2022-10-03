@@ -38,7 +38,7 @@ namespace Space_Refinery_Game
 			writer.Serialize(Friction, nameof(Friction));
 		}
 
-		public void DeserializeState(XmlReader reader, GameData gameData, SerializationReferenceHandler referenceHandler)
+		public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 		{
 			Shape = reader.DeserializeEnum<PipeShape>(nameof(Shape));
 

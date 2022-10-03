@@ -20,7 +20,7 @@ namespace Space_Refinery_Game
 			writer.Serialize(Direction, nameof(Direction));
 		}
 
-		public void DeserializeState(XmlReader reader, GameData gameData, SerializationReferenceHandler referenceHandler)
+		public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 		{
 			Position = reader.DeserializeVector3FixedDecimalInt4(nameof(Position));
 			Direction = reader.DeserializeVector3FixedDecimalInt4(nameof(Direction));

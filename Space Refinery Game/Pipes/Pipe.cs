@@ -285,7 +285,7 @@ namespace Space_Refinery_Game
 			writer.WriteEndElement();
 		}
 
-		public virtual void DeserializeState(XmlReader reader, GameData gameData, SerializationReferenceHandler referenceHandler)
+		public virtual void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 		{
 			reader.ReadStartElement(nameof(Pipe));
 			{
@@ -295,19 +295,19 @@ namespace Space_Refinery_Game
 
 				Transform transform = reader.DeserializeTransform();
 
-				SetupDeserialized(pipeType, transform, gameData);
+				SetupDeserialized(pipeType, transform, serializationData);
 			}
 			reader.ReadEndElement();
 
-			void SetupDeserialized(PipeType pipeType, Transform transform, GameData gameData)
+			void SetupDeserialized(PipeType pipeType, Transform transform, SerializationData serializationData)
 			{
 				Transform = transform;
 
 				MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
 
-				EntityRenderable renderable = CreateRenderable(pipeType, gameData.GraphicsWorld, transform);
+				EntityRenderable renderable = CreateRenderable(pipeType, serializationData.GameData.GraphicsWorld, transform);
 
-				PhysicsObject physObj = CreatePhysicsObject(gameData.PhysicsWorld, transform, this, pipeType.Mesh);
+				PhysicsObject physObj = CreatePhysicsObject(serializationData.GameData.PhysicsWorld, transform, this, pipeType.Mesh);
 
 				PipeConnector[] connectors = (PipeConnector[])reader.DeserializeCollection<PipeConnector>((r, setAction, i) => r.DeserializeReference(referenceHandler,
 					(s) =>
@@ -322,16 +322,16 @@ namespace Space_Refinery_Game
 
 				PipeType = pipeType;
 
-				gameData.SerializationCompleteEvent += () =>
+				serializationData.SerializationCompleteEvent += () =>
 				{
-					SetUp(pipeType, null, connectors, renderable, physObj, gameData);
+					SetUp(pipeType, null, connectors, renderable, physObj, serializationData.GameData);
 				};
 
 				Created = true;
 
-				gameData.GameWorld.AddEntity(this);
+				serializationData.GameData.GameWorld.AddEntity(this);
 
-				gameData.GameWorld.AddConstruction(this);
+				serializationData.GameData.GameWorld.AddConstruction(this);
 			}
 		}
 

@@ -21,7 +21,7 @@ namespace Space_Refinery_Game
 		{
 			writer.WriteStartElement(name);
 			{
-				writer.WriteElementString("Type", entitySerializable.GetType().AssemblyQualifiedName);
+				writer.Serialize(entitySerializable.GetType());
 
 				entitySerializable.SerializeState(writer);
 			}
@@ -46,7 +46,7 @@ namespace Space_Refinery_Game
 		{
 			reader.ReadStartElement(name);
 			{
-				Type type = Type.GetType(reader.ReadString("Type"));
+				Type type = reader.DeserializeType();
 
 				if (!type.IsAssignableTo(typeof(IEntitySerializable)))
 				{

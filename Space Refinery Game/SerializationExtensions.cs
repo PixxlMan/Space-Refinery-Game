@@ -24,6 +24,16 @@ namespace Space_Refinery_Game
 			return map.TargetMethods[index];
 		}
 
+		public static void Serialize(this XmlWriter writer, Type type, string name = "Type")
+		{
+			writer.WriteElementString(name, type.FullName);
+		}
+
+		public static Type DeserializeType(this XmlReader reader, string name = "Type")
+		{
+			return Type.GetType(reader.ReadString(name), true);
+		}
+
 		public static void Serialize(this XmlWriter writer, Enum @enum, string name = "Enum")
 		{
 			writer.WriteElementString(name, @enum.ToString());
@@ -39,11 +49,22 @@ namespace Space_Refinery_Game
 		{
 			string value;
 
-			reader.ReadStartElement(name);
+			if (name is null)
 			{
-				value = reader.ReadString();
+				reader.ReadStartElement();
+				{
+					value = reader.ReadString();
+				}
+				reader.ReadEndElement();
 			}
-			reader.ReadEndElement();
+			else
+			{
+				reader.ReadStartElement(name);
+				{
+					value = reader.ReadString();
+				}
+				reader.ReadEndElement();
+			}
 
 			return value;
 		}
@@ -320,26 +341,26 @@ namespace Space_Refinery_Game
 			reader.ReadEndElement();
 		}
 
-		public static void SerializeReference(this XmlWriter writer, ISerializableReference serializableReference, string? name = null)
+		public static void SerializeReference(this XmlWriter writer, ISerializableReference serializableReference, string name = "GUID")
 		{
-			writer.WriteElementString(name ?? "GUID", serializableReference.SerializableReferenceGUID.ToString());
+			writer.WriteElementString(name, serializableReference.SerializableReferenceGUID.ToString());
 		}
 
-		public static Guid ReadRefereceGUID(this XmlReader reader, string? name = null)
+		public static Guid ReadRefereceGUID(this XmlReader reader, string name = "GUID")
 		{
-			Guid guid = Guid.Parse(reader.ReadElementString(name ?? "GUID"));
+			Guid guid = Guid.Parse(reader.ReadElementString(name));
 
 			return guid;
 		}
 
-		public static void DeserializeReference(this XmlReader reader, SerializationReferenceHandler referenceHandler, Action<ISerializableReference> referenceRegisteredCallback, string? name = null)
+		public static void DeserializeReference(this XmlReader reader, SerializationReferenceHandler referenceHandler, Action<ISerializableReference> referenceRegisteredCallback, string name = "GUID")
 		{
-			Guid guid = Guid.Parse(reader.ReadElementString(name ?? "GUID"));
+			Guid guid = Guid.Parse(reader.ReadElementString(name));
 
 			referenceHandler.GetEventualReference(guid, referenceRegisteredCallback);
 		}
 
-		public static void DeserializeReference<T>(this XmlReader reader, SerializationReferenceHandler referenceHandler, Action<T> refrenceRegisteredCallback, string? name = null)
+		public static void DeserializeReference<T>(this XmlReader reader, SerializationReferenceHandler referenceHandler, Action<T> refrenceRegisteredCallback, string? name = "GUID")
 			where T : ISerializableReference
 		{
 			DeserializeReference(reader, referenceHandler, (s) => refrenceRegisteredCallback((T)s), name);

@@ -110,18 +110,24 @@ public class GraphicsWorld
 
 	public void AddRenderable(IRenderable renderable)
 	{
-		UnorderedRenderables.Add(renderable);
+		lock (SynchronizationObject)
+		{
+			UnorderedRenderables.Add(renderable);
+		}
 	}
 
 	public void AddRenderable(IRenderable renderable, int order)
 	{
-		if (SpecificOrderRenderables.ContainsKey(order))
+		lock (SynchronizationObject)
 		{
-			SpecificOrderRenderables[order].Add(renderable);
-		}
-		else
-		{
-			SpecificOrderRenderables.Add(order, new() { renderable });
+			if (SpecificOrderRenderables.ContainsKey(order))
+			{
+				SpecificOrderRenderables[order].Add(renderable);
+			}
+			else
+			{
+				SpecificOrderRenderables.Add(order, new() { renderable });
+			}
 		}
 	}
 

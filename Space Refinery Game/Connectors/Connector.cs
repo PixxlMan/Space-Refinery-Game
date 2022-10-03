@@ -15,6 +15,7 @@ namespace Space_Refinery_Game
 	{
 		protected Connector()
 		{
+			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
 		}
 
 		public Connector((IConnectable connectableA, IConnectable connectableB) connectables, Transform transform, GameData gameData) : this(transform, gameData)

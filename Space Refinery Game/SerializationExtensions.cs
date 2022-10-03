@@ -346,7 +346,7 @@ namespace Space_Refinery_Game
 			writer.WriteElementString(name, serializableReference.SerializableReferenceGUID.ToString());
 		}
 
-		public static Guid ReadRefereceGUID(this XmlReader reader, string name = "GUID")
+		public static Guid ReadReferenceGUID(this XmlReader reader, string name = "GUID")
 		{
 			Guid guid = Guid.Parse(reader.ReadElementString(name));
 

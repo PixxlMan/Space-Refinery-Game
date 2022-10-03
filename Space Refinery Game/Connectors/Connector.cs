@@ -264,7 +264,7 @@ namespace Space_Refinery_Game
 		{
 			reader.ReadStartElement(nameof(Connector));
 			{
-				SerializableReferenceGUID = reader.ReadRefereceGUID();
+				SerializableReferenceGUID = reader.ReadReferenceGUID();
 
 				Transform = reader.DeserializeTransform();
 

@@ -289,7 +289,7 @@ namespace Space_Refinery_Game
 		{
 			reader.ReadStartElement(nameof(Pipe));
 			{
-				SerializableReferenceGUID = reader.ReadRefereceGUID();
+				SerializableReferenceGUID = reader.ReadReferenceGUID();
 
 				PipeType pipeType = PipeType.PipeTypes[reader.ReadElementString("PipeType")];
 

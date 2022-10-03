@@ -100,7 +100,7 @@ namespace Space_Refinery_Game
 
 		public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 		{
-			SerializableReferenceGUID = reader.ReadRefereceGUID();
+			SerializableReferenceGUID = reader.ReadReferenceGUID();
 
 			Name = reader.ReadString(nameof(Name));
 

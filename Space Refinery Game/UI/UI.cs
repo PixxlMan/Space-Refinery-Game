@@ -263,10 +263,13 @@ namespace Space_Refinery_Game
 
 				if (ImGui.Button("Load"))
 				{
-					lock (mainGame.GameWorld.TickSyncObject)
+					Task.Run(() =>
 					{
-						mainGame.Deserialize(@"R:\save.xml");
-					}
+						lock (mainGame.GameWorld.TickSyncObject)
+						{
+							mainGame.Deserialize(@"R:\save.xml");
+						}
+					});
 				}
 
 				if (ImGui.Button("Settings"))

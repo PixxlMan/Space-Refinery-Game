@@ -162,6 +162,6 @@ public class EntityRenderable : IRenderable
 			}
 
 			shouldDraw = false;
-		}
+		}			
 	}
 }

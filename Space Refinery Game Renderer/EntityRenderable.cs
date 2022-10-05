@@ -152,8 +152,6 @@ public class EntityRenderable : IRenderable
 		commandList.DrawIndexed(mesh.IndexCount);
 	}
 
-	public void Destroy()
-	{
 		lock (SyncRoot)
 		{
 			if (shouldDraw)
@@ -163,5 +161,7 @@ public class EntityRenderable : IRenderable
 
 			shouldDraw = false;
 		}
+		
+		
 	}
 }

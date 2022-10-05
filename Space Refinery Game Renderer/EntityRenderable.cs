@@ -27,7 +27,7 @@ public class EntityRenderable : IRenderable
 
 	public Transform Transform;
 
-	public static EntityRenderable Create(GraphicsDevice gd, ResourceFactory factory, Transform transform, Mesh mesh, Texture texture, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
+	public static EntityRenderable Create(ShaderLoader shaderLoader, GraphicsDevice gd, ResourceFactory factory, Transform transform, Mesh mesh, Texture texture, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
 	{
 		EntityRenderable entityRenderable = new(transform);
 
@@ -94,7 +94,7 @@ public class EntityRenderable : IRenderable
 			ResourceLayouts = new ResourceLayout[] { sharedLayout, textureLayout },
 			ShaderSet = new ShaderSetDescription(
 				vertexLayouts: new VertexLayoutDescription[] { vertexLayout, transformationVertexShaderParameterLayout },
-				shaders: Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), "EntityRenderable", factory)
+				shaders: shaderLoader.LoadCached("EntityRenderable")
 			),
 			Outputs = gd.MainSwapchain.Framebuffer.OutputDescription
 		};

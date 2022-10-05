@@ -43,6 +43,8 @@ public class GraphicsWorld
 
 	public MeshLoader MeshLoader { get; private set; }
 
+	public ShaderLoader ShaderLoader { get; private set; }
+
 	public readonly object SynchronizationObject = new();
 
 	public Camera Camera;
@@ -66,6 +68,8 @@ public class GraphicsWorld
 		Camera.FieldOfView = 75 * FixedDecimalInt4.DegreesToRadians;
 
 		MeshLoader = new(this);
+
+		ShaderLoader = new(this);
 
 		CreateDeviceObjects(gd, factory, swapchain);
 	}

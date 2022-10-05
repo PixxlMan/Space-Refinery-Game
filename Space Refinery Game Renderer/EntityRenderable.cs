@@ -20,6 +20,30 @@ public class EntityRenderable : IRenderable
 
 	private GraphicsWorld graphicsWorld;
 
+	private object SyncRoot;
+
+	private bool shouldDraw = true;
+	public bool ShouldDraw
+	{
+		get => shouldDraw;
+		set
+		{
+			lock (SyncRoot)
+			{
+				if (!value)
+				{
+					graphicsWorld.RemoveRenderable(this);
+				}
+				else
+				{
+					graphicsWorld.AddRenderable(this);
+				}
+
+				shouldDraw = value;
+			}
+		}
+	}
+
 	private EntityRenderable(Transform transform)
 	{
 		Transform = transform;
@@ -130,6 +154,14 @@ public class EntityRenderable : IRenderable
 
 	public void Destroy()
 	{
-		graphicsWorld.RemoveRenderable(this);
+		lock (SyncRoot)
+		{
+			if (shouldDraw)
+			{
+				graphicsWorld.RemoveRenderable(this);
+			}
+
+			shouldDraw = false;
+		}
 	}
 }

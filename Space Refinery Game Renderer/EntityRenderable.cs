@@ -18,6 +18,8 @@ public class EntityRenderable : IRenderable
 
 	private Pipeline pipeline;
 
+	private GraphicsWorld graphicsWorld;
+
 	private EntityRenderable(Transform transform)
 	{
 		Transform = transform;
@@ -27,22 +29,22 @@ public class EntityRenderable : IRenderable
 
 	public Transform Transform;
 
-	public static EntityRenderable Create(ShaderLoader shaderLoader, GraphicsDevice gd, ResourceFactory factory, Transform transform, Mesh mesh, Texture texture, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
+	public static EntityRenderable Create(GraphicsWorld graphicsWorld, Transform transform, Mesh mesh, Texture texture, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
 	{
 		EntityRenderable entityRenderable = new(transform);
 
 		entityRenderable.mesh = mesh;
 
-		TextureView textureView = factory.CreateTextureView(texture);
+		TextureView textureView = graphicsWorld.Factory.CreateTextureView(texture);
 
 		ResourceLayoutElementDescription[] textureLayoutDescriptions =
 		{
 				new ResourceLayoutElementDescription("Tex", ResourceKind.TextureReadOnly, ShaderStages.Fragment),
 				new ResourceLayoutElementDescription("Samp", ResourceKind.Sampler, ShaderStages.Fragment)
 			};
-		ResourceLayout textureLayout = factory.CreateResourceLayout(new ResourceLayoutDescription(textureLayoutDescriptions));
+		ResourceLayout textureLayout = graphicsWorld.Factory.CreateResourceLayout(new ResourceLayoutDescription(textureLayoutDescriptions));
 
-		entityRenderable.textureSet = factory.CreateResourceSet(new ResourceSetDescription(textureLayout, textureView, gd.Aniso4xSampler));
+		entityRenderable.textureSet = graphicsWorld.Factory.CreateResourceSet(new ResourceSetDescription(textureLayout, textureView, graphicsWorld.GraphicsDevice.Aniso4xSampler));
 
 		ResourceLayoutElementDescription[] resourceLayoutElementDescriptions =
 			{
@@ -50,8 +52,7 @@ public class EntityRenderable : IRenderable
 				new ResourceLayoutElementDescription("ProjView", ResourceKind.UniformBuffer, ShaderStages.Vertex),
 			};
 		ResourceLayoutDescription resourceLayoutDescription = new ResourceLayoutDescription(resourceLayoutElementDescriptions);
-		ResourceLayout sharedLayout = factory.CreateResourceLayout(resourceLayoutDescription);
-
+		ResourceLayout sharedLayout = graphicsWorld.Factory.CreateResourceLayout(resourceLayoutDescription);
 
 		VertexLayoutDescription transformationVertexShaderParameterLayout = new VertexLayoutDescription(
 			new VertexElementDescription("InstancePosition", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3),
@@ -67,9 +68,9 @@ public class EntityRenderable : IRenderable
 			new VertexElementDescription("InstanceScale", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3)
 			);
 		transformationVertexShaderParameterLayout.InstanceStepRate = 1;
-		entityRenderable.transformationBuffer = factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes, BufferUsage.VertexBuffer));
+		entityRenderable.transformationBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes, BufferUsage.VertexBuffer));
 
-		gd.UpdateBuffer(entityRenderable.transformationBuffer, 0, entityRenderable.Transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
+		graphicsWorld.GraphicsDevice.UpdateBuffer(entityRenderable.transformationBuffer, 0, entityRenderable.Transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
 
 		VertexLayoutDescription vertexLayout = new VertexLayoutDescription(
 			new VertexElementDescription("Position", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3),
@@ -94,16 +95,20 @@ public class EntityRenderable : IRenderable
 			ResourceLayouts = new ResourceLayout[] { sharedLayout, textureLayout },
 			ShaderSet = new ShaderSetDescription(
 				vertexLayouts: new VertexLayoutDescription[] { vertexLayout, transformationVertexShaderParameterLayout },
-				shaders: shaderLoader.LoadCached("EntityRenderable")
+				shaders: graphicsWorld.ShaderLoader.LoadCached("EntityRenderable")
 			),
-			Outputs = gd.MainSwapchain.Framebuffer.OutputDescription
+			Outputs = graphicsWorld.GraphicsDevice.MainSwapchain.Framebuffer.OutputDescription
 		};
 
-		entityRenderable.pipeline = factory.CreateGraphicsPipeline(pipelineDescription);
+		entityRenderable.pipeline = graphicsWorld.Factory.CreateGraphicsPipeline(pipelineDescription);
 
 		BindableResource[] bindableResources = new BindableResource[] { lightInfoBuffer, cameraProjViewBuffer };
 		ResourceSetDescription resourceSetDescription = new ResourceSetDescription(sharedLayout, bindableResources);
-		entityRenderable.resourceSet = factory.CreateResourceSet(resourceSetDescription);
+		entityRenderable.resourceSet = graphicsWorld.Factory.CreateResourceSet(resourceSetDescription);
+
+		entityRenderable.graphicsWorld = graphicsWorld;
+
+		graphicsWorld.AddRenderable(entityRenderable);
 
 		return entityRenderable;
 	}
@@ -125,6 +130,6 @@ public class EntityRenderable : IRenderable
 
 	public void Destroy()
 	{
-		
+		graphicsWorld.RemoveRenderable(this);
 	}
 }

@@ -97,9 +97,7 @@ namespace Space_Refinery_Game
 
 		private static EntityRenderable CreateRenderable(PipeType pipeType, GraphicsWorld graphWorld, Transform transform)
 		{
-			EntityRenderable renderable = EntityRenderable.Create(graphWorld.ShaderLoader, graphWorld.GraphicsDevice, graphWorld.Factory, transform, pipeType.Mesh, Utils.GetSolidColoredTexture(RgbaByte.LightGrey, graphWorld.GraphicsDevice, graphWorld.Factory), graphWorld.CameraProjViewBuffer, graphWorld.LightInfoBuffer);
-
-			graphWorld.AddRenderable(renderable);
+			EntityRenderable renderable = EntityRenderable.Create(graphWorld, transform, pipeType.Mesh, Utils.GetSolidColoredTexture(RgbaByte.LightGrey, graphWorld.GraphicsDevice, graphWorld.Factory), graphWorld.CameraProjViewBuffer, graphWorld.LightInfoBuffer);
 
 			return renderable;
 		}
@@ -243,8 +241,6 @@ namespace Space_Refinery_Game
 				Renderable.Destroy();
 
 				MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
-
-				GraphicsWorld.RemoveRenderable(Renderable);
 
 				foreach (var connector in Connectors)
 				{

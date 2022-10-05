@@ -129,7 +129,7 @@ namespace Space_Refinery_Game
 
 			ModelPath = reader.ReadString(nameof(ModelPath));
 
-			Mesh = Mesh.LoadMesh(serializationData.GameData.GraphicsWorld.GraphicsDevice, serializationData.GameData.GraphicsWorld.Factory, ModelPath);
+			Mesh = serializationData.GameData.GraphicsWorld.MeshLoader.LoadCached(ModelPath);
 
 			TypeOfPipe = reader.DeserializeType();
 

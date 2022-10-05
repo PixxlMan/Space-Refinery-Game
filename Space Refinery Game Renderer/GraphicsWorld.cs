@@ -17,9 +17,11 @@ namespace Space_Refinery_Game_Renderer;
 
 public class GraphicsWorld
 {
-	public List<IRenderable> UnorderedRenderables = new();
+	private List<IRenderable> unorderedRenderables = new();
 
-	public SortedDictionary<int, List<IRenderable>> SpecificOrderRenderables = new(); // Use Lookup<int, IRenderable> and sort manually as it's not very common to add objects?
+	private SortedDictionary<int, HashSet<IRenderable>> specificOrderRenderables = new(); // Use Lookup<int, IRenderable> and sort manually as it's not very common to add objects?
+
+	private Dictionary<IRenderable, int> renderableToOrder = new();
 
 	public GraphicsDevice GraphicsDevice;
 
@@ -38,6 +40,8 @@ public class GraphicsWorld
 	public DeviceBuffer ViewInfoBuffer;
 
 	private Window window;
+
+	public MeshLoader MeshLoader { get; private set; }
 
 	public readonly object SynchronizationObject = new();
 
@@ -60,6 +64,8 @@ public class GraphicsWorld
 		Camera.NearDistance = (FixedDecimalInt4)0.1;
 
 		Camera.FieldOfView = 75 * FixedDecimalInt4.DegreesToRadians;
+
+		MeshLoader = new(this);
 
 		CreateDeviceObjects(gd, factory, swapchain);
 	}
@@ -112,7 +118,7 @@ public class GraphicsWorld
 	{
 		lock (SynchronizationObject)
 		{
-			UnorderedRenderables.Add(renderable);
+			unorderedRenderables.Add(renderable);
 		}
 	}
 
@@ -120,13 +126,34 @@ public class GraphicsWorld
 	{
 		lock (SynchronizationObject)
 		{
-			if (SpecificOrderRenderables.ContainsKey(order))
+			if (specificOrderRenderables.ContainsKey(order))
 			{
-				SpecificOrderRenderables[order].Add(renderable);
+				specificOrderRenderables[order].Add(renderable);
+
+				renderableToOrder.Add(renderable, order);
 			}
 			else
 			{
-				SpecificOrderRenderables.Add(order, new() { renderable });
+				specificOrderRenderables.Add(order, new() { renderable });
+
+				renderableToOrder.Add(renderable, order);
+			}
+		}
+	}
+
+	public void RemoveRenderable(IRenderable renderable)
+	{
+		lock (SynchronizationObject)
+		{
+			if (unorderedRenderables.Contains(renderable))
+			{
+				unorderedRenderables.Remove(renderable);
+			}
+			else if (renderableToOrder.ContainsKey(renderable))
+			{
+				specificOrderRenderables[renderableToOrder[renderable]].Remove(renderable);
+
+				renderableToOrder.Remove(renderable);
 			}
 		}
 	}
@@ -158,9 +185,9 @@ public class GraphicsWorld
 			commandList.ClearDepthStencil(1f);
 
 			commandList.PushDebugGroup("Draw renderables");
-			if (SpecificOrderRenderables.Count == 0)
+			if (specificOrderRenderables.Count == 0)
 			{
-				foreach (var renderable in UnorderedRenderables)
+				foreach (var renderable in unorderedRenderables)
 				{
 					renderable.AddDrawCommands(commandList);
 				}
@@ -168,11 +195,11 @@ public class GraphicsWorld
 			else
 			{
 				bool hasRenderedUnorderedRenderables = false;
-				foreach (var index in SpecificOrderRenderables.Keys)
+				foreach (var index in specificOrderRenderables.Keys)
 				{
 					if (index >= 0 && !hasRenderedUnorderedRenderables)
 					{
-						foreach (var renderable in UnorderedRenderables)
+						foreach (var renderable in unorderedRenderables)
 						{
 							renderable.AddDrawCommands(commandList);
 
@@ -180,7 +207,7 @@ public class GraphicsWorld
 						}
 					}
 
-					foreach (var renderable in SpecificOrderRenderables[index])
+					foreach (var renderable in specificOrderRenderables[index])
 					{
 						renderable.AddDrawCommands(commandList);
 					}
@@ -188,7 +215,7 @@ public class GraphicsWorld
 
 				if (!hasRenderedUnorderedRenderables)
 				{
-					foreach (var renderable in UnorderedRenderables)
+					foreach (var renderable in unorderedRenderables)
 					{
 						renderable.AddDrawCommands(commandList);
 					}

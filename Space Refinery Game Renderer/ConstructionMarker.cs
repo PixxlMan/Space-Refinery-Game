@@ -146,7 +146,7 @@ namespace Space_Refinery_Game_Renderer
 
 		public void Destroy()
 		{
-			graphicsWorld.UnorderedRenderables.Remove(this);
+			graphicsWorld.RemoveRenderable(this);
 		}
 	}
 }

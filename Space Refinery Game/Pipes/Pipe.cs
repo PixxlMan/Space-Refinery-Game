@@ -244,7 +244,7 @@ namespace Space_Refinery_Game
 
 				MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
 
-				GraphicsWorld.UnorderedRenderables.Remove(Renderable);
+				GraphicsWorld.RemoveRenderable(Renderable);
 
 				foreach (var connector in Connectors)
 				{

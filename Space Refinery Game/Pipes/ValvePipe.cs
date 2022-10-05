@@ -42,7 +42,7 @@ namespace Space_Refinery_Game
 			{
 				if (InternalBlockerModel is null)
 				{
-					InternalBlockerModel = Mesh.LoadMesh(GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory, Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe", "Special", "PipeSpecialValveInternalBlocker.obj"));
+					InternalBlockerModel = GraphicsWorld.MeshLoader.LoadCached(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe", "Special", "PipeSpecialValveInternalBlocker.obj"));
 				}
 
 				InternalBlockerRenderable = EntityRenderable.Create(GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory, Transform, InternalBlockerModel, Utils.GetSolidColoredTexture(RgbaByte.LightGrey, GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory), GraphicsWorld.CameraProjViewBuffer, GraphicsWorld.LightInfoBuffer);
@@ -121,7 +121,7 @@ namespace Space_Refinery_Game
 
 				InternalBlockerRenderable.Destroy();
 
-				GraphicsWorld.UnorderedRenderables.Remove(InternalBlockerRenderable);
+				GraphicsWorld.RemoveRenderable(InternalBlockerRenderable);
 			}
 		}
 

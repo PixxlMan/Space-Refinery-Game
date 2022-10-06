@@ -20,7 +20,7 @@ public class EntityRenderable : IRenderable
 
 	private GraphicsWorld graphicsWorld;
 
-	private object SyncRoot;
+	private object SyncRoot = new();
 
 	private bool shouldDraw = true;
 	public bool ShouldDraw

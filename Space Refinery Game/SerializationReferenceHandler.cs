@@ -18,6 +18,8 @@ namespace Space_Refinery_Game
 			get { lock (SyncRoot) return guidToSerializableReference[guid]; }
 		}
 
+		public int ReferenceCount { get => guidToSerializableReference.Count; }
+
 		public object SyncRoot = new();
 
 		private Dictionary<Guid, ISerializableReference> guidToSerializableReference = new();

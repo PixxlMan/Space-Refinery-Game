@@ -8,6 +8,6 @@
 
 		public void Interacted();
 
-		public void Destroyed();
+		public void Destroy();
 	}
 }

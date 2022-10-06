@@ -31,7 +31,7 @@ namespace Space_Refinery_Game
 
 		public void Interacted() { }
 
-		public void Destroyed() { }
+		public void Destroy() { }
 
 		public IInformationProvider InformationProvider => ((Entity)ProxiedEntity).InformationProvider;
 	}

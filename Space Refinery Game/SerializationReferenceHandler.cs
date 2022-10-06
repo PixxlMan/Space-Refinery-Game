@@ -144,11 +144,22 @@ namespace Space_Refinery_Game
 
 		public void DeserializeInto(XmlReader reader, SerializationData serializationData)
 		{
-			EnterAllowEventualReferenceMode();
+			lock (SyncRoot)
+			{
+				EnterAllowEventualReferenceMode();
 
-			reader.DeserializeCollection((r) => RegisterReference((ISerializableReference)r.DeserializeEntitySerializableWithEmbeddedType(serializationData, this)), nameof(SerializationReferenceHandler));
+				reader.DeserializeCollection((r) => RegisterReference((ISerializableReference)r.DeserializeEntitySerializableWithEmbeddedType(serializationData, this)), nameof(SerializationReferenceHandler));
 
-			ExitAllowEventualReferenceMode();
+				ExitAllowEventualReferenceMode();
+			}
+		}
+
+		public void RemoveReference(ISerializableReference serializableReference)
+		{
+			lock (SyncRoot)
+			{
+				guidToSerializableReference.Remove(serializableReference.SerializableReferenceGUID);
+			}
 		}
 	}
 }

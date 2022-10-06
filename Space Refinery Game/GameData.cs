@@ -14,16 +14,16 @@ namespace Space_Refinery_Game
 			ReferenceHandler = referenceHandler;
 		}
 
-		public UI UI { get; }
+		public UI UI { get; set; }
 
-		public PhysicsWorld PhysicsWorld { get; }
+		public PhysicsWorld PhysicsWorld { get; set; }
 
-		public GraphicsWorld GraphicsWorld { get; }
+		public GraphicsWorld GraphicsWorld { get; set; }
 
-		public GameWorld GameWorld { get; }
+		public GameWorld GameWorld { get; set; }
 
-		public MainGame MainGame { get; }
+		public MainGame MainGame { get; set; }
 
-		public SerializationReferenceHandler ReferenceHandler { get; }
+		public SerializationReferenceHandler ReferenceHandler { get; set; }
 	}
 }

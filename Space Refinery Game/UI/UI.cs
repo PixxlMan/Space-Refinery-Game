@@ -35,43 +35,51 @@ namespace Space_Refinery_Game
 
 		public event Action<IEntityType> SelectedEntityTypeChanged;
 
+		private object SyncRoot = new();
+
 		public void ChangeEntitySelection(int selectionDelta)
 		{
-			EntitySelection += selectionDelta;
-			 
-			while (EntitySelection >= PipeTypes.Count || EntitySelection < 0)
+			lock (SyncRoot)
 			{
-				if (EntitySelection < 0)
+				EntitySelection += selectionDelta;
+			 
+				while (EntitySelection >= PipeTypes.Count || EntitySelection < 0)
 				{
-					EntitySelection += PipeTypes.Count;
+					if (EntitySelection < 0)
+					{
+						EntitySelection += PipeTypes.Count;
+					}
+					else if (EntitySelection >= PipeTypes.Count)
+					{
+						EntitySelection -= PipeTypes.Count;
+					}
 				}
-				else if (EntitySelection >= PipeTypes.Count)
-				{
-					EntitySelection -= PipeTypes.Count;
-				}
+
+				ChangeConnectorSelection(0);
+
+				SelectedEntityTypeChanged?.Invoke(SelectedPipeType);
 			}
-
-			ChangeConnectorSelection(0);
-
-			SelectedEntityTypeChanged?.Invoke(SelectedPipeType);
 		}
 
 		public int ConnectorSelection;
 
 		public void ChangeConnectorSelection(int selectionDelta)
 		{
-			ConnectorSelection += selectionDelta;
-
-			while (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length || ConnectorSelection < 0)
+			lock (SyncRoot)
 			{
-				if (ConnectorSelection < 0)
+				ConnectorSelection += selectionDelta;
+
+				while (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length || ConnectorSelection < 0)
 				{
-					ConnectorSelection += SelectedPipeType.ConnectorPlacements.Length;
-				}
-				else if (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length)
-				{
-					ConnectorSelection -= SelectedPipeType.ConnectorPlacements.Length;
-				}
+					if (ConnectorSelection < 0)
+					{
+						ConnectorSelection += SelectedPipeType.ConnectorPlacements.Length;
+					}
+					else if (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length)
+					{
+						ConnectorSelection -= SelectedPipeType.ConnectorPlacements.Length;
+					}
+				} 
 			}
 		}
 
@@ -84,6 +92,28 @@ namespace Space_Refinery_Game
 			imGuiRenderer = new(gd, gd.MainSwapchain.Framebuffer.OutputDescription, (int)gd.MainSwapchain.Framebuffer.Width, (int)gd.MainSwapchain.Framebuffer.Height);
 
 			imGuiRenderer.CreateDeviceResources(gd, gd.MainSwapchain.Framebuffer.OutputDescription);
+
+			gameData.GraphicsWorld.WindowResized += WindowResized;
+		}
+
+		private void WindowResized(int width, int height)
+		{
+			lock (SyncRoot)
+			{
+				imGuiRenderer.WindowResized(width, height);
+
+				imGuiRenderer.DestroyDeviceObjects();
+
+				imGuiRenderer.CreateDeviceResources(gd, gameData.GraphicsWorld.Swapchain.Framebuffer.OutputDescription);
+
+				//imGuiRenderer.Dispose();
+
+				//imGuiRenderer = new(gd, gameData.GraphicsWorld.Swapchain.Framebuffer.OutputDescription, width, height);
+
+				//imGuiRenderer.CreateDeviceResources(gd, gameData.GraphicsWorld.Swapchain.Framebuffer.OutputDescription);				
+
+				//Style();
+			}
 		}
 
 		public bool InMenu;
@@ -94,17 +124,20 @@ namespace Space_Refinery_Game
 
 		public void EnterMenu(Action doMenu, string title)
 		{
-			InMenu = true;
-
-			this.doMenu = doMenu;
-
-			MenuTitle = title;
-
-			ImGui.Begin(title);
+			lock (SyncRoot)
 			{
-				ImGui.SetWindowCollapsed(false);
+				InMenu = true;
+
+				this.doMenu = doMenu;
+
+				MenuTitle = title;
+
+				ImGui.Begin(title);
+				{
+					ImGui.SetWindowCollapsed(false);
+				}
+				ImGui.End(); 
 			}
-			ImGui.End();
 		}
 
 		public static UI Create(GameData gameData)
@@ -124,118 +157,139 @@ namespace Space_Refinery_Game
 
 		public void AddDrawCommands(CommandList cl)
 		{
-			imGuiRenderer.Update(1, InputTracker.FrameSnapshot);
+			lock (SyncRoot)
+			{
+				imGuiRenderer.Update(1, InputTracker.FrameSnapshot);
 
-			DoUI();
+				DoUI();
 
-			imGuiRenderer.WindowResized((int)gd.MainSwapchain.Framebuffer.Width, (int)gd.MainSwapchain.Framebuffer.Height);
+				imGuiRenderer.WindowResized((int)gd.MainSwapchain.Framebuffer.Width, (int)gd.MainSwapchain.Framebuffer.Height);
 
-			imGuiRenderer.Render(gd, cl);
+				imGuiRenderer.Render(gd, cl); 
+			}
 		}
 
 		public void Update()
 		{
-			if (InputTracker.GetKeyDown(Key.C) && InputTracker.GetKey(Key.ShiftLeft))
+			lock (SyncRoot)
 			{
-				ChangeConnectorSelection(-1);
-			}
-			else if (InputTracker.GetKeyDown(Key.C))
-			{
-				ChangeConnectorSelection(1);
-			}
+				if (InputTracker.GetKeyDown(Key.C) && InputTracker.GetKey(Key.ShiftLeft))
+				{
+					ChangeConnectorSelection(-1);
+				}
+				else if (InputTracker.GetKeyDown(Key.C))
+				{
+					ChangeConnectorSelection(1);
+				}
 
-			if (InputTracker.GetKeyDown(Key.R) && InputTracker.GetKey(Key.ShiftLeft))
-			{
-				RotationIndex--;
-			}
-			else if (InputTracker.GetKeyDown(Key.R))
-			{
-				RotationIndex++;
-			}
+				if (InputTracker.GetKeyDown(Key.R) && InputTracker.GetKey(Key.ShiftLeft))
+				{
+					RotationIndex--;
+				}
+				else if (InputTracker.GetKeyDown(Key.R))
+				{
+					RotationIndex++;
+				}
 
-			if (InputTracker.FrameSnapshot.WheelDelta != 0)
-			{
-				ChangeEntitySelection(-(int)InputTracker.FrameSnapshot.WheelDelta);
-			}
+				if (InputTracker.FrameSnapshot.WheelDelta != 0)
+				{
+					ChangeEntitySelection(-(int)InputTracker.FrameSnapshot.WheelDelta);
+				}
 
-			if (InMenu && InputTracker.CaptureKeyDown(Key.F))
-			{
-				InMenu = false;
-			}
-
-			if (InputTracker.GetKeyDown(Key.Escape))
-			{
-				if (InMenu)
+				if (InMenu && InputTracker.CaptureKeyDown(Key.F))
 				{
 					InMenu = false;
 				}
-				else
+
+				if (InputTracker.GetKeyDown(Key.Escape))
 				{
-					TogglePause();
-				}
+					if (InMenu)
+					{
+						InMenu = false;
+					}
+					else
+					{
+						TogglePause();
+					}
+				} 
 			}
 		}
 
 		public void TogglePause()
 		{
-			if (Paused)
+			lock (SyncRoot)
 			{
-				Unpause();
-			}
-			else
-			{
-				Pause();
+				if (Paused)
+				{
+					Unpause();
+				}
+				else
+				{
+					Pause();
+				} 
 			}
 		}
 
 		public void Pause()
 		{
-			if (Paused)
+			lock (SyncRoot)
 			{
-				return;
+				if (Paused)
+				{
+					return;
+				}
+
+				Paused = true;
+
+				PauseStateChanged?.Invoke(true); 
 			}
-
-			Paused = true;
-
-			PauseStateChanged?.Invoke(true);
 		}
 
 		public void Unpause()
 		{
-			if (!Paused)
+			lock (SyncRoot)
 			{
-				return;
+				if (!Paused)
+				{
+					return;
+				}
+
+				Paused = false;
+
+				inSettings = false;
+
+				PauseStateChanged?.Invoke(false); 
 			}
-
-			Paused = false;
-
-			inSettings = false;
-
-			PauseStateChanged?.Invoke(false);
 		}
 
 		public void DoUI()
 		{
-			if (!Paused)
+			lock (SyncRoot)
 			{
-				DoGameRunningUI();
-			}
-			else if (Paused)
-			{
-				DoPauseMenuUI();
+				if (!Paused)
+				{
+					DoGameRunningUI();
+				}
+				else if (Paused)
+				{
+					DoPauseMenuUI();
+				} 
 			}
 		}
 
 		private void DoDebugSettingsUI()
 		{
-			if (ImGui.Begin("Debug Settings", ImGuiWindowFlags.AlwaysAutoResize))
+			lock (SyncRoot)
 			{
-				foreach (var debugSetting in MainGame.DebugSettings.DebugSettingsDictionary.Values)
+				if (ImGui.Begin("Debug Settings", ImGuiWindowFlags.AlwaysAutoResize))
 				{
-					debugSetting.DrawUIElement();
-				}
+					foreach (var debugSetting in MainGame.DebugSettings.DebugSettingsDictionary.Values)
+					{
+						debugSetting.DrawUIElement();
+					}
 
-				ImGui.End();
+					ImGui.End();
+				} 
 			}
 		}
 

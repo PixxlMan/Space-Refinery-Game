@@ -51,11 +51,13 @@ public class GraphicsWorld
 
 	public event Action<CommandList> CustomDrawOperations;
 
+	public event Action<int, int> WindowResized;
+
 	public void SetUp(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
 		this.window = window;
 
-		window.Resized += () => Camera.WindowResized(window.Width, window.Height);
+		window.Resized += HandleWindowResized;
 
 		Camera = new(window.Width, window.Height, Perspective.Perspective);
 
@@ -72,6 +74,20 @@ public class GraphicsWorld
 		ShaderLoader = new(this);
 
 		CreateDeviceObjects(gd, factory, swapchain);
+	}
+
+	private void HandleWindowResized()
+	{
+		lock (SynchronizationObject)
+		{
+			Camera.WindowResized(window.Width, window.Height);
+
+			Swapchain.Resize(window.Width, window.Height);
+
+			GraphicsDevice.ResizeMainWindow(window.Width, window.Height);
+
+			WindowResized?.Invoke((int)window.Width, (int)window.Height);
+		}
 	}
 
 	public void Run()

@@ -54,6 +54,8 @@ public sealed class MainGame
 
 	public PipeType[] PipeTypes;
 
+	public Guid SaveGuid { get; private set; } = Guid.NewGuid();
+
 	public void Start(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
 		GameData = new(null, null, null, null, this, null);
@@ -184,8 +186,10 @@ public sealed class MainGame
 
 	public void Serialize(string path)
 	{
-		lock (GameWorld.TickSyncObject)
+		lock (GameWorld.TickSyncObject)	lock (SynchronizationObject)
 		{
+			Console.WriteLine($"Serialization started. Serializing {ReferenceHandler.ReferenceCount} references.");
+
 			File.Delete(path);
 
 			Stopwatch stopwatch = new();
@@ -199,6 +203,8 @@ public sealed class MainGame
 			writer.WriteStartDocument();
 			writer.WriteStartElement(nameof(MainGame));
 			{
+				writer.WriteElementString(nameof(SaveGuid), SaveGuid.ToString());
+
 				Player.Serialize(writer);
 
 				ReferenceHandler.Serialize(writer);
@@ -226,8 +232,10 @@ public sealed class MainGame
 
 	public void Deserialize(string path)
 	{
-		lock (GameWorld.TickSyncObject)
+		lock (GameWorld.TickSyncObject) lock (SynchronizationObject)
 		{
+			Console.WriteLine($"Deserialization started.");
+
 			Stopwatch stopwatch = new();
 
 			stopwatch.Start();
@@ -240,7 +248,16 @@ public sealed class MainGame
 
 			reader.ReadStartElement(nameof(MainGame));
 			{
-				Player.Dispose();
+				var newSaveGuid = reader.ReadReferenceGUID(nameof(SaveGuid));
+
+				if (newSaveGuid != SaveGuid)
+				{
+					Console.WriteLine($"Deserializing a save with another guid. Guid: {newSaveGuid}");
+				}
+
+				SaveGuid = newSaveGuid;
+
+				Player.Destroy();
 
 				Player = Player.Deserialize(reader, serializationData);
 
@@ -262,7 +279,7 @@ public sealed class MainGame
 
 			stopwatch.Stop();
 			
-			Console.WriteLine($"Deserialized all state in {stopwatch.Elapsed.TotalMilliseconds} ms.");
+			Console.WriteLine($"Deserialized all state in {stopwatch.Elapsed.TotalMilliseconds} ms. Deserialized {ReferenceHandler.ReferenceCount} references.");
 		}
 	}
 }

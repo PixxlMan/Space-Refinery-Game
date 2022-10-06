@@ -12,7 +12,7 @@ using static FixedPrecision.Convenience;
 
 namespace Space_Refinery_Game
 {
-	public sealed class Player : IDisposable
+	public sealed class Player
 	{
 		public Transform Transform = Transform.Identity;
 
@@ -154,11 +154,11 @@ namespace Space_Refinery_Game
 			return lookedAtPhysicsObject is not null && (((lookedAtPhysicsObject.Entity is Connector connector && (connector).Vacant) || (lookedAtPhysicsObject.Entity is InformationProxy informationProxy && informationProxy.ProxiedEntity is Connector proxiedConnector && proxiedConnector.Vacant))) && gameData.UI.SelectedPipeType is not null;
 		}
 
-		public bool Disposed = false;
+		public bool Destroyed = false;
 
-		public void Dispose()
+		public void Destroy()
 		{
-			if (Disposed)
+			if (Destroyed)
 				return;
 
 			constructionMarker.Destroy();

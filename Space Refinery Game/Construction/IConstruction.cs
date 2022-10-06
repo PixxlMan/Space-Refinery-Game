@@ -5,7 +5,7 @@ using System.Xml;
 
 namespace Space_Refinery_Game
 {
-	public interface IConstruction : ISerializableReference
+	public interface IConstruction : ISerializableReference, Entity
 	{
 		public static abstract IConstruction Build(Connector connector, IEntityType entityType, int indexOfSelectedConnector, FixedDecimalLong8 rotation, GameData gameData, SerializationReferenceHandler referenceHandler);
 

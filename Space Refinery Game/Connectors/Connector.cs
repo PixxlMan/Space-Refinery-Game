@@ -52,6 +52,8 @@ namespace Space_Refinery_Game
 			UpdateProxy();
 		}
 
+		public bool Destroyed { get; protected set; }
+
 		private GameData gameData;
 
 		public Transform Transform;
@@ -173,7 +175,7 @@ namespace Space_Refinery_Game
 
 			if (Connectables.connectableA is null && Connectables.connectableB is null)
 			{
-				gameData.GameWorld.RemoveEntity(this);
+				Destroy();
 			}
 		}
 
@@ -294,8 +296,15 @@ namespace Space_Refinery_Game
 			reader.ReadEndElement();
 		}
 
-		void Entity.Destroyed()
+		public virtual void Destroy()
 		{
+			if (Destroyed)
+			{
+				return;
+			}
+
+			Destroyed = true;
+
 			PhysicsObject.Destroy();
 
 			Proxy.PhysicsObject.Destroy();
@@ -303,6 +312,10 @@ namespace Space_Refinery_Game
 			gameData.UI.SelectedEntityTypeChanged -= UpdateProxyOnEntityTypeChanged;
 
 			MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
+
+			gameData.GameWorld.RemoveEntity(this);
+
+			gameData.ReferenceHandler.RemoveReference(this);
 		}
 
 		public abstract void Tick();

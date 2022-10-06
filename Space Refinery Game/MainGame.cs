@@ -10,16 +10,14 @@ namespace Space_Refinery_Game;
 
 public sealed class MainGame
 {
-	public GraphicsWorld GraphicsWorld { get; private set; }
-	public PhysicsWorld PhysicsWorld { get; private set; }
-	public GameWorld GameWorld { get; private set; }
-	public Player Player { get; private set; }
-	public SerializationReferenceHandler ReferenceHandler { get; private set; }
+	private GraphicsWorld GraphicsWorld { get => GameData.GraphicsWorld; set => GameData.GraphicsWorld = value; }
+	private PhysicsWorld PhysicsWorld { get => GameData.PhysicsWorld; set => GameData.PhysicsWorld = value; }
+	private GameWorld GameWorld { get => GameData.GameWorld; set => GameData.GameWorld = value; }
+	private SerializationReferenceHandler ReferenceHandler { get => GameData.ReferenceHandler; set => GameData.ReferenceHandler = value; }
+	private Player Player { get; set; }
+	private UI UI { get => GameData.UI; set => GameData.UI = value; }
 
-	public GameData GetGameData()
-	{
-		return new(ui, PhysicsWorld, GraphicsWorld, GameWorld, this, ReferenceHandler);
-	}
+	public GameData GameData { get; private set; }
 
 	public static SerializationReferenceHandler GlobalReferenceHandler;
 
@@ -45,7 +43,6 @@ public sealed class MainGame
 	public static DebugSettings DebugSettings = new();
 
 	private Window window;
-	private UI ui;
 
 	public bool Paused;
 
@@ -59,6 +56,8 @@ public sealed class MainGame
 
 	public void Start(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
+		GameData = new(null, null, null, null, this, null);
+
 		GlobalSettings = new();
 
 		GlobalSettings.SetSettingOptions("FoV", new SliderSettingOptions(30, 120));
@@ -79,7 +78,7 @@ public sealed class MainGame
 
 		if (GlobalReferenceHandler is null)
 		{
-			GlobalReferenceHandler = DeserializeGlobalReferenceHandler(new SerializationData(GetGameData()));
+			GlobalReferenceHandler = DeserializeGlobalReferenceHandler(new SerializationData(GameData));
 		}
 
 		PhysicsWorld = new();
@@ -88,25 +87,23 @@ public sealed class MainGame
 
 		PhysicsWorld.Run();
 
-		ui = UI.Create(GraphicsWorld, this);
+		UI = UI.Create(GameData);
 
-		ui.PauseStateChanged += UI_PauseStateChanged;
+		UI.PauseStateChanged += UI_PauseStateChanged;
 
-		GameWorld = new(this);
+		GameWorld = new(GameData);
 
 		ReferenceHandler = new();
 
-		Player = Player.Create(GetGameData());
+		Player = Player.Create(GameData);
 
 		Starfield.Create(GraphicsWorld);
 
-		GameWorld.AddConstruction(Pipe.Create(ui.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), GetGameData(), ReferenceHandler));
+		GameWorld.AddConstruction(Pipe.Create(UI.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), GameData, ReferenceHandler));
 
 		InputTracker.IgnoreNextFrameMousePosition = true;
 
 		//DebugRender.ShouldRender = true;
-
-		GraphicsWorld.Run();
 
 		StartUpdating();
 
@@ -127,6 +124,8 @@ public sealed class MainGame
 		Thread thread = new Thread(new ThreadStart(() =>
 		{
 			Stopwatch stopwatch = new();
+
+		GraphicsWorld.Run();
 			stopwatch.Start();
 
 			FixedDecimalInt4 timeLastUpdate = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalInt4>();
@@ -160,14 +159,14 @@ public sealed class MainGame
 
 			InputTracker.UpdateFrameInput(input);
 
-			ui.Update();
+			UI.Update();
 
 			if (InputTracker.GetKeyDown(Key.P))
 			{
 				DebugRender.ShouldRender = !DebugRender.ShouldRender;
 			}
 
-			if (ui.InMenu || Paused)
+			if (UI.InMenu || Paused)
 			{
 				window.CaptureMouse = false;
 			}
@@ -176,7 +175,7 @@ public sealed class MainGame
 				window.CaptureMouse = true;
 			}
 
-			if (!Paused && !ui.InMenu)
+			if (!Paused && !UI.InMenu)
 			{
 				Player.Update(deltaTime);
 			}
@@ -193,7 +192,7 @@ public sealed class MainGame
 
 			stopwatch.Start();
 
-			using Stream stream = File.OpenWrite(path);
+			using FileStream stream = File.OpenWrite(path);
 
 			using XmlWriter writer = XmlWriter.Create(stream, new XmlWriterSettings() { Indent = true, IndentChars = "\t" });
 
@@ -211,13 +210,17 @@ public sealed class MainGame
 
 			writer.Close();
 
-			stream.Flush();
+			stream.Flush(true);
 
 			stream.Close();
 
+			writer.Dispose();
+
+			stream.Dispose();
+
 			stopwatch.Stop();
 
-			Console.WriteLine(stopwatch.Elapsed.TotalMilliseconds);
+			Console.WriteLine($"Serialized all state in {stopwatch.Elapsed.TotalMilliseconds} ms.");
 		}
 	}
 
@@ -233,7 +236,7 @@ public sealed class MainGame
 
 			using XmlReader reader = XmlReader.Create(stream);
 
-			var serializationData = new SerializationData(GetGameData());
+			var serializationData = new SerializationData(GameData);
 
 			reader.ReadStartElement(nameof(MainGame));
 			{
@@ -253,9 +256,13 @@ public sealed class MainGame
 
 			stream.Close();
 
-			stopwatch.Stop();
+			reader.Dispose();
 
-			Console.WriteLine(stopwatch.Elapsed.TotalMilliseconds);
+			stream.Dispose();
+
+			stopwatch.Stop();
+			
+			Console.WriteLine($"Deserialized all state in {stopwatch.Elapsed.TotalMilliseconds} ms.");
 		}
 	}
 }

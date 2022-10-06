@@ -49,6 +49,8 @@ namespace Space_Refinery_Game
 
 		public Guid SerializableReferenceGUID { get; private set; } = Guid.NewGuid();
 
+		public SerializationReferenceHandler ReferenceHandler { get; private set; }
+
 		protected Dictionary<string, PipeConnector> NamedConnectors = new();
 
 		public bool Destroyed { get; private set; }
@@ -216,6 +218,7 @@ namespace Space_Refinery_Game
 				Renderable = renderable;
 				GameWorld = gameData.GameWorld;
 				MainGame = gameData.MainGame;
+				ReferenceHandler = gameData.ReferenceHandler;
 
 				SetUp();
 			}
@@ -235,6 +238,8 @@ namespace Space_Refinery_Game
 					return;
 				}
 
+				Destroyed = true;
+
 				DisplaceContents();
 
 				PhysicsObject.Destroy();
@@ -247,7 +252,7 @@ namespace Space_Refinery_Game
 					connector.Disconnect(this);
 				}
 
-				Destroyed = true;
+				ReferenceHandler.RemoveReference(this);
 			}
 		}
 
@@ -331,6 +336,6 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		void Entity.Destroyed() => Deconstruct();
+		void Entity.Destroy() => Deconstruct();
 	}
 }

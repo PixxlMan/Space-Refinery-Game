@@ -13,9 +13,9 @@ namespace Space_Refinery_Game
 {
 	public sealed class GameWorld
 	{
-		public GameWorld(MainGame mainGame)
+		public GameWorld(GameData gameData)
 		{
-			MainGame = mainGame;
+			GameData = gameData;
 		}
 
 		public object SynchronizationObject = new();
@@ -24,7 +24,7 @@ namespace Space_Refinery_Game
 
 		public HashSet<IConstruction> Constructions = new();
 
-		public MainGame MainGame;
+		public GameData GameData;
 
 		public HashSet<Entity> Entities = new();
 
@@ -40,7 +40,7 @@ namespace Space_Refinery_Game
 			{
 				Entities.Remove(entity);
 
-				entity.Destroyed();
+				entity.Destroy();
 			}
 		}
 
@@ -57,6 +57,8 @@ namespace Space_Refinery_Game
 				Constructions.Remove(construction);
 
 				construction.Deconstruct();
+
+				RemoveEntity(construction);				
 			}
 		}
 
@@ -93,9 +95,9 @@ namespace Space_Refinery_Game
 				FixedDecimalInt4 timeLastUpdate = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalInt4>();
 				FixedDecimalInt4 time;
 				FixedDecimalInt4 deltaTime;
-				while (/*MainGame.Running*/true)
+				while (/*GameData.MainGame.Running*/true)
 				{
-					if (!MainGame.Paused)
+					if (!GameData.MainGame.Paused)
 					{
 						time = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalInt4>();
 

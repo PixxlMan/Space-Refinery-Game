@@ -19,7 +19,7 @@ namespace Space_Refinery_Game
 
 		private GraphicsDevice gd;
 
-		private MainGame mainGame;
+		private GameData gameData;
 
 		public List<PipeType> PipeTypes = new();
 
@@ -75,13 +75,15 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		private UI(GraphicsDevice gd)
+		private UI(GameData gameData)
 		{
+			this.gameData = gameData;
+
+			gd = gameData.GraphicsWorld.GraphicsDevice;
+
 			imGuiRenderer = new(gd, gd.MainSwapchain.Framebuffer.OutputDescription, (int)gd.MainSwapchain.Framebuffer.Width, (int)gd.MainSwapchain.Framebuffer.Height);
 
 			imGuiRenderer.CreateDeviceResources(gd, gd.MainSwapchain.Framebuffer.OutputDescription);
-
-			this.gd = gd;
 		}
 
 		public bool InMenu;
@@ -105,19 +107,17 @@ namespace Space_Refinery_Game
 			ImGui.End();
 		}
 
-		public static UI Create(GraphicsWorld graphWorld, MainGame mainGame)
+		public static UI Create(GameData gameData)
 		{
 			ImGui.CreateContext();
 
-			UI ui = new(graphWorld.GraphicsDevice);
+			UI ui = new(gameData);
 
-			graphWorld.AddRenderable(ui, 1);
+			gameData.GraphicsWorld.AddRenderable(ui, 1);
 
 			ui.PipeTypes.AddRange(PipeType.PipeTypes.Values);
 
 			ui.Style();
-
-			ui.mainGame = mainGame;
 
 			return ui;
 		}
@@ -258,16 +258,22 @@ namespace Space_Refinery_Game
 
 				if (ImGui.Button("Save"))
 				{
-					mainGame.Serialize(@"R:\save.xml");
+					Task.Run(() =>
+					{
+						lock (gameData.GameWorld.TickSyncObject) lock (gameData.GameWorld.SynchronizationObject)
+						{
+							gameData.MainGame.Serialize(@"R:\save.xml");
+						}
+					});
 				}
 
 				if (ImGui.Button("Load"))
 				{
 					Task.Run(() =>
 					{
-						lock (mainGame.GameWorld.TickSyncObject)
+						lock (gameData.GameWorld.TickSyncObject) lock (gameData.GameWorld.SynchronizationObject)
 						{
-							mainGame.Deserialize(@"R:\save.xml");
+							gameData.MainGame.Deserialize(@"R:\save.xml");
 						}
 					});
 				}

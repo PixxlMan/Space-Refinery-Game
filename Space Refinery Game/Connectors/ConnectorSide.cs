@@ -17,7 +17,7 @@
 				case ConnectorSide.B:
 					return ConnectorSide.A;
 				default:
-					throw new ArgumentException("Invalid ConnectorSide enum", nameof(connector));
+					throw new ArgumentException("Invalid ConnectorSide enum.", nameof(connector));
 			}
 		}
 	}

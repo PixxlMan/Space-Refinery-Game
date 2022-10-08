@@ -305,8 +305,9 @@ namespace Space_Refinery_Game
 					}
 
 					for (int i = 0; i < count; i++)
-					{						
-						deserializationAction(reader, (t) => array[i] = t, i);
+					{
+						int iCopy = i;
+						deserializationAction(reader, (t) => array[iCopy] = t, iCopy);
 					}
 				}
 				reader.ReadEndElement();
@@ -334,6 +335,31 @@ namespace Space_Refinery_Game
 					for (int i = 0; i < count; i++)
 					{
 						deserializationAction(reader);
+					}
+				}
+				reader.ReadEndElement();
+			}
+			reader.ReadEndElement();
+		}
+
+		public static void DeserializeCollection(this XmlReader reader, Action<XmlReader, int> deserializationAction, string? name = null)
+		{
+			reader.ReadStartElement(name ?? "Collection");
+			{
+				int count = int.Parse(reader.ReadElementString("Count"));
+
+				reader.ReadStartElement("Elements");
+				{
+					if (count == 0)
+					{
+						reader.ReadEndElement();
+
+						return;
+					}
+
+					for (int i = 0; i < count; i++)
+					{
+						deserializationAction(reader, i);
 					}
 				}
 				reader.ReadEndElement();

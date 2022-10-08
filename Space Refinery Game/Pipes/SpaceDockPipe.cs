@@ -123,7 +123,7 @@ namespace Space_Refinery_Game
 		{
 			base.DeserializeState(reader, serializationData, referenceHandler);
 
-			ResourceContainer = ResourceContainer.Deserialize(reader, MainGame);
+			ResourceContainer = ResourceContainer.Deserialize(reader);
 		}
 	}
 }

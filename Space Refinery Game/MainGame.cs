@@ -50,7 +50,7 @@ public sealed class MainGame
 
 	public ChemicalType[] ChemicalTypes;
 
-	public Dictionary<string, ChemicalType> ChemicalTypesDictionary;
+	public static Dictionary<string, ChemicalType> ChemicalTypesDictionary;
 
 	public PipeType[] PipeTypes;
 

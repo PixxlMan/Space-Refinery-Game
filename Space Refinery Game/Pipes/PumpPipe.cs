@@ -130,8 +130,8 @@ namespace Space_Refinery_Game
 
 			DirectionAToB = reader.DeserializeBoolean(nameof(DirectionAToB));
 
-			ContainerA = ResourceContainer.Deserialize(reader, MainGame);
-			ContainerB = ResourceContainer.Deserialize(reader, MainGame);
+			ContainerA = ResourceContainer.Deserialize(reader);
+			ContainerB = ResourceContainer.Deserialize(reader);
 		}
 	}
 }

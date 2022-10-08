@@ -173,9 +173,9 @@ namespace Space_Refinery_Game
 
 			Activated = reader.DeserializeBoolean(nameof(Activated));
 
-			WaterInput = ResourceContainer.Deserialize(reader, MainGame);
-			OxygenOutput = ResourceContainer.Deserialize(reader, MainGame);
-			HydrogenOutput = ResourceContainer.Deserialize(reader, MainGame);
+			WaterInput = ResourceContainer.Deserialize(reader);
+			OxygenOutput = ResourceContainer.Deserialize(reader);
+			HydrogenOutput = ResourceContainer.Deserialize(reader);
 		}
 	}
 }

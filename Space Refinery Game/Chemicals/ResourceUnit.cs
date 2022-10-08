@@ -182,7 +182,7 @@ namespace Space_Refinery_Game
 			writer.Serialize(Pressure, nameof(Pressure));
 		}
 
-		public static ResourceUnit Deserialize(XmlReader reader, MainGame mainGame)
+		public static ResourceUnit Deserialize(XmlReader reader)
 		{
 			ChemicalType chemicalType;
 			ResourceType resourceType;
@@ -192,7 +192,7 @@ namespace Space_Refinery_Game
 
 			reader.ReadStartElement(nameof(Space_Refinery_Game.ChemicalType.ChemicalName));
 			{
-				chemicalType = mainGame.ChemicalTypesDictionary[reader.ReadContentAsString()];
+				chemicalType = MainGame.ChemicalTypesDictionary[reader.ReadContentAsString()];
 			}
 			reader.ReadEndElement();
 			reader.ReadStartElement(nameof(Space_Refinery_Game.ResourceType.ChemicalPhase));

@@ -182,7 +182,7 @@ namespace Space_Refinery_Game
 			writer.WriteEndElement();
 		}
 
-		public static ResourceContainer Deserialize(XmlReader reader, MainGame mainGame)
+		public static ResourceContainer Deserialize(XmlReader reader)
 		{
 			ResourceContainer resourceContainer = new();
 
@@ -190,7 +190,7 @@ namespace Space_Refinery_Game
 			{
 				resourceContainer.maxVolume = reader.DeserializeFixedDecimalLong8(nameof(MaxVolume));
 
-				reader.DeserializeCollection((r) => resourceContainer.AddResource(ResourceUnit.Deserialize(r, mainGame)), nameof(resources));
+				reader.DeserializeCollection((r) => resourceContainer.AddResource(ResourceUnit.Deserialize(r)), nameof(resources));
 			}
 			reader.ReadEndElement();
 

@@ -22,9 +22,9 @@ namespace Space_Refinery_Game
 
 		private static Mesh InternalBlockerModel;
 
-		public FixedDecimalLong8 Limiter = (FixedDecimalLong8)0.5;
+		public DecimalNumber Limiter = (DecimalNumber)0.5;
 
-		public override void TransferResourceFromConnector(ResourceContainer source, FixedDecimalLong8 volume, PipeConnector sourceConnector)
+		public override void TransferResourceFromConnector(ResourceContainer source, DecimalNumber volume, PipeConnector sourceConnector)
 		{
 			lock (this)
 			{
@@ -60,7 +60,7 @@ namespace Space_Refinery_Game
 			{
 				base.Tick();
 
-				InternalBlockerRenderable.Transform.Rotation = QuaternionFixedDecimalInt4.Normalize(QuaternionFixedDecimalInt4.Concatenate(Transform.Rotation, QuaternionFixedDecimalInt4.CreateFromAxisAngle(Transform.LocalUnitZ, (FixedDecimalInt4)Limiter * 90 * FixedDecimalInt4.DegreesToRadians)));
+				InternalBlockerRenderable.Transform.Rotation = QuaternionFixedDecimalInt4.Normalize(QuaternionFixedDecimalInt4.Concatenate(Transform.Rotation, QuaternionFixedDecimalInt4.CreateFromAxisAngle(Transform.LocalUnitZ, (DecimalNumber)Limiter * 90 * DecimalNumber.DegreesToRadians)));
 
 				ResourceContainer lowestFullnessContainer = ResourceContainers.Values.First();
 
@@ -79,7 +79,7 @@ namespace Space_Refinery_Game
 						continue;
 					}
 
-					resourceContainer.TransferResource(lowestFullnessContainer, resourceContainer.Volume * Limiter * (FixedDecimalLong8)Time.TickInterval);
+					resourceContainer.TransferResource(lowestFullnessContainer, resourceContainer.Volume * Limiter * (DecimalNumber)Time.TickInterval);
 				}
 			}
 		}
@@ -128,7 +128,7 @@ namespace Space_Refinery_Game
 
 			ImGui.SliderFloat("Limit", ref menuLimit, 0, 1);
 
-			Limiter = FixedDecimalLong8.FromDouble(menuLimit);
+			Limiter = DecimalNumber.FromDouble(menuLimit);
 		}
 
 
@@ -145,7 +145,7 @@ namespace Space_Refinery_Game
 		{
 			base.DeserializeState(reader, serializationData, referenceHandler);
 
-			Limiter = reader.DeserializeFixedDecimalLong8(nameof(Limiter));
+			Limiter = reader.DeserializeDecimalNumber(nameof(Limiter));
 			var resourceContainers = (ResourceContainer[])reader.DeserializeCollection((r) => ResourceContainer.Deserialize(r));
 
 			serializationData.SerializationCompleteEvent += () =>

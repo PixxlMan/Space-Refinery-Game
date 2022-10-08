@@ -22,7 +22,7 @@ namespace Space_Refinery_Game
 		{
 			if (Dirty)
 			{
-				Value = (FixedDecimalInt4)uiValue;
+				Value = (DecimalNumber)uiValue;
 
 				AcceptedSettingChange?.Invoke(this);
 			}
@@ -50,13 +50,13 @@ namespace Space_Refinery_Game
 			uiValue = Value.ToFloat();
 		}
 
-		public FixedDecimalInt4 Value;
+		public DecimalNumber Value;
 
 		float uiValue;
 
 		float lastValue;
 
-		public bool Dirty => (FixedDecimalInt4)uiValue != Value;
+		public bool Dirty => (DecimalNumber)uiValue != Value;
 
 		public ISettingOptions Options { get; set; } = new SliderSettingOptions(0, 1000);
 	}

@@ -43,7 +43,7 @@ namespace Space_Refinery_Game
 
 		public override IInformationProvider InformationProvider => informationProvider;
 
-		public void TransferResource(Pipe sourcePipe, ResourceContainer sourceContainer, FixedDecimalLong8 volume)
+		public void TransferResource(Pipe sourcePipe, ResourceContainer sourceContainer, DecimalNumber volume)
 		{
 			lock (this)
 			{
@@ -64,7 +64,7 @@ namespace Space_Refinery_Game
 				var pipeAResourceContainer = Pipes.pipeA.GetResourceContainerForConnector(this);
 				var pipeBResourceContainer = Pipes.pipeB.GetResourceContainerForConnector(this);
 
-				if (FixedDecimalLong8.Abs(pipeAResourceContainer.Fullness - pipeBResourceContainer.Fullness) > (FixedDecimalLong8)0.0001)
+				if (DecimalNumber.Abs(pipeAResourceContainer.Fullness - pipeBResourceContainer.Fullness) > (DecimalNumber)0.0001)
 				{
 					ConnectorSide flowDirection = pipeAResourceContainer.Fullness - pipeBResourceContainer.Fullness > 0 ? ConnectorSide.B : ConnectorSide.A;
 
@@ -72,9 +72,9 @@ namespace Space_Refinery_Game
 
 					var otherContainer = flowDirection == ConnectorSide.A ? pipeBResourceContainer : pipeAResourceContainer;
 
-					var fullnessDifference = FixedDecimalLong8.Abs(recipientContainer.Fullness - otherContainer.Fullness);
+					var fullnessDifference = DecimalNumber.Abs(recipientContainer.Fullness - otherContainer.Fullness);
 
-					otherContainer.TransferResource(recipientContainer, otherContainer.Volume * fullnessDifference * (FixedDecimalLong8)Time.TickInterval);
+					otherContainer.TransferResource(recipientContainer, otherContainer.Volume * fullnessDifference * (DecimalNumber)Time.TickInterval);
 				}
 			}
 		}

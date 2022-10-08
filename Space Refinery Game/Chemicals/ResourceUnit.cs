@@ -16,13 +16,13 @@ namespace Space_Refinery_Game
 
 		public readonly ChemicalType ChemicalType => ResourceType.ChemicalType;
 
-		public FixedDecimalLong8 Mass; // kg
+		public DecimalNumber Mass; // kg
 
-		public FixedDecimalLong8 Volume => (FixedDecimalLong8)Mass / ResourceType.Density; // m3
+		public DecimalNumber Volume => (DecimalNumber)Mass / ResourceType.Density; // m3
 
-		public FixedDecimalLong8 InternalEnergy; // kJ
+		public DecimalNumber InternalEnergy; // kJ
 
-		public FixedDecimalLong8 Temperature // k
+		public DecimalNumber Temperature // k
 		{
 			get
 			{
@@ -35,11 +35,11 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		public FixedDecimalLong8 Pressure => /*temporarily set to 101325 Pa*/ 101325; // Pa or kg/m3
+		public DecimalNumber Pressure => /*temporarily set to 101325 Pa*/ 101325; // Pa or kg/m3
 
-		public FixedDecimalLong8 Enthalpy => InternalEnergy + Pressure * Volume; // https://www.omnicalculator.com/physics/enthalpy
+		public DecimalNumber Enthalpy => InternalEnergy + Pressure * Volume; // https://www.omnicalculator.com/physics/enthalpy
 
-		public ResourceUnit(ResourceType resourceType, FixedDecimalLong8 mass, FixedDecimalLong8 internalEnergy, FixedDecimalLong8 pressure)
+		public ResourceUnit(ResourceType resourceType, DecimalNumber mass, DecimalNumber internalEnergy, DecimalNumber pressure)
 		{
 			ResourceType = resourceType;
 			Mass = mass;
@@ -73,7 +73,7 @@ namespace Space_Refinery_Game
 
 				float mass = newResourceUnit.Mass.ToFloat();
 				ImGui.SliderFloat("Mass (kg)", ref mass, 0, 100);
-				newResourceUnit.Mass = FixedDecimalLong8.FromFloat(mass);
+				newResourceUnit.Mass = DecimalNumber.FromFloat(mass);
 
 				ImGui.Text($"Volume: {newResourceUnit.Volume} m3");
 			}
@@ -116,7 +116,7 @@ namespace Space_Refinery_Game
 			return HashCode.Combine(ResourceType, Mass, InternalEnergy, Pressure);
 		}
 
-		public static ResourceUnit Part(ResourceUnit unit, FixedDecimalLong8 part)
+		public static ResourceUnit Part(ResourceUnit unit, DecimalNumber part)
 		{
 			ResourceUnit resourceUnit = new()
 			{
@@ -186,9 +186,9 @@ namespace Space_Refinery_Game
 		{
 			ChemicalType chemicalType;
 			ResourceType resourceType;
-			FixedDecimalLong8 mass;
-			FixedDecimalLong8 internalEnergy;
-			FixedDecimalLong8 pressure;
+			DecimalNumber mass;
+			DecimalNumber internalEnergy;
+			DecimalNumber pressure;
 
 			reader.ReadStartElement(nameof(Space_Refinery_Game.ChemicalType.ChemicalName));
 			{
@@ -202,9 +202,9 @@ namespace Space_Refinery_Game
 				resourceType = chemicalType.GetResourceTypeForPhase(chemicalPhase);
 			}
 			reader.ReadEndElement();
-			mass = reader.DeserializeFixedDecimalLong8(nameof(Mass));
-			internalEnergy = reader.DeserializeFixedDecimalLong8(nameof(InternalEnergy));
-			pressure = reader.DeserializeFixedDecimalLong8(nameof(Pressure));
+			mass = reader.DeserializeDecimalNumber(nameof(Mass));
+			internalEnergy = reader.DeserializeDecimalNumber(nameof(InternalEnergy));
+			pressure = reader.DeserializeDecimalNumber(nameof(Pressure));
 
 			return new(resourceType, mass, internalEnergy, pressure);
 		}

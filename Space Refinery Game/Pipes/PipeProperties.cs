@@ -7,17 +7,17 @@ namespace Space_Refinery_Game
 	{
 		public PipeShape Shape;
 
-		//public FixedDecimalLong8 WallInsulation;
+		//public DecimalNumber WallInsulation;
 
-		//public FixedDecimalLong8 FlowableRadius;
+		//public DecimalNumber FlowableRadius;
 
-		//public FixedDecimalLong8 FlowableLength;
+		//public DecimalNumber FlowableLength;
 
-		public FixedDecimalLong8 FlowableVolume;
+		public DecimalNumber FlowableVolume;
 
-		public FixedDecimalLong8 Friction;
+		public DecimalNumber Friction;
 
-		public PipeProperties(PipeShape shape, /*FixedDecimalLong8 wallInsulation, FixedDecimalLong8 flowableRadius, FixedDecimalLong8 flowableLength,*/ FixedDecimalLong8 flowableVolume, FixedDecimalLong8 friction)
+		public PipeProperties(PipeShape shape, /*DecimalNumber wallInsulation, DecimalNumber flowableRadius, DecimalNumber flowableLength,*/ DecimalNumber flowableVolume, DecimalNumber friction)
 		{
 			Shape = shape;
 			/*WallInsulation = wallInsulation;
@@ -42,11 +42,11 @@ namespace Space_Refinery_Game
 		{
 			Shape = reader.DeserializeEnum<PipeShape>(nameof(Shape));
 
-			/*WallInsulation = reader.DeserializeFixedDecimalLong8(nameof(WallInsulation));
-			FlowableRadius = reader.DeserializeFixedDecimalLong8(nameof(FlowableRadius));
-			FlowableLength = reader.DeserializeFixedDecimalLong8(nameof(FlowableLength));*/
-			FlowableVolume = reader.DeserializeFixedDecimalLong8(nameof(FlowableVolume));
-			Friction = reader.DeserializeFixedDecimalLong8(nameof(Friction));
+			/*WallInsulation = reader.DeserializeDecimalNumber(nameof(WallInsulation));
+			FlowableRadius = reader.DeserializeDecimalNumber(nameof(FlowableRadius));
+			FlowableLength = reader.DeserializeDecimalNumber(nameof(FlowableLength));*/
+			FlowableVolume = reader.DeserializeDecimalNumber(nameof(FlowableVolume));
+			Friction = reader.DeserializeDecimalNumber(nameof(Friction));
 		}
 	}
 }

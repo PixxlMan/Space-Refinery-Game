@@ -8,11 +8,11 @@ namespace Space_Refinery_Game
 	{
 		public PipeShape Shape;
 
-		public FixedDecimalInt4 ConnectorDiameter;
+		public DecimalNumber ConnectorDiameter;
 
-		public FixedDecimalInt4 ConnectorFlowAreaDiameter;
+		public DecimalNumber ConnectorFlowAreaDiameter;
 
-		public PipeConnectorProperties(PipeShape shape, FixedDecimalInt4 connectorDiameter, FixedDecimalInt4 connectorFlowAreaDiameter, SerializationReferenceHandler referenceHandler)
+		public PipeConnectorProperties(PipeShape shape, DecimalNumber connectorDiameter, DecimalNumber connectorFlowAreaDiameter, SerializationReferenceHandler referenceHandler)
 		{
 			Shape = shape;
 			ConnectorDiameter = connectorDiameter;
@@ -47,9 +47,9 @@ namespace Space_Refinery_Game
 
 			Shape = reader.DeserializeEnum<PipeShape>(nameof(Shape));
 
-			ConnectorDiameter = reader.DeserializeFixedDecimalInt4(nameof(ConnectorDiameter));
+			ConnectorDiameter = reader.DeserializeDecimalNumber(nameof(ConnectorDiameter));
 
-			ConnectorFlowAreaDiameter = reader.DeserializeFixedDecimalInt4(nameof(ConnectorFlowAreaDiameter));
+			ConnectorFlowAreaDiameter = reader.DeserializeDecimalNumber(nameof(ConnectorFlowAreaDiameter));
 		}
 	}
 }

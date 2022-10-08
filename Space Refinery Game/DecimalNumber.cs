@@ -1,7 +1,10 @@
 ﻿using FixedPrecision;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-namespace VideoEditorSystem
+namespace Space_Refinery_Game
 {
+	[JsonConverter(typeof(DecimalNumberJsonConverter))]
 	public struct DecimalNumber : IFixedPrecisionNumeral<DecimalNumber>
 	{
 		public DecimalNumber(FixedDecimalLong8 value)
@@ -440,7 +443,24 @@ namespace VideoEditorSystem
 		{
 			return FromTimeSpan(value);
 		}
+		
+		public static implicit operator FixedDecimalInt4(DecimalNumber value) => ToFixedDecimalInt4(value);
 
+		public static implicit operator DecimalNumber(FixedDecimalInt4 value) => FromFixedDecimalInt4(value);
+
+		const int FixedDecimalInt4PrecisionDifferenceFactor = 10 * 10 * 10 * 10; //(int)Math.Pow(Precision - FixedDecimalInt4.Precision, 10)
+
+		public static FixedDecimalInt4 ToFixedDecimalInt4(DecimalNumber value)
+		{
+			return FixedDecimalInt4.FromDecimal(value.ToDecimal());
+			//return FixedDecimalInt4.CreateInstanceFromRaw((int)(value.Value.GetRawValue() / FixedDecimalInt4PrecisionDifferenceFactor));
+		}
+
+		public static DecimalNumber FromFixedDecimalInt4(FixedDecimalInt4 value)
+		{
+			return FromDecimal(value.ToDecimal());
+			//return new(value.GetRawValue() * FixedDecimalInt4PrecisionDifferenceFactor);
+		}
 
 		[Obsolete]
 		public static implicit operator DecimalNumber(short value) => FromInt16(value);
@@ -460,5 +480,18 @@ namespace VideoEditorSystem
 		public static explicit operator decimal(DecimalNumber value) => ToDecimal(value);
 		public static explicit operator double(DecimalNumber value) => ToDouble(value);
 		public static explicit operator float(DecimalNumber value) => ToFloat(value);
+	}
+
+	public class DecimalNumberJsonConverter : JsonConverter<DecimalNumber>
+	{
+		public override DecimalNumber Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+		{
+			return FixedDecimalLong8.FromDecimal(reader.GetDecimal());
+		}
+
+		public override void Write(Utf8JsonWriter writer, DecimalNumber value, JsonSerializerOptions options)
+		{
+			writer.WriteNumberValue(value.ToDecimal());
+		}
 	}
 }

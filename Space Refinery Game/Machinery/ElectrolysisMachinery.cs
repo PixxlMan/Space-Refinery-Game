@@ -21,13 +21,13 @@ namespace Space_Refinery_Game
 
 		public ResourceContainer OxygenOutput;
 
-		public static readonly FixedDecimalLong8 ProcessingContainerVolume = 1;
+		public static readonly DecimalNumber ProcessingContainerVolume = 1;
 
 		public ResourceContainer ProcessingContainer = new(ProcessingContainerVolume);
 
-		public static readonly FixedDecimalLong8 InOutPipeVolume = (FixedDecimalLong8).4;
+		public static readonly DecimalNumber InOutPipeVolume = (DecimalNumber).4;
 
-		public static readonly FixedDecimalLong8 ElectrolyzationRate = (FixedDecimalLong8).0005; // m3/s
+		public static readonly DecimalNumber ElectrolyzationRate = (DecimalNumber).0005; // m3/s
 
 		protected override void SetUp()
 		{
@@ -74,13 +74,13 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		static readonly FixedDecimalLong8 hydrogenPart = ((FixedDecimalLong8)1 / (FixedDecimalLong8)3) * (FixedDecimalLong8)2;
+		static readonly DecimalNumber hydrogenPart = ((DecimalNumber)1 / (DecimalNumber)3) * (DecimalNumber)2;
 
-		static readonly FixedDecimalLong8 oxygenPart = ((FixedDecimalLong8)1 / (FixedDecimalLong8)3);
+		static readonly DecimalNumber oxygenPart = ((DecimalNumber)1 / (DecimalNumber)3);
 
 		bool blocked;
 
-		public ResourceContainer OutputBuffer = new(FixedDecimalLong8.MaxValue);
+		public ResourceContainer OutputBuffer = new(DecimalNumber.MaxValue);
 
 		protected override void DisplaceContents()
 		{
@@ -121,11 +121,11 @@ namespace Space_Refinery_Game
 
 				if (Activated/* && !blocked*/)
 				{
-					WaterInput.TransferResource(ProcessingContainer, FixedDecimalLong8.Clamp(WaterInput.Volume * WaterInput.Fullness * (FixedDecimalLong8)Time.TickInterval, 0, WaterInput.Volume));
+					WaterInput.TransferResource(ProcessingContainer, DecimalNumber.Clamp(WaterInput.Volume * WaterInput.Fullness * (DecimalNumber)Time.TickInterval, 0, WaterInput.Volume));
 
 					if (ProcessingContainer.ContainsResourceType(MainGame.ChemicalTypesDictionary["Water"].LiquidPhaseType))
 					{
-						FixedDecimalLong8 electrolyzedVolume = FixedDecimalLong8.Min(ElectrolyzationRate * (FixedDecimalLong8)Time.TickInterval, ProcessingContainer.GetResourceUnitForResourceType(MainGame.ChemicalTypesDictionary["Water"].LiquidPhaseType).Volume); // cache, just reset on Tick pace change?
+						DecimalNumber electrolyzedVolume = DecimalNumber.Min(ElectrolyzationRate * (DecimalNumber)Time.TickInterval, ProcessingContainer.GetResourceUnitForResourceType(MainGame.ChemicalTypesDictionary["Water"].LiquidPhaseType).Volume); // cache, just reset on Tick pace change?
 
 						var electrolyzedUnit = ProcessingContainer.ExtractResource(MainGame.ChemicalTypesDictionary["Water"].LiquidPhaseType, electrolyzedVolume);
 

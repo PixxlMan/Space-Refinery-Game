@@ -10,16 +10,16 @@ namespace Space_Refinery_Game
 {
 	public sealed class ResourceContainer : IUIInspectable
 	{
-		private FixedDecimalLong8 volume;
-		public FixedDecimalLong8 Volume { get => volume; }
+		private DecimalNumber volume;
+		public DecimalNumber Volume { get => volume; }
 
-		private FixedDecimalLong8 mass;
-		public FixedDecimalLong8 Mass { get => mass; }
+		private DecimalNumber mass;
+		public DecimalNumber Mass { get => mass; }
 
-		private FixedDecimalLong8 maxVolume;
-		public FixedDecimalLong8 MaxVolume => maxVolume;
+		private DecimalNumber maxVolume;
+		public DecimalNumber MaxVolume => maxVolume;
 
-		public FixedDecimalLong8 Fullness
+		public DecimalNumber Fullness
 		{
 			get
 			{
@@ -28,13 +28,13 @@ namespace Space_Refinery_Game
 					return 1;
 				}
 
-				return Volume / (FixedDecimalLong8)MaxVolume;
+				return Volume / (DecimalNumber)MaxVolume;
 			}
 		}
 
 		private Dictionary<ResourceType, ResourceUnit> resources = new();
 
-		public ResourceContainer(FixedDecimalLong8 maxVolume)
+		public ResourceContainer(DecimalNumber maxVolume)
 		{
 			this.maxVolume = maxVolume;
 		}
@@ -80,9 +80,9 @@ namespace Space_Refinery_Game
 			return resources.ContainsKey(resourceType);
 		}
 
-		public ResourceUnit ExtractResource(ResourceType resourceType, FixedDecimalLong8 extractionVolume)
+		public ResourceUnit ExtractResource(ResourceType resourceType, DecimalNumber extractionVolume)
 		{
-			FixedDecimalLong8 transferPart = extractionVolume / resources[resourceType].Volume;
+			DecimalNumber transferPart = extractionVolume / resources[resourceType].Volume;
 
 			var extractedResource = ResourceUnit.Part(resources[resourceType], transferPart);
 
@@ -100,7 +100,7 @@ namespace Space_Refinery_Game
 			return extractedResource;
 		}
 
-		public void TransferResource(ResourceContainer transferTarget, FixedDecimalLong8 transferVolume)
+		public void TransferResource(ResourceContainer transferTarget, DecimalNumber transferVolume)
 		{
 			if (transferTarget.Volume + transferVolume > transferTarget.MaxVolume)
 			{
@@ -117,7 +117,7 @@ namespace Space_Refinery_Game
 				return;
 			}
 
-			FixedDecimalLong8 transferPart = (transferVolume / Volume);
+			DecimalNumber transferPart = (transferVolume / Volume);
 
 			foreach (var unit in resources.Values)
 			{
@@ -188,7 +188,7 @@ namespace Space_Refinery_Game
 
 			reader.ReadStartElement(nameof(ResourceContainer));
 			{
-				resourceContainer.maxVolume = reader.DeserializeFixedDecimalLong8(nameof(MaxVolume));
+				resourceContainer.maxVolume = reader.DeserializeDecimalNumber(nameof(MaxVolume));
 
 				reader.DeserializeCollection((r) => resourceContainer.AddResource(ResourceUnit.Deserialize(r)), nameof(resources));
 			}

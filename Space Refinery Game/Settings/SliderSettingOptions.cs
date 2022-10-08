@@ -9,14 +9,14 @@ namespace Space_Refinery_Game
 {
 	public struct SliderSettingOptions : ISettingOptions
 	{
-		public SliderSettingOptions(FixedDecimalInt4 max, FixedDecimalInt4 min)
+		public SliderSettingOptions(DecimalNumber max, DecimalNumber min)
 		{
 			Max = max;
 			Min = min;
 		}
 
-		public FixedDecimalInt4 Max;
+		public DecimalNumber Max;
 
-		public FixedDecimalInt4 Min;
+		public DecimalNumber Min;
 	}
 }

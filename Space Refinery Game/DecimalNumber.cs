@@ -448,7 +448,7 @@ namespace Space_Refinery_Game
 
 		public static implicit operator DecimalNumber(FixedDecimalInt4 value) => FromFixedDecimalInt4(value);
 
-		const int FixedDecimalInt4PrecisionDifferenceFactor = 10 * 10 * 10 * 10; //(int)Math.Pow(Precision - FixedDecimalInt4.Precision, 10)
+		const int fixedDecimalInt4PrecisionDifferenceFactor = 10 * 10 * 10 * 10; //(int)Math.Pow(Precision - FixedDecimalInt4.Precision, 10)
 
 		public static FixedDecimalInt4 ToFixedDecimalInt4(DecimalNumber value)
 		{

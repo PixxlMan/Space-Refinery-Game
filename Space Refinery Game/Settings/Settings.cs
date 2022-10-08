@@ -79,7 +79,9 @@ namespace Space_Refinery_Game
 
 				ImGui.SameLine();
 
-				nameSettingPair.Value.DoUI();
+				ImGui.PushID(nameSettingPair.Value.Guid.ToString());
+					nameSettingPair.Value.DoUI();
+				ImGui.PopID();
 
 				if (nameSettingPair.Value.Dirty)
 				{

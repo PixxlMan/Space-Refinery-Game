@@ -35,7 +35,7 @@ namespace Space_Refinery_Game
 
 		public void DoUI()
 		{
-			ImGui.SliderFloat(string.Empty, ref uiValue, ((SliderSettingOptions)Options).Min.ToFloat(), ((SliderSettingOptions)Options).Max.ToFloat());
+			ImGui.SliderFloat($"{((SliderSettingOptions)Options).Label}##{Guid}", ref uiValue, ((SliderSettingOptions)Options).Min.ToFloat(), ((SliderSettingOptions)Options).Max.ToFloat());
 
 			if (uiValue != lastValue)
 			{
@@ -58,6 +58,8 @@ namespace Space_Refinery_Game
 
 		public bool Dirty => (DecimalNumber)uiValue != Value;
 
-		public ISettingOptions Options { get; set; } = new SliderSettingOptions(0, 1000);
+		public ISettingOptions Options { get; set; } = new SliderSettingOptions(0, 1000, Guid.NewGuid().ToString());
+
+		public Guid Guid { get; } = Guid.NewGuid();
 	}
 }

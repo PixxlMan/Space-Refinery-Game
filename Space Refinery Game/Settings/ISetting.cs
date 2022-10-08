@@ -4,6 +4,8 @@ namespace Space_Refinery_Game
 {
 	public interface ISetting
 	{
+		public Guid Guid { get; }
+
 		public bool Dirty { get; }
 
 		ISettingOptions Options { get; set; }

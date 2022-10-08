@@ -58,5 +58,7 @@ namespace Space_Refinery_Game
 		public bool Dirty => uiValue != Value;
 
 		public ISettingOptions Options { get; set; }
+
+		public Guid Guid { get; } = Guid.NewGuid();
 	}
 }

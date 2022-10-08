@@ -49,6 +49,10 @@ public class GraphicsWorld
 
 	public Camera Camera;
 
+	public FixedDecimalLong8 FrametimeLowerLimit = (FixedDecimalLong8)0.001;
+
+	public bool ShouldLimitFramerate = true;
+
 	public event Action<CommandList> CustomDrawOperations;
 
 	public event Action<int, int> WindowResized;
@@ -97,20 +101,35 @@ public class GraphicsWorld
 			Stopwatch stopwatch = new();
 			stopwatch.Start();
 
-			FixedDecimalInt4 timeLastUpdate = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalInt4>();
-			FixedDecimalInt4 time;
-			FixedDecimalInt4 deltaTime;
+			FixedDecimalLong8 timeLastUpdate = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
+			FixedDecimalLong8 time;
+			FixedDecimalLong8 deltaTime;
 			while (window.Exists)
 			{
-				time = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalInt4>();
+				time = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
 
 				deltaTime = time - timeLastUpdate;
 
 				timeLastUpdate = time;
 
-				Thread.Sleep(1);
-
 				RenderScene(deltaTime);
+
+				if (ShouldLimitFramerate && deltaTime < FrametimeLowerLimit)
+				{
+					while (deltaTime < FrametimeLowerLimit)
+					{
+						deltaTime = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>() - timeLastUpdate;
+
+						if (FrametimeLowerLimit > 2 && deltaTime - FrametimeLowerLimit > 2)
+						{
+							Thread.Sleep(1);
+						}
+						else
+						{
+							Thread.SpinWait(4);
+						}
+					}
+				}
 			}
 		}))
 		{ Name = "Render Thread" };
@@ -178,7 +197,7 @@ public class GraphicsWorld
 		}
 	}
 
-	private void RenderScene(FixedDecimalInt4 deltaTime)
+	private void RenderScene(FixedDecimalLong8 deltaTime)
 	{
 		lock(SynchronizationObject)
 		{

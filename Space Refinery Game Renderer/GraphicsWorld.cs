@@ -112,6 +112,8 @@ public class GraphicsWorld
 
 				timeLastUpdate = time;
 
+				window.PumpEvents();
+
 				RenderScene(deltaTime);
 
 				if (ShouldLimitFramerate && deltaTime < FrametimeLowerLimit)

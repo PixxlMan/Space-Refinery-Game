@@ -159,7 +159,7 @@ namespace Space_Refinery_Game
 		{
 			lock (SyncRoot)
 			{
-				imGuiRenderer.Update(1, InputTracker.FrameSnapshot);
+				imGuiRenderer.Update(1, new BogusInputSnapshot());
 
 				DoUI();
 
@@ -191,9 +191,9 @@ namespace Space_Refinery_Game
 					RotationIndex++;
 				}
 
-				if (InputTracker.FrameSnapshot.WheelDelta != 0)
+				if (InputTracker.ScrollWheelDelta != 0)
 				{
-					ChangeEntitySelection(-(int)InputTracker.FrameSnapshot.WheelDelta);
+					ChangeEntitySelection(-(int)InputTracker.ScrollWheelDelta);
 				}
 
 				if (InMenu && InputTracker.CaptureKeyDown(Key.F))

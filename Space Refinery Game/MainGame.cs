@@ -80,11 +80,11 @@ public sealed class MainGame
 
 		this.window = window;
 
+		InputTracker.ListenToWindow(window);
+
 		GraphicsWorld = new();
 
 		GraphicsWorld.SetUp(window, gd, factory, swapchain);
-
-		
 
 		DebugRender = DebugRender.Create(GraphicsWorld);
 
@@ -137,7 +137,7 @@ public sealed class MainGame
 		{
 			Stopwatch stopwatch = new();
 
-		GraphicsWorld.Run();
+			GraphicsWorld.Run();
 			stopwatch.Start();
 
 			FixedDecimalInt4 timeLastUpdate = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalInt4>();
@@ -167,10 +167,6 @@ public sealed class MainGame
 		{
 			GraphicsWorld.Camera.Transform = Player.CameraTransform;
 
-			window.PumpEvents(out var input); // TODO: modify to only pump input related events and let renderer pump drawing related?
-
-			InputTracker.UpdateFrameInput(input);
-
 			UI.Update();
 
 			if (InputTracker.GetKeyDown(Key.P))
@@ -191,6 +187,8 @@ public sealed class MainGame
 			{
 				Player.Update(deltaTime);
 			}
+
+			InputTracker.UpdateInputFrame();
 		}
 	}
 

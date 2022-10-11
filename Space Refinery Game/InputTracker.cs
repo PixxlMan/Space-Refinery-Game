@@ -9,11 +9,16 @@ namespace Space_Refinery_Game
 {
 	public static class InputTracker
 	{
-		private static HashSet<Key> _currentlyPressedKeys = new HashSet<Key>();
-		private static HashSet<Key> _newKeysThisFrame = new HashSet<Key>();
+		private static HashSet<Key> _currentlyPressedKeys = new();
+		private static HashSet<Key> _newKeysThisFrame = new();
 
-		private static HashSet<MouseButton> _currentlyPressedMouseButtons = new HashSet<MouseButton>();
-		private static HashSet<MouseButton> _newMouseButtonsThisFrame = new HashSet<MouseButton>();
+		private static HashSet<MouseButton> _currentlyPressedMouseButtons = new();
+		private static HashSet<MouseButton> _newMouseButtonsThisFrame = new();
+
+		private static List<KeyEvent> keyEvents = new();
+		private static List<MouseEvent> mouseEvents = new();
+
+		private static List<char> keyCharsPressed = new();
 
 		public static Vector2FixedDecimalInt4 MousePosition;
 
@@ -29,16 +34,21 @@ namespace Space_Refinery_Game
 
 		private static bool ignoredMousePositonLastFrame;
 
+		internal static InputTrackerCloneSnapshot Create()
+		{
+			return new InputTrackerCloneSnapshot(keyEvents, mouseEvents, keyCharsPressed, MousePosition.ToVector2(), ScrollWheelDelta.ToFloat());
+		}
+
 		public static void ListenToWindow(Window window)
 		{
 			lock (SyncRoot)
 			{
-				window.SdlWindow.KeyDown += (ke) => KeyDown(ke.Key);
-				window.SdlWindow.KeyUp += (ke) => KeyUp(ke.Key);
-				window.SdlWindow.MouseDown += (me) => MouseDown(me.MouseButton);
-				window.SdlWindow.MouseUp += (me) => MouseUp(me.MouseButton);
-				window.SdlWindow.MouseMove += (me) => MouseMove(me.MousePosition.ToFixed<Vector2FixedDecimalInt4>());
-				window.SdlWindow.MouseWheel += (me) => MouseWheel(me.WheelDelta.ToFixed<DecimalNumber>());
+				window.SdlWindow.KeyDown += (ke) => { KeyDown(ke.Key); keyEvents.Add(ke); };
+				window.SdlWindow.KeyUp += (ke) => { KeyUp(ke.Key); keyEvents.Add(ke); };
+				window.SdlWindow.MouseDown += (me) => { MouseDown(me.MouseButton); mouseEvents.Add(me); };
+				window.SdlWindow.MouseUp += (me) => { MouseUp(me.MouseButton); mouseEvents.Add(me); };
+				window.SdlWindow.MouseMove += (me) => { MouseMove(me.MousePosition.ToFixed<Vector2FixedDecimalInt4>()); };
+				window.SdlWindow.MouseWheel += (me) => { MouseWheel(me.WheelDelta.ToFixed<DecimalNumber>()); };
 			}
 		}
 
@@ -116,6 +126,9 @@ namespace Space_Refinery_Game
 			{
 				_newKeysThisFrame.Clear();
 				_newMouseButtonsThisFrame.Clear();
+				keyEvents.Clear();
+				mouseEvents.Clear();
+				keyCharsPressed.Clear();
 				ScrollWheelDelta = 0;
 
 				if (IgnoreNextFrameMousePosition)
@@ -165,6 +178,11 @@ namespace Space_Refinery_Game
 			{
 				_currentlyPressedKeys.Remove(key);
 				_newKeysThisFrame.Remove(key);
+
+				if (char.TryParse(key.ToString(), out char pressed))
+				{
+					keyCharsPressed.Add(pressed);
+				}
 			}
 		}
 
@@ -175,6 +193,11 @@ namespace Space_Refinery_Game
 				if (_currentlyPressedKeys.Add(key))
 				{
 					_newKeysThisFrame.Add(key);
+				}
+
+				if (char.TryParse(key.ToString(), out char pressed))
+				{
+					keyCharsPressed.Add(pressed);
 				}
 			}
 		}

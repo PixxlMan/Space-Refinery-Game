@@ -28,6 +28,8 @@ namespace Space_Refinery_Game
 
 		private IThreadDispatcher threadDispatcher;
 
+		public event Action<FixedDecimalLong8> CollectPhysicsPerformanceData;
+
 		public void SetUp()
 		{
 			lock (SyncRoot)
@@ -48,9 +50,23 @@ namespace Space_Refinery_Game
 		{
 			Thread thread = new Thread(new ThreadStart(() =>
 			{
+				Stopwatch stopwatch = new();
+				stopwatch.Start();
+
+				FixedDecimalLong8 timeLastUpdate = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
+				FixedDecimalLong8 time;
+				FixedDecimalLong8 deltaTime;
 				while (true)
 				{
-					Thread.Sleep((Time.PhysicsInterval * 1000).ToInt32());
+					time = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
+
+					deltaTime = time - timeLastUpdate;
+
+					timeLastUpdate = time;
+
+					CollectPhysicsPerformanceData?.Invoke(deltaTime);
+
+					Thread.Sleep((Time.PhysicsInterval * 1000).ToInt32());					
 
 					lock (SyncRoot)
 					{

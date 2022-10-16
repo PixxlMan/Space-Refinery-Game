@@ -55,6 +55,10 @@ public class GraphicsWorld
 
 	public event Action<CommandList> CustomDrawOperations;
 
+	public event Action FrameRendered;
+
+	public event Action<FixedDecimalLong8> CollectRenderingPerformanceData;
+
 	public event Action<int, int> WindowResized;
 
 	public void SetUp(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
@@ -112,6 +116,8 @@ public class GraphicsWorld
 
 				timeLastUpdate = time;
 
+				CollectRenderingPerformanceData?.Invoke(deltaTime);
+
 				window.PumpEvents();
 
 				RenderScene(deltaTime);
@@ -132,6 +138,8 @@ public class GraphicsWorld
 						}
 					}
 				}
+
+				FrameRendered?.Invoke();
 			}
 		}))
 		{ Name = "Render Thread" };

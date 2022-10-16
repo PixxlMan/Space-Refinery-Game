@@ -28,6 +28,8 @@ namespace Space_Refinery_Game
 
 		public HashSet<Entity> Entities = new();
 
+		public event Action<FixedDecimalLong8> CollectTickPerformanceData;
+
 		public void AddEntity(Entity entity)
 		{
 			lock (SynchronizationObject)
@@ -92,18 +94,20 @@ namespace Space_Refinery_Game
 				Stopwatch stopwatch = new();
 				stopwatch.Start();
 
-				FixedDecimalInt4 timeLastUpdate = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalInt4>();
-				FixedDecimalInt4 time;
-				FixedDecimalInt4 deltaTime;
+				FixedDecimalLong8 timeLastUpdate = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
+				FixedDecimalLong8 time;
+				FixedDecimalLong8 deltaTime;
 				while (/*GameData.MainGame.Running*/true)
 				{
 					if (!GameData.MainGame.Paused)
 					{
-						time = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalInt4>();
+						time = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
 
 						deltaTime = time - timeLastUpdate;
 
 						timeLastUpdate = time;
+
+						CollectTickPerformanceData?.Invoke(deltaTime);
 
 						Thread.Sleep((Time.TickInterval * 1000).ToInt32());
 

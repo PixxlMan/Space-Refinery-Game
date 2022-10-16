@@ -4,6 +4,18 @@ namespace Space_Refinery_Game
 {
 	public sealed class GameData
 	{
+		private UI uI;
+		private PhysicsWorld physicsWorld;
+		private GraphicsWorld graphicsWorld;
+		private GameWorld gameWorld;
+		private MainGame mainGame;
+		private SerializationReferenceHandler referenceHandler;
+
+		public GameData()
+		{
+
+		}
+
 		public GameData(UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler)
 		{
 			UI = ui;
@@ -12,18 +24,27 @@ namespace Space_Refinery_Game
 			GameWorld = gameWorld;
 			MainGame = mainGame;
 			ReferenceHandler = referenceHandler;
+
+			UpdatePerformanceStatisticsCollector();
 		}
 
-		public UI UI { get; set; }
+		public PerformanceStatisticsCollector PerformanceStatisticsCollector { get; private set; }
 
-		public PhysicsWorld PhysicsWorld { get; set; }
+		void UpdatePerformanceStatisticsCollector()
+		{
+			PerformanceStatisticsCollector = new(this);
+		}
 
-		public GraphicsWorld GraphicsWorld { get; set; }
+		public UI UI { get => uI; set { uI = value; UpdatePerformanceStatisticsCollector(); } }
 
-		public GameWorld GameWorld { get; set; }
+		public PhysicsWorld PhysicsWorld { get => physicsWorld; set { physicsWorld = value; UpdatePerformanceStatisticsCollector(); } }
 
-		public MainGame MainGame { get; set; }
+		public GraphicsWorld GraphicsWorld { get => graphicsWorld; set { graphicsWorld = value; UpdatePerformanceStatisticsCollector(); } }
 
-		public SerializationReferenceHandler ReferenceHandler { get; set; }
+		public GameWorld GameWorld { get => gameWorld; set { gameWorld = value; UpdatePerformanceStatisticsCollector(); } }
+
+		public MainGame MainGame { get => mainGame; set { mainGame = value; UpdatePerformanceStatisticsCollector(); } }
+
+		public SerializationReferenceHandler ReferenceHandler { get => referenceHandler; set { referenceHandler = value; UpdatePerformanceStatisticsCollector(); } }
 	}
 }

@@ -56,9 +56,13 @@ public sealed class MainGame
 
 	public Guid SaveGuid { get; private set; } = Guid.NewGuid();
 
+	public event Action<FixedDecimalLong8> CollectUpdatePerformanceData;
+
 	public void Start(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
-		GameData = new(null, null, null, null, this, null);
+		GameData = new();
+
+		GameData.MainGame = this;
 
 		GlobalSettings = new();
 
@@ -140,16 +144,18 @@ public sealed class MainGame
 			GraphicsWorld.Run();
 			stopwatch.Start();
 
-			FixedDecimalInt4 timeLastUpdate = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalInt4>();
-			FixedDecimalInt4 time;
-			FixedDecimalInt4 deltaTime;
+			FixedDecimalLong8 timeLastUpdate = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
+			FixedDecimalLong8 time;
+			FixedDecimalLong8 deltaTime;
 			while (window.Exists)
 			{
-				time = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalInt4>();
+				time = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
 
 				deltaTime = time - timeLastUpdate;
 
 				timeLastUpdate = time;
+
+				CollectUpdatePerformanceData?.Invoke(deltaTime);
 
 				Thread.Sleep((Time.UpdateInterval * 1000).ToInt32());
 
@@ -161,10 +167,12 @@ public sealed class MainGame
 		thread.Start();
 	}
 
-	private void Update(FixedDecimalInt4 deltaTime)
+	private void Update(FixedDecimalLong8 deltaTime)
 	{
 		lock (SynchronizationObject) lock (GraphicsWorld.SynchronizationObject)
 		{
+			//InputTracker.DeferFurtherInputToNextFrame();
+
 			GraphicsWorld.Camera.Transform = Player.CameraTransform;
 
 			UI.Update();
@@ -185,7 +193,7 @@ public sealed class MainGame
 
 			if (!Paused && !UI.InMenu)
 			{
-				Player.Update(deltaTime);
+				Player.Update((FixedDecimalInt4)deltaTime);
 			}
 
 			InputTracker.UpdateInputFrame();

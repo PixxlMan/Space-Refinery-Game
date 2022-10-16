@@ -10,7 +10,7 @@ namespace Space_Refinery_Game
 {
 	public class PerformanceStatisticsCollector
 	{
-		public enum PerformanceStatisticsCollectorMode
+		public enum PerformanceStatisticsCollectorMode // https://answers.unity.com/questions/326621/how-to-calculate-an-average-fps.html
 		{
 			Direct,
 			Averaged,

@@ -32,7 +32,7 @@ namespace Space_Refinery_Game
 
 		void UpdatePerformanceStatisticsCollector()
 		{
-			PerformanceStatisticsCollector = new(this);
+			PerformanceStatisticsCollector = new(this, PerformanceStatisticsCollector.PerformanceStatisticsCollectorMode.Averaged);
 		}
 
 		public UI UI { get => uI; set { uI = value; UpdatePerformanceStatisticsCollector(); } }

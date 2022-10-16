@@ -10,11 +10,21 @@ namespace Space_Refinery_Game
 {
 	public class PerformanceStatisticsCollector
 	{
+		public enum PerformanceStatisticsCollectorMode
+		{
+			Direct,
+			Averaged,
+		}
+
 		GameData gameData;
 
-		public PerformanceStatisticsCollector(GameData gameData)
+		public PerformanceStatisticsCollectorMode Mode;
+
+		public PerformanceStatisticsCollector(GameData gameData, PerformanceStatisticsCollectorMode mode)
 		{
 			this.gameData = gameData;
+
+			Mode = mode;
 
 			if (gameData.GraphicsWorld is not null)
 				gameData.GraphicsWorld.CollectRenderingPerformanceData += GraphicsWorld_CollectPerformanceData;			
@@ -31,22 +41,54 @@ namespace Space_Refinery_Game
 
 		private void PhysicsWorld_CollectPerformanceData(FixedDecimalLong8 deltaTime)
 		{
-			PhysicsTime = deltaTime;
+			switch (Mode)
+			{
+				case PerformanceStatisticsCollectorMode.Direct:
+					PhysicsTime = deltaTime;
+					break;
+				case PerformanceStatisticsCollectorMode.Averaged:
+					PhysicsTime += ((DecimalNumber)deltaTime - PhysicsTime) * (DecimalNumber)0.03;
+					break;
+			}
 		}
 
 		private void MainGame_CollectPerformanceData(FixedDecimalLong8 deltaTime)
 		{
-			UpdateTime = deltaTime;
+			switch (Mode)
+			{
+				case PerformanceStatisticsCollectorMode.Direct:
+					UpdateTime = deltaTime;
+					break;
+				case PerformanceStatisticsCollectorMode.Averaged:
+					UpdateTime += ((DecimalNumber)deltaTime - UpdateTime) * (DecimalNumber)0.03;
+					break;
+			}
 		}
 
 		private void GameWorld_CollectPerformanceData(FixedDecimalLong8 deltaTime)
 		{
-			TickTime = deltaTime;
+			switch (Mode)
+			{
+				case PerformanceStatisticsCollectorMode.Direct:
+					TickTime = deltaTime;
+					break;
+				case PerformanceStatisticsCollectorMode.Averaged:
+					TickTime += ((DecimalNumber)deltaTime - TickTime) * (DecimalNumber)0.03;
+					break;
+			}
 		}
 
 		private void GraphicsWorld_CollectPerformanceData(FixedDecimalLong8 deltaTime)
 		{
-			RendererFrameTime = deltaTime;
+			switch (Mode)
+			{
+				case PerformanceStatisticsCollectorMode.Direct:
+					RendererFrameTime = deltaTime;
+					break;
+				case PerformanceStatisticsCollectorMode.Averaged:
+					RendererFrameTime += ((DecimalNumber)deltaTime - RendererFrameTime) * (DecimalNumber)0.03;
+					break;
+			}
 		}
 
 		public DecimalNumber RendererFrameTime { get; private set; }

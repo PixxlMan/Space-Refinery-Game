@@ -389,7 +389,7 @@ namespace Space_Refinery_Game
 
 				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Display performance information"))
 				{
-					ImGui.TextColored(RgbaFloat.White.ToVector4(), $"Frame time:				   {gameData.PerformanceStatisticsCollector.RendererFrameTime * 1000} ms ({gameData.PerformanceStatisticsCollector.RendererFramerate} FPS)");
+					ImGui.TextColored(RgbaFloat.White.ToVector4(), $"Frame time:				  {gameData.PerformanceStatisticsCollector.RendererFrameTime * 1000} ms ({gameData.PerformanceStatisticsCollector.RendererFramerate} FPS)");
 
 					RgbaFloat tickColor;
 					if (gameData.PerformanceStatisticsCollector.TickBudgetUse > 1)
@@ -405,7 +405,7 @@ namespace Space_Refinery_Game
 						tickColor = RgbaFloat.Green;
 					}
 
-					ImGui.TextColored(tickColor.ToVector4(), $"Tick time:					   {gameData.PerformanceStatisticsCollector.TickTime * 1000} ms ({gameData.PerformanceStatisticsCollector.TicksPerSecond} TPS)");
+					ImGui.TextColored(tickColor.ToVector4(), $"Tick time:					   {gameData.PerformanceStatisticsCollector.TickTime * 1000} ms ({gameData.PerformanceStatisticsCollector.TicksPerSecond} TPS, {(gameData.PerformanceStatisticsCollector.TickBudgetUse * 100).ToInt32()} percent)");
 
 					RgbaFloat updateColor;
 					if (gameData.PerformanceStatisticsCollector.UpdateBudgetUse > 1)
@@ -421,7 +421,7 @@ namespace Space_Refinery_Game
 						updateColor = RgbaFloat.Green;
 					}
 
-					ImGui.TextColored(updateColor.ToVector4(), $"Update time:				 {gameData.PerformanceStatisticsCollector.UpdateTime * 1000} ms ({gameData.PerformanceStatisticsCollector.UpdatesPerSecond} UPS)");
+					ImGui.TextColored(updateColor.ToVector4(), $"Update time:				 {gameData.PerformanceStatisticsCollector.UpdateTime * 1000} ms ({gameData.PerformanceStatisticsCollector.UpdatesPerSecond} UPS, {(gameData.PerformanceStatisticsCollector.UpdateBudgetUse * 100).ToInt32()} percent)");
 
 					RgbaFloat physicsUpdateColor;
 					if (gameData.PerformanceStatisticsCollector.PhysicsBudgetUse > 1)
@@ -437,7 +437,7 @@ namespace Space_Refinery_Game
 						physicsUpdateColor = RgbaFloat.Green;
 					}
 
-					ImGui.TextColored(physicsUpdateColor.ToVector4(), $"Physics update time:	{gameData.PerformanceStatisticsCollector.PhysicsTime * 1000} ms ({gameData.PerformanceStatisticsCollector.PhysicsUpdatesPerSecond} PUPS)");
+					ImGui.TextColored(physicsUpdateColor.ToVector4(), $"Physics update time:	{gameData.PerformanceStatisticsCollector.PhysicsTime * 1000} ms ({gameData.PerformanceStatisticsCollector.PhysicsUpdatesPerSecond} PUPS, {(gameData.PerformanceStatisticsCollector.PhysicsBudgetUse * 100).ToInt32()} percent)");
 				}
 			}
 			ImGui.End();

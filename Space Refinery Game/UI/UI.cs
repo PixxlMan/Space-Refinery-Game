@@ -42,7 +42,7 @@ namespace Space_Refinery_Game
 			lock (SyncRoot)
 			{
 				EntitySelection += selectionDelta;
-			 
+
 				while (EntitySelection >= PipeTypes.Count || EntitySelection < 0)
 				{
 					if (EntitySelection < 0)
@@ -65,21 +65,18 @@ namespace Space_Refinery_Game
 
 		public void ChangeConnectorSelection(int selectionDelta)
 		{
-			lock (SyncRoot)
-			{
-				ConnectorSelection += selectionDelta;
+			Interlocked.Add(ref ConnectorSelection, selectionDelta);
 
-				while (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length || ConnectorSelection < 0)
+			while (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length || ConnectorSelection < 0)
+			{
+				if (ConnectorSelection < 0)
 				{
-					if (ConnectorSelection < 0)
-					{
-						ConnectorSelection += SelectedPipeType.ConnectorPlacements.Length;
-					}
-					else if (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length)
-					{
-						ConnectorSelection -= SelectedPipeType.ConnectorPlacements.Length;
-					}
-				} 
+					Interlocked.Add(ref ConnectorSelection, SelectedPipeType.ConnectorPlacements.Length);
+				}
+				else if (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length)
+				{
+					Interlocked.Add(ref ConnectorSelection, SelectedPipeType.ConnectorPlacements.Length);
+				}
 			}
 		}
 
@@ -136,7 +133,7 @@ namespace Space_Refinery_Game
 				{
 					ImGui.SetWindowCollapsed(false);
 				}
-				ImGui.End(); 
+				ImGui.End();
 			}
 		}
 
@@ -165,53 +162,50 @@ namespace Space_Refinery_Game
 
 				imGuiRenderer.WindowResized((int)gd.MainSwapchain.Framebuffer.Width, (int)gd.MainSwapchain.Framebuffer.Height);
 
-				imGuiRenderer.Render(gd, cl); 
+				imGuiRenderer.Render(gd, cl);
 			}
 		}
 
 		public void Update()
 		{
-			lock (SyncRoot)
+			if (InputTracker.GetKeyDown(Key.C) && InputTracker.GetKey(Key.ShiftLeft))
 			{
-				if (InputTracker.GetKeyDown(Key.C) && InputTracker.GetKey(Key.ShiftLeft))
-				{
-					ChangeConnectorSelection(-1);
-				}
-				else if (InputTracker.GetKeyDown(Key.C))
-				{
-					ChangeConnectorSelection(1);
-				}
+				ChangeConnectorSelection(-1);
+			}
+			else if (InputTracker.GetKeyDown(Key.C))
+			{
+				ChangeConnectorSelection(1);
+			}
 
-				if (InputTracker.GetKeyDown(Key.R) && InputTracker.GetKey(Key.ShiftLeft))
-				{
-					RotationIndex--;
-				}
-				else if (InputTracker.GetKeyDown(Key.R))
-				{
-					RotationIndex++;
-				}
+			if (InputTracker.GetKeyDown(Key.R) && InputTracker.GetKey(Key.ShiftLeft))
+			{
+				Interlocked.Decrement(ref RotationIndex);
+			}
+			else if (InputTracker.GetKeyDown(Key.R))
+			{
+				Interlocked.Increment(ref RotationIndex);
+			}
 
-				if (InputTracker.ScrollWheelDelta != 0)
-				{
-					ChangeEntitySelection(-(int)InputTracker.ScrollWheelDelta);
-				}
+			if (InputTracker.ScrollWheelDelta != 0)
+			{
+				ChangeEntitySelection(-(int)InputTracker.ScrollWheelDelta);
+			}
 
-				if (InMenu && InputTracker.CaptureKeyDown(Key.F))
+			if (InMenu && InputTracker.CaptureKeyDown(Key.F))
+			{
+				InMenu = false;
+			}
+
+			if (InputTracker.GetKeyDown(Key.Escape))
+			{
+				if (InMenu)
 				{
 					InMenu = false;
 				}
-
-				if (InputTracker.GetKeyDown(Key.Escape))
+				else
 				{
-					if (InMenu)
-					{
-						InMenu = false;
-					}
-					else
-					{
-						TogglePause();
-					}
-				} 
+					TogglePause();
+				}
 			}
 		}
 
@@ -226,7 +220,7 @@ namespace Space_Refinery_Game
 				else
 				{
 					Pause();
-				} 
+				}
 			}
 		}
 
@@ -241,7 +235,7 @@ namespace Space_Refinery_Game
 
 				Paused = true;
 
-				PauseStateChanged?.Invoke(true); 
+				PauseStateChanged?.Invoke(true);
 			}
 		}
 
@@ -258,7 +252,7 @@ namespace Space_Refinery_Game
 
 				inSettings = false;
 
-				PauseStateChanged?.Invoke(false); 
+				PauseStateChanged?.Invoke(false);
 			}
 		}
 
@@ -273,7 +267,7 @@ namespace Space_Refinery_Game
 				else if (Paused)
 				{
 					DoPauseMenuUI();
-				} 
+				}
 			}
 		}
 
@@ -289,7 +283,7 @@ namespace Space_Refinery_Game
 					}
 
 					ImGui.End();
-				} 
+				}
 			}
 		}
 
@@ -315,9 +309,9 @@ namespace Space_Refinery_Game
 					Task.Run(() =>
 					{
 						lock (gameData.GameWorld.TickSyncObject) lock (gameData.GameWorld.SynchronizationObject)
-						{
-							gameData.MainGame.Serialize(@"R:\save.xml");
-						}
+							{
+								gameData.MainGame.Serialize(@"R:\save.xml");
+							}
 					});
 				}
 
@@ -326,9 +320,9 @@ namespace Space_Refinery_Game
 					Task.Run(() =>
 					{
 						lock (gameData.GameWorld.TickSyncObject) lock (gameData.GameWorld.SynchronizationObject)
-						{
-							gameData.MainGame.Deserialize(@"R:\save.xml");
-						}
+							{
+								gameData.MainGame.Deserialize(@"R:\save.xml");
+							}
 					});
 				}
 

@@ -9,10 +9,10 @@ namespace Space_Refinery_Game
 {
 	public static class Time // https://fpstoms.com/
 	{
-		public static readonly FixedDecimalInt4 TickInterval = (FixedDecimalInt4)0.016666; // 60 tps
+		public static readonly FixedDecimalLong8 TickInterval = (FixedDecimalLong8)0.02; // 50 tps
 
-		public static readonly FixedDecimalInt4 UpdateInterval = (FixedDecimalInt4)0.005; // 200 fps
+		public static readonly FixedDecimalLong8 UpdateInterval = (FixedDecimalLong8)0.005; // 200 ups
 
-		public static readonly FixedDecimalInt4 PhysicsInterval = (FixedDecimalInt4)0.016666; // 60 pups
+		public static readonly FixedDecimalLong8 PhysicsInterval = (FixedDecimalLong8)0.016666; // 60 pups
 	}
 }

@@ -390,9 +390,54 @@ namespace Space_Refinery_Game
 				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Display performance information"))
 				{
 					ImGui.TextColored(RgbaFloat.White.ToVector4(), $"Frame time:				   {gameData.PerformanceStatisticsCollector.RendererFrameTime * 1000} ms ({gameData.PerformanceStatisticsCollector.RendererFramerate} FPS)");
-					ImGui.TextColored(RgbaFloat.Green.ToVector4(), $"Tick time:					   {gameData.PerformanceStatisticsCollector.TickTime * 1000} ms ({gameData.PerformanceStatisticsCollector.TicksPerSecond} TPS)");
-					ImGui.TextColored(RgbaFloat.Green.ToVector4(), $"Update time:				 {gameData.PerformanceStatisticsCollector.UpdateTime * 1000} ms ({gameData.PerformanceStatisticsCollector.UpdatesPerSecond} UPS)");
-					ImGui.TextColored(RgbaFloat.Green.ToVector4(), $"Physics update time:	{gameData.PerformanceStatisticsCollector.PhysicsTime * 1000} ms ({gameData.PerformanceStatisticsCollector.PhysicsUpdatesPerSecond} PUPS)");
+
+					RgbaFloat tickColor;
+					if (gameData.PerformanceStatisticsCollector.TickBudgetUse > 1)
+					{
+						tickColor = RgbaFloat.Red;
+					}
+					else if (gameData.PerformanceStatisticsCollector.TickBudgetUse > (DecimalNumber)0.75)
+					{
+						tickColor = RgbaFloat.Yellow;
+					}
+					else
+					{
+						tickColor = RgbaFloat.Green;
+					}
+
+					ImGui.TextColored(tickColor.ToVector4(), $"Tick time:					   {gameData.PerformanceStatisticsCollector.TickTime * 1000} ms ({gameData.PerformanceStatisticsCollector.TicksPerSecond} TPS)");
+
+					RgbaFloat updateColor;
+					if (gameData.PerformanceStatisticsCollector.UpdateBudgetUse > 1)
+					{
+						updateColor = RgbaFloat.Red;
+					}
+					else if (gameData.PerformanceStatisticsCollector.UpdateBudgetUse > (DecimalNumber)0.75)
+					{
+						updateColor = RgbaFloat.Yellow;
+					}
+					else
+					{
+						updateColor = RgbaFloat.Green;
+					}
+
+					ImGui.TextColored(updateColor.ToVector4(), $"Update time:				 {gameData.PerformanceStatisticsCollector.UpdateTime * 1000} ms ({gameData.PerformanceStatisticsCollector.UpdatesPerSecond} UPS)");
+
+					RgbaFloat physicsUpdateColor;
+					if (gameData.PerformanceStatisticsCollector.PhysicsBudgetUse > 1)
+					{
+						physicsUpdateColor = RgbaFloat.Red;
+					}
+					else if (gameData.PerformanceStatisticsCollector.PhysicsBudgetUse > (DecimalNumber)0.75)
+					{
+						physicsUpdateColor = RgbaFloat.Yellow;
+					}
+					else
+					{
+						physicsUpdateColor = RgbaFloat.Green;
+					}
+
+					ImGui.TextColored(physicsUpdateColor.ToVector4(), $"Physics update time:	{gameData.PerformanceStatisticsCollector.PhysicsTime * 1000} ms ({gameData.PerformanceStatisticsCollector.PhysicsUpdatesPerSecond} PUPS)");
 				}
 			}
 			ImGui.End();

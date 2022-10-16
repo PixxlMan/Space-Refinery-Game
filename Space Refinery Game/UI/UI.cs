@@ -389,10 +389,10 @@ namespace Space_Refinery_Game
 
 				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Display performance information"))
 				{
-					ImGui.TextColored(RgbaFloat.White.ToVector4(), $"Frame time:			{gameData.PerformanceStatisticsCollector.RendererFrameTime * 1000} ms		({gameData.PerformanceStatisticsCollector.RendererFramerate} FPS)");
-					ImGui.TextColored(RgbaFloat.Green.ToVector4(), $"Tick time:				{gameData.PerformanceStatisticsCollector.TickTime * 1000} ms				({gameData.PerformanceStatisticsCollector.TicksPerSecond} TPS)");
-					ImGui.TextColored(RgbaFloat.Green.ToVector4(), $"Update time:			{gameData.PerformanceStatisticsCollector.UpdatesPerSecond * 1000} ms		({gameData.PerformanceStatisticsCollector.UpdatesPerSecond} UPS)");
-					ImGui.TextColored(RgbaFloat.Green.ToVector4(), $"Physics update time:	{gameData.PerformanceStatisticsCollector.PhysicsTime * 1000} ms			({gameData.PerformanceStatisticsCollector.PhysicsUpdatesPerSecond} PUPS)");
+					ImGui.TextColored(RgbaFloat.White.ToVector4(), $"Frame time:				   {gameData.PerformanceStatisticsCollector.RendererFrameTime * 1000} ms ({gameData.PerformanceStatisticsCollector.RendererFramerate} FPS)");
+					ImGui.TextColored(RgbaFloat.Green.ToVector4(), $"Tick time:					   {gameData.PerformanceStatisticsCollector.TickTime * 1000} ms ({gameData.PerformanceStatisticsCollector.TicksPerSecond} TPS)");
+					ImGui.TextColored(RgbaFloat.Green.ToVector4(), $"Update time:				 {gameData.PerformanceStatisticsCollector.UpdateTime * 1000} ms ({gameData.PerformanceStatisticsCollector.UpdatesPerSecond} UPS)");
+					ImGui.TextColored(RgbaFloat.Green.ToVector4(), $"Physics update time:	{gameData.PerformanceStatisticsCollector.PhysicsTime * 1000} ms ({gameData.PerformanceStatisticsCollector.PhysicsUpdatesPerSecond} PUPS)");
 				}
 			}
 			ImGui.End();

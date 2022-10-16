@@ -128,7 +128,7 @@ public class GraphicsWorld
 					{
 						deltaTime = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>() - timeLastUpdate;
 
-						if (FrametimeLowerLimit > 2 && deltaTime - FrametimeLowerLimit > 2)
+						if (FrametimeLowerLimit > (FixedDecimalLong8)0.002 && FrametimeLowerLimit - deltaTime > (FixedDecimalLong8)0.002)
 						{
 							Thread.Sleep(1);
 						}

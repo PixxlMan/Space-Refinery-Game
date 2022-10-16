@@ -109,9 +109,24 @@ namespace Space_Refinery_Game
 
 						CollectTickPerformanceData?.Invoke(deltaTime);
 
-						Thread.Sleep((Time.TickInterval * 1000).ToInt32());
-
 						Tick();
+
+						if (deltaTime < Time.TickInterval)
+						{
+							while (deltaTime < Time.TickInterval)
+							{
+								deltaTime = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>() - timeLastUpdate;
+
+								if (Time.TickInterval > (FixedDecimalLong8)0.002 && Time.TickInterval - deltaTime > (FixedDecimalLong8)0.002)
+								{
+									Thread.Sleep(1);
+								}
+								else
+								{
+									Thread.SpinWait(4);
+								}
+							}
+						}
 					}
 				}
 			}))

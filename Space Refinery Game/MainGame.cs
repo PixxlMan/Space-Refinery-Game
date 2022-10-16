@@ -157,9 +157,24 @@ public sealed class MainGame
 
 				CollectUpdatePerformanceData?.Invoke(deltaTime);
 
-				Thread.Sleep((Time.UpdateInterval * 1000).ToInt32());
-
 				Update(deltaTime);
+
+				if (deltaTime < Time.UpdateInterval)
+				{
+					while (deltaTime < Time.UpdateInterval)
+					{
+						deltaTime = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>() - timeLastUpdate;
+
+						if (Time.TickInterval > (FixedDecimalLong8)0.002 && Time.UpdateInterval - deltaTime > (FixedDecimalLong8)0.002)
+						{
+							Thread.Sleep(1);
+						}
+						else
+						{
+							Thread.SpinWait(4);
+						}
+					}
+				}
 			}
 		}))
 		{ Name = "Update Thread" };

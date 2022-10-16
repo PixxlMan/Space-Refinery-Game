@@ -64,13 +64,28 @@ namespace Space_Refinery_Game
 
 					timeLastUpdate = time;
 
-					CollectPhysicsPerformanceData?.Invoke(deltaTime);
-
-					Thread.Sleep((Time.PhysicsInterval * 1000).ToInt32());					
+					CollectPhysicsPerformanceData?.Invoke(deltaTime);				
 
 					lock (SyncRoot)
 					{
 						simulation.Timestep(Time.PhysicsInterval.ToFloat(), threadDispatcher);
+					}
+
+					if (deltaTime < Time.PhysicsInterval)
+					{
+						while (deltaTime < Time.PhysicsInterval)
+						{
+							deltaTime = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>() - timeLastUpdate;
+
+							if (Time.TickInterval > (FixedDecimalLong8)0.002 && Time.PhysicsInterval - deltaTime > (FixedDecimalLong8)0.002)
+							{
+								Thread.Sleep(1);
+							}
+							else
+							{
+								Thread.SpinWait(4);
+							}
+						}
 					}
 				}
 			}))

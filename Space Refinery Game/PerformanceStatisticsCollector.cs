@@ -47,7 +47,7 @@ namespace Space_Refinery_Game
 					PhysicsTime = deltaTime;
 					break;
 				case PerformanceStatisticsCollectorMode.Averaged:
-					PhysicsTime += ((DecimalNumber)deltaTime - PhysicsTime) * (DecimalNumber)0.03;
+					PhysicsTime += ((DecimalNumber)deltaTime - PhysicsTime) * (DecimalNumber)0.1;
 					break;
 			}
 		}
@@ -60,7 +60,7 @@ namespace Space_Refinery_Game
 					UpdateTime = deltaTime;
 					break;
 				case PerformanceStatisticsCollectorMode.Averaged:
-					UpdateTime += ((DecimalNumber)deltaTime - UpdateTime) * (DecimalNumber)0.03;
+					UpdateTime += ((DecimalNumber)deltaTime - UpdateTime) * (DecimalNumber)0.1;
 					break;
 			}
 		}
@@ -73,7 +73,7 @@ namespace Space_Refinery_Game
 					TickTime = deltaTime;
 					break;
 				case PerformanceStatisticsCollectorMode.Averaged:
-					TickTime += ((DecimalNumber)deltaTime - TickTime) * (DecimalNumber)0.03;
+					TickTime += ((DecimalNumber)deltaTime - TickTime) * (DecimalNumber)0.1;
 					break;
 			}
 		}
@@ -86,7 +86,7 @@ namespace Space_Refinery_Game
 					RendererFrameTime = deltaTime;
 					break;
 				case PerformanceStatisticsCollectorMode.Averaged:
-					RendererFrameTime += ((DecimalNumber)deltaTime - RendererFrameTime) * (DecimalNumber)0.03;
+					RendererFrameTime += ((DecimalNumber)deltaTime - RendererFrameTime) * (DecimalNumber)0.1;
 					break;
 			}
 		}

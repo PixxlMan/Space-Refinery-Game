@@ -168,6 +168,44 @@ namespace Space_Refinery_Game
 			return connectors;
 		}
 
+		private static bool ValidateConnectors(PipeType pipeType, Transform transform, GameData gameData)
+		{
+			for (int i = 0; i < pipeType.ConnectorPlacements.Length; i++)
+			{
+				//MainGame.DebugRender.PersistentCube(new (transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, transform.Rotation), transform.Rotation, new((DecimalNumber).125, (DecimalNumber).125, (DecimalNumber).125)), new RgbaFloat((float)i / (float)pipeType.ConnectorPlacements.Length, (float)i / 10f + .1f, 0, 1));
+
+				if (gameData.PhysicsWorld.ApproxOverlapPoint<PipeConnector>(transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, transform.Rotation), out PhysicsObject physicsObject))
+				{
+					PipeConnector pipeConnector = (PipeConnector)physicsObject.Entity;
+
+					if (!pipeConnector.Vacant)
+					{
+						return false;
+					}
+				}
+			}
+
+			return true;
+		}
+
+		public static bool ValidateBuild(Connector connector, IEntityType entityType, int indexOfSelectedConnector, FixedDecimalLong8 rotation, GameData gameData)
+		{
+			lock (gameData.GameWorld.TickSyncObject)
+			{
+				Transform transform = GameWorld.GenerateTransformForConnector(((PipeType)entityType).ConnectorPlacements[indexOfSelectedConnector], connector, rotation);
+
+				if (connector is not PipeConnector ||
+					entityType is not Space_Refinery_Game.PipeType ||
+					//!ValidatePhysics(gameData.PhysicsWorld, transform, pipe, pipeType.Mesh)||
+					!ValidateConnectors((PipeType)entityType, transform, gameData))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
 		public static IConstruction Build(Connector connector, IEntityType entityType, int indexOfSelectedConnector, FixedDecimalLong8 rotation, GameData gameData, SerializationReferenceHandler referenceHandler)
 		{
 			lock (gameData.GameWorld.TickSyncObject)

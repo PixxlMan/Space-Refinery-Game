@@ -69,17 +69,24 @@ namespace Space_Refinery_Game
 
 				constructionMarker.SetMesh(gameData.UI.SelectedPipeType.Mesh);
 
-				constructionMarker.SetColor(RgbaFloat.Green);
-
 				constructionMarker.SetTransform(GameWorld.GenerateTransformForConnector(gameData.UI.SelectedPipeType.ConnectorPlacements[gameData.UI.ConnectorSelection], pipeConnector, RotationSnapped));
 
 				constructionMarker.ShouldDraw = true;
 
-				if (InputTracker.GetMouseButtonDown(MouseButton.Left))
+				if (Pipe.ValidateBuild(pipeConnector, gameData.UI.SelectedPipeType, gameData.UI.ConnectorSelection, RotationSnapped, gameData))
 				{
-					Pipe.Build(pipeConnector, gameData.UI.SelectedPipeType, gameData.UI.ConnectorSelection, RotationSnapped, gameData, gameData.ReferenceHandler);
+					constructionMarker.State = ConstructionMarker.ConstructionMarkerState.LegalBuild;
 
-					constructionMarker.ShouldDraw = false;
+					if (InputTracker.GetMouseButtonDown(MouseButton.Left))
+					{
+						Pipe.Build(pipeConnector, gameData.UI.SelectedPipeType, gameData.UI.ConnectorSelection, RotationSnapped, gameData, gameData.ReferenceHandler);
+
+						constructionMarker.ShouldDraw = false;
+					}
+				}
+				else
+				{
+					constructionMarker.State = ConstructionMarker.ConstructionMarkerState.IllegalBuild;
 				}
 			}
 			else if (lookedAtPhysicsObject is not null && lookedAtPhysicsObject.Entity is IConstruction construction)

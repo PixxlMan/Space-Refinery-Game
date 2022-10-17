@@ -11,6 +11,31 @@ namespace Space_Refinery_Game_Renderer
 {
 	public class ConstructionMarker : IRenderable
 	{
+		public enum ConstructionMarkerState
+		{
+			LegalBuild,
+			IllegalBuild,
+		}
+
+		public ConstructionMarkerState State
+		{
+			get => state;
+			set
+			{
+				switch (value)
+				{
+					case ConstructionMarkerState.LegalBuild:
+						SetColor(RgbaFloat.Green);
+						break;
+					case ConstructionMarkerState.IllegalBuild:
+						SetColor(RgbaFloat.Red);
+						break;
+				}
+
+				state = value;
+			}
+		}
+
 		public static ConstructionMarker Create(GraphicsWorld gw)
 		{
 			DeviceBuffer transformationBuffer = gw.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes, BufferUsage.VertexBuffer));
@@ -31,6 +56,8 @@ namespace Space_Refinery_Game_Renderer
 			graphicsWorld = gw;
 			this.transformationBuffer = transformationBuffer;
 			this.colorBuffer = colorBuffer;
+
+			state = ConstructionMarkerState.IllegalBuild;
 		}
 
 		private void CreateDeviceObjects(GraphicsDevice gd, ResourceFactory factory)
@@ -127,6 +154,8 @@ namespace Space_Refinery_Game_Renderer
 		private DeviceBuffer transformationBuffer;
 
 		private DeviceBuffer colorBuffer;
+
+		private ConstructionMarkerState state;
 
 		public void AddDrawCommands(CommandList cl)
 		{

@@ -4,12 +4,24 @@ namespace Space_Refinery_Game
 {
 	public sealed class GameData
 	{
+		public enum GameDataChange
+		{
+			UI,
+			PhysicsWorld,
+			GraphicsWorld,
+			GameWorld,
+			MainGame,
+			ReferenceHandler,
+		}
+
 		private UI uI;
 		private PhysicsWorld physicsWorld;
 		private GraphicsWorld graphicsWorld;
 		private GameWorld gameWorld;
 		private MainGame mainGame;
 		private SerializationReferenceHandler referenceHandler;
+
+		public event Action<GameDataChange> GameDataChangedEvent;
 
 		public GameData()
 		{
@@ -25,26 +37,31 @@ namespace Space_Refinery_Game
 			MainGame = mainGame;
 			ReferenceHandler = referenceHandler;
 
-			UpdatePerformanceStatisticsCollector();
+			PerformanceStatisticsCollector = new(this, PerformanceStatisticsCollector.PerformanceStatisticsCollectorMode.Averaged);
 		}
 
 		public PerformanceStatisticsCollector PerformanceStatisticsCollector { get; private set; }
 
-		void UpdatePerformanceStatisticsCollector()
+		void GameDataChanged(GameDataChange gameDataChange)
 		{
-			PerformanceStatisticsCollector = new(this, PerformanceStatisticsCollector.PerformanceStatisticsCollectorMode.Averaged);
+			if (PerformanceStatisticsCollector is null)
+			{
+				PerformanceStatisticsCollector = new(this, PerformanceStatisticsCollector.PerformanceStatisticsCollectorMode.Averaged);
+			}
+
+			GameDataChangedEvent?.Invoke(gameDataChange);
 		}
 
-		public UI UI { get => uI; set { uI = value; UpdatePerformanceStatisticsCollector(); } }
+		public UI UI { get => uI; set { uI = value; GameDataChanged(GameDataChange.UI); } }
 
-		public PhysicsWorld PhysicsWorld { get => physicsWorld; set { physicsWorld = value; UpdatePerformanceStatisticsCollector(); } }
+		public PhysicsWorld PhysicsWorld { get => physicsWorld; set { physicsWorld = value; GameDataChanged(GameDataChange.PhysicsWorld); } }
 
-		public GraphicsWorld GraphicsWorld { get => graphicsWorld; set { graphicsWorld = value; UpdatePerformanceStatisticsCollector(); } }
+		public GraphicsWorld GraphicsWorld { get => graphicsWorld; set { graphicsWorld = value; GameDataChanged(GameDataChange.GraphicsWorld); } }
 
-		public GameWorld GameWorld { get => gameWorld; set { gameWorld = value; UpdatePerformanceStatisticsCollector(); } }
+		public GameWorld GameWorld { get => gameWorld; set { gameWorld = value; GameDataChanged(GameDataChange.GameWorld); } }
 
-		public MainGame MainGame { get => mainGame; set { mainGame = value; UpdatePerformanceStatisticsCollector(); } }
+		public MainGame MainGame { get => mainGame; set { mainGame = value; GameDataChanged(GameDataChange.MainGame); } }
 
-		public SerializationReferenceHandler ReferenceHandler { get => referenceHandler; set { referenceHandler = value; UpdatePerformanceStatisticsCollector(); } }
+		public SerializationReferenceHandler ReferenceHandler { get => referenceHandler; set { referenceHandler = value; GameDataChanged(GameDataChange.ReferenceHandler); } }
 	}
 }

@@ -1,10 +1,5 @@
 ﻿using FixedPrecision;
 using Space_Refinery_Game_Renderer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Space_Refinery_Game
 {
@@ -18,6 +13,14 @@ namespace Space_Refinery_Game
 
 		GameData gameData;
 
+		private GameWorld gameWorld;
+
+		private GraphicsWorld graphicsWorld;
+
+		private PhysicsWorld physicsWorld;
+
+		private MainGame mainGame;
+
 		public PerformanceStatisticsCollectorMode Mode;
 
 		public PerformanceStatisticsCollector(GameData gameData, PerformanceStatisticsCollectorMode mode)
@@ -26,17 +29,59 @@ namespace Space_Refinery_Game
 
 			Mode = mode;
 
-			if (gameData.GraphicsWorld is not null)
-				gameData.GraphicsWorld.CollectRenderingPerformanceData += GraphicsWorld_CollectPerformanceData;			
+			gameData.GameDataChangedEvent += GameDataChanged;
 
-			if (gameData.GameWorld is not null)
-				gameData.GameWorld.CollectTickPerformanceData += GameWorld_CollectPerformanceData;
+			GameDataChanged(GameData.GameDataChange.PhysicsWorld);
+			GameDataChanged(GameData.GameDataChange.GraphicsWorld);
+			GameDataChanged(GameData.GameDataChange.GameWorld);
+			GameDataChanged(GameData.GameDataChange.MainGame);
+		}
 
-			if (gameData.MainGame is not null)
-				gameData.MainGame.CollectUpdatePerformanceData += MainGame_CollectPerformanceData;
+		public void GameDataChanged(GameData.GameDataChange gameDataChange)
+		{
+			switch (gameDataChange)
+			{
+				case GameData.GameDataChange.PhysicsWorld:
+					if (physicsWorld is not null)
+						physicsWorld.CollectPhysicsPerformanceData -= PhysicsWorld_CollectPerformanceData;
 
-			if (gameData.PhysicsWorld is not null)
-				gameData.PhysicsWorld.CollectPhysicsPerformanceData += PhysicsWorld_CollectPerformanceData;
+					if (gameData.PhysicsWorld is not null)
+					{
+						physicsWorld = gameData.PhysicsWorld;
+						physicsWorld.CollectPhysicsPerformanceData += PhysicsWorld_CollectPerformanceData;
+					}
+					break;
+				case GameData.GameDataChange.GraphicsWorld:
+					if (graphicsWorld is not null)
+						graphicsWorld.CollectRenderingPerformanceData -= GraphicsWorld_CollectPerformanceData;
+
+					if (gameData.GraphicsWorld is not null)
+					{
+						graphicsWorld = gameData.GraphicsWorld;
+						graphicsWorld.CollectRenderingPerformanceData += GraphicsWorld_CollectPerformanceData;
+					}
+					break;
+				case GameData.GameDataChange.GameWorld:
+					if (gameWorld is not null)
+						gameWorld.CollectTickPerformanceData -= GameWorld_CollectPerformanceData;
+
+					if (gameData.GameWorld is not null)
+					{
+						gameWorld = gameData.GameWorld;
+						gameWorld.CollectTickPerformanceData += GameWorld_CollectPerformanceData;
+					}
+					break;
+				case GameData.GameDataChange.MainGame:
+					if (mainGame is not null)
+						mainGame.CollectUpdatePerformanceData -= MainGame_CollectPerformanceData;
+
+					if (gameData.MainGame is not null)
+					{
+						mainGame = gameData.MainGame;
+						mainGame.CollectUpdatePerformanceData += MainGame_CollectPerformanceData;
+					}
+					break;
+			}
 		}
 
 		private void PhysicsWorld_CollectPerformanceData(FixedDecimalLong8 deltaTime)

@@ -350,7 +350,7 @@ namespace Space_Refinery_Game
 
 				PhysicsObject.Destroy();
 
-				Proxy.PhysicsObject.Destroy();
+				Proxy?.PhysicsObject.Destroy();
 
 				gameData.UI.SelectedEntityTypeChanged -= UpdateProxyOnEntityTypeChanged;
 

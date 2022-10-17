@@ -238,21 +238,9 @@ namespace Space_Refinery_Game
 					return;
 				}
 
-				Destroyed = true;
-
 				DisplaceContents();
 
-				PhysicsObject.Destroy();
-				Renderable.Destroy();
-
-				MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
-
-				foreach (var connector in Connectors)
-				{
-					connector.Disconnect(this);
-				}
-
-				ReferenceHandler.RemoveReference(this);
+				Destroy();
 			}
 		}
 
@@ -336,6 +324,26 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		void Entity.Destroy() => Deconstruct();
+		public virtual void Destroy()
+		{
+			if (Destroyed)
+			{
+				return;
+			}
+
+			Destroyed = true;
+
+			PhysicsObject.Destroy();
+			Renderable.Destroy();
+
+			MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
+
+			foreach (var connector in Connectors)
+			{
+				connector.Disconnect(this);
+			}
+
+			ReferenceHandler.RemoveReference(this);
+		}
 	}
 }

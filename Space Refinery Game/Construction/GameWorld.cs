@@ -137,18 +137,16 @@ namespace Space_Refinery_Game
 
 		public void ClearAll()
 		{
-			foreach (var constructable in Constructions)
+			lock (TickSyncObject) lock (SynchronizationObject)
 			{
-				Deconstruct(constructable);
-			}
-
-			foreach (var entity in Entities)
-			{
-				RemoveEntity(entity);
-
-				if (entity is IDisposable disposable)
+				foreach (var entity in Entities)
 				{
-					disposable.Dispose();
+					RemoveEntity(entity);
+
+					if (entity is IDisposable disposable)
+					{
+						disposable.Dispose();
+					}
 				}
 			}
 		}

@@ -31,7 +31,7 @@ namespace Space_Refinery_Game
 		{
 			if (Destroyed)
 			{
-				throw new Exception("Already destroyed");
+				return;
 			}
 
 			Destroyed = true;

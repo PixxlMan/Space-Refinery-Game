@@ -93,12 +93,14 @@ namespace Space_Refinery_Game
 
 		public DecimalNumber RendererFrameTime { get; private set; }
 
-		public DecimalNumber RendererFramerate => 1 / RendererFrameTime;
+		public DecimalNumber RendererFramerate => 1 / (gameData.GraphicsWorld.ShouldLimitFramerate ? DecimalNumber.Max(RendererFrameTime, gameData.GraphicsWorld.FrametimeLowerLimit) : RendererFrameTime);
 
 
 		public DecimalNumber UpdateTime { get; private set; }
 
-		public DecimalNumber UpdatesPerSecond => DecimalNumber.One / UpdateTime;
+		public DecimalNumber UpdateTimeTotal => DecimalNumber.Max(UpdateTime, UpdateTimeBudget);
+
+		public DecimalNumber UpdatesPerSecond => DecimalNumber.One / UpdateTimeTotal;
 
 		public DecimalNumber UpdateTimeBudget => Time.UpdateInterval;
 
@@ -107,7 +109,9 @@ namespace Space_Refinery_Game
 
 		public DecimalNumber TickTime { get; private set; }
 
-		public DecimalNumber TicksPerSecond => DecimalNumber.One / TickTime;
+		public DecimalNumber TickTimeTotal => DecimalNumber.Max(TickTime, TickTimeBudget);
+
+		public DecimalNumber TicksPerSecond => DecimalNumber.One / TickTimeTotal;
 
 		public DecimalNumber TickTimeBudget => Time.TickInterval;
 
@@ -116,7 +120,9 @@ namespace Space_Refinery_Game
 
 		public DecimalNumber PhysicsTime { get; private set; }
 
-		public DecimalNumber PhysicsUpdatesPerSecond => DecimalNumber.One / PhysicsTime;
+		public DecimalNumber PhysicsTimeTotal => DecimalNumber.Max(PhysicsTime, PhysicsTimeBudget);
+
+		public DecimalNumber PhysicsUpdatesPerSecond => DecimalNumber.One / PhysicsTimeTotal;
 
 		public DecimalNumber PhysicsTimeBudget => Time.PhysicsInterval;
 

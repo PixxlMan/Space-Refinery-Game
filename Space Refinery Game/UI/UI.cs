@@ -67,15 +67,18 @@ namespace Space_Refinery_Game
 		{
 			Interlocked.Add(ref ConnectorSelection, selectionDelta);
 
-			while (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length || ConnectorSelection < 0)
+			lock (SelectedPipeType)
 			{
-				if (ConnectorSelection < 0)
+				while (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length || ConnectorSelection < 0)
 				{
-					Interlocked.Add(ref ConnectorSelection, SelectedPipeType.ConnectorPlacements.Length);
-				}
-				else if (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length)
-				{
-					Interlocked.Add(ref ConnectorSelection, SelectedPipeType.ConnectorPlacements.Length);
+					if (ConnectorSelection < 0)
+					{
+						Interlocked.Add(ref ConnectorSelection, SelectedPipeType.ConnectorPlacements.Length);
+					}
+					else if (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length)
+					{
+						Interlocked.Add(ref ConnectorSelection, SelectedPipeType.ConnectorPlacements.Length);
+					}
 				}
 			}
 		}

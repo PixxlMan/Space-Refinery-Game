@@ -153,28 +153,17 @@ public sealed class MainGame
 
 				deltaTime = time - timeLastUpdate;
 
-				timeLastUpdate = time;
-
 				CollectUpdatePerformanceData?.Invoke(deltaTime);
 
-				Update(deltaTime);
+				Update(FixedDecimalLong8.Max(deltaTime, Time.UpdateInterval));
 
-				if (deltaTime < Time.UpdateInterval)
+				FixedDecimalLong8 timeToStopWaiting = time + Time.UpdateInterval;
+				while (stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>() < timeToStopWaiting)
 				{
-					while (deltaTime < Time.UpdateInterval)
-					{
-						deltaTime = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>() - timeLastUpdate;
-
-						if (Time.TickInterval > (FixedDecimalLong8)0.002 && Time.UpdateInterval - deltaTime > (FixedDecimalLong8)0.002)
-						{
-							Thread.Sleep(1);
-						}
-						else
-						{
-							Thread.SpinWait(4);
-						}
-					}
+					Thread.SpinWait(4);
 				}
+
+				timeLastUpdate = timeToStopWaiting;
 			}
 		}))
 		{ Name = "Update Thread" };

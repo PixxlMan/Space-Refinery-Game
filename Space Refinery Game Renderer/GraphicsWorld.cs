@@ -114,30 +114,19 @@ public class GraphicsWorld
 
 				deltaTime = time - timeLastUpdate;
 
-				timeLastUpdate = time;
-
 				CollectRenderingPerformanceData?.Invoke(deltaTime);
 
 				window.PumpEvents();
 
-				RenderScene(deltaTime);
+				RenderScene(FixedDecimalLong8.Max(deltaTime, FrametimeLowerLimit));
 
-				if (ShouldLimitFramerate && deltaTime < FrametimeLowerLimit)
+				FixedDecimalLong8 timeToStopWaiting = time + FrametimeLowerLimit;
+				while (stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>() < timeToStopWaiting)
 				{
-					while (deltaTime < FrametimeLowerLimit)
-					{
-						deltaTime = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>() - timeLastUpdate;
-
-						if (FrametimeLowerLimit > (FixedDecimalLong8)0.002 && FrametimeLowerLimit - deltaTime > (FixedDecimalLong8)0.002)
-						{
-							Thread.Sleep(1);
-						}
-						else
-						{
-							Thread.SpinWait(4);
-						}
-					}
+					Thread.SpinWait(4);
 				}
+
+				timeLastUpdate = timeToStopWaiting;
 
 				FrameRendered?.Invoke();
 			}

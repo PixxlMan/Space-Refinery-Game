@@ -62,8 +62,6 @@ namespace Space_Refinery_Game
 
 					deltaTime = time - timeLastUpdate;
 
-					timeLastUpdate = time;
-
 					CollectPhysicsPerformanceData?.Invoke(deltaTime);				
 
 					lock (SyncRoot)
@@ -71,22 +69,13 @@ namespace Space_Refinery_Game
 						simulation.Timestep(Time.PhysicsInterval.ToFloat(), threadDispatcher);
 					}
 
-					if (deltaTime < Time.PhysicsInterval)
+					FixedDecimalLong8 timeToStopWaiting = time + Time.PhysicsInterval;
+					while (stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>() < timeToStopWaiting)
 					{
-						while (deltaTime < Time.PhysicsInterval)
-						{
-							deltaTime = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>() - timeLastUpdate;
-
-							if (Time.TickInterval > (FixedDecimalLong8)0.002 && Time.PhysicsInterval - deltaTime > (FixedDecimalLong8)0.002)
-							{
-								Thread.Sleep(1);
-							}
-							else
-							{
-								Thread.SpinWait(4);
-							}
-						}
+						Thread.SpinWait(4);
 					}
+
+					timeLastUpdate = timeToStopWaiting;
 				}
 			}))
 			{ Name = "Physics Update Thread" };

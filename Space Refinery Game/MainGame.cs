@@ -66,18 +66,6 @@ public sealed class MainGame
 
 		GlobalSettings = new();
 
-		GlobalSettings.SetSettingOptions("FoV", new SliderSettingOptions(30, 120, "degrees"));
-
-		GlobalSettings.RegisterToSetting<SliderSetting>("FoV", (se) => GraphicsWorld.Camera.FieldOfView = se.Value * DecimalNumber.DegreesToRadians, defaultValue: new SliderSetting() { Value = 65 });
-
-		GlobalSettings.SetSettingOptions("Max framerate", new SliderSettingOptions(1, 1000, "FPS"));
-
-		GlobalSettings.RegisterToSetting<SliderSetting>("Max framerate", (se) => GraphicsWorld.FrametimeLowerLimit = 1 / se.Value, defaultValue: new SliderSetting() { Value = 500 });
-
-		GlobalSettings.SetSettingOptions("Limit framerate", null);
-
-		GlobalSettings.RegisterToSetting<BooleanSetting>("Limit framerate", (bs) => GraphicsWorld.ShouldLimitFramerate = bs.Value, defaultValue: new BooleanSetting() { Value = true });
-
 		ChemicalTypes = ChemicalType.LoadChemicalTypes(Path.Combine(Environment.CurrentDirectory, "Assets", "Chemical types"));
 
 		ChemicalTypesDictionary = ChemicalTypes.ToDictionary((cT) => cT.ChemicalName);
@@ -124,6 +112,19 @@ public sealed class MainGame
 		StartUpdating();
 
 		GameWorld.StartTicking();
+
+		GlobalSettings.SetSettingOptions("FoV", new SliderSettingOptions(30, 120, "degrees"));
+
+		GlobalSettings.RegisterToSetting<SliderSetting>("FoV", (se) => GraphicsWorld.Camera.FieldOfView = se.Value * DecimalNumber.DegreesToRadians, defaultValue: new SliderSetting() { Value = 65 });
+
+		GlobalSettings.SetSettingOptions("Max framerate", new SliderSettingOptions(1, 1000, "FPS"));
+
+		GlobalSettings.RegisterToSetting<SliderSetting>("Max framerate", (se) => GraphicsWorld.FrametimeLowerLimit = 1 / se.Value, defaultValue: new SliderSetting() { Value = 500 });
+
+		GlobalSettings.SetSettingOptions("Limit framerate", null);
+
+		GlobalSettings.RegisterToSetting<BooleanSetting>("Limit framerate", (bs) => GraphicsWorld.ShouldLimitFramerate = bs.Value, defaultValue: new BooleanSetting() { Value = true });
+
 	}
 
 	private void UI_PauseStateChanged(bool paused)

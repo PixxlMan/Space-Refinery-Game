@@ -67,6 +67,8 @@ namespace Space_Refinery_Game
 			{
 				setting.SettingChanged += (ISetting setting) => settingChangedHandler((TSetting)setting);
 			}
+
+			settingChangeAcceptedHandler((TSetting)setting);
 		}
 
 		public void DoSettingsUI()

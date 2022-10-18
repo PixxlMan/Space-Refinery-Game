@@ -52,15 +52,6 @@ namespace Space_Refinery_Game
 			UpdateProxy();
 		}
 
-		private void SetUp(GameData gameData)
-		{
-			this.gameData = gameData;
-
-			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
-
-			gameData.UI.SelectedEntityTypeChanged += UpdateProxyOnEntityTypeChanged;
-		}
-
 		private void UpdateProxyOnEntityTypeChanged(IEntityType _)
 		{
 			UpdateProxy();

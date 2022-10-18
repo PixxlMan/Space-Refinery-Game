@@ -9,23 +9,33 @@ namespace Space_Refinery_Game
 	{
 		private PipeConnector()
 		{
-			informationProvider = new PipeConnectorInformationProvider(this);
 		}
 
 		public PipeConnector((Pipe connectableA, Pipe connectableB) connectables, Transform transform, PipeConnectorProperties pipeConnectorProperties, GameData gameData) : base(connectables, transform, gameData)
 		{
 			PipeConnectorProperties = pipeConnectorProperties;
-			informationProvider = new PipeConnectorInformationProvider(this);
-			CreatePhysicsObject(transform, gameData.PhysicsWorld);
+
+			SetUp();
+
 			gameData.GameWorld.AddEntity(this);
 		}
 
 		public PipeConnector(Pipe initialConnectable, ConnectorSide side, Transform transform, PipeConnectorProperties pipeConnectorProperties, GameData gameData) : base(initialConnectable, side, transform, gameData)
 		{
 			PipeConnectorProperties = pipeConnectorProperties;
-			informationProvider = new PipeConnectorInformationProvider(this);
-			CreatePhysicsObject(transform, gameData.PhysicsWorld);
+
+			SetUp();
+
 			gameData.GameWorld.AddEntity(this);
+		}
+
+		protected override void SetUp()
+		{
+			base.SetUp();
+
+			informationProvider = new PipeConnectorInformationProvider(this);
+
+			CreatePhysicsObject(Transform, GameData.PhysicsWorld);
 		}
 
 		private void CreatePhysicsObject(Transform transform, PhysicsWorld physicsWorld)
@@ -92,12 +102,7 @@ namespace Space_Refinery_Game
 
 			reader.DeserializeReference<PipeConnectorProperties>(MainGame.GlobalReferenceHandler, (p) => PipeConnectorProperties = p, nameof(PipeConnectorProperties));
 
-			CreatePhysicsObject(Transform, serializationData.GameData.PhysicsWorld);
-
-			serializationData.SerializationCompleteEvent += () =>
-			{
-				UpdateProxy();
-			};
+			SetUp();
 		}
 	}
 }

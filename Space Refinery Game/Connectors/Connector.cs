@@ -34,20 +34,21 @@ namespace Space_Refinery_Game
 
 			Transform = transform;
 
-			SetUp(gameData);
+			this.GameData = gameData;
+
+			SetUp();
 
 			gameData.GameWorld.AddEntity(this);
 
 			gameData.ReferenceHandler.RegisterReference(this);
 		}
 
-		private void SetUp(GameData gameData)
+		protected virtual void SetUp()
 		{
-			this.gameData = gameData;
 
 			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
 
-			gameData.UI.SelectedEntityTypeChanged += UpdateProxyOnEntityTypeChanged;
+			GameData.UI.SelectedEntityTypeChanged += UpdateProxyOnEntityTypeChanged;
 
 			UpdateProxy();
 		}
@@ -59,7 +60,7 @@ namespace Space_Refinery_Game
 
 		public bool Destroyed { get; protected set; }
 
-		private GameData gameData;
+		protected GameData GameData;
 
 		public Transform Transform;
 
@@ -241,9 +242,9 @@ namespace Space_Refinery_Game
 					Proxy.PhysicsObject.Destroy();
 				}
 
-				var proxyPhysicsObject = new PhysicsObjectDescription<ConvexHull>(gameData.PhysicsWorld.GetConvexHullForMesh(gameData.UI.SelectedPipeType.Mesh), GameWorld.GenerateTransformForConnector(gameData.UI.SelectedPipeType.ConnectorPlacements[gameData.UI.ConnectorSelection], this, gameData.UI.RotationIndex * 45 * FixedDecimalLong8.DegreesToRadians), 0, true);
+				var proxyPhysicsObject = new PhysicsObjectDescription<ConvexHull>(GameData.PhysicsWorld.GetConvexHullForMesh(GameData.UI.SelectedPipeType.Mesh), GameWorld.GenerateTransformForConnector(GameData.UI.SelectedPipeType.ConnectorPlacements[GameData.UI.ConnectorSelection], this, GameData.UI.RotationIndex * 45 * FixedDecimalLong8.DegreesToRadians), 0, true);
 
-				Proxy.PhysicsObject = gameData.PhysicsWorld.AddPhysicsObject(proxyPhysicsObject, Proxy);
+				Proxy.PhysicsObject = GameData.PhysicsWorld.AddPhysicsObject(proxyPhysicsObject, Proxy);
 
 				Proxy.Enable(); 
 			}
@@ -329,6 +330,8 @@ namespace Space_Refinery_Game
 						reader.DeserializeReference<IConnectable>(referenceHandler, (es) => b = (IConnectable)es, $"{nameof(Connectables.connectableB)}_GUID");
 					}
 
+					this.GameData = serializationData.GameData;
+
 					serializationData.SerializationCompleteEvent += () =>
 					{
 						if (a != null)
@@ -341,11 +344,11 @@ namespace Space_Refinery_Game
 							Connect(b);
 						}
 
-						SetUp(gameData);
+						SetUp();
 					};
 
 
-					this.gameData = serializationData.GameData;
+					this.GameData = serializationData.GameData;
 
 					serializationData.GameData.GameWorld.AddEntity(this);
 				}
@@ -368,13 +371,13 @@ namespace Space_Refinery_Game
 
 				Proxy?.PhysicsObject.Destroy();
 
-				gameData.UI.SelectedEntityTypeChanged -= UpdateProxyOnEntityTypeChanged;
+				GameData.UI.SelectedEntityTypeChanged -= UpdateProxyOnEntityTypeChanged;
 
 				MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
 
-				gameData.GameWorld.RemoveEntity(this);
+				GameData.GameWorld.RemoveEntity(this);
 
-				gameData.ReferenceHandler.RemoveReference(this); 
+				GameData.ReferenceHandler.RemoveReference(this); 
 			}
 		}
 

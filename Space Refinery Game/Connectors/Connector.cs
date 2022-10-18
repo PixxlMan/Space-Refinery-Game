@@ -15,7 +15,7 @@ namespace Space_Refinery_Game
 	{
 		protected Connector()
 		{
-			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
+			
 		}
 
 		public Connector((IConnectable connectableA, IConnectable connectableB) connectables, Transform transform, GameData gameData) : this(transform, gameData)
@@ -38,13 +38,20 @@ namespace Space_Refinery_Game
 
 			Transform = transform;
 
-			this.gameData = gameData;
-
-			gameData.UI.SelectedEntityTypeChanged += UpdateProxyOnEntityTypeChanged;
+			SetUp(gameData);
 
 			gameData.GameWorld.AddEntity(this);
 
 			gameData.ReferenceHandler.RegisterReference(this);
+		}
+
+		private void SetUp(GameData gameData)
+		{
+			this.gameData = gameData;
+
+			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
+
+			gameData.UI.SelectedEntityTypeChanged += UpdateProxyOnEntityTypeChanged;
 		}
 
 		private void UpdateProxyOnEntityTypeChanged(IEntityType _)
@@ -175,7 +182,7 @@ namespace Space_Refinery_Game
 				}
 
 				PhysicsObject.Enabled = false;
-				Proxy.Disable(); 
+				Proxy?.Disable(); 
 			}
 		}
 
@@ -326,8 +333,19 @@ namespace Space_Refinery_Game
 
 					serializationData.SerializationCompleteEvent += () =>
 					{
-						Connectables = (a, b);
+						if (a != null)
+						{
+							Connect(a);
+						}
+
+						if (b != null)
+						{
+							Connect(b);
+						}
+
+						SetUp(gameData);
 					};
+
 
 					this.gameData = serializationData.GameData;
 

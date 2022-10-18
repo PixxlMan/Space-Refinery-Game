@@ -158,13 +158,9 @@ public sealed class MainGame
 
 				Update(FixedDecimalLong8.Max(deltaTime, Time.UpdateInterval));
 
-				FixedDecimalLong8 timeToStopWaiting = time + Time.UpdateInterval;
-				while (stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>() < timeToStopWaiting)
-				{
-					Thread.SpinWait(4);
-				}
+				Time.WaitIntervalLimit(Time.UpdateInterval, time, stopwatch, out var timeOfContinuation);
 
-				timeLastUpdate = timeToStopWaiting;
+				timeLastUpdate = timeOfContinuation;
 			}
 		}))
 		{ Name = "Update Thread" };

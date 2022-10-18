@@ -69,13 +69,9 @@ namespace Space_Refinery_Game
 						simulation.Timestep(Time.PhysicsInterval.ToFloat(), threadDispatcher);
 					}
 
-					FixedDecimalLong8 timeToStopWaiting = time + Time.PhysicsInterval;
-					while (stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>() < timeToStopWaiting)
-					{
-						Thread.SpinWait(4);
-					}
+					Time.WaitIntervalLimit(Time.PhysicsInterval, time, stopwatch, out var timeOfContinuation);
 
-					timeLastUpdate = timeToStopWaiting;
+					timeLastUpdate = timeOfContinuation;
 				}
 			}))
 			{ Name = "Physics Update Thread" };

@@ -120,6 +120,8 @@ public class GraphicsWorld
 
 				RenderScene(FixedDecimalLong8.Max(deltaTime, FrametimeLowerLimit));
 
+				// Clone of: Time.WaitIntervalLimit(FrametimeLowerLimit, time, stopwatch, out var timeOfContinuation);
+
 				FixedDecimalLong8 timeToStopWaiting = time + FrametimeLowerLimit;
 				while (stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>() < timeToStopWaiting)
 				{

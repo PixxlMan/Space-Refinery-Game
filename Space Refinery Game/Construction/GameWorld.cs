@@ -109,13 +109,9 @@ namespace Space_Refinery_Game
 
 						Tick();
 
-						FixedDecimalLong8 timeToStopWaiting = time + Time.TickInterval;
-						while (stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>() < timeToStopWaiting)
-						{
-							Thread.SpinWait(4);
-						}
+						Time.WaitIntervalLimit(Time.TickInterval, time, stopwatch, out var timeOfContinuation);
 
-						timeLastUpdate = timeToStopWaiting;
+						timeLastUpdate = timeOfContinuation;
 					}
 				}
 			}))

@@ -15,7 +15,7 @@ using static FixedPrecision.Convenience;
 
 namespace Space_Refinery_Game_Renderer;
 
-public class GraphicsWorld
+public sealed class GraphicsWorld
 {
 	private List<IRenderable> unorderedRenderables = new();
 

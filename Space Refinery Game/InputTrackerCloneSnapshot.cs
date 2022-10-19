@@ -8,7 +8,7 @@ using Veldrid;
 
 namespace Space_Refinery_Game
 {
-	internal class InputTrackerCloneSnapshot : InputSnapshot
+	internal sealed class InputTrackerCloneSnapshot : InputSnapshot
 	{
 		public InputTrackerCloneSnapshot(IReadOnlyList<KeyEvent> keyEvents, IReadOnlyList<MouseEvent> mouseEvents, IReadOnlyList<char> keyCharPresses, Vector2 mousePosition, float wheelDelta)
 		{

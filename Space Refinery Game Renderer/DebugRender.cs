@@ -5,7 +5,7 @@ using Veldrid;
 
 namespace Space_Refinery_Game_Renderer
 {
-	public class DebugRender
+	public sealed class DebugRender
 	{
 		public bool ShouldRender;
 

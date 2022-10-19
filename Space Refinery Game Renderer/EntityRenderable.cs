@@ -4,7 +4,7 @@ using Veldrid;
 
 namespace Space_Refinery_Game_Renderer;
 
-public class EntityRenderable : IRenderable
+public sealed class EntityRenderable : IRenderable
 {
 	private bool transformChangedSinceDraw;
 

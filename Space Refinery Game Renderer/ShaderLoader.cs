@@ -3,7 +3,7 @@ using Veldrid;
 
 namespace Space_Refinery_Game_Renderer
 {
-	public class ShaderLoader
+	public sealed class ShaderLoader
 	{
 		private Dictionary<string, Shader[]> shaderCache = new();
 

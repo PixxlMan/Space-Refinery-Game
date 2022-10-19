@@ -9,7 +9,7 @@ using Veldrid;
 
 namespace Space_Refinery_Game_Renderer
 {
-	public class ConstructionMarker : IRenderable
+	public sealed class ConstructionMarker : IRenderable
 	{
 		public enum ConstructionMarkerState
 		{

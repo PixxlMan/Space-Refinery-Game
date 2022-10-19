@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Space_Refinery_Game_Renderer
 {
-	public class MeshLoader
+	public sealed class MeshLoader
 	{
 		private Dictionary<string, Mesh> meshCache = new();
 

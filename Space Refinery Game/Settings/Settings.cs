@@ -10,7 +10,7 @@ using Veldrid;
 namespace Space_Refinery_Game
 {
 	[DataContract]
-	public class Settings
+	public sealed class Settings
 	{
 		[DataMember]
 		private Dictionary<string, ISetting> settings = new();

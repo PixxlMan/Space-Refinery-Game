@@ -8,6 +8,7 @@ using FixedPrecision;
 using System.Numerics;
 using FXRenderer;
 using Space_Refinery_Game_Renderer;
+using static Space_Refinery_Game.InterlockedExtensions;
 
 namespace Space_Refinery_Game
 {
@@ -69,13 +70,13 @@ namespace Space_Refinery_Game
 
 			lock (SelectedPipeType)
 			{
-				while (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length || ConnectorSelection < 0)
+				while (InterlockedReadInt(ref ConnectorSelection) >= SelectedPipeType.ConnectorPlacements.Length || InterlockedReadInt(ref ConnectorSelection) < 0)
 				{
-					if (ConnectorSelection < 0)
+					if (InterlockedReadInt(ref ConnectorSelection) < 0)
 					{
 						Interlocked.Add(ref ConnectorSelection, SelectedPipeType.ConnectorPlacements.Length);
 					}
-					else if (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length)
+					else if (InterlockedReadInt(ref ConnectorSelection) >= SelectedPipeType.ConnectorPlacements.Length)
 					{
 						Interlocked.Add(ref ConnectorSelection, SelectedPipeType.ConnectorPlacements.Length);
 					}

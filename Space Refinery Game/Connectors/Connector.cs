@@ -37,15 +37,10 @@ namespace Space_Refinery_Game
 			this.GameData = gameData;
 
 			SetUp();
-
-			gameData.GameWorld.AddEntity(this);
-
-			gameData.ReferenceHandler.RegisterReference(this);
 		}
 
 		protected virtual void SetUp()
 		{
-
 			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
 
 			GameData.UI.SelectedEntityTypeChanged += UpdateProxyOnEntityTypeChanged;
@@ -346,7 +341,6 @@ namespace Space_Refinery_Game
 
 						SetUp();
 					};
-
 
 					this.GameData = serializationData.GameData;
 

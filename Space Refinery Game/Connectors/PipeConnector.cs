@@ -14,19 +14,11 @@ namespace Space_Refinery_Game
 		public PipeConnector((Pipe connectableA, Pipe connectableB) connectables, Transform transform, PipeConnectorProperties pipeConnectorProperties, GameData gameData) : base(connectables, transform, gameData)
 		{
 			PipeConnectorProperties = pipeConnectorProperties;
-
-			SetUp();
-
-			gameData.GameWorld.AddEntity(this);
 		}
 
 		public PipeConnector(Pipe initialConnectable, ConnectorSide side, Transform transform, PipeConnectorProperties pipeConnectorProperties, GameData gameData) : base(initialConnectable, side, transform, gameData)
 		{
 			PipeConnectorProperties = pipeConnectorProperties;
-
-			SetUp();
-
-			gameData.GameWorld.AddEntity(this);
 		}
 
 		protected override void SetUp()

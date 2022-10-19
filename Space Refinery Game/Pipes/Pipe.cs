@@ -154,6 +154,10 @@ namespace Space_Refinery_Game
 
 					PipeConnector connector = new PipeConnector(pipe, ConnectorSide.A, transform, pipeType.ConnectorProperties[i], gameData);
 
+					gameData.GameWorld.AddEntity(connector);
+
+					gameData.ReferenceHandler.RegisterReference(connector);
+
 					connectors[i] = connector;
 
 					if (pipeType.ConnectorNames is not null && pipeType.ConnectorNames[i] is not null)

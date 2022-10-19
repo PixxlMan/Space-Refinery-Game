@@ -33,14 +33,16 @@ namespace Space_Refinery_Game
 		public void AddEntity(Entity entity)
 		{
 			lock (SynchronizationObject)
-				Entities.Add(entity);
+			{
+				Entities.AddUnique(entity, $"This {nameof(Entity)} has already been added.");
+			}
 		}
 
 		public void RemoveEntity(Entity entity)
 		{
 			lock (SynchronizationObject)
 			{
-				Entities.Remove(entity);
+				Entities.RemoveStrict(entity, $"This {nameof(Entity)} cannot be found.");
 
 				entity.Destroy();
 			}
@@ -49,14 +51,14 @@ namespace Space_Refinery_Game
 		public void AddConstruction(IConstruction construction)
 		{
 			lock (SynchronizationObject)
-				Constructions.Add(construction);
+				Constructions.AddUnique(construction);
 		}
 
 		public void Deconstruct(IConstruction construction)
 		{
 			lock (SynchronizationObject)
 			{
-				Constructions.Remove(construction);
+				Constructions.RemoveStrict(construction);
 
 				construction.Deconstruct();
 

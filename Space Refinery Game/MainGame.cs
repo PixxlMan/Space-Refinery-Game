@@ -52,8 +52,6 @@ public sealed class MainGame
 
 	public static Dictionary<string, ChemicalType> ChemicalTypesDictionary;
 
-	public PipeType[] PipeTypes;
-
 	public Guid SaveGuid { get; private set; } = Guid.NewGuid();
 
 	public event Action<FixedDecimalLong8> CollectUpdatePerformanceData;
@@ -103,7 +101,7 @@ public sealed class MainGame
 
 		Starfield.Create(GraphicsWorld);
 
-		GameWorld.AddConstruction(Pipe.Create(UI.SelectedPipeType, new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), GameData, ReferenceHandler));
+		Pipe.Create(PipeType.PipeTypes["Straight Pipe"], new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), GameData, ReferenceHandler);
 
 		InputTracker.IgnoreNextFrameMousePosition = true;
 
@@ -124,7 +122,6 @@ public sealed class MainGame
 		GlobalSettings.SetSettingOptions("Limit framerate", null);
 
 		GlobalSettings.RegisterToSetting<BooleanSetting>("Limit framerate", (bs) => GraphicsWorld.ShouldLimitFramerate = bs.Value, defaultValue: new BooleanSetting() { Value = true });
-
 	}
 
 	private void UI_PauseStateChanged(bool paused)

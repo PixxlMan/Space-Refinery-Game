@@ -1,7 +1,10 @@
-﻿namespace Space_Refinery_Game
+﻿using System.Diagnostics;
+
+namespace Space_Refinery_Game
 {
 	public static class CollectionExtensions
 	{
+		[DebuggerHidden]
 		public static void AddUnique<T>(this HashSet<T> hashSet, T item, string? exceptionText = null)
 		{
 			if (!hashSet.Add(item))
@@ -10,6 +13,7 @@
 			}
 		}
 
+		[DebuggerHidden]
 		public static void RemoveStrict<T>(this HashSet<T> hashSet, T item, string? exceptionText = null)
 		{
 			if (!hashSet.Remove(item))

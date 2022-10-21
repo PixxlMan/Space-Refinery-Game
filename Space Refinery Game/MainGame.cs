@@ -23,6 +23,9 @@ public sealed class MainGame
 
 	private static SerializationReferenceHandler DeserializeGlobalReferenceHandler(SerializationData serializationData)
 	{
+		var stopwatch = new Stopwatch();
+		stopwatch.Start();
+
 		using var reader = XmlReader.Create(Path.Combine(Environment.CurrentDirectory, "Assets", "GlobalReferences.xml"));
 
 		reader.ReadStartElement("GlobalReferences");
@@ -41,6 +44,9 @@ public sealed class MainGame
 		globalReferenceHandler.ExitAllowEventualReferenceMode();
 
 		serializationData.SerializationComplete();
+
+		stopwatch.Stop();
+		Console.WriteLine($"Deserialized all ({globalReferenceHandler.ReferenceCount}!) global references in {stopwatch.ElapsedMilliseconds} ms");
 
 		return globalReferenceHandler;
 	}

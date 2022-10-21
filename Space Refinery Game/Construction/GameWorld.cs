@@ -42,7 +42,8 @@ namespace Space_Refinery_Game
 		{
 			lock (SynchronizationObject)
 			{
-				Entities.RemoveStrict(entity, $"This {nameof(Entity)} cannot be found.");
+				//Entities.RemoveStrict(entity, $"This {nameof(Entity)} cannot be found.");
+				Entities.Remove(entity);
 
 				entity.Destroy();
 			}

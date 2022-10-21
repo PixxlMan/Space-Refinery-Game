@@ -18,7 +18,7 @@ namespace Space_Refinery_Game
 			get { lock (SyncRoot) return guidToSerializableReference[guid]; }
 		}
 
-		public int ReferenceCount { get => guidToSerializableReference.Count; }
+		public int ReferenceCount { get { lock (SyncRoot) return guidToSerializableReference.Count; } }
 
 		public object SyncRoot = new();
 
@@ -131,7 +131,7 @@ namespace Space_Refinery_Game
 			}
 		}
 		
-		public static SerializationReferenceHandler Deserialize(XmlReader reader, SerializationData serializationData)
+		public static SerializationReferenceHandler Deserialize(XmlReader reader, SerializationData serializationData, bool exitAllowEventualReferenceModeBeforeReturning = true)
 		{
 			SerializationReferenceHandler referenceHandler = new();
 
@@ -139,12 +139,15 @@ namespace Space_Refinery_Game
 
 			reader.DeserializeCollection((r) => referenceHandler.RegisterReference((ISerializableReference)r.DeserializeEntitySerializableWithEmbeddedType(serializationData, referenceHandler)), nameof(SerializationReferenceHandler));
 
-			referenceHandler.ExitAllowEventualReferenceMode();
+			if (exitAllowEventualReferenceModeBeforeReturning)
+			{
+				referenceHandler.ExitAllowEventualReferenceMode();
+			}
 
 			return referenceHandler;
 		}
 
-		public void DeserializeInto(XmlReader reader, SerializationData serializationData)
+		public void DeserializeInto(XmlReader reader, SerializationData serializationData, bool exitAllowEventualReferenceModeBeforeReturning = true)
 		{
 			lock (SyncRoot)
 			{
@@ -152,7 +155,10 @@ namespace Space_Refinery_Game
 
 				reader.DeserializeCollection((r) => RegisterReference((ISerializableReference)r.DeserializeEntitySerializableWithEmbeddedType(serializationData, this)), nameof(SerializationReferenceHandler));
 
-				ExitAllowEventualReferenceMode();
+				if (exitAllowEventualReferenceModeBeforeReturning)
+				{
+					ExitAllowEventualReferenceMode();
+				}
 			}
 		}
 

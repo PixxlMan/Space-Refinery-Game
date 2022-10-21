@@ -27,13 +27,22 @@ public sealed class MainGame
 
 		reader.ReadStartElement("GlobalReferences");
 
-		var globalReferenceHanlder = SerializationReferenceHandler.Deserialize(reader, serializationData);
-
-		serializationData.SerializationComplete();
+		var globalReferenceHandler = SerializationReferenceHandler.Deserialize(reader, serializationData, false);
 
 		reader.ReadEndElement();
 
-		return globalReferenceHanlder;
+		foreach (var serializationReferenceXmlFiles in Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "Assets"), "*.srh.xml", SearchOption.AllDirectories))
+		{
+			using var individualFileReader = XmlReader.Create(serializationReferenceXmlFiles, new XmlReaderSettings() { ConformanceLevel = ConformanceLevel.Document });
+
+			globalReferenceHandler.DeserializeInto(individualFileReader, serializationData, false);
+		}
+
+		globalReferenceHandler.ExitAllowEventualReferenceMode();
+
+		serializationData.SerializationComplete();
+
+		return globalReferenceHandler;
 	}
 
 	public static Settings GlobalSettings;
@@ -47,8 +56,6 @@ public sealed class MainGame
 	public bool Paused;
 
 	public readonly object SynchronizationObject = new();
-
-	public ChemicalType[] ChemicalTypes;
 
 	public static Dictionary<string, ChemicalType> ChemicalTypesDictionary;
 
@@ -64,10 +71,6 @@ public sealed class MainGame
 
 		GlobalSettings = new();
 
-		ChemicalTypes = ChemicalType.LoadChemicalTypes(Path.Combine(Environment.CurrentDirectory, "Assets", "Chemical types"));
-
-		ChemicalTypesDictionary = ChemicalTypes.ToDictionary((cT) => cT.ChemicalName);
-
 		this.window = window;
 
 		InputTracker.ListenToWindow(window);
@@ -82,6 +85,8 @@ public sealed class MainGame
 		{
 			GlobalReferenceHandler = DeserializeGlobalReferenceHandler(new SerializationData(GameData));
 		}
+
+		ChemicalTypesDictionary = ChemicalType.ChemicalTypes.ToDictionary((cT) => cT.ChemicalName);
 
 		PhysicsWorld = new();
 

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SerializationReferenceHandler>
+	<Count>1</Count>
+	<Elements>
+		<IEntitySerializable>
+			<Type>Space_Refinery_Game.ChemicalType</Type>
+			<ChemicalType>
+				<GUID>8c22ca6f-030b-41d1-a4ff-d54eaeb06640</GUID>
+				<ChemicalName>Oxygen</ChemicalName>
+				<EnthalpyOfVaporization>446.1</EnthalpyOfVaporization>
+				<EnthalpyOfFusion>58</EnthalpyOfFusion>
+				<GasPhaseType>
+					<ResourceType>
+						<ResourceName>Oxygen Gas</ResourceName>
+						<Density>1.429</Density>
+						<SpecificHeatCapacity>14.38</SpecificHeatCapacity>
+					</ResourceType>
+				</GasPhaseType>
+				<LiquidPhaseType>
+					<ResourceType>
+						<ResourceName>Liquid Oxygen</ResourceName>
+						<Density>700</Density>
+						<SpecificHeatCapacity>13.12</SpecificHeatCapacity>
+					</ResourceType>
+				</LiquidPhaseType>
+				<SolidPhaseType>
+					<ResourceType>
+						<ResourceName>Solid Oxygen</ResourceName>
+						<Density>860</Density>
+						<SpecificHeatCapacity>13.12</SpecificHeatCapacity>
+					</ResourceType>
+				</SolidPhaseType>
+			</ChemicalType>				
+		</IEntitySerializable>
+	</Elements>
+</SerializationReferenceHandler>

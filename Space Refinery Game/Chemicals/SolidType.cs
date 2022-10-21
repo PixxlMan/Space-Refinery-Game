@@ -3,10 +3,8 @@ using System.Text.Json.Serialization;
 
 namespace Space_Refinery_Game;
 
-[Serializable]
 public sealed class SolidType : ResourceType
 {
-	[JsonConstructor]
 	public SolidType()
 	{
 

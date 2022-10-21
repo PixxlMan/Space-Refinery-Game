@@ -1,14 +1,12 @@
 ﻿using FixedPrecision;
 using ImGuiNET;
 using System.Text.Json.Serialization;
+using System.Xml;
 
 namespace Space_Refinery_Game;
 
-[Serializable]
-public abstract class ResourceType : IUIInspectable
+public abstract class ResourceType : IUIInspectable, IEntitySerializable
 {
-	[NonSerialized]
-	[JsonIgnore]
 	public ChemicalType ChemicalType;
 
 	public string ResourceName;
@@ -50,5 +48,27 @@ public abstract class ResourceType : IUIInspectable
 	public virtual IUIInspectable DoUIInspectorEditable()
 	{
 		throw new NotImplementedException();
+	}
+
+	public virtual void SerializeState(XmlWriter writer)
+	{
+		writer.WriteStartElement(nameof(ResourceType));
+		{
+			writer.Serialize(ResourceName, nameof(ResourceName));
+			writer.Serialize(Density, nameof(Density));
+			writer.Serialize(SpecificHeatCapacity, nameof(SpecificHeatCapacity));
+		}
+		writer.WriteEndElement();
+	}
+
+	public virtual void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
+	{
+		reader.ReadStartElement(nameof(ResourceType));
+		{
+			ResourceName = reader.ReadString(nameof(ResourceName));
+			Density = reader.DeserializeDecimalNumber(nameof(Density));
+			SpecificHeatCapacity = reader.DeserializeDecimalNumber(nameof(SpecificHeatCapacity));
+		}
+		reader.ReadEndElement();
 	}
 }

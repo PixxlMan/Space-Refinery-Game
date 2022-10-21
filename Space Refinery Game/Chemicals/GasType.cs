@@ -4,10 +4,8 @@ using System.Text.Json.Serialization;
 
 namespace Space_Refinery_Game;
 
-[Serializable]
 public sealed class GasType : ResourceType
 {
-	[JsonConstructor]
 	public GasType()
 	{
 

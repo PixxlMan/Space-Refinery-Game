@@ -1,18 +1,21 @@
 ﻿using FixedPrecision;
 using ImGuiNET;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Space_Refinery_Game
 {
-	[Serializable]
-	public sealed class ChemicalType : IJsonOnDeserialized, IUIInspectable
+	public sealed class ChemicalType : ISerializableReference, IUIInspectable
 	{
+		public static ConcurrentBag<ChemicalType> ChemicalTypes = new();
+
 		public string ChemicalName;
 
 		public GasType GasPhaseType;
@@ -25,40 +28,12 @@ namespace Space_Refinery_Game
 
 		public DecimalNumber EnthalpyOfFusion;
 
-		public void OnDeserialized()
+		public ChemicalType()
 		{
-			GasPhaseType.ChemicalType = this;
-			LiquidPhaseType.ChemicalType = this;
-			SolidPhaseType.ChemicalType = this;
+			ChemicalTypes.Add(this);
 		}
 
-		public void Serialize(string path)
-		{
-			using var stream = File.OpenWrite(path);
-
-			JsonSerializer.Serialize(stream, this, new JsonSerializerOptions() { IncludeFields = true, WriteIndented = true, ReadCommentHandling = JsonCommentHandling.Skip });
-		}
-
-		public static ChemicalType Deserialize(string path)
-		{
-			using var stream = File.OpenRead(path);
-
-			return JsonSerializer.Deserialize<ChemicalType>(stream, new JsonSerializerOptions() { IncludeFields = true, ReadCommentHandling = JsonCommentHandling.Skip });
-		}
-
-		public static ChemicalType[] LoadChemicalTypes(string directory)
-		{
-			List<ChemicalType> chemicalTypes = new();
-
-			foreach (var filePath in Directory.GetFiles(directory))
-			{
-				using var stream = File.OpenRead(filePath);
-
-				chemicalTypes.Add(Deserialize(filePath));
-			}
-
-			return chemicalTypes.ToArray();
-		}
+		public Guid SerializableReferenceGUID { get; private set; }
 
 		public void DoUIInspectorReadonly()
 		{
@@ -112,6 +87,40 @@ namespace Space_Refinery_Game
 				default:
 					throw new ArgumentException(nameof(chemicalPhase));
 			}
+		}
+
+		public void SerializeState(XmlWriter writer)
+		{
+			writer.WriteStartElement(nameof(ChemicalType));
+			{
+				writer.SerializeReference(this);
+				writer.Serialize(ChemicalName, nameof(ChemicalName));
+				writer.Serialize(EnthalpyOfVaporization, nameof(EnthalpyOfVaporization));
+				writer.Serialize(EnthalpyOfFusion, nameof(EnthalpyOfFusion));
+				IEntitySerializable.SerializeWithoutEmbeddedType(writer, GasPhaseType, nameof(GasPhaseType));
+				IEntitySerializable.SerializeWithoutEmbeddedType(writer, LiquidPhaseType, nameof(LiquidPhaseType));
+				IEntitySerializable.SerializeWithoutEmbeddedType(writer, SolidPhaseType, nameof(SolidPhaseType));
+			}
+			writer.WriteEndElement();
+		}
+
+		public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
+		{
+			reader.ReadStartElement(nameof(ChemicalType));
+			{
+				SerializableReferenceGUID = reader.ReadReferenceGUID();
+				ChemicalName = reader.ReadString(nameof(ChemicalName));
+				EnthalpyOfVaporization = reader.DeserializeDecimalNumber(nameof(EnthalpyOfVaporization));
+				EnthalpyOfFusion = reader.DeserializeDecimalNumber(nameof(EnthalpyOfFusion));
+				GasPhaseType = IEntitySerializable.DeserializeWithoutEmbeddedType<GasType>(reader, serializationData, referenceHandler, nameof(GasPhaseType));
+				LiquidPhaseType = IEntitySerializable.DeserializeWithoutEmbeddedType<LiquidType>(reader, serializationData, referenceHandler, nameof(LiquidPhaseType));
+				SolidPhaseType = IEntitySerializable.DeserializeWithoutEmbeddedType<SolidType>(reader, serializationData, referenceHandler, nameof(SolidPhaseType));
+
+				GasPhaseType.ChemicalType = this;
+				LiquidPhaseType.ChemicalType = this;
+				SolidPhaseType.ChemicalType = this;
+			}
+			reader.ReadEndElement();
 		}
 	}
 }

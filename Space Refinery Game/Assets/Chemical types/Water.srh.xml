@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SerializationReferenceHandler>
+	<Count>1</Count>
+	<Elements>
+		<IEntitySerializable>
+			<Type>Space_Refinery_Game.ChemicalType</Type>
+			<ChemicalType>
+				<GUID>6b3a9e4d-531d-4976-bacb-ae680dbc74a5</GUID>
+				<ChemicalName>Water</ChemicalName>
+				<EnthalpyOfVaporization>2257</EnthalpyOfVaporization>
+				<EnthalpyOfFusion>334</EnthalpyOfFusion>
+				<GasPhaseType>
+					<ResourceType>
+						<ResourceName>Water Vapor</ResourceName>
+						<Density>200</Density>
+						<SpecificHeatCapacity>3.77</SpecificHeatCapacity>
+					</ResourceType>
+				</GasPhaseType>
+				<LiquidPhaseType>
+					<ResourceType>
+						<ResourceName>Water</ResourceName>
+						<Density>1000</Density>
+						<SpecificHeatCapacity>4.16</SpecificHeatCapacity>
+					</ResourceType>
+				</LiquidPhaseType>
+				<SolidPhaseType>
+					<ResourceType>
+						<ResourceName>Ice</ResourceName>
+						<Density>917</Density>
+						<SpecificHeatCapacity>3.11</SpecificHeatCapacity>
+					</ResourceType>
+				</SolidPhaseType>
+			</ChemicalType>				
+		</IEntitySerializable>
+	</Elements>
+</SerializationReferenceHandler>

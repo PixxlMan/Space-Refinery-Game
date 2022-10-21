@@ -1,10 +1,4 @@
-﻿using FixedPrecision;
-using ImGuiNET;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ImGuiNET;
 using System.Xml;
 
 namespace Space_Refinery_Game
@@ -84,7 +78,7 @@ namespace Space_Refinery_Game
 			{
 				if (ImGui.CollapsingHeader("Resource selection"))
 				{
-					UIFunctions.DoSelector(MainGame.ChemicalTypes, ref selection, out bool hasSelection, out ChemicalType selected);
+					UIFunctions.DoSelector(ChemicalType.ChemicalTypes.ToArray(), ref selection, out bool hasSelection, out ChemicalType selected);
 
 					if (hasSelection)
 					{

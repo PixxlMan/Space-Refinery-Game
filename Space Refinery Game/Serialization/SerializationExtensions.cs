@@ -401,7 +401,7 @@ namespace Space_Refinery_Game
 
 					for (int i = 0; i < count; i++)
 					{
-						DeserializeReference(reader, referenceHandler, (s) => bagToAddTo.Add((T)s), name);
+						DeserializeReference(reader, referenceHandler, (s) => bagToAddTo.Add((T)s));
 					}
 				}
 				reader.ReadEndElement();

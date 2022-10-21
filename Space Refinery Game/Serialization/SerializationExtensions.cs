@@ -1,6 +1,7 @@
 ﻿using FixedPrecision;
 using FXRenderer;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -22,6 +23,11 @@ namespace Space_Refinery_Game
 			if (index < 0) return null;
 
 			return map.TargetMethods[index];
+		}
+
+		public static void Serialize(this XmlWriter writer, string text, string name = "String")
+		{
+			writer.WriteElementString(name, text);
 		}
 
 		public static void Serialize(this XmlWriter writer, Type type, string name = "Type")
@@ -220,6 +226,7 @@ namespace Space_Refinery_Game
 				return result;
 			}
 		}
+
 		public static void Serialize<T>(this XmlWriter writer, ICollection<T> collection, Action<XmlWriter, T> serializationAction, string? name = null)
 		{
 			writer.WriteStartElement(name ?? "Collection");
@@ -231,6 +238,25 @@ namespace Space_Refinery_Game
 					foreach (T serializable in collection)
 					{
 						serializationAction(writer, serializable);
+					}
+				}				
+				writer.WriteEndElement();
+			}
+			writer.WriteEndElement();
+		}
+
+		public static void Serialize<T>(this XmlWriter writer, ICollection<T> collection, string? name = null)
+			where T : ISerializableReference
+		{
+			writer.WriteStartElement(name ?? "Collection");
+			{
+				writer.WriteElementString("Count", collection.Count.ToString());
+
+				writer.WriteStartElement("Elements");
+				{
+					foreach (T serializable in collection)
+					{
+						writer.SerializeReference(serializable);
 					}
 				}				
 				writer.WriteEndElement();
@@ -350,6 +376,32 @@ namespace Space_Refinery_Game
 					for (int i = 0; i < count; i++)
 					{
 						deserializationAction(reader);
+					}
+				}
+				reader.ReadEndElement();
+			}
+			reader.ReadEndElement();
+		}
+
+		public static void DeserializeReferenceCollection<T>(this XmlReader reader, ConcurrentBag<T> bagToAddTo, SerializationReferenceHandler referenceHandler, string? name = null)
+			where T : ISerializableReference
+		{
+			reader.ReadStartElement(name ?? "Collection");
+			{
+				int count = int.Parse(reader.ReadElementString("Count"));
+
+				reader.ReadStartElement("Elements");
+				{
+					if (count == 0)
+					{
+						reader.ReadEndElement();
+
+						return;
+					}
+
+					for (int i = 0; i < count; i++)
+					{
+						DeserializeReference(reader, referenceHandler, (s) => bagToAddTo.Add((T)s), name);
 					}
 				}
 				reader.ReadEndElement();

@@ -176,7 +176,9 @@ namespace Space_Refinery_Game
 				}
 
 				PhysicsObject.Enabled = false;
-				Proxy?.Disable(); 
+				Proxy?.Disable();
+
+				UpdateProxy();
 			}
 		}
 
@@ -214,7 +216,7 @@ namespace Space_Refinery_Game
 				else if (Connectables.connectableB == connectable)
 				{
 					Disconnect(ConnectorSide.B);
-				} 
+				}
 			}
 		}
 
@@ -265,6 +267,9 @@ namespace Space_Refinery_Game
 		{
 			lock (SyncRoot)
 			{
+				if (Destroyed)
+					return;
+
 				if (!MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>($"{nameof(Connector)} debug objects"))
 					return;
 

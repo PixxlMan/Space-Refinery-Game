@@ -10,15 +10,17 @@ using System.Xml;
 
 namespace Space_Refinery_Game
 {
-	public struct ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
+	public class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 	{
 		public ResourceType ResourceType;
 
-		public readonly ChemicalType ChemicalType => ResourceType.ChemicalType;
+		public ChemicalType ChemicalType => ResourceType.ChemicalType;
 
-		public DecimalNumber Mass; // kg
+		public DecimalNumber Moles;
 
-		public DecimalNumber Volume => (DecimalNumber)Mass / ResourceType.Density; // m3
+		public DecimalNumber Mass => ChemicalType.MolesToMass(ChemicalType, Moles); // kg
+
+		public DecimalNumber Volume => Mass / ResourceType.Density; // m3
 
 		public DecimalNumber InternalEnergy; // kJ
 
@@ -39,30 +41,12 @@ namespace Space_Refinery_Game
 
 		public DecimalNumber Enthalpy => InternalEnergy + Pressure * Volume; // https://www.omnicalculator.com/physics/enthalpy
 
-		public ResourceUnit(ResourceType resourceType, DecimalNumber mass, DecimalNumber internalEnergy, DecimalNumber pressure)
+		public ResourceUnit(ResourceType resourceType, DecimalNumber moles, DecimalNumber internalEnergy)
 		{
 			ResourceType = resourceType;
-			Mass = mass;
+			Moles = moles;
 			InternalEnergy = internalEnergy;
 			//Pressure = pressure;
-		}
-
-		public static ResourceUnit Add(ResourceUnit a, ResourceUnit b)
-		{
-			if (a.ResourceType != b.ResourceType)
-			{
-				throw new InvalidOperationException($"The {nameof(ResourceType)} of both {nameof(a)} and {nameof(b)} was not the same.");
-			}
-
-			ResourceUnit resourceUnit = new()
-			{
-				ResourceType = a.ResourceType,
-				Mass = a.Mass + b.Mass,
-				InternalEnergy = a.InternalEnergy + b.InternalEnergy,
-				//Pressure = a.Pressure + b.Pressure, // ?
-			};
-
-			return resourceUnit;
 		}
 
 		public static void DoCreation(ChemicalType selected, ref ResourceUnit newResourceUnit)
@@ -73,29 +57,18 @@ namespace Space_Refinery_Game
 
 				float mass = newResourceUnit.Mass.ToFloat();
 				ImGui.SliderFloat("Mass (kg)", ref mass, 0, 100);
-				newResourceUnit.Mass = DecimalNumber.FromFloat(mass);
+				newResourceUnit.Moles = ChemicalType.MassToMoles(selected, DecimalNumber.FromFloat(mass));
+
+				ImGui.Text($"Moles: {newResourceUnit.Moles} mol");
 
 				ImGui.Text($"Volume: {newResourceUnit.Volume} m3");
 			}
 			ImGui.Unindent();
 		}
 
-		public static ResourceUnit Remove(ResourceUnit a, ResourceUnit b)
+		public ResourceUnit Clone()
 		{
-			if (a.ResourceType != b.ResourceType)
-			{
-				throw new InvalidOperationException($"The {nameof(ResourceType)} of both {nameof(a)} and {nameof(b)} was not the same.");
-			}
-
-			ResourceUnit resourceUnit = new()
-			{
-				ResourceType = a.ResourceType,
-				Mass = a.Mass - b.Mass,
-				InternalEnergy = a.InternalEnergy - b.InternalEnergy,
-				//Pressure = a.Pressure - b.Pressure, // ?
-			};
-
-			return resourceUnit;
+			return new(ResourceType, Moles, InternalEnergy);
 		}
 
 		public override bool Equals(object? obj)
@@ -106,25 +79,19 @@ namespace Space_Refinery_Game
 		public bool Equals(ResourceUnit other)
 		{
 			return EqualityComparer<ResourceType>.Default.Equals(ResourceType, other.ResourceType) &&
-				   Mass.Equals(other.Mass) &&
+				   Moles.Equals(other.Moles) &&
 				   InternalEnergy.Equals(other.InternalEnergy) &&
 				   Pressure.Equals(other.Pressure);
 		}
 
 		public override int GetHashCode()
 		{
-			return HashCode.Combine(ResourceType, Mass, InternalEnergy, Pressure);
+			return HashCode.Combine(ResourceType, Moles, InternalEnergy, Pressure);
 		}
 
-		public static ResourceUnit Part(ResourceUnit unit, DecimalNumber part)
+		public static ResourceUnit GetPart(ResourceUnit unit, DecimalNumber part)
 		{
-			ResourceUnit resourceUnit = new()
-			{
-				ResourceType = unit.ResourceType,
-				Mass = unit.Mass * part,
-				InternalEnergy = unit.InternalEnergy * part,
-				//Pressure = unit.Pressure * transferPart, // ?
-			};
+			ResourceUnit resourceUnit = new(unit.ResourceType, unit.Moles * part, unit.InternalEnergy * part);
 
 			return resourceUnit;
 		}
@@ -138,6 +105,7 @@ namespace Space_Refinery_Game
 					ResourceType.DoUIInspectorReadonly();
 				}
 
+				ImGui.Text($"Moles: {Moles} mol");
 				ImGui.Text($"Mass: {Mass} kg");
 				ImGui.Text($"Volume: {Volume} m3");
 				ImGui.Text($"Internal Energy: {InternalEnergy} ?");
@@ -146,6 +114,28 @@ namespace Space_Refinery_Game
 				ImGui.Text($"Pressure: {Pressure} Pa");
 			}
 			UIFunctions.EndSub();
+		}
+
+		public void Remove(ResourceUnit b)
+		{
+			if (b.ResourceType != ResourceType)
+			{
+				throw new ArgumentException($"The other {nameof(ResourceUnit)} had another {nameof(ResourceType)}.", nameof(b));
+			}
+
+			Moles -= b.Moles;
+			InternalEnergy -= b.InternalEnergy;
+		}
+
+		public void Add(ResourceUnit b)
+		{
+			if (b.ResourceType != ResourceType)
+			{
+				throw new ArgumentException($"The other {nameof(ResourceUnit)} had another {nameof(ResourceType)}.", nameof(b));
+			}
+
+			Moles += b.Moles;
+			InternalEnergy += b.InternalEnergy;
 		}
 
 		public IUIInspectable DoUIInspectorEditable()
@@ -163,50 +153,31 @@ namespace Space_Refinery_Game
 			return !(left == right);
 		}
 
-		public static ResourceUnit operator +(ResourceUnit left, ResourceUnit right)
-		{
-			return Add(left, right);
-		}
-
-		public static ResourceUnit operator -(ResourceUnit left, ResourceUnit right)
-		{
-			return Remove(left, right);
-		}
-
 		public void Serialize(XmlWriter writer)
 		{
 			writer.WriteElementString(nameof(ChemicalType.ChemicalName), ChemicalType.ChemicalName);
-			writer.WriteElementString(nameof(ResourceType.ChemicalPhase), ResourceType.ChemicalPhase.ToString());
-			writer.Serialize(Mass, nameof(Mass));
+			writer.Serialize(ResourceType.ChemicalPhase.ToString(), nameof(ChemicalPhase));
+			writer.Serialize(Moles, nameof(Moles));
 			writer.Serialize(InternalEnergy, nameof(InternalEnergy));
-			writer.Serialize(Pressure, nameof(Pressure));
+			//writer.Serialize(Pressure, nameof(Pressure));
 		}
 
 		public static ResourceUnit Deserialize(XmlReader reader)
 		{
 			ChemicalType chemicalType;
 			ResourceType resourceType;
-			DecimalNumber mass;
+			DecimalNumber moles;
 			DecimalNumber internalEnergy;
 			DecimalNumber pressure;
 
-			reader.ReadStartElement(nameof(Space_Refinery_Game.ChemicalType.ChemicalName));
-			{
-				chemicalType = MainGame.ChemicalTypesDictionary[reader.ReadContentAsString()];
-			}
+			chemicalType = MainGame.ChemicalTypesDictionary[reader.ReadString(nameof(Space_Refinery_Game.ChemicalType.ChemicalName))];
 			reader.ReadEndElement();
-			reader.ReadStartElement(nameof(Space_Refinery_Game.ResourceType.ChemicalPhase));
-			{
-				ChemicalPhase chemicalPhase = Enum.Parse<ChemicalPhase>(reader.ReadContentAsString());
-
-				resourceType = chemicalType.GetResourceTypeForPhase(chemicalPhase);
-			}
-			reader.ReadEndElement();
-			mass = reader.DeserializeDecimalNumber(nameof(Mass));
+			resourceType = chemicalType.GetResourceTypeForPhase(reader.DeserializeEnum<ChemicalPhase>(nameof(ChemicalPhase)));
+			moles = reader.DeserializeDecimalNumber(nameof(Moles));
 			internalEnergy = reader.DeserializeDecimalNumber(nameof(InternalEnergy));
-			pressure = reader.DeserializeDecimalNumber(nameof(Pressure));
+			//pressure = reader.DeserializeDecimalNumber(nameof(Pressure));
 
-			return new(resourceType, mass, internalEnergy, pressure);
+			return new(resourceType, moles, internalEnergy);
 		}
 	}
 }

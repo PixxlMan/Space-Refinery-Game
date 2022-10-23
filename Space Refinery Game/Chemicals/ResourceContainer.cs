@@ -28,7 +28,7 @@ namespace Space_Refinery_Game
 					return 1;
 				}
 
-				return Volume / (DecimalNumber)MaxVolume;
+				return Volume / MaxVolume;
 			}
 		}
 
@@ -53,7 +53,7 @@ namespace Space_Refinery_Game
 
 			if (resources.ContainsKey(unit.ResourceType))
 			{
-				resources[unit.ResourceType] += unit;
+				resources[unit.ResourceType].Add(unit);
 			}
 			else
 			{
@@ -80,13 +80,13 @@ namespace Space_Refinery_Game
 			return resources.ContainsKey(resourceType);
 		}
 
-		public ResourceUnit ExtractResource(ResourceType resourceType, DecimalNumber extractionVolume)
+		public ResourceUnit ExtractResourceByVolume(ResourceType resourceType, DecimalNumber extractionVolume)
 		{
 			DecimalNumber transferPart = extractionVolume / resources[resourceType].Volume;
 
-			var extractedResource = ResourceUnit.Part(resources[resourceType], transferPart);
+			var extractedResource = ResourceUnit.GetPart(resources[resourceType], transferPart);
 
-			resources[resourceType] -= extractedResource;
+			resources[resourceType].Moles -= extractedResource.Moles;
 
 			mass -= extractedResource.Mass;
 
@@ -98,6 +98,26 @@ namespace Space_Refinery_Game
 			volume -= extractionVolume;
 
 			return extractedResource;
+		}
+
+		public ResourceUnit ExtractResourceByMoles(ResourceType resourceType, DecimalNumber extractionMoles)
+		{
+			resources[resourceType].Moles -= extractionMoles;
+
+			mass -= ChemicalType.MolesToMass(resourceType.ChemicalType, extractionMoles);
+
+			if (resources[resourceType].Mass <= 0)
+			{
+				resources.Remove(resourceType);
+			}
+
+			volume -= ChemicalType.MolesToMass(resourceType.ChemicalType, extractionMoles);
+
+			var extracted = resources[resourceType].Clone();
+
+			extracted.Moles = extractionMoles;
+
+			return extracted;
 		}
 
 		public void TransferResource(ResourceContainer transferTarget, DecimalNumber transferVolume)
@@ -121,11 +141,11 @@ namespace Space_Refinery_Game
 
 			foreach (var unit in resources.Values)
 			{
-				var transferedResource = ResourceUnit.Part(unit, transferPart);
+				var transferedResource = ResourceUnit.GetPart(unit, transferPart);
 
 				transferTarget.AddResource(transferedResource);
 
-				resources[unit.ResourceType] -= transferedResource;
+				resources[unit.ResourceType].Remove(transferedResource);
 
 				mass -= transferedResource.Mass;
 

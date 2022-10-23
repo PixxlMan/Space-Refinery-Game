@@ -95,7 +95,7 @@ namespace Space_Refinery_Game
 				{
 					if (InputTracker.GetKeyDown(Key.U))
 					{
-						pipe.ResourceContainer.AddResource(new(MainGame.ChemicalTypesDictionary["Water"].LiquidPhaseType, 10, 100 * MainGame.ChemicalTypesDictionary["Water"].LiquidPhaseType.SpecificHeatCapacity * 10, 0));
+						pipe.ResourceContainer.AddResource(new(MainGame.ChemicalTypesDictionary["Water"].LiquidPhaseType, ChemicalType.MassToMoles(MainGame.ChemicalTypesDictionary["Water"], 10), 100 * MainGame.ChemicalTypesDictionary["Water"].LiquidPhaseType.SpecificHeatCapacity * 10));
 					}
 				}
 

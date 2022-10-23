@@ -8,11 +8,24 @@ namespace Space_Refinery_Game
 {
 	public static class Electricity
 	{
-		public static DecimalNumber Voltage => 1000; // V or J/C
+		/// <summary>
+		/// [C/mol]
+		/// </summary>
+		public static DecimalNumber FaradayConstant => 96485; // [C/mol]
 
-		public static DecimalNumber ElectricalEnergyToCoulomb(DecimalNumber electricalEnergy /* J */)
+		/// <summary>
+		/// [V], [J/C]
+		/// </summary>
+		public static DecimalNumber Voltage => 1000; // [V] or [J/C]
+
+		/// <summary>
+		/// [J] of electrical energy to [C]
+		/// </summary>
+		/// <param name="electricalEnergy">[J]</param>
+		/// <returns>[C]</returns>
+		public static DecimalNumber ElectricalEnergyToCoulomb(DecimalNumber electricalEnergy /* [J] */)
 		{
-			return electricalEnergy * Voltage; // J * J/C => C
+			return electricalEnergy * Voltage; // [J] * [J/C] => [C]
 		}
 	}
 }

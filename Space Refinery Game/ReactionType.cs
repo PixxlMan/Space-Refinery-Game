@@ -61,6 +61,8 @@ namespace Space_Refinery_Game
 
 		public string ReactionName { get; protected set; }
 
+		public abstract string Reaction { get; }
+
 		public HashSet<ChemicalType> NecessaryChemicals { get; private set; }
 
 		public Guid SerializableReferenceGUID { get; private set; }

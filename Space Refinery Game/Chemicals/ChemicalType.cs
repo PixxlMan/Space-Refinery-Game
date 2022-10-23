@@ -24,6 +24,9 @@ namespace Space_Refinery_Game
 
 		public SolidType SolidPhaseType;
 
+		/// <summary>
+		/// [g/mol]
+		/// </summary>
 		public DecimalNumber MolarMass; // M
 
 		public DecimalNumber EnthalpyOfVaporization;
@@ -91,14 +94,24 @@ namespace Space_Refinery_Game
 			}
 		}
 
+		/// <summary>
+		/// [mol] to [kg]
+		/// </summary>
+		/// <param name="moles">[mol]</param>
+		/// <returns>[kg]</returns>
 		public static DecimalNumber MolesToMass(ChemicalType chemicalType, DecimalNumber moles)
 		{
-			return moles * chemicalType.MolarMass;
+			return (moles * chemicalType.MolarMass) * 1000;
 		}
 
+		/// <summary>
+		/// [kg] to [mol]
+		/// </summary>
+		/// <param name="mass">[kg]</param>
+		/// <returns>[mol]</returns>
 		public static DecimalNumber MassToMoles(ChemicalType chemicalType, DecimalNumber mass)
 		{
-			return mass / chemicalType.MolarMass;
+			return (mass / 1000) / chemicalType.MolarMass;
 		}
 
 		public void SerializeState(XmlWriter writer)

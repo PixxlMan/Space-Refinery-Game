@@ -7,6 +7,7 @@
 			<ReactionType>
 				<GUID>4c340359-2c09-41c9-97dd-858501c99368</GUID>
 				<ReactionName>Electrolysis</ReactionName>
+				<CanOccurSpontaneously>True</CanOccurSpontaneously>
 				<NecessaryChemicals>
 					<Count>2</Count>
 					<Elements>

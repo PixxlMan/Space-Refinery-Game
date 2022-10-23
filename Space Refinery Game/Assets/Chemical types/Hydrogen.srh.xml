@@ -7,6 +7,7 @@
 			<ChemicalType>
 				<GUID>b0ccba05-c046-4378-b45e-52fcb715b1f4</GUID>
 				<ChemicalName>Hydrogen</ChemicalName>
+				<MolarMass>1.008</MolarMass>
 				<EnthalpyOfVaporization>446.1</EnthalpyOfVaporization>
 				<EnthalpyOfFusion>58</EnthalpyOfFusion>
 				<GasPhaseType>

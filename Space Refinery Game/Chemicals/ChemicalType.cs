@@ -24,6 +24,8 @@ namespace Space_Refinery_Game
 
 		public SolidType SolidPhaseType;
 
+		public DecimalNumber MolarMass; // M
+
 		public DecimalNumber EnthalpyOfVaporization;
 
 		public DecimalNumber EnthalpyOfFusion;
@@ -85,8 +87,18 @@ namespace Space_Refinery_Game
 				case ChemicalPhase.Plasma:
 					throw new NotSupportedException("Plasma isn't supported.");
 				default:
-					throw new ArgumentException(nameof(chemicalPhase));
+					throw new ArgumentException($"Invalid {nameof(ChemicalType)} enum value.", nameof(chemicalPhase));
 			}
+		}
+
+		public static DecimalNumber MolesToMass(ChemicalType chemicalType, DecimalNumber moles)
+		{
+			return moles * chemicalType.MolarMass;
+		}
+
+		public static DecimalNumber MassToMoles(ChemicalType chemicalType, DecimalNumber mass)
+		{
+			return mass / chemicalType.MolarMass;
 		}
 
 		public void SerializeState(XmlWriter writer)
@@ -95,6 +107,7 @@ namespace Space_Refinery_Game
 			{
 				writer.SerializeReference(this);
 				writer.Serialize(ChemicalName, nameof(ChemicalName));
+				writer.Serialize(MolarMass, nameof(MolarMass));
 				writer.Serialize(EnthalpyOfVaporization, nameof(EnthalpyOfVaporization));
 				writer.Serialize(EnthalpyOfFusion, nameof(EnthalpyOfFusion));
 				IEntitySerializable.SerializeWithoutEmbeddedType(writer, GasPhaseType, nameof(GasPhaseType));
@@ -110,6 +123,7 @@ namespace Space_Refinery_Game
 			{
 				SerializableReferenceGUID = reader.ReadReferenceGUID();
 				ChemicalName = reader.ReadString(nameof(ChemicalName));
+				MolarMass = reader.DeserializeDecimalNumber(nameof(MolarMass));
 				EnthalpyOfVaporization = reader.DeserializeDecimalNumber(nameof(EnthalpyOfVaporization));
 				EnthalpyOfFusion = reader.DeserializeDecimalNumber(nameof(EnthalpyOfFusion));
 				GasPhaseType = IEntitySerializable.DeserializeWithoutEmbeddedType<GasType>(reader, serializationData, referenceHandler, nameof(GasPhaseType));

@@ -462,15 +462,12 @@ namespace Space_Refinery_Game
 			//return new(value.GetRawValue() * FixedDecimalInt4PrecisionDifferenceFactor);
 		}
 
-		[Obsolete]
 		public static implicit operator DecimalNumber(short value) => FromInt16(value);
-		[Obsolete]
 		public static implicit operator DecimalNumber(int value) => FromInt32(value);
-		[Obsolete]
 		public static implicit operator DecimalNumber(long value) => FromInt64(value);
 
 		public static explicit operator DecimalNumber(decimal value) => FromDecimal(value);
-		public static explicit operator DecimalNumber(double value) => FromDouble(value);
+		public static implicit operator DecimalNumber(double value) => FromDouble(value);
 		public static explicit operator DecimalNumber(float value) => FromFloat(value);
 
 		public static explicit operator short(DecimalNumber value) => ToInt16(value);

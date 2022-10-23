@@ -14,6 +14,22 @@ namespace Space_Refinery_Game
 {
 	public sealed class ChemicalType : ISerializableReference, IUIInspectable
 	{
+		private static Lazy<ChemicalType> oxygen = new (() => GetChemicalType("Oxygen"), isThreadSafe: true);
+		public static ChemicalType Oxygen => oxygen.Value;
+
+		private static Lazy<ChemicalType> hydrogen = new (() => GetChemicalType("Hydrogen"), isThreadSafe: true);
+		public static ChemicalType Hydrogen => hydrogen.Value;
+
+		private static Lazy<ChemicalType> water = new (() => GetChemicalType("Water"), isThreadSafe: true);
+		public static ChemicalType Water => water.Value;
+
+		public static ChemicalType GetChemicalType(string chemicalName)
+		{
+			return chemicalNameToChemicalType[chemicalName];
+		}
+
+		private static ConcurrentDictionary<string, ChemicalType> chemicalNameToChemicalType;
+
 		public static ConcurrentBag<ChemicalType> ChemicalTypes = new();
 
 		public string ChemicalName;
@@ -148,6 +164,8 @@ namespace Space_Refinery_Game
 				SolidPhaseType.ChemicalType = this;
 			}
 			reader.ReadEndElement();
+
+			chemicalNameToChemicalType.TryAdd(ChemicalName, this);
 		}
 	}
 }

@@ -63,8 +63,6 @@ public sealed class MainGame
 
 	public readonly object SynchronizationObject = new();
 
-	public static Dictionary<string, ChemicalType> ChemicalTypesDictionary;
-
 	public Guid SaveGuid { get; private set; } = Guid.NewGuid();
 
 	public event Action<FixedDecimalLong8> CollectUpdatePerformanceData;
@@ -91,8 +89,6 @@ public sealed class MainGame
 		{
 			GlobalReferenceHandler = DeserializeGlobalReferenceHandler(new SerializationData(GameData));
 		}
-
-		ChemicalTypesDictionary = ChemicalType.ChemicalTypes.ToDictionary((cT) => cT.ChemicalName);
 
 		PhysicsWorld = new();
 

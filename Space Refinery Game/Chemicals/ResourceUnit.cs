@@ -170,7 +170,7 @@ namespace Space_Refinery_Game
 			DecimalNumber internalEnergy;
 			DecimalNumber pressure;
 
-			chemicalType = MainGame.ChemicalTypesDictionary[reader.ReadString(nameof(Space_Refinery_Game.ChemicalType.ChemicalName))];
+			chemicalType = ChemicalType.GetChemicalType(reader.ReadString(nameof(Space_Refinery_Game.ChemicalType.ChemicalName)));
 			reader.ReadEndElement();
 			resourceType = chemicalType.GetResourceTypeForPhase(reader.DeserializeEnum<ChemicalPhase>(nameof(ChemicalPhase)));
 			moles = reader.DeserializeDecimalNumber(nameof(Moles));

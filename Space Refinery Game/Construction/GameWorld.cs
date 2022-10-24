@@ -125,7 +125,7 @@ namespace Space_Refinery_Game
 
 		private void Tick()
 		{
-			lock (TickSyncObject) lock (SynchronizationObject)
+			lock (TickSyncObject)
 			{
 				foreach (var entity in Entities)
 				{

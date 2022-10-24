@@ -27,8 +27,6 @@ namespace Space_Refinery_Game
 
 		public static readonly DecimalNumber InOutPipeVolume = (DecimalNumber).4;
 
-		public static readonly DecimalNumber ElectrolyzationRate = (DecimalNumber).0005; // [m³/s]
-
 		public static DecimalNumber AmperageDrawMax => 100;
 
 		public static DecimalNumber MaxElectricalEnergyPerSecond => AmperageDrawMax * Electricity.Voltage;
@@ -41,7 +39,9 @@ namespace Space_Refinery_Game
 			{
 				ResourceContainer resourceContainer = new(InOutPipeVolume);
 
-				ResourceContainers.Add(nameConnectorPair.Value, resourceContainer);
+				ConnectorToResourceContainers.AddUnique(nameConnectorPair.Value, resourceContainer);
+
+				ResourceContainers.AddUnique($"{nameConnectorPair.Key} container", resourceContainer);
 
 				switch (nameConnectorPair.Key)
 				{
@@ -56,14 +56,14 @@ namespace Space_Refinery_Game
 						break;
 				}
 			}
+
+			ResourceContainers.AddUnique("Reaction container", ReactionContainer);
 		}
 
 		protected override void DoMenu()
 		{
 			base.DoMenu();
 		}
-
-		public ResourceContainer OutputBuffer = new(DecimalNumber.MaxValue);
 
 		protected override void DisplaceContents()
 		{
@@ -82,18 +82,20 @@ namespace Space_Refinery_Game
 				{
 					WaterInput.TransferResource(ReactionContainer, DecimalNumber.Clamp(WaterInput.Volume * WaterInput.Fullness * (DecimalNumber)Time.TickInterval, 0, WaterInput.Volume));
 
-					electrolysisReaction.ProvideElectricalPower(MaxElectricalEnergyPerSecond);
-
-					electrolysisReaction.Tick(Time.TickInterval, ReactionContainer);
+					electrolysisReaction.Tick(Time.TickInterval, ReactionContainer, new ReactionFactor[1] { new ElectricalCurrent(MaxElectricalEnergyPerSecond * (DecimalNumber)Time.TickInterval) });
 
 					if (ReactionContainer.ContainsResourceType(ChemicalType.Oxygen.GasPhaseType))
 					{
-						OxygenOutput.AddResource(ReactionContainer.ExtractResourceByVolume(ChemicalType.Oxygen.GasPhaseType, ReactionContainer.GetResourceUnitForResourceType(ChemicalType.Oxygen.GasPhaseType).Volume));
+						OxygenOutput.FillResource(ReactionContainer.ExtractResourceByVolume(ChemicalType.Oxygen.GasPhaseType, ReactionContainer.GetResourceUnitForResourceType(ChemicalType.Oxygen.GasPhaseType).Volume), out var rest);
+
+						ReactionContainer.AddResource(rest);
 					}
 
 					if (ReactionContainer.ContainsResourceType(ChemicalType.Hydrogen.GasPhaseType))
 					{
-						HydrogenOutput.AddResource(ReactionContainer.ExtractResourceByVolume(ChemicalType.Hydrogen.GasPhaseType, ReactionContainer.GetResourceUnitForResourceType(ChemicalType.Hydrogen.GasPhaseType).Volume));
+						HydrogenOutput.FillResource(ReactionContainer.ExtractResourceByVolume(ChemicalType.Hydrogen.GasPhaseType, ReactionContainer.GetResourceUnitForResourceType(ChemicalType.Hydrogen.GasPhaseType).Volume), out var rest);
+
+						ReactionContainer.AddResource(rest);
 					}
 
 					//ElectricityInput.ConsumeElectricity();
@@ -107,6 +109,7 @@ namespace Space_Refinery_Game
 
 			writer.Serialize(Activated, nameof(Activated));
 
+			ReactionContainer.Serialize(writer);
 			WaterInput.Serialize(writer);
 			OxygenOutput.Serialize(writer);
 			HydrogenOutput.Serialize(writer);
@@ -118,6 +121,7 @@ namespace Space_Refinery_Game
 
 			Activated = reader.DeserializeBoolean(nameof(Activated));
 
+			ReactionContainer = ResourceContainer.Deserialize(reader);
 			WaterInput = ResourceContainer.Deserialize(reader);
 			OxygenOutput = ResourceContainer.Deserialize(reader);
 			HydrogenOutput = ResourceContainer.Deserialize(reader);

@@ -28,7 +28,7 @@ namespace Space_Refinery_Game
 			return chemicalNameToChemicalType[chemicalName];
 		}
 
-		private static ConcurrentDictionary<string, ChemicalType> chemicalNameToChemicalType;
+		private static ConcurrentDictionary<string, ChemicalType> chemicalNameToChemicalType = new();
 
 		public static ConcurrentBag<ChemicalType> ChemicalTypes = new();
 

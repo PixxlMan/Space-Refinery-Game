@@ -14,7 +14,7 @@ namespace Space_Refinery_Game
 
 			var machineryPipe = (MachineryPipe)Pipe;
 
-			foreach (var resourceContainer in machineryPipe.ResourceContainers.Values)
+			foreach (var resourceContainer in machineryPipe.ResourceContainers)
 			{
 				ImGui.Text(resourceContainer.ToString());
 			}

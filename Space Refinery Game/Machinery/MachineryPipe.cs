@@ -1,6 +1,7 @@
 ﻿using FixedPrecision;
 using ImGuiNET;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,9 @@ namespace Space_Refinery_Game
 			informationProvider = new MachineryPipeInformationProvider(this);
 		}
 
-		public Dictionary<PipeConnector, ResourceContainer> ResourceContainers = new();
+		public ConcurrentDictionary<PipeConnector, ResourceContainer> ConnectorToResourceContainers = new();
+
+		public ConcurrentDictionary<string, ResourceContainer> ResourceContainers = new();
 
 		public bool Activated;
 
@@ -23,7 +26,7 @@ namespace Space_Refinery_Game
 		{
 			lock (this)
 			{
-				return ResourceContainers[pipeConnector];
+				return ConnectorToResourceContainers[pipeConnector];
 			}
 		}
 
@@ -31,7 +34,7 @@ namespace Space_Refinery_Game
 		{
 			lock (this)
 			{
-				source.TransferResource(ResourceContainers[transferingConnector], volume);
+				source.TransferResource(ConnectorToResourceContainers[transferingConnector], volume);
 			}
 		}
 

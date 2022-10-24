@@ -23,11 +23,15 @@ namespace Space_Refinery_Game
 
 		public static readonly DecimalNumber ProcessingContainerVolume = 1;
 
-		public ResourceContainer ProcessingContainer = new(ProcessingContainerVolume);
+		public ResourceContainer ReactionContainer = new(ProcessingContainerVolume);
 
 		public static readonly DecimalNumber InOutPipeVolume = (DecimalNumber).4;
 
-		public static readonly DecimalNumber ElectrolyzationRate = (DecimalNumber).0005; // m3/s
+		public static readonly DecimalNumber ElectrolyzationRate = (DecimalNumber).0005; // [m³/s]
+
+		public static DecimalNumber AmperageDrawMax => 100;
+
+		public static DecimalNumber MaxElectricalEnergyPerSecond => AmperageDrawMax * Electricity.Voltage;
 
 		protected override void SetUp()
 		{
@@ -57,28 +61,7 @@ namespace Space_Refinery_Game
 		protected override void DoMenu()
 		{
 			base.DoMenu();
-
-			if (blocked)
-			{
-				ImGui.TextColored(RgbaFloat.Red.ToVector4(), "Blocked");
-			}
-
-			if (!Activated || blocked)
-			{
-				UIFunctions.PushDisabled();
-			}
-
-			if (!Activated || blocked)
-			{
-				UIFunctions.PopDisabled();
-			}
 		}
-
-		static readonly DecimalNumber hydrogenPart = ((DecimalNumber)1 / (DecimalNumber)3) * (DecimalNumber)2;
-
-		static readonly DecimalNumber oxygenPart = ((DecimalNumber)1 / (DecimalNumber)3);
-
-		bool blocked;
 
 		public ResourceContainer OutputBuffer = new(DecimalNumber.MaxValue);
 
@@ -87,71 +70,33 @@ namespace Space_Refinery_Game
 			//throw new NotImplementedException();
 		}
 
+		ElectrolysisReactionType electrolysisReaction = (ElectrolysisReactionType)ReactionType.ReactionTypes[0];
+
 		public override void Tick()
 		{
 			base.Tick();
 
 			lock (this)
 			{
-				if (blocked)
+				if (Activated)
 				{
-					if (OutputBuffer.ContainsResourceType(MainGame.ChemicalTypesDictionary["Hydrogen"].GasPhaseType))
+					WaterInput.TransferResource(ReactionContainer, DecimalNumber.Clamp(WaterInput.Volume * WaterInput.Fullness * (DecimalNumber)Time.TickInterval, 0, WaterInput.Volume));
+
+					electrolysisReaction.ProvideElectricalPower(MaxElectricalEnergyPerSecond);
+
+					electrolysisReaction.Tick(Time.TickInterval, ReactionContainer);
+
+					if (ReactionContainer.ContainsResourceType(ChemicalType.Oxygen.GasPhaseType))
 					{
-						ResourceUnit bufferedHydrogen = OutputBuffer.GetResourceUnitForResourceType(MainGame.ChemicalTypesDictionary["Hydrogen"].GasPhaseType);
-						if (HydrogenOutput.Volume + bufferedHydrogen.Volume < HydrogenOutput.MaxVolume)
-						{
-							HydrogenOutput.AddResource(OutputBuffer.ExtractResource(bufferedHydrogen.ResourceType, bufferedHydrogen.Volume));
-						}
+						OxygenOutput.AddResource(ReactionContainer.ExtractResourceByVolume(ChemicalType.Oxygen.GasPhaseType, ReactionContainer.GetResourceUnitForResourceType(ChemicalType.Oxygen.GasPhaseType).Volume));
 					}
 
-					if (OutputBuffer.ContainsResourceType(MainGame.ChemicalTypesDictionary["Water"].GasPhaseType))
+					if (ReactionContainer.ContainsResourceType(ChemicalType.Hydrogen.GasPhaseType))
 					{
-						ResourceUnit bufferedOxygen = OutputBuffer.GetResourceUnitForResourceType(MainGame.ChemicalTypesDictionary["Oxygen"].GasPhaseType);
-						if (OxygenOutput.Volume + bufferedOxygen.Volume < OxygenOutput.MaxVolume)
-						{
-							OxygenOutput.AddResource(OutputBuffer.ExtractResource(bufferedOxygen.ResourceType, bufferedOxygen.Volume));
-						}
+						HydrogenOutput.AddResource(ReactionContainer.ExtractResourceByVolume(ChemicalType.Hydrogen.GasPhaseType, ReactionContainer.GetResourceUnitForResourceType(ChemicalType.Hydrogen.GasPhaseType).Volume));
 					}
 
-					/*if (!OutputBuffer.ContainsResourceType(MainGame.ChemicalTypesDictionary["Hydrogen"].GasPhaseType) || !OutputBuffer.ContainsResourceType(MainGame.ChemicalTypesDictionary["Water"].GasPhaseType))
-					{
-						blocked = false;
-					}*/
-				}
-
-				if (Activated/* && !blocked*/)
-				{
-					WaterInput.TransferResource(ProcessingContainer, DecimalNumber.Clamp(WaterInput.Volume * WaterInput.Fullness * (DecimalNumber)Time.TickInterval, 0, WaterInput.Volume));
-
-					if (ProcessingContainer.ContainsResourceType(MainGame.ChemicalTypesDictionary["Water"].LiquidPhaseType))
-					{
-						DecimalNumber electrolyzedVolume = DecimalNumber.Min(ElectrolyzationRate * (DecimalNumber)Time.TickInterval, ProcessingContainer.GetResourceUnitForResourceType(MainGame.ChemicalTypesDictionary["Water"].LiquidPhaseType).Volume); // cache, just reset on Tick pace change?
-
-						var electrolyzedUnit = ProcessingContainer.ExtractResource(MainGame.ChemicalTypesDictionary["Water"].LiquidPhaseType, electrolyzedVolume);
-
-						ResourceUnit hydrogenUnit = new(MainGame.ChemicalTypesDictionary["Hydrogen"].GasPhaseType, electrolyzedUnit.Mass * hydrogenPart, electrolyzedUnit.InternalEnergy * hydrogenPart, electrolyzedUnit.Pressure * hydrogenPart);
-
-						ResourceUnit oxygenUnit = new(MainGame.ChemicalTypesDictionary["Oxygen"].GasPhaseType, electrolyzedUnit.Mass * oxygenPart, electrolyzedUnit.InternalEnergy * oxygenPart, electrolyzedUnit.Pressure * oxygenPart);
-
-						if (HydrogenOutput.Volume + hydrogenUnit.Volume > HydrogenOutput.MaxVolume  || OxygenOutput.Volume + oxygenUnit.Volume > OxygenOutput.MaxVolume)
-						{
-							OutputBuffer.AddResource(hydrogenUnit);
-							OutputBuffer.AddResource(oxygenUnit);
-
-							blocked = true;
-							return;
-						}
-						else
-						{
-							blocked = false;
-						}
-
-						HydrogenOutput.AddResource(hydrogenUnit); // use molar or atom mass later? this isnt really correct since dihydrogen and dioxygen weigh differently...
-
-						OxygenOutput.AddResource(oxygenUnit);
-
-						//ElectricityInput.ConsumeElectricity();
-					}
+					//ElectricityInput.ConsumeElectricity();
 				}
 			}
 		}

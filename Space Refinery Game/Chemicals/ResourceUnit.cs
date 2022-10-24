@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Diagnostics;
 
 namespace Space_Refinery_Game
 {
@@ -16,7 +17,19 @@ namespace Space_Refinery_Game
 
 		public ChemicalType ChemicalType => ResourceType.ChemicalType;
 
-		public DecimalNumber Moles;
+		private DecimalNumber moles;
+		/// <summary>
+		/// [mol]
+		/// </summary>
+		public DecimalNumber Moles
+		{
+			get => moles;
+			set
+			{
+				Debug.Assert(value >= 0, "The number of moles cannot be less than zero.");
+				moles = value;
+			}
+		}
 
 		public DecimalNumber Mass => ChemicalType.MolesToMass(ChemicalType, Moles); // kg
 
@@ -40,6 +53,8 @@ namespace Space_Refinery_Game
 		public DecimalNumber Pressure => /*temporarily set to 101325 Pa*/ 101325; // Pa or kg/m3
 
 		public DecimalNumber Enthalpy => InternalEnergy + Pressure * Volume; // https://www.omnicalculator.com/physics/enthalpy
+
+		//public event Action Changed
 
 		public ResourceUnit(ResourceType resourceType, DecimalNumber moles, DecimalNumber internalEnergy)
 		{

@@ -8,9 +8,9 @@
 
 		static DecimalNumber coulombForReaction => molesOfWater * 2 * Electricity.FaradayConstant; // [J/Reaction] (wikipedia states that 2 electrons are required per mole of water)
 
-		static DecimalNumber reactionScale = 1000; // Operate on a reaction model that is 1000x bigger.
+		static DecimalNumber reactionScale => 1000; // Operate on a reaction model that is 1000x bigger.
 
-		static DecimalNumber molesOfWater = 2 * reactionScale; // [mol]
+		static DecimalNumber molesOfWater => 2 * reactionScale; // [mol]
 
 		public void ProvideElectricalPower(DecimalNumber electricalEnergy)
 		{
@@ -21,10 +21,10 @@
 		{
 			var electrolysisProcess = (Electricity.ElectricalEnergyToCoulomb(electricalEnergy) / coulombForReaction) * interval;
 
-			var water = resourceContainer.ExtractResourceByMoles(MainGame.ChemicalTypesDictionary["Water"].LiquidPhaseType, molesOfWater * electrolysisProcess);
+			var water = resourceContainer.ExtractResourceByMoles(ChemicalType.Water.LiquidPhaseType, molesOfWater * electrolysisProcess);
 
-			resourceContainer.AddResource(new ResourceUnit(MainGame.ChemicalTypesDictionary["Hydrogen"].GasPhaseType, water.Moles, water.InternalEnergy / 2));
-			resourceContainer.AddResource(new ResourceUnit(MainGame.ChemicalTypesDictionary["Oxygen"].GasPhaseType, water.Moles / 2, water.InternalEnergy / 2));
+			resourceContainer.AddResource(new ResourceUnit(ChemicalType.Hydrogen.GasPhaseType, water.Moles, water.InternalEnergy / 2));
+			resourceContainer.AddResource(new ResourceUnit(ChemicalType.Oxygen.GasPhaseType, water.Moles / 2, water.InternalEnergy / 2));
 		}
 	}
 }

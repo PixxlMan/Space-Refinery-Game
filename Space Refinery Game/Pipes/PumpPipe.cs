@@ -65,7 +65,11 @@ namespace Space_Refinery_Game
 
 			lock (this)
 			{
-				var transferVolume = DecimalNumber.Min(Transferer.Volume * (DecimalNumber)Time.TickInterval, DecimalNumber.Min(MaxFlowRate * (DecimalNumber)Time.TickInterval, Recipient.MaxVolume - Recipient.Volume - (DecimalNumber)0.0001));
+				var transferVolume = DecimalNumber.Min(
+					Transferer.Volume * (DecimalNumber)Time.TickInterval,
+					DecimalNumber.Min(
+						MaxFlowRate * (DecimalNumber)Time.TickInterval,
+						Recipient.MaxVolume - Recipient.Volume - (DecimalNumber)0.0001));
 
 				Transferer.TransferResource(Recipient, transferVolume);
 			}

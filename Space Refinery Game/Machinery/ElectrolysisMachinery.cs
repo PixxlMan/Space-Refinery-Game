@@ -80,7 +80,11 @@ namespace Space_Refinery_Game
 			{
 				if (Activated)
 				{
-					WaterInput.TransferResource(ReactionContainer, DecimalNumber.Clamp(WaterInput.Volume * WaterInput.Fullness * (DecimalNumber)Time.TickInterval, 0, WaterInput.FreeVolume));
+					WaterInput.TransferResource(ReactionContainer,
+						DecimalNumber.Clamp(
+							WaterInput.Volume * WaterInput.Fullness * (DecimalNumber)Time.TickInterval,
+							0,
+							WaterInput.FreeVolume));
 
 					electrolysisReaction.Tick(Time.TickInterval, ReactionContainer, new ReactionFactor[1] { new ElectricalCurrent(MaxElectricalEnergyPerSecond * (DecimalNumber)Time.TickInterval) });
 

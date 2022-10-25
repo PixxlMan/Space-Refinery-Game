@@ -50,9 +50,13 @@ namespace Space_Refinery_Game
 			return FixedDecimalLong8.Asin(a);
 		}
 
-		public static DecimalNumber Difference(DecimalNumber time1, DecimalNumber time2)
+		/// <summary>
+		/// Equal to abs(a - b).
+		/// </summary>
+		/// <returns>The difference between a and b.</returns>
+		public static DecimalNumber Difference(DecimalNumber a, DecimalNumber b)
 		{
-			return Abs(time1 - time2);
+			return Abs(a - b);
 		}
 
 		public static DecimalNumber Atan(DecimalNumber a)

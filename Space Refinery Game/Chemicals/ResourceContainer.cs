@@ -20,6 +20,8 @@ namespace Space_Refinery_Game
 		private DecimalNumber maxVolume;
 		public DecimalNumber MaxVolume => maxVolume;
 
+		public DecimalNumber FreeVolume => MaxVolume - Volume;
+
 		public object SyncRoot = new();
 
 		//public event Action CompositionChanged
@@ -127,31 +129,15 @@ namespace Space_Refinery_Game
 			return resources.ContainsKey(resourceType);
 		}
 
+		/// <summary>
+		/// Extracts a certain volume of the specified resource type from the ResourceContainer.
+		/// </summary>
+		/// <param name="extractionVolume">[m³]</param>
 		public ResourceUnit ExtractResourceByVolume(ResourceType resourceType, DecimalNumber extractionVolume)
 		{
 			lock (SyncRoot)
 			{
-				if (!resources.ContainsKey(resourceType))
-				{
-					return new ResourceUnit(resourceType, 0, 0);
-				}
-
-				DecimalNumber transferPart = extractionVolume / resources[resourceType].Volume;
-
-				var extractedResource = ResourceUnit.GetPart(resources[resourceType], transferPart);
-
-				resources[resourceType].Moles -= extractedResource.Moles;
-
-				mass -= extractedResource.Mass;
-
-				volume -= extractionVolume;
-
-				if (resources[resourceType].Moles == 0)
-				{
-					resources.RemoveStrict(resourceType);
-				}
-
-				return extractedResource;
+				return ExtractResourceByMoles(resourceType, ChemicalType.MassToMoles(resourceType.ChemicalType, extractionVolume / resourceType.Density));
 			}
 		}
 

@@ -10,6 +10,7 @@
 				<MolarMass>16</MolarMass>
 				<EnthalpyOfVaporization>446.1</EnthalpyOfVaporization>
 				<EnthalpyOfFusion>58</EnthalpyOfFusion>
+				<CommonPhase>Gas</CommonPhase>
 				<GasPhaseType>
 					<ResourceType>
 						<ResourceName>Oxygen Gas</ResourceName>

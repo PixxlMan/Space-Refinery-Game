@@ -41,6 +41,11 @@ namespace Space_Refinery_Game
 		public SolidType SolidPhaseType;
 
 		/// <summary>
+		/// Phase at room temperature. For instance, oxygen or hydrogen will be in gas form, water will be in liquid form, etc.
+		/// </summary>
+		public ChemicalPhase CommonPhase;
+
+		/// <summary>
 		/// [g/mol]
 		/// </summary>
 		public DecimalNumber MolarMass; // M
@@ -139,6 +144,7 @@ namespace Space_Refinery_Game
 				writer.Serialize(MolarMass, nameof(MolarMass));
 				writer.Serialize(EnthalpyOfVaporization, nameof(EnthalpyOfVaporization));
 				writer.Serialize(EnthalpyOfFusion, nameof(EnthalpyOfFusion));
+				writer.Serialize(CommonPhase, nameof(CommonPhase));
 				IEntitySerializable.SerializeWithoutEmbeddedType(writer, GasPhaseType, nameof(GasPhaseType));
 				IEntitySerializable.SerializeWithoutEmbeddedType(writer, LiquidPhaseType, nameof(LiquidPhaseType));
 				IEntitySerializable.SerializeWithoutEmbeddedType(writer, SolidPhaseType, nameof(SolidPhaseType));
@@ -155,6 +161,7 @@ namespace Space_Refinery_Game
 				MolarMass = reader.DeserializeDecimalNumber(nameof(MolarMass));
 				EnthalpyOfVaporization = reader.DeserializeDecimalNumber(nameof(EnthalpyOfVaporization));
 				EnthalpyOfFusion = reader.DeserializeDecimalNumber(nameof(EnthalpyOfFusion));
+				CommonPhase = reader.DeserializeEnum<ChemicalPhase>(nameof(CommonPhase));
 				GasPhaseType = IEntitySerializable.DeserializeWithoutEmbeddedType<GasType>(reader, serializationData, referenceHandler, nameof(GasPhaseType));
 				LiquidPhaseType = IEntitySerializable.DeserializeWithoutEmbeddedType<LiquidType>(reader, serializationData, referenceHandler, nameof(LiquidPhaseType));
 				SolidPhaseType = IEntitySerializable.DeserializeWithoutEmbeddedType<SolidType>(reader, serializationData, referenceHandler, nameof(SolidPhaseType));

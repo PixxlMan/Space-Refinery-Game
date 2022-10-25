@@ -10,6 +10,7 @@
 				<MolarMass>1.008</MolarMass>
 				<EnthalpyOfVaporization>446.1</EnthalpyOfVaporization>
 				<EnthalpyOfFusion>58</EnthalpyOfFusion>
+				<CommonPhase>Gas</CommonPhase>
 				<GasPhaseType>
 					<ResourceType>
 						<ResourceName>Hydrogen Gas</ResourceName>

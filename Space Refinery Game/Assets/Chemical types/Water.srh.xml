@@ -10,6 +10,7 @@
 				<MolarMass>18.016</MolarMass>
 				<EnthalpyOfVaporization>2257</EnthalpyOfVaporization>
 				<EnthalpyOfFusion>334</EnthalpyOfFusion>
+				<CommonPhase>Liquid</CommonPhase>
 				<GasPhaseType>
 					<ResourceType>
 						<ResourceName>Water Vapor</ResourceName>

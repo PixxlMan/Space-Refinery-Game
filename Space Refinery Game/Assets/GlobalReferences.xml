@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <GlobalReferences>
 	<SerializationReferenceHandler>
-		<Count>10</Count>
+		<Count>9</Count>
 		<Elements>
 			<IEntitySerializable>
 				<Type>Space_Refinery_Game.PipeConnectorProperties</Type>
@@ -52,69 +52,7 @@
 				<HasConnectorNames>False</HasConnectorNames>
 				<ModelPath>Assets\Models\Pipe\PipeStraight.obj</ModelPath>
 				<Type>Space_Refinery_Game.OrdinaryPipe</Type>
-			</IEntitySerializable>
-			<IEntitySerializable>
-				<Type>Space_Refinery_Game.PipeType</Type>
-				<GUID>0490792d-b771-42e9-8e57-a0cb2dec1138</GUID>
-				<Name>Electrolysis Machine</Name>
-				<Shape>Cylindrical</Shape>
-				<FlowableVolume>0.16</FlowableVolume>
-				<Friction>0.04</Friction>
-				<ConnectorPlacements>
-					<Count>3</Count>
-					<Elements>
-						<Position>
-							<X>0.9</X>
-							<Y>0</Y>
-							<Z>-0.35</Z>
-						</Position>
-						<Direction>
-							<X>1</X>
-							<Y>0</Y>
-							<Z>0</Z>
-						</Direction>
-						<Position>
-							<X>0.9</X>
-							<Y>0</Y>
-							<Z>0.35</Z>
-						</Position>
-						<Direction>
-							<X>1</X>
-							<Y>0</Y>
-							<Z>0</Z>
-						</Direction>
-						<Position>
-							<X>-0.9</X>
-							<Y>0</Y>
-							<Z>0</Z>
-						</Position>
-						<Direction>
-							<X>-1</X>
-							<Y>0</Y>
-							<Z>0</Z>
-						</Direction>
-					</Elements>
-				</ConnectorPlacements>
-				<ConnectorProperties>
-					<Count>3</Count>
-					<Elements>
-						<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
-						<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
-						<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
-					</Elements>
-				</ConnectorProperties>
-				<HasConnectorNames>True</HasConnectorNames>
-				<Collection>
-					<Count>3</Count>
-					<Elements>
-						<ConnectorName>HydrogenOutput</ConnectorName>
-						<ConnectorName>OxygenOutput</ConnectorName>
-						<ConnectorName>WaterInput</ConnectorName>
-					</Elements>
-				</Collection>
-				<ModelPath>Assets\Models\Machinery\MachineryElectrolysis.obj</ModelPath>
-				<Type>Space_Refinery_Game.ElectrolysisMachinery</Type>
-			</IEntitySerializable>
+			</IEntitySerializable>			
 			<IEntitySerializable>
 				<Type>Space_Refinery_Game.PipeType</Type>
 				<GUID>d4824118-1824-403e-ae18-9786f9f0772a</GUID>

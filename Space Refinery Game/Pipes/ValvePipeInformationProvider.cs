@@ -18,7 +18,7 @@ namespace Space_Refinery_Game
 
 			foreach (var resourceContainer in valvePipe.ResourceContainers.Values)
 			{
-				ImGui.Text(resourceContainer.ToString());
+				resourceContainer.DoUIInspectorReadonly();
 			}
 		}
 	}

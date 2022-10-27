@@ -14,9 +14,9 @@ namespace Space_Refinery_Game
 
 			var pumpPipe = (PumpPipe)Pipe;
 
-			ImGui.Text(pumpPipe.ContainerA.ToString());
+			pumpPipe.ContainerA.DoUIInspectorReadonly();
 
-			ImGui.Text(pumpPipe.ContainerB.ToString());
+			pumpPipe.ContainerB.DoUIInspectorReadonly();
 		}
 	}
 }

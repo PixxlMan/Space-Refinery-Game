@@ -10,7 +10,7 @@ namespace Space_Refinery_Game
 			informationProvider = new SpaceDockPipeInformationProvider(this);
 		}
 
-		public List<ResourceUnit> Orders = new();
+		public List<ResourceUnitData> Orders = new();
 
 		public ResourceContainer ResourceContainer;
 
@@ -23,7 +23,7 @@ namespace Space_Refinery_Game
 		{
 			lock (this)
 			{
-				ResourceContainer.TransferResource(source, volume);
+				ResourceContainer.TransferResourceByVolume(source, volume);
 			}
 		}
 
@@ -71,7 +71,7 @@ namespace Space_Refinery_Game
 		}
 
 		int selection = -1;
-		ResourceUnit newResourceUnit;
+		ResourceUnitData newResourceUnit;
 		private void DoMenu()
 		{
 			lock (this)
@@ -82,7 +82,7 @@ namespace Space_Refinery_Game
 
 					if (hasSelection)
 					{
-						ResourceUnit.DoCreation(selected, ref newResourceUnit);
+						ResourceUnitData.DoCreation(selected, ref newResourceUnit);
 
 						if (ImGui.Button("Add"))
 						{

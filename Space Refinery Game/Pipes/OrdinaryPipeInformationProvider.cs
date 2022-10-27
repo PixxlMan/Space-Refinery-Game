@@ -14,7 +14,9 @@ namespace Space_Refinery_Game
 
 			var ordinaryPipe = (OrdinaryPipe)Pipe;
 
-			ImGui.Text($"{nameof(ResourceContainer)}: {ordinaryPipe.ResourceContainer.ToString()}");
+			ImGui.Text($"{nameof(ResourceContainer)}:");
+
+			ordinaryPipe.ResourceContainer.DoUIInspectorReadonly();
 
 			//ImGui.Text("Statistics:");
 		}

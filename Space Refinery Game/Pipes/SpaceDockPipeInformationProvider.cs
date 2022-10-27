@@ -14,7 +14,8 @@ namespace Space_Refinery_Game
 
 			var spaceDockPipe = (SpaceDockPipe)Pipe;
 
-			ImGui.Text($"{nameof(ResourceContainer)}: {spaceDockPipe.ResourceContainer.ToString()}");
+			ImGui.Text($"{nameof(ResourceContainer)}:");
+			spaceDockPipe.ResourceContainer.DoUIInspectorReadonly();
 		}
 	}
 }

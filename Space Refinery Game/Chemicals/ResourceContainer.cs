@@ -185,6 +185,7 @@ namespace Space_Refinery_Game
 
 				if (resources[changed.ResourceType].Moles == DecimalNumber.Zero)
 				{
+					changed.ResourceUnitChanged -= ResourceUnit_Changed;
 					resources.RemoveStrict(changed.ResourceType);
 				}
 			}

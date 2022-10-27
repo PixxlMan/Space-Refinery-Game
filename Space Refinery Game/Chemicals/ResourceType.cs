@@ -11,9 +11,15 @@ public abstract class ResourceType : IUIInspectable, IEntitySerializable
 
 	public string ResourceName;
 
-	public DecimalNumber Density; // kg/m3
+	/// <summary>
+	/// [kg/m³]
+	/// </summary>
+	public DecimalNumber Density;
 
-	public DecimalNumber SpecificHeatCapacity; // kJ/k
+	/// <summary>
+	/// [kJ/K]
+	/// </summary>
+	public DecimalNumber SpecificHeatCapacity;
 
 	public abstract ChemicalPhase ChemicalPhase { get; }
 

@@ -26,7 +26,7 @@ namespace Space_Refinery_Game
 		{
 			lock (this)
 			{
-				ResourceContainer.TransferResource(source, volume);
+				ResourceContainer.TransferResourceByVolume(source, volume);
 			}
 		}
 

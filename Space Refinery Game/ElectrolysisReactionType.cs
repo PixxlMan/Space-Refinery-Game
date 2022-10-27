@@ -28,10 +28,21 @@
 
 			var electrolysisProcess = (Electricity.ElectricalEnergyToCoulomb(electricalEnergy) / coulombForReaction) * interval;
 
-			var water = resourceContainer.ExtractResourceByMoles(ChemicalType.Water.LiquidPhaseType, DecimalNumber.Min(resourceContainer.GetResourceUnitForResourceType(ChemicalType.Water.LiquidPhaseType).Moles, molesOfWater * electrolysisProcess));
+			var water = resourceContainer.TakeResourceByMoles(ChemicalType.Water.LiquidPhaseType, DecimalNumber.Min(resourceContainer.GetResourceUnitData(ChemicalType.Water.LiquidPhaseType).Moles, molesOfWater * electrolysisProcess));
 
-			resourceContainer.AddResource(new ResourceUnit(ChemicalType.Hydrogen.GasPhaseType, water.Moles, water.InternalEnergy / 2));
-			resourceContainer.AddResource(new ResourceUnit(ChemicalType.Oxygen.GasPhaseType, water.Moles / 2, water.InternalEnergy / 2));
+			water.BreakInto(2, out IReadOnlyDictionary<ResourceType, ResourceUnitData> resourceUnitDatas, (ChemicalType.Hydrogen.GasPhaseType, 2), (ChemicalType.Oxygen.GasPhaseType, 1));
+
+			DecimalNumber totalVolume = 0;
+
+			foreach (ResourceUnitData resourceUnit in resourceUnitDatas.Values)
+			{
+				totalVolume += resourceUnit.Volume;
+			}
+
+			if (resourceContainer.Volume + totalVolume < resourceContainer.MaxVolume) // at least until pressure can be simulated...
+			{
+				resourceContainer.AddResources(resourceUnitDatas.Values);
+			}
 		}
 	}
 }

@@ -41,7 +41,7 @@ namespace Space_Refinery_Game
 		{
 			lock (this)
 			{
-				source.TransferResource(GetResourceContainerForConnector(transferingConnector), volume);
+				source.TransferResourceByVolume(GetResourceContainerForConnector(transferingConnector), volume);
 			}
 		}
 
@@ -71,7 +71,7 @@ namespace Space_Refinery_Game
 						MaxFlowRate * (DecimalNumber)Time.TickInterval,
 						Recipient.MaxVolume - Recipient.Volume - (DecimalNumber)0.0001));
 
-				Transferer.TransferResource(Recipient, transferVolume);
+				Transferer.TransferResourceByVolume(Recipient, transferVolume);
 			}
 		}
 

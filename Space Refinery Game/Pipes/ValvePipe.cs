@@ -28,7 +28,7 @@ namespace Space_Refinery_Game
 		{
 			lock (this)
 			{
-				source.TransferResource(ResourceContainers[sourceConnector], volume);
+				source.TransferResourceByVolume(ResourceContainers[sourceConnector], volume);
 			}
 		}
 
@@ -79,7 +79,7 @@ namespace Space_Refinery_Game
 						continue;
 					}
 
-					resourceContainer.TransferResource(lowestFullnessContainer, resourceContainer.Volume * Limiter * (DecimalNumber)Time.TickInterval);
+					resourceContainer.TransferResourceByVolume(lowestFullnessContainer, resourceContainer.Volume * Limiter * (DecimalNumber)Time.TickInterval);
 				}
 			}
 		}

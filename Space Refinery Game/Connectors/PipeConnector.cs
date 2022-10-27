@@ -49,7 +49,7 @@ namespace Space_Refinery_Game
 		{
 			lock (this)
 			{
-				sourceContainer.TransferResource(((Pipe)GetOther(sourcePipe)).GetResourceContainerForConnector(this), volume);
+				sourceContainer.TransferAllResource(((Pipe)GetOther(sourcePipe)).GetResourceContainerForConnector(this));
 			}
 		}
 
@@ -76,7 +76,7 @@ namespace Space_Refinery_Game
 
 					var fullnessDifference = DecimalNumber.Abs(recipientContainer.Fullness - otherContainer.Fullness);
 
-					otherContainer.TransferResource(recipientContainer, otherContainer.Volume * fullnessDifference * (DecimalNumber)Time.TickInterval);
+					otherContainer.TransferResourceByVolume(recipientContainer, otherContainer.Volume * fullnessDifference * (DecimalNumber)Time.TickInterval);
 				}
 			}
 		}

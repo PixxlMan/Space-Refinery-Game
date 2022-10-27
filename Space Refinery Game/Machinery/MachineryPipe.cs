@@ -34,7 +34,7 @@ namespace Space_Refinery_Game
 		{
 			lock (this)
 			{
-				source.TransferResource(ConnectorToResourceContainers[transferingConnector], volume);
+				source.TransferResourceByVolume(ConnectorToResourceContainers[transferingConnector], volume);
 			}
 		}
 

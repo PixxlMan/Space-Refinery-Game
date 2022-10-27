@@ -1,7 +1,9 @@
 ﻿using FixedPrecision;
+using ImGuiNET;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,15 +14,73 @@ namespace Space_Refinery_Game
 	public sealed class ResourceContainer : IUIInspectable
 	{
 		private DecimalNumber volume;
-		public DecimalNumber Volume { get => volume; }
+		public DecimalNumber Volume
+		{
+			get
+			{
+				lock (SyncRoot)
+				{
+					if (recalculateVolume)
+					{
+						volume = RecalculateVolume();
+					}
+
+					return volume;
+				}
+			}
+		}
+
+		private DecimalNumber RecalculateVolume()
+		{
+			recalculateVolume = false;
+			
+			DecimalNumber volume = 0;
+
+			foreach (var resourceUnit in resources.Values)
+			{
+				volume += resourceUnit.Volume;
+			}
+
+			return volume;
+		}
 
 		private DecimalNumber mass;
-		public DecimalNumber Mass { get => mass; }
+		public DecimalNumber Mass
+		{
+			get
+			{
+				lock (SyncRoot)
+				{
+					if (recalculateMass)
+					{
+						mass = RecalculateMass();
+					}
+
+					return mass;
+				}
+			}
+		}
+
+		private DecimalNumber RecalculateMass()
+		{
+			DecimalNumber mass = 0;
+
+			foreach (var resourceUnit in resources.Values)
+			{
+				mass += resourceUnit.Mass;
+			}
+
+			return mass;
+		}
 
 		private DecimalNumber maxVolume;
 		public DecimalNumber MaxVolume => maxVolume;
 
-		public DecimalNumber FreeVolume => MaxVolume - Volume;
+		public DecimalNumber FreeVolume => DecimalNumber.Max(MaxVolume - Volume, 0);
+
+		bool recalculateVolume = false;
+
+		bool recalculateMass = false;
 
 		public object SyncRoot = new();
 
@@ -44,6 +104,8 @@ namespace Space_Refinery_Game
 
 		private ConcurrentDictionary<ResourceType, ResourceUnit> resources = new();
 
+		private static readonly DecimalNumber acceptableVolumeTransferError = 0.1;
+
 		public ResourceContainer(DecimalNumber maxVolume)
 		{
 			this.maxVolume = maxVolume;
@@ -54,201 +116,177 @@ namespace Space_Refinery_Game
 
 		}
 
-		public void AddResource(ResourceUnit unit)
+		public ResourceUnitData TakeResourceByMoles(ResourceType resourceType, DecimalNumber moles)
+		{
+			if (moles == DecimalNumber.Zero)
+			{
+				return new ResourceUnitData(resourceType, DecimalNumber.Zero);
+			}
+
+			resources[resourceType].Remove(new(resourceType, moles));
+
+			return new(resourceType, moles);
+		}
+
+		public void AddResources(IEnumerable<ResourceUnitData> resourceUnitDatas)
+		{
+			foreach (var resourceUnit in resourceUnitDatas)
+			{
+				AddResource(resourceUnit);
+			}
+		}
+
+		public void AddResource(ResourceUnitData resourceUnitData)
 		{
 			lock (SyncRoot)
 			{
-				if (Volume + unit.Volume > MaxVolume)
+				if (Volume + resourceUnitData.Volume > MaxVolume + acceptableVolumeTransferError)
 				{
-					throw new Exception("Operation would make volume larger than max volume.");
+					throw new InvalidOperationException("Cannot exceed maximum volume.");
 				}
+			}
 
-				if (resources.ContainsKey(unit.ResourceType))
-				{
-					resources[unit.ResourceType].Add(unit);
-				}
-				else
-				{
-					resources.AddUnique(unit.ResourceType, unit);
-				}
+			resources.AddOrUpdate(resourceUnitData.ResourceType, (_) =>
+			{
+				ResourceUnit resourceUnit = new(resourceUnitData.ResourceType, this, resourceUnitData);
 
-				if (resources[unit.ResourceType].Mass == 0)
-				{
-					resources.RemoveStrict(unit.ResourceType);
-				}
+				resourceUnit.ResourceUnitChanged += ResourceUnit_Changed;
 
-				volume += unit.Volume;
+				InvalidateRecalcuables();
 
-				mass += unit.Mass;
+				return resourceUnit;
+			},
+			(_, ru) =>
+			{
+				lock (SyncRoot)
+					ru.Add(resourceUnitData);
+
+				return ru;
+			});
+		}
+
+		public DecimalNumber VolumeOf(ResourceType resourceType)
+		{
+			if (resources.TryGetValue(resourceType, out var resourceUnit))
+			{
+				return resourceUnit.Volume;
+			}
+			else
+			{
+				return DecimalNumber.Zero;
 			}
 		}
 
-		public bool FillResource(ResourceUnit unit, out ResourceUnit rest)
+		private void ResourceUnit_Changed(ResourceUnit changed)
 		{
 			lock (SyncRoot)
 			{
-				bool usedEntireUnit;
+				InvalidateRecalcuables();
 
-				ResourceUnit fillable;
-
-				if (Volume + unit.Volume > MaxVolume)
+				if (resources[changed.ResourceType].Moles == DecimalNumber.Zero)
 				{
-					usedEntireUnit = false;
-
-					fillable = ResourceUnit.GetPart(unit, (MaxVolume - Volume) / unit.Volume);
-
-					rest = new(unit.ResourceType, unit.Moles - fillable.Moles, unit.InternalEnergy - fillable.Moles);
+					resources.RemoveStrict(changed.ResourceType);
 				}
-				else
-				{
-					usedEntireUnit = true;
-
-					fillable = unit;
-
-					rest = new(unit.ResourceType, 0, 0);
-				}
-
-				AddResource(fillable);
-
-				return usedEntireUnit;
 			}
 		}
 
-		public ResourceUnit GetResourceUnitForResourceType(ResourceType resourceType)
-		{
-			if (!resources.ContainsKey(resourceType))
-			{
-				return new ResourceUnit(resourceType, 0, 0);
-			}
-
-			return resources[resourceType];
-		}
-
-		public bool ContainsResourceType(ResourceType resourceType)
-		{
-			return resources.ContainsKey(resourceType);
-		}
-
-		/// <summary>
-		/// Extracts a certain volume of the specified resource type from the ResourceContainer.
-		/// </summary>
-		/// <param name="extractionVolume">[m³]</param>
-		public ResourceUnit ExtractResourceByVolume(ResourceType resourceType, DecimalNumber extractionVolume)
+		private void InvalidateRecalcuables()
 		{
 			lock (SyncRoot)
 			{
-				return ExtractResourceByMoles(resourceType, ChemicalType.MassToMoles(resourceType.ChemicalType, extractionVolume / resourceType.Density));
+				recalculateVolume = true;
+				recalculateMass = true;
 			}
 		}
 
-		public ResourceUnit ExtractResourceByMoles(ResourceType resourceType, DecimalNumber extractionMoles)
+		public void TransferResourceByVolume(ResourceContainer targetContainer, DecimalNumber volume)
 		{
-			lock (SyncRoot)
+			if (Volume - volume < 0)
 			{
-				if (!resources.ContainsKey(resourceType))
-				{
-					return new ResourceUnit(resourceType, 0, 0);
-				}
-
-				if (resources[resourceType].Moles - extractionMoles < 0)
-				{
-					throw new Exception("Cannot extract more moles than there are available.");
-				}
-
-				resources[resourceType].Moles -= extractionMoles;
-
-				mass -= ChemicalType.MolesToMass(resourceType.ChemicalType, extractionMoles);
-
-				volume -= ChemicalType.MolesToMass(resourceType.ChemicalType, extractionMoles);
-
-				var extracted = resources[resourceType].Clone();
-
-				extracted.Moles = extractionMoles;
-
-				if (resources[resourceType].Moles <= 0)
-				{
-					resources.RemoveStrict(resourceType);
-				}
-
-				return extracted;
+				throw new InvalidOperationException("Cannot transfer more resource volume than there is volume available.");
 			}
-		}
-
-		public void TransferResource(ResourceContainer transferTarget, DecimalNumber transferVolume)
-		{
-			lock (SyncRoot)
+			else if (volume < 0)
 			{
-				if (transferTarget.Volume + transferVolume > transferTarget.MaxVolume)
-				{
-					throw new Exception("Operation would make volume larger than max volume.");
-				}
-
-				if (transferVolume > Volume)
-				{
-					throw new ArgumentException("Requested volume to transfer greater than total available volume.", nameof(transferVolume));
-				}
-
-				if (transferVolume == 0 || Volume == 0)
-				{
-					return;
-				}
-
-				DecimalNumber transferPart = (transferVolume / Volume);
-
-				foreach (var unit in resources.Values)
-				{
-					var transferedResource = ResourceUnit.GetPart(unit, transferPart);
-
-					transferTarget.AddResource(transferedResource);
-
-					resources[unit.ResourceType].Remove(transferedResource);
-
-					mass -= transferedResource.Mass;
-
-					if (resources[unit.ResourceType].Mass == 0)
-					{
-						resources.RemoveStrict(unit.ResourceType);
-					}
-				}
-
-				volume -= transferVolume;
+				throw new ArgumentException("The volume to transfer must be larger than or equal to zero.", nameof(volume));
 			}
-		}
 
-		public override string ToString()
-		{
-			lock (SyncRoot)
+			if (volume == DecimalNumber.Zero)
 			{
-				string str = "\n";
+				return;
+			}
 
-				str += $"Mass: {Mass} kg\n";
-				str += $"Volume: {Volume} m3\n";
-				str += $"Max Volume: {MaxVolume} m3\n";
-				str += $"Fullness: {Fullness}\n";
+			DecimalNumber intialVolume = Volume;
 
-				str += "ResourceContainer contains: \n";
+			DecimalNumber desiredPartOfVolume = (volume / intialVolume);
 
-				foreach (var resourceMassPair in resources)
-				{
-					str += $"{resourceMassPair.Key.ResourceName}: {resourceMassPair.Value.Mass} kg ~ {resourceMassPair.Value.Volume} m3\n";
-					str += $"Enthalpy: {resourceMassPair.Value.Enthalpy} J\n";
-					str += $"Temperature: {(resourceMassPair.Value.Mass > 0 ? resourceMassPair.Value.Temperature : @"N\A")} k\n";
-					str += $"Pressure: {resourceMassPair.Value.Pressure} Pa\n";
-					str += $"Internal Energy: {resourceMassPair.Value.InternalEnergy} kJ\n";
-				}
+			foreach (var resourceUnit in resources.Values)
+			{
+				var moles = ChemicalType.MassToMoles(
+							resourceUnit.ChemicalType,
+							(resourceUnit.Volume / intialVolume)
+								* desiredPartOfVolume
+									* resourceUnit.ResourceType.Density); // portion of current resource to transfer
 
-				return str;
+				targetContainer.AddResource(new(resourceUnit.ResourceType, moles));
+
+				resources[resourceUnit.ResourceType].Remove(new(resourceUnit.ResourceType, moles));
+			}
+
+			Debug.Assert(DecimalNumber.Difference(intialVolume - Volume, volume) < acceptableVolumeTransferError, "Volume error too large!");
+		}
+
+		public void TransferResourceByVolume(ResourceContainer targetContainer, ResourceType resourceType, DecimalNumber volume)
+		{
+			if (Volume - volume < 0)
+			{
+				throw new InvalidOperationException("Cannot transfer more resource volume than there is volume available.");
+			}
+			else if (volume < 0)
+			{
+				throw new ArgumentException("The volume to transfer must be larger than or equal to zero.", nameof(volume));
+			}
+
+			if (volume == DecimalNumber.Zero)
+			{
+				return;
+			}
+
+#if DEBUG
+			DecimalNumber intialVolume = Volume;
+#endif
+
+			var resourceUnit = resources[resourceType];
+
+			var moles = ChemicalType.MassToMoles(resourceUnit.ChemicalType, volume * resourceUnit.ResourceType.Density); // moles of resource to transfer
+
+			targetContainer.AddResource(new(resourceUnit.ResourceType, moles));
+
+			resources[resourceType].Remove(new(resourceType, moles));
+
+			Debug.Assert(DecimalNumber.Difference(intialVolume - Volume, volume) < acceptableVolumeTransferError, "Volume error too large!");
+		}
+
+		public void TransferAllResource(ResourceContainer targetContainer, ResourceType resourceType)
+		{
+			targetContainer.AddResource(TakeResourceByMoles(resourceType, resources[resourceType].Moles));
+		}
+
+		public void TransferAllResource(ResourceContainer targetContainer)
+		{
+			foreach (var resourceType in resources.Keys)
+			{
+				TransferAllResource(targetContainer, resourceType);
 			}
 		}
 
-		public void DoUIInspectorReadonly()
+		public ResourceUnitData GetResourceUnitData(ResourceType resourceType)
 		{
-			throw new NotImplementedException();
-		}
+			if (resources.TryGetValue(resourceType, out var resourceUnit))
+			{
+				return resourceUnit.ResourceUnitData;
+			}
 
-		public IUIInspectable DoUIInspectorEditable()
-		{
-			throw new NotImplementedException();
+			return new ResourceUnitData(resourceType, 0);
 		}
 
 		public void Serialize(XmlWriter writer)
@@ -259,7 +297,7 @@ namespace Space_Refinery_Game
 				{
 					writer.Serialize(MaxVolume, nameof(MaxVolume));
 
-					writer.Serialize(resources.Values, (w, r) => r.Serialize(w), nameof(resources));
+					writer.Serialize(resources.Values, (w, ru) => ru.ResourceUnitData.Serialize(w), nameof(resources));
 				}
 				writer.WriteEndElement();
 			}
@@ -273,11 +311,45 @@ namespace Space_Refinery_Game
 			{
 				resourceContainer.maxVolume = reader.DeserializeDecimalNumber(nameof(MaxVolume));
 
-				reader.DeserializeCollection((r) => resourceContainer.AddResource(ResourceUnit.Deserialize(r)), nameof(resources));
+				reader.DeserializeCollection((r) => resourceContainer.AddResource(ResourceUnitData.Deserialize(r)), nameof(resources));
 			}
 			reader.ReadEndElement();
 
 			return resourceContainer;
+		}
+
+		public void DoUIInspectorReadonly()
+		{
+			UIFunctions.BeginSub();
+			{
+				if (Mass == DecimalNumber.Zero)
+				{
+					UIFunctions.PushDisabled();
+
+					ImGui.Text("Empty");
+
+					UIFunctions.PopDisabled();
+				}
+				else
+				{
+					ImGui.Text($"{nameof(Mass)}: {Mass} kg");
+					ImGui.Text($"{nameof(Volume)}: {Volume} m³");
+					ImGui.Text($"{nameof(MaxVolume)}: {MaxVolume} m³");
+					ImGui.Text($"{nameof(Fullness)}: {Fullness}");
+					ImGui.Text($"Different types of resources: {resources.Count}");
+
+					foreach (var resourceUnit in resources.Values)
+					{
+						resourceUnit.DoUIInspectorReadonly();
+					}
+				}
+			}
+			UIFunctions.EndSub();
+		}
+
+		public IUIInspectable DoUIInspectorEditable()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

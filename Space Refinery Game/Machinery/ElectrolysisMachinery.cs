@@ -80,25 +80,17 @@ namespace Space_Refinery_Game
 			{
 				if (Activated)
 				{
-					WaterInput.TransferResource(ReactionContainer,
+					WaterInput.TransferResourceByVolume(ReactionContainer, ChemicalType.Water.LiquidPhaseType,
 						DecimalNumber.Clamp(
 							WaterInput.Volume * WaterInput.Fullness * (DecimalNumber)Time.TickInterval,
 							0,
-							WaterInput.FreeVolume));
+							ReactionContainer.FreeVolume));
 
 					electrolysisReaction.Tick(Time.TickInterval, ReactionContainer, new ReactionFactor[1] { new ElectricalCurrent(MaxElectricalEnergyPerSecond * (DecimalNumber)Time.TickInterval) });
 
-					if (ReactionContainer.ContainsResourceType(ChemicalType.Oxygen.GasPhaseType))
-					{
-						if (!OxygenOutput.FillResource(ReactionContainer.ExtractResourceByMoles(ChemicalType.Oxygen.GasPhaseType, ReactionContainer.GetResourceUnitForResourceType(ChemicalType.Oxygen.GasPhaseType).Moles), out var rest))
-							ReactionContainer.FillResource(rest, out _);
-					}
+					ReactionContainer.TransferResourceByVolume(OxygenOutput, ChemicalType.Oxygen.GasPhaseType, DecimalNumber.Min(ReactionContainer.VolumeOf(ChemicalType.Oxygen.GasPhaseType), OxygenOutput.FreeVolume * 0.8));
 
-					if (ReactionContainer.ContainsResourceType(ChemicalType.Hydrogen.GasPhaseType))
-					{
-						if (!HydrogenOutput.FillResource(ReactionContainer.ExtractResourceByMoles(ChemicalType.Hydrogen.GasPhaseType, ReactionContainer.GetResourceUnitForResourceType(ChemicalType.Hydrogen.GasPhaseType).Moles), out var rest))
-							ReactionContainer.FillResource(rest, out _);
-					}
+					ReactionContainer.TransferResourceByVolume(HydrogenOutput, ChemicalType.Hydrogen.GasPhaseType, DecimalNumber.Min(ReactionContainer.VolumeOf(ChemicalType.Hydrogen.GasPhaseType), HydrogenOutput.FreeVolume * 0.8));
 
 					//ElectricityInput.ConsumeElectricity();
 				}

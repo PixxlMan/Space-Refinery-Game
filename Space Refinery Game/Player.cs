@@ -91,11 +91,13 @@ namespace Space_Refinery_Game
 			}
 			else if (lookedAtPhysicsObject is not null && lookedAtPhysicsObject.Entity is IConstruction construction)
 			{
-				if (construction is OrdinaryPipe pipe)
+				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Insert resource with button") && construction is OrdinaryPipe pipe)
 				{
-					if (InputTracker.GetKeyDown(Key.U))
+					ResourceUnitData resource = new(ChemicalType.Water.LiquidPhaseType, ChemicalType.MassToMoles(ChemicalType.Water, 10));
+
+					if (InputTracker.GetKeyDown(Key.U) && pipe.ResourceContainer.Volume + resource.Volume < pipe.ResourceContainer.MaxVolume)
 					{
-						pipe.ResourceContainer.AddResource(new(ChemicalType.Water.LiquidPhaseType, ChemicalType.MassToMoles(ChemicalType.Water, 10), 100 * ChemicalType.Water.LiquidPhaseType.SpecificHeatCapacity * 10));
+						pipe.ResourceContainer.AddResource(resource);
 					}
 				}
 

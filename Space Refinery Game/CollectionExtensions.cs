@@ -22,8 +22,7 @@ namespace Space_Refinery_Game
 				throw new Exception(exceptionText ?? $"Item does not exist in this {nameof(HashSet<T>)}.");
 			}
 		}
-		
-		// rename to AddStrict as it is more accurate
+
 		[DebuggerHidden]
 		public static void AddUnique<TKey, TValue>(this ConcurrentDictionary<TKey, TValue> dictionary, TKey key, TValue value, string? exceptionText = null)
 		{

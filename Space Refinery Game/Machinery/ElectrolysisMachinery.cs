@@ -12,7 +12,7 @@ namespace Space_Refinery_Game
 {
 	public sealed class ElectrolysisMachinery : MachineryPipe
 	{
-		protected ElectrolysisMachinery() : base()
+		private ElectrolysisMachinery() : base()
 		{ }
 
 		public ResourceContainer WaterInput;
@@ -21,9 +21,9 @@ namespace Space_Refinery_Game
 
 		public ResourceContainer OxygenOutput;
 
-		public static readonly DecimalNumber ProcessingContainerVolume = 1;
+		public static readonly DecimalNumber ReactionContainerVolume = 1;
 
-		public ResourceContainer ReactionContainer = new(ProcessingContainerVolume);
+		public ResourceContainer ReactionContainer = new(ReactionContainerVolume);
 
 		public static readonly DecimalNumber InOutPipeVolume = (DecimalNumber).4;
 
@@ -87,7 +87,7 @@ namespace Space_Refinery_Game
 							ReactionContainer.FreeVolume));
 
 					electrolysisReaction.Tick(Time.TickInterval, ReactionContainer, new ReactionFactor[1] { new ElectricalCurrent(MaxElectricalEnergyPerSecond * (DecimalNumber)Time.TickInterval) });
-
+					// cache and don't regenerate reaction factors every time?
 					ReactionContainer.TransferResourceByVolume(OxygenOutput, ChemicalType.Oxygen.GasPhaseType, DecimalNumber.Min(ReactionContainer.VolumeOf(ChemicalType.Oxygen.GasPhaseType), OxygenOutput.FreeVolume * 0.8));
 
 					ReactionContainer.TransferResourceByVolume(HydrogenOutput, ChemicalType.Hydrogen.GasPhaseType, DecimalNumber.Min(ReactionContainer.VolumeOf(ChemicalType.Hydrogen.GasPhaseType), HydrogenOutput.FreeVolume * 0.8));

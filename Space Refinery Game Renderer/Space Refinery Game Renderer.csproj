@@ -54,6 +54,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Space Refinery Utilities\Space Refinery Utilities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="FixedPrecision">
       <HintPath>..\..\FixedPrecision\FixedPrecision\bin\Debug\net6.0\FixedPrecision.dll</HintPath>
     </Reference>

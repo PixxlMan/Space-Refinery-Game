@@ -1,7 +1,9 @@
 ﻿using FixedPrecision;
 using FXRenderer;
+using Space_Refinery_Game;
 using Space_Refinery_Game_Renderer;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -17,11 +19,11 @@ namespace Space_Refinery_Game_Renderer;
 
 public sealed class GraphicsWorld
 {
-	private List<IRenderable> unorderedRenderables = new();
+	private HashSet<IRenderable> unorderedRenderables = new();
 
 	private SortedDictionary<int, HashSet<IRenderable>> specificOrderRenderables = new(); // Use Lookup<int, IRenderable> and sort manually as it's not very common to add objects?
 
-	private Dictionary<IRenderable, int> renderableToOrder = new();
+	private ConcurrentDictionary<IRenderable, int> renderableToOrder = new();
 
 	public GraphicsDevice GraphicsDevice;
 
@@ -86,16 +88,16 @@ public sealed class GraphicsWorld
 
 	private void HandleWindowResized()
 	{
-		lock (SynchronizationObject)
+		Camera.WindowResized(window.Width, window.Height);
+
+		lock (Swapchain) // is locking necessary for Swapchain?
 		{
-			Camera.WindowResized(window.Width, window.Height);
-
 			Swapchain.Resize(window.Width, window.Height);
-
-			GraphicsDevice.ResizeMainWindow(window.Width, window.Height);
-
-			WindowResized?.Invoke((int)window.Width, (int)window.Height);
 		}
+
+		GraphicsDevice.ResizeMainWindow(window.Width, window.Height);
+
+		WindowResized?.Invoke((int)window.Width, (int)window.Height);
 	}
 
 	public void Run()
@@ -156,7 +158,7 @@ public sealed class GraphicsWorld
 
 	public void AddRenderable(IRenderable renderable)
 	{
-		lock (SynchronizationObject)
+		lock (unorderedRenderables)
 		{
 			unorderedRenderables.Add(renderable);
 		}
@@ -164,26 +166,26 @@ public sealed class GraphicsWorld
 
 	public void AddRenderable(IRenderable renderable, int order)
 	{
-		lock (SynchronizationObject)
+		lock (specificOrderRenderables)
 		{
 			if (specificOrderRenderables.ContainsKey(order))
 			{
 				specificOrderRenderables[order].Add(renderable);
 
-				renderableToOrder.Add(renderable, order);
+				renderableToOrder.AddUnique(renderable, order);
 			}
 			else
 			{
 				specificOrderRenderables.Add(order, new() { renderable });
 
-				renderableToOrder.Add(renderable, order);
+				renderableToOrder.AddUnique(renderable, order);
 			}
 		}
 	}
 
 	public void RemoveRenderable(IRenderable renderable)
 	{
-		lock (SynchronizationObject)
+		lock (unorderedRenderables)
 		{
 			if (unorderedRenderables.Contains(renderable))
 			{
@@ -193,14 +195,14 @@ public sealed class GraphicsWorld
 			{
 				specificOrderRenderables[renderableToOrder[renderable]].Remove(renderable);
 
-				renderableToOrder.Remove(renderable);
+				renderableToOrder.RemoveStrict(renderable);
 			}
 		}
 	}
 
 	private void RenderScene(FixedDecimalLong8 deltaTime)
 	{
-		lock(SynchronizationObject)
+		lock (commandList)
 		{
 			// Begin() must be called before commands can be issued.
 			commandList.Begin();
@@ -227,37 +229,49 @@ public sealed class GraphicsWorld
 			commandList.PushDebugGroup("Draw renderables");
 			if (specificOrderRenderables.Count == 0)
 			{
-				foreach (var renderable in unorderedRenderables)
+				lock (unorderedRenderables)
 				{
-					renderable.AddDrawCommands(commandList);
+					foreach (var renderable in unorderedRenderables)
+					{
+						renderable.AddDrawCommands(commandList);
+					}
 				}
 			}
 			else
 			{
 				bool hasRenderedUnorderedRenderables = false;
-				foreach (var index in specificOrderRenderables.Keys)
+				lock (specificOrderRenderables)
 				{
-					if (index >= 0 && !hasRenderedUnorderedRenderables)
+					foreach (var index in specificOrderRenderables.Keys)
+					{
+						if (index >= 0 && !hasRenderedUnorderedRenderables)
+						{
+							lock (unorderedRenderables)
+							{
+								foreach (var renderable in unorderedRenderables)
+								{
+									renderable.AddDrawCommands(commandList);
+
+									hasRenderedUnorderedRenderables = true;
+								}
+							}
+						}
+
+						foreach (var renderable in specificOrderRenderables[index])
+						{
+							renderable.AddDrawCommands(commandList);
+						}
+					}
+				}
+
+				lock (unorderedRenderables)
+				{
+					if (!hasRenderedUnorderedRenderables)
 					{
 						foreach (var renderable in unorderedRenderables)
 						{
 							renderable.AddDrawCommands(commandList);
-
-							hasRenderedUnorderedRenderables = true;
 						}
-					}
-
-					foreach (var renderable in specificOrderRenderables[index])
-					{
-						renderable.AddDrawCommands(commandList);
-					}
-				}
-
-				if (!hasRenderedUnorderedRenderables)
-				{
-					foreach (var renderable in unorderedRenderables)
-					{
-						renderable.AddDrawCommands(commandList);
 					}
 				}
 			}
@@ -267,12 +281,13 @@ public sealed class GraphicsWorld
 
 			// End() must be called before commands can be submitted for execution.
 			commandList.End();
-			GraphicsDevice.SubmitCommands(commandList);
-			GraphicsDevice.WaitForIdle();
-
-			// Once commands have been submitted, the rendered image can be presented to the application window.
-			GraphicsDevice.SwapBuffers(Swapchain);
 		}
+
+		GraphicsDevice.SubmitCommands(commandList);
+		GraphicsDevice.WaitForIdle();
+
+		// Once commands have been submitted, the rendered image can be presented to the application window.
+		GraphicsDevice.SwapBuffers(Swapchain);
 	}
 
 	[StructLayout(LayoutKind.Sequential)]

@@ -34,7 +34,7 @@ namespace Space_Refinery_Game
 
 		private static bool ignoredMousePositonLastFrame;
 
-		internal static InputTrackerCloneSnapshot Create()
+		internal static InputTrackerCloneSnapshot CreateInputTrackerCloneSnapshot()
 		{
 			lock (SyncRoot)
 			{

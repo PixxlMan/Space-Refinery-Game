@@ -160,7 +160,7 @@ namespace Space_Refinery_Game
 		{
 			lock (SyncRoot)
 			{
-				imGuiRenderer.Update(1, InputTracker.Create());
+				imGuiRenderer.Update(1, InputTracker.CreateInputTrackerCloneSnapshot());
 
 				DoUI();
 

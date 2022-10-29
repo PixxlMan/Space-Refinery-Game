@@ -122,15 +122,16 @@ public sealed class GraphicsWorld
 
 				RenderScene(FixedDecimalLong8.Max(deltaTime, FrametimeLowerLimit));
 
-				// Clone of: Time.WaitIntervalLimit(FrametimeLowerLimit, time, stopwatch, out var timeOfContinuation);
-
-				FixedDecimalLong8 timeToStopWaiting = time + FrametimeLowerLimit;
-				while (stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>() < timeToStopWaiting)
+				if (ShouldLimitFramerate)
 				{
-					Thread.SpinWait(4);
-				}
+					Time.WaitIntervalLimit(FrametimeLowerLimit, time, stopwatch, out var timeOfContinuation);
 
-				timeLastUpdate = timeToStopWaiting;
+					timeLastUpdate = timeOfContinuation;
+				}
+				else
+				{
+					timeLastUpdate = time;
+				}
 
 				FrameRendered?.Invoke();
 			}

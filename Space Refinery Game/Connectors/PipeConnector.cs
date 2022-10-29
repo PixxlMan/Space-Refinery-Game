@@ -66,7 +66,7 @@ namespace Space_Refinery_Game
 				var pipeAResourceContainer = Pipes.pipeA.GetResourceContainerForConnector(this);
 				var pipeBResourceContainer = Pipes.pipeB.GetResourceContainerForConnector(this);
 
-				if (DecimalNumber.Abs(pipeAResourceContainer.Fullness - pipeBResourceContainer.Fullness) > (DecimalNumber)0.0001)
+				if (DecimalNumber.Difference(pipeAResourceContainer.Fullness, pipeBResourceContainer.Fullness) != 0)
 				{
 					ConnectorSide flowDirection = pipeAResourceContainer.Fullness - pipeBResourceContainer.Fullness > 0 ? ConnectorSide.B : ConnectorSide.A;
 

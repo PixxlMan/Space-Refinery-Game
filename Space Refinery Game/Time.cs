@@ -16,6 +16,10 @@ namespace Space_Refinery_Game
 
 		public static readonly FixedDecimalLong8 PhysicsInterval = 1 / (FixedDecimalLong8)60; // 60 pups
 
+		public static long TicksElapsed = 0;
+
+		public static DecimalNumber CurrentTickTime => TicksElapsed * TickInterval;
+
 		public static void WaitIntervalLimit(FixedDecimalLong8 intervalTime, FixedDecimalLong8 intervalStartTime, Stopwatch stopwatch, out FixedDecimalLong8 timeOfContinuation)
 		{
 			FixedDecimalLong8 timeToStopWaiting = intervalStartTime + intervalTime;

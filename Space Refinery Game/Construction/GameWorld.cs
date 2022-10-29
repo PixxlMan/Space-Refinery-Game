@@ -110,6 +110,8 @@ namespace Space_Refinery_Game
 
 						CollectTickPerformanceData?.Invoke(deltaTime);
 
+						Interlocked.Increment(ref Time.TicksElapsed);
+
 						Tick();
 
 						Time.WaitIntervalLimit(Time.TickInterval, time, stopwatch, out var timeOfContinuation);

@@ -25,16 +25,26 @@ namespace Space_Refinery_Game
 		/// </summary>
 		public DecimalNumber Moles
 		{
-			get => moles;
+			get
+			{
+				lock (syncRoot)
+					return moles;
+			}
+
 			private set
 			{
 				Debug.Assert(value >= 0, "The number of moles cannot be less than zero.");
 
 				ResourceUnitChanged?.Invoke(this);
 
-				moles = value;
+				lock (syncRoot)
+				{
+					moles = value;
+				}
 			}
 		}
+
+		private object syncRoot = new();
 
 		public DecimalNumber Mass => ChemicalType.MolesToMass(ChemicalType, Moles); // [kg]
 

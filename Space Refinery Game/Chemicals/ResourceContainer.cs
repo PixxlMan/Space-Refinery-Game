@@ -106,14 +106,16 @@ namespace Space_Refinery_Game
 
 		private static readonly DecimalNumber acceptableVolumeTransferError = 0.1;
 
-		public ResourceContainer(DecimalNumber maxVolume)
+		private static readonly DecimalNumber permittedMaxPostReactionMassDiscrepancy = 0.001;
+
+		public ResourceContainer(DecimalNumber maxVolume) : this()
 		{
 			this.maxVolume = maxVolume;
 		}
 
 		private ResourceContainer()
 		{
-
+			RecalculatePossibleReactionTypes();
 		}
 
 		public ResourceUnitData TakeResourceByMoles(ResourceType resourceType, DecimalNumber moles)
@@ -126,6 +128,54 @@ namespace Space_Refinery_Game
 			resources[resourceType].Remove(new(resourceType, moles));
 
 			return new(resourceType, moles);
+		}
+
+		public ResourceUnitData TakeAllResource(ResourceType resourceType)
+		{
+			resources[resourceType].Remove(new(resourceType, resources[resourceType].Moles));
+
+			return new(resourceType, resources[resourceType].Moles);
+		}
+
+		private ICollection<ReactionType> possibleReactionTypes;
+
+		private bool invalidatePossibleReactionTypes = true;
+
+		public void Tick(DecimalNumber tickInterval, IEnumerable<ReactionFactor> reactionFactors)
+		{
+#if DEBUG
+			var initialMass = Mass;
+			lock (SyncRoot) // lock because otherwise the assert to check the mass discrepency could Assert incorrectly because of external parallell modifications to the mass.
+			{
+#endif
+				foreach (var reactionType in possibleReactionTypes) // Tick all reactionTypes *before* recalculating possible reaction types - in order to ensure reactions can be stopped by noticing lack of resources. A reactionType should always be ticked normally before being removed from further ticks.
+				{
+					reactionType.Tick(tickInterval, this, reactionFactors);
+				}
+#if DEBUG
+			}
+#endif
+			Debug.Assert(DecimalNumber.Difference(initialMass, Mass) < permittedMaxPostReactionMassDiscrepancy);
+
+			bool needsToRecalculatePossibleReactionTypes;
+			lock (SyncRoot)
+			{
+				needsToRecalculatePossibleReactionTypes = invalidatePossibleReactionTypes;
+			}
+			if (needsToRecalculatePossibleReactionTypes)
+			{
+				RecalculatePossibleReactionTypes();
+			}
+		}
+
+		private void RecalculatePossibleReactionTypes()
+		{
+			HashSet<ChemicalType> chemicalTypes = resources.Keys.Select((rT) => rT.ChemicalType).ToHashSet();
+
+			possibleReactionTypes = ReactionType.GetAllPossibleReactionTypes(chemicalTypes);
+
+			lock (SyncRoot)
+				invalidatePossibleReactionTypes = false;
 		}
 
 		public void AddResources(IEnumerable<ResourceUnitData> resourceUnitDatas)
@@ -154,6 +204,8 @@ namespace Space_Refinery_Game
 
 				InvalidateRecalcuables();
 
+				ResourceCountChanged();
+
 				return resourceUnit;
 			},
 			(_, ru) =>
@@ -165,11 +217,43 @@ namespace Space_Refinery_Game
 			});
 		}
 
+		private void ResourceCountChanged()
+		{
+			lock (SyncRoot)
+			{
+				invalidatePossibleReactionTypes = true;
+			}
+		}
+
 		public DecimalNumber VolumeOf(ResourceType resourceType)
 		{
 			if (resources.TryGetValue(resourceType, out var resourceUnit))
 			{
 				return resourceUnit.Volume;
+			}
+			else
+			{
+				return DecimalNumber.Zero;
+			}
+		}
+
+		public DecimalNumber MassOf(ResourceType resourceType)
+		{
+			if (resources.TryGetValue(resourceType, out var resourceUnit))
+			{
+				return resourceUnit.Mass;
+			}
+			else
+			{
+				return DecimalNumber.Zero;
+			}
+		}
+
+		public DecimalNumber MolesOf(ResourceType resourceType)
+		{
+			if (resources.TryGetValue(resourceType, out var resourceUnit))
+			{
+				return resourceUnit.Moles;
 			}
 			else
 			{
@@ -185,6 +269,7 @@ namespace Space_Refinery_Game
 
 				if (resources[changed.ResourceType].Moles == DecimalNumber.Zero)
 				{
+					ResourceCountChanged();
 					changed.ResourceUnitChanged -= ResourceUnit_Changed;
 					resources.RemoveStrict(changed.ResourceType);
 				}

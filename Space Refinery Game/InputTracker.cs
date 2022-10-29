@@ -36,7 +36,10 @@ namespace Space_Refinery_Game
 
 		internal static InputTrackerCloneSnapshot Create()
 		{
-			return new InputTrackerCloneSnapshot(keyEvents, mouseEvents, keyCharsPressed, MousePosition.ToVector2(), ScrollWheelDelta.ToFloat());
+			lock (SyncRoot)
+			{
+				return new InputTrackerCloneSnapshot(keyEvents, mouseEvents, keyCharsPressed, MousePosition.ToVector2(), ScrollWheelDelta.ToFloat());
+			}
 		}
 
 		public static void ListenToWindow(Window window)

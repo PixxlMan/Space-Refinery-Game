@@ -39,9 +39,14 @@
 				totalVolume += resourceUnit.Volume;
 			}
 
+			// this isn't really thread safe? more stuff could be added between the volume check and adding...
 			if (resourceContainer.Volume + totalVolume < resourceContainer.MaxVolume) // at least until pressure can be simulated...
 			{
 				resourceContainer.AddResources(resourceUnitDatas.Values);
+			}
+			else
+			{
+				resourceContainer.AddResource(water);
 			}
 		}
 	}

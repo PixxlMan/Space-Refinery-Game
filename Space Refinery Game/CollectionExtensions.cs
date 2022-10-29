@@ -23,6 +23,7 @@ namespace Space_Refinery_Game
 			}
 		}
 		
+		// rename to AddStrict as it is more accurate
 		[DebuggerHidden]
 		public static void AddUnique<TKey, TValue>(this ConcurrentDictionary<TKey, TValue> dictionary, TKey key, TValue value, string? exceptionText = null)
 		{

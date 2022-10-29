@@ -30,7 +30,7 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		public ICollection<ReactionType> GetAllPossibleReactionTypes(HashSet<ChemicalType> availableChemicals)
+		public static ICollection<ReactionType> GetAllPossibleReactionTypes(HashSet<ChemicalType> availableChemicals)
 		{
 			HashSet<ReactionType> initialPossibleReactions = new();
 
@@ -57,7 +57,7 @@ namespace Space_Refinery_Game
 
 		public static List<ReactionType> ReactionTypes = new();
 
-		public ConcurrentDictionary<ChemicalType, HashSet<ReactionType>> PossibleReactionsPerChemicalType = new();
+		public static ConcurrentDictionary<ChemicalType, HashSet<ReactionType>> PossibleReactionsPerChemicalType = new();
 
 		public string ReactionName { get; protected set; }
 

@@ -30,6 +30,19 @@ namespace Space_Refinery_Game
 
 		public static DecimalNumber RadiansToDegrees => FixedDecimalLong8.RadiansToDegrees;
 
+		public static DecimalNumber Deca => 10;
+		public static DecimalNumber Hecto => 100;
+		public static DecimalNumber Kilo => 1000;
+		public static DecimalNumber Mega => 1_000_000;
+		public static DecimalNumber Giga => 1_000_000_000;
+		public static DecimalNumber Tera => 1_000_000_000_000;
+		
+		public static DecimalNumber Deci => 1/10;
+		public static DecimalNumber Centi => 1/100;
+		public static DecimalNumber Milli => 1/1000;
+		public static DecimalNumber Micro => 1/1_000_000;
+		public static DecimalNumber Nano => 1/1_000_000_000; // can't actually represent..
+
 		public static DecimalNumber Abs(DecimalNumber a)
 		{
 			return FixedDecimalLong8.Abs(a);

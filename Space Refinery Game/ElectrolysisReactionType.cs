@@ -10,18 +10,11 @@
 
 		static DecimalNumber molesOfWater => 2 * reactionScale; // [mol]
 
-		public override void Tick(DecimalNumber interval, ResourceContainer resourceContainer, IEnumerable<ReactionFactor> reactionFactors)
+		public override void Tick(DecimalNumber interval, ResourceContainer resourceContainer, ILookup<Type, ReactionFactor> reactionFactors, ICollection<ReactionFactor> producedReactionFactors)
 		{
-			var electricalEnergyFactors = reactionFactors.OfType<ElectricalCurrent>();
-
-			if (electricalEnergyFactors.Count() == 0)
-			{
-				return;
-			}
-
 			DecimalNumber electricalEnergy = DecimalNumber.Zero;
 
-			foreach (var electricalCurrent in electricalEnergyFactors)
+			foreach (ElectricalCurrent electricalCurrent in reactionFactors[typeof(ElectricalCurrent)])
 			{
 				electricalEnergy += electricalCurrent.ElectricalEnergy;
 			}

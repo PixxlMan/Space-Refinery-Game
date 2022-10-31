@@ -69,7 +69,7 @@ namespace Space_Refinery_Game
 
 		public bool CanOccurSpontaneously { get; protected set; }
 
-		public abstract void Tick(DecimalNumber interval, ResourceContainer resourceContainer, IEnumerable<ReactionFactor> reactionFactors);
+		public abstract void Tick(DecimalNumber interval, ResourceContainer resourceContainer, ILookup<Type, ReactionFactor> reactionFactors, ICollection<ReactionFactor> producedReactionFactors);
 
 		public virtual void SerializeState(XmlWriter writer)
 		{

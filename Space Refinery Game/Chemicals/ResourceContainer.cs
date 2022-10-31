@@ -141,8 +141,10 @@ namespace Space_Refinery_Game
 
 		private bool invalidatePossibleReactionTypes = true;
 
-		public void Tick(DecimalNumber tickInterval, IEnumerable<ReactionFactor> reactionFactors)
+		public void Tick(DecimalNumber tickInterval, ILookup<Type, ReactionFactor> reactionFactors, out ICollection<ReactionFactor> producedReactionFactors)
 		{
+			producedReactionFactors = new List<ReactionFactor>();
+
 #if DEBUG
 			var initialMass = Mass;
 			lock (SyncRoot) // lock because otherwise the assert to check the mass discrepency could Assert incorrectly because of external parallell modifications to the mass.
@@ -150,7 +152,7 @@ namespace Space_Refinery_Game
 #endif
 				foreach (var reactionType in possibleReactionTypes) // Tick all reactionTypes *before* recalculating possible reaction types - in order to ensure reactions can be stopped by noticing lack of resources. A reactionType should always be ticked normally before being removed from further ticks.
 				{
-					reactionType.Tick(tickInterval, this, reactionFactors);
+					reactionType.Tick(tickInterval, this, reactionFactors, producedReactionFactors);
 				}
 #if DEBUG
 			}

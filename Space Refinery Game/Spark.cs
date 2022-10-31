@@ -12,10 +12,4 @@
 			SparkEnergy = sparkEnergy;
 		}
 	}
-
-	public struct Fire : ReactionFactor
-	{
-		public Fire()
-		{ }
-	}
 }

@@ -13,8 +13,8 @@
 				<Count>3</Count>
 				<Elements>
 					<Position>
-						<X>-.75</X>
-						<Y>0.4</Y>
+						<X>-0.5</X>
+						<Y>0</Y>
 						<Z>0</Z>
 					</Position>
 					<Direction>
@@ -23,8 +23,8 @@
 						<Z>0</Z>
 					</Direction>
 					<Position>
-						<X>.75</X>
-						<Y>0.4</Y>
+						<X>0.5</X>
+						<Y>0</Y>
 						<Z>0</Z>
 					</Position>
 					<Direction>

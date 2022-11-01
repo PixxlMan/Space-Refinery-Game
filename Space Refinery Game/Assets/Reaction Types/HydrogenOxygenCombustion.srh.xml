@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SerializationReferenceHandler>
+	<Count>1</Count>
+	<Elements>
+		<IEntitySerializable>
+			<Type>Space_Refinery_Game.HydrogenOxygenCombustionReactionType</Type>
+			<ReactionType>
+				<GUID>e1bba7bb-ac2f-4dd4-b674-8802fb3b23c5</GUID>
+				<ReactionName>Hydrogen-Oxygen Combustion</ReactionName>
+				<CanOccurSpontaneously>True</CanOccurSpontaneously>
+				<NecessaryChemicals>
+					<Count>2</Count>
+					<Elements>
+						<GUID>8c22ca6f-030b-41d1-a4ff-d54eaeb06640</GUID>
+						<GUID>b0ccba05-c046-4378-b45e-52fcb715b1f4</GUID>
+					</Elements>
+				</NecessaryChemicals>
+			</ReactionType>				
+		</IEntitySerializable>
+	</Elements>
+</SerializationReferenceHandler>

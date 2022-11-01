@@ -1,5 +1,6 @@
 ﻿using FixedPrecision;
 using ImGuiNET;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 using System.Xml;
 
@@ -76,5 +77,10 @@ public abstract class ResourceType : IUIInspectable, IEntitySerializable
 			SpecificHeatCapacity = reader.DeserializeDecimalNumber(nameof(SpecificHeatCapacity));
 		}
 		reader.ReadEndElement();
+	}
+
+	public override string ToString()
+	{
+		return $"{ChemicalType}.{ResourceName}";
 	}
 }

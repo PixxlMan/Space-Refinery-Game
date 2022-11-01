@@ -174,5 +174,10 @@ namespace Space_Refinery_Game
 
 			chemicalNameToChemicalType.TryAdd(ChemicalName, this);
 		}
+
+		public override string ToString()
+		{
+			return ChemicalName;
+		}
 	}
 }

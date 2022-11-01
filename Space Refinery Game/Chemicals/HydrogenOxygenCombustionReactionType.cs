@@ -23,7 +23,7 @@ namespace Space_Refinery_Game
 
 					foreach (Spark spark in reactionFactors[typeof(Spark)])
 					{
-						if (spark.SparkEnergy > 20 * DecimalNumber.Micro) // If the spark has more than 20 microjoules of energy, it will ignite the gas.
+						if (spark.SparkEnergy >= 20 * DecimalNumber.Micro) // If the spark has more than 20 microjoules of energy, it will ignite the gas.
 						{
 							shouldStartToCombust = true;
 

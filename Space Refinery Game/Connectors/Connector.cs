@@ -3,6 +3,7 @@ using FixedPrecision;
 using FXRenderer;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -165,6 +166,8 @@ namespace Space_Refinery_Game
 				{
 					throw new Exception($"{nameof(Connector)} is not vacant.");
 				}
+
+				Debug.Assert(!ReferenceEquals(GetConnectableAtSide(VacantSide.Value), connectable), "This connector has detected a self referential connection.");
 
 				if (VacantSide == ConnectorSide.A)
 				{

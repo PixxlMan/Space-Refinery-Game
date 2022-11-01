@@ -120,7 +120,7 @@ namespace Space_Refinery_Game
 				{
 					r.DeserializeReference<PipeConnectorProperties>(referenceHandler, (pcp) => pipeConnectorProperties.Add(pcp));
 				}, nameof(ConnectorProperties));
-			serializationData.SerializationCompleteEvent += () => ConnectorProperties = pipeConnectorProperties.ToArray();
+			serializationData.DeserializationCompleteEvent += () => ConnectorProperties = pipeConnectorProperties.ToArray();
 
 			if (reader.DeserializeBoolean("HasConnectorNames"))
 			{

@@ -353,7 +353,7 @@ namespace Space_Refinery_Game
 
 				PipeType = pipeType;
 
-				serializationData.SerializationCompleteEvent += () =>
+				serializationData.DeserializationCompleteEvent += () =>
 				{
 					SetUp(pipeType, null, connectors, renderable, physObj, serializationData.GameData);
 				};

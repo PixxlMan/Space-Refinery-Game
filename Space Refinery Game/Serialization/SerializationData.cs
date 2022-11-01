@@ -2,7 +2,7 @@
 
 namespace Space_Refinery_Game
 {
-	public sealed class SerializationData
+	public sealed class SerializationData // rename to deserializationdata?
 	{
 		public SerializationData(UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler)
 		{
@@ -16,11 +16,11 @@ namespace Space_Refinery_Game
 
 		public GameData GameData;
 
-		public event Action SerializationCompleteEvent;
+		public event Action DeserializationCompleteEvent;
 
 		public void SerializationComplete()
 		{
-			SerializationCompleteEvent?.Invoke();
+			DeserializationCompleteEvent?.Invoke();
 		}
 	}
 }

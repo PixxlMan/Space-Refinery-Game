@@ -335,7 +335,7 @@ namespace Space_Refinery_Game
 
 					this.GameData = serializationData.GameData;
 
-					serializationData.SerializationCompleteEvent += () =>
+					serializationData.DeserializationCompleteEvent += () =>
 					{
 						if (a != null)
 						{

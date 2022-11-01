@@ -148,11 +148,11 @@ namespace Space_Refinery_Game
 			Limiter = reader.DeserializeDecimalNumber(nameof(Limiter));
 			var resourceContainers = (ResourceContainer[])reader.DeserializeCollection((r) => ResourceContainer.Deserialize(r));
 
-			serializationData.SerializationCompleteEvent += () =>
+			serializationData.DeserializationCompleteEvent += () =>
 			{
 				for (int i = 0; i < resourceContainers.Length; i++)
 				{
-					serializationData.SerializationCompleteEvent += () => ResourceContainers.Add(Connectors[i], resourceContainers[i]);
+					serializationData.DeserializationCompleteEvent += () => ResourceContainers.Add(Connectors[i], resourceContainers[i]);
 				}
 			};
 		}

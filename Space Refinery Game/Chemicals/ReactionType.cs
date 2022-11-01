@@ -84,7 +84,7 @@ namespace Space_Refinery_Game
 				ConcurrentBag<ChemicalType> necessaryChemicalTypes = new();
 				reader.DeserializeReferenceCollection(necessaryChemicalTypes, referenceHandler, nameof(NecessaryChemicals));
 
-				serializationData.SerializationCompleteEvent += () =>
+				serializationData.DeserializationCompleteEvent += () =>
 				{
 					NecessaryChemicals = necessaryChemicalTypes.ToHashSet();
 

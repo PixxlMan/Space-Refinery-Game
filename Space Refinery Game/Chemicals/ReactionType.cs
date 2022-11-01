@@ -13,26 +13,11 @@ namespace Space_Refinery_Game
 		public ReactionType()
 		{
 			ReactionTypes.Add(this);
-
-			if (CanOccurSpontaneously)
-			{
-				foreach (ChemicalType chemicalType in NecessaryChemicals)
-				{
-					if (PossibleReactionsPerChemicalType.ContainsKey(chemicalType))
-					{
-						PossibleReactionsPerChemicalType[chemicalType].Add(this);
-					}
-					else
-					{
-						PossibleReactionsPerChemicalType.TryAdd(chemicalType, new() { this });
-					}
-				}
-			}
 		}
 
 		public static ICollection<ReactionType> GetAllPossibleReactionTypes(HashSet<ChemicalType> availableChemicals)
 		{
-			HashSet<ReactionType> initialPossibleReactions = new();
+			HashSet<ReactionType> initialPossibleReactions = new(); // Find all reaction types that share a necessary chemical with what is available.
 
 			foreach (var chemical in availableChemicals)
 			{
@@ -42,7 +27,7 @@ namespace Space_Refinery_Game
 				}
 			}
 
-			HashSet<ReactionType> refinedPossibleReactions = new();
+			HashSet<ReactionType> refinedPossibleReactions = new(); // Eliminate all reaction types whoose necessary chemicals are not fully satisfied.
 
 			foreach (var possibleReaction in initialPossibleReactions)
 			{
@@ -102,6 +87,21 @@ namespace Space_Refinery_Game
 				serializationData.SerializationCompleteEvent += () =>
 				{
 					NecessaryChemicals = necessaryChemicalTypes.ToHashSet();
+
+					if (CanOccurSpontaneously)
+					{
+						foreach (ChemicalType chemicalType in NecessaryChemicals)
+						{
+							if (PossibleReactionsPerChemicalType.ContainsKey(chemicalType))
+							{
+								PossibleReactionsPerChemicalType[chemicalType].Add(this);
+							}
+							else
+							{
+								PossibleReactionsPerChemicalType.TryAdd(chemicalType, new() { this });
+							}
+						}
+					}
 				};
 			}
 			reader.ReadEndElement();

@@ -132,18 +132,41 @@ namespace Space_Refinery_Game
 
 		public ResourceUnitData TakeAllResource(ResourceType resourceType)
 		{
+			ResourceUnitData takenResource = new(resourceType, resources[resourceType].Moles);
+
 			resources[resourceType].Remove(new(resourceType, resources[resourceType].Moles));
 
-			return new(resourceType, resources[resourceType].Moles);
+			return takenResource;
 		}
 
 		private ICollection<ReactionType> possibleReactionTypes;
 
 		private bool invalidatePossibleReactionTypes = true;
 
-		public void Tick(DecimalNumber tickInterval, ILookup<Type, ReactionFactor> reactionFactors, out ICollection<ReactionFactor> producedReactionFactors)
+		public void AddReactionFactor(ReactionFactor reactionFactor)
 		{
-			producedReactionFactors = new List<ReactionFactor>();
+			lock (producedReactionFactors)
+			{
+				producedReactionFactors.Add(reactionFactor);
+			}
+		}
+
+		public void AddReactionFactors(IEnumerable<ReactionFactor> reactionFactors)
+		{
+			lock (producedReactionFactors)
+			{
+				producedReactionFactors.AddRange(reactionFactors);
+			}
+		}
+
+		private ILookup<Type, ReactionFactor> reactionFactors;
+		private readonly List<ReactionFactor> producedReactionFactors = new();
+
+		public void Tick(DecimalNumber tickInterval)
+		{
+			reactionFactors = producedReactionFactors.ToLookup((rF) => rF.GetType());
+
+			producedReactionFactors.Clear();
 
 #if DEBUG
 			var initialMass = Mass;
@@ -168,6 +191,8 @@ namespace Space_Refinery_Game
 			{
 				RecalculatePossibleReactionTypes();
 			}
+			
+			reactionFactors = null;
 		}
 
 		private void RecalculatePossibleReactionTypes()
@@ -178,6 +203,14 @@ namespace Space_Refinery_Game
 
 			lock (SyncRoot)
 				invalidatePossibleReactionTypes = false;
+		}
+
+		private void InvalidatePossibleReactionTypes()
+		{
+			lock (SyncRoot)
+			{
+				invalidatePossibleReactionTypes = true;
+			}
 		}
 
 		public void AddResources(IEnumerable<ResourceUnitData> resourceUnitDatas)
@@ -221,10 +254,7 @@ namespace Space_Refinery_Game
 
 		private void ResourceCountChanged()
 		{
-			lock (SyncRoot)
-			{
-				invalidatePossibleReactionTypes = true;
-			}
+			InvalidatePossibleReactionTypes();
 		}
 
 		public DecimalNumber VolumeOf(ResourceType resourceType)

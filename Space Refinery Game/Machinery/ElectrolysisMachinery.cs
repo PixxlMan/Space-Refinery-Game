@@ -86,7 +86,7 @@ namespace Space_Refinery_Game
 							0,
 							ReactionContainer.FreeVolume));
 
-					electrolysisReaction.Tick(Time.TickInterval, ReactionContainer, new ReactionFactor[1] { new ElectricalCurrent(MaxElectricalEnergyPerSecond * (DecimalNumber)Time.TickInterval) });
+					electrolysisReaction.Tick(Time.TickInterval, ReactionContainer, new ReactionFactor[1] { new ElectricalCurrent(MaxElectricalEnergyPerSecond * (DecimalNumber)Time.TickInterval) }.ToLookup((rF) => rF.GetType()), null);
 					// cache and don't regenerate reaction factors every time?
 					ReactionContainer.TransferResourceByVolume(OxygenOutput, ChemicalType.Oxygen.GasPhaseType, DecimalNumber.Min(ReactionContainer.VolumeOf(ChemicalType.Oxygen.GasPhaseType), OxygenOutput.FreeVolume * 0.8));
 

@@ -7,12 +7,11 @@
 			<ReactionType>
 				<GUID>4c340359-2c09-41c9-97dd-858501c99368</GUID>
 				<ReactionName>Electrolysis</ReactionName>
-				<CanOccurSpontaneously>True</CanOccurSpontaneously>
+				<CanOccurSpontaneously>False</CanOccurSpontaneously>
 				<NecessaryChemicals>
-					<Count>2</Count>
+					<Count>1</Count>
 					<Elements>
-						<GUID>8c22ca6f-030b-41d1-a4ff-d54eaeb06640</GUID>
-						<GUID>b0ccba05-c046-4378-b45e-52fcb715b1f4</GUID>
+						<GUID>6b3a9e4d-531d-4976-bacb-ae680dbc74a5</GUID>
 					</Elements>
 				</NecessaryChemicals>
 			</ReactionType>				

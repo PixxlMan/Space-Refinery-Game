@@ -37,11 +37,10 @@ namespace Space_Refinery_Game
 		public static DecimalNumber Giga => 1_000_000_000;
 		public static DecimalNumber Tera => 1_000_000_000_000;
 		
-		public static DecimalNumber Deci => 1/10;
-		public static DecimalNumber Centi => 1/100;
-		public static DecimalNumber Milli => 1/1000;
-		public static DecimalNumber Micro => 1/1_000_000;
-		public static DecimalNumber Nano => 1/1_000_000_000; // can't actually represent..
+		public static DecimalNumber Deci => 1/ (DecimalNumber)10;
+		public static DecimalNumber Centi => 1/ (DecimalNumber)100;
+		public static DecimalNumber Milli => 1/ (DecimalNumber)1000;
+		public static DecimalNumber Micro => 1/ (DecimalNumber)1_000_000;
 
 		public static DecimalNumber Abs(DecimalNumber a)
 		{

@@ -51,10 +51,12 @@ namespace Space_Refinery_Game
 			if (hydrogen.Moles * 2 > oxygen.Moles)
 			{ // oxygen limited
 				resourceContainer.AddResource(new ResourceUnitData(ChemicalType.Water.LiquidPhaseType, oxygen.Moles));
+				resourceContainer.AddResource(new ResourceUnitData(ChemicalType.Hydrogen.GasPhaseType, hydrogen.Moles - oxygen.Moles * 2)); // Add back the hydrogen that didn't get used up.
 			}
 			else
 			{ // hydrogen limited
 				resourceContainer.AddResource(new ResourceUnitData(ChemicalType.Water.LiquidPhaseType, hydrogen.Moles * 2));
+				resourceContainer.AddResource(new ResourceUnitData(ChemicalType.Oxygen.GasPhaseType, oxygen.Moles - hydrogen.Moles / 2)); // Add back the oxygen that didn't get used up.
 			}
 		}
 	}

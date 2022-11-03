@@ -96,7 +96,7 @@ namespace Space_Refinery_Game
 
 					ProductOutput.Tick(Time.TickInterval);
 
-					ReactionContainer.TransferResourceByVolume(ProductOutput, DecimalNumber.Min(ReactionContainer.VolumeOf(ChemicalType.Oxygen.GasPhaseType), DecimalNumber.Max(ProductOutput.Fullness - ReactionContainer.Fullness, 0) * (DecimalNumber)Time.TickInterval));
+					ReactionContainer.TransferResourceByVolume(ProductOutput, DecimalNumber.Min(ReactionContainer.VolumeOf(ChemicalType.Water.LiquidPhaseType), DecimalNumber.Max(ReactionContainer.Fullness - ProductOutput.Fullness, 0) * (DecimalNumber)Time.TickInterval));
 
 					//ElectricityInput.ConsumeElectricity();
 				}

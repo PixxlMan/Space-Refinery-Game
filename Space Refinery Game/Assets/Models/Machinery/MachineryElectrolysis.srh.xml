@@ -13,7 +13,7 @@
 				<Count>3</Count>
 				<Elements>
 					<Position>
-						<X>-0.9</X>
+						<X>-1</X>
 						<Y>0</Y>
 						<Z>-1</Z>
 					</Position>
@@ -23,7 +23,7 @@
 						<Z>0</Z>
 					</Direction>
 					<Position>
-						<X>-0.9</X>
+						<X>-1</X>
 						<Y>0</Y>
 						<Z>1</Z>
 					</Position>
@@ -33,7 +33,7 @@
 						<Z>0</Z>
 					</Direction>
 					<Position>
-						<X>0.9</X>
+						<X>1</X>
 						<Y>0</Y>
 						<Z>0</Z>
 					</Position>

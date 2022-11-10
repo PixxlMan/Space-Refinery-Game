@@ -16,21 +16,18 @@ namespace Space_Refinery_Game
 	{
 		protected Connector()
 		{
-			
+
 		}
 
-		public Connector((IConnectable connectableA, IConnectable connectableB) connectables, Transform transform, GameData gameData) : this(transform, gameData)
+		public Connector(IConnectable initialConnectable, ConnectorSide side, Transform transform, GameData gameData) : this((side == ConnectorSide.A ? (initialConnectable, null) : (null, initialConnectable)), transform, gameData)
+		{
+
+		}
+
+		public Connector((IConnectable connectableA, IConnectable connectableB) connectables, Transform transform, GameData gameData)
 		{
 			Connectables = connectables;
-		}
 
-		public Connector(IConnectable initialConnectable, ConnectorSide side, Transform transform, GameData gameData) : this(transform, gameData)
-		{
-			Connectables = (side == ConnectorSide.A ? (initialConnectable, null) : (null, initialConnectable));
-		}
-
-		protected Connector(Transform transform, GameData gameData)
-		{
 			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
 
 			Transform = transform;
@@ -94,7 +91,8 @@ namespace Space_Refinery_Game
 
 		public Guid SerializableReferenceGUID { get; private set; } = Guid.NewGuid();
 
-		public (IConnectable? connectableA, IConnectable? connectableB) Connectables { get; protected set; }
+		private (IConnectable connectableA, IConnectable connectableB) connectables;
+		public (IConnectable? connectableA, IConnectable? connectableB) Connectables { get { lock(SyncRoot) return connectables; } protected set { lock (SyncRoot) { connectables = value; Debug.Assert(!(connectables.connectableA is null && connectables.connectableB is null), $"Both {nameof(Connectables)} cannot be null!"); } } }
 
 		public IConnectable? Unconnected
 		{
@@ -191,20 +189,20 @@ namespace Space_Refinery_Game
 			{
 				if (side == ConnectorSide.A)
 				{
-					Connectables = (null, Connectables.connectableB);
+					connectables = (null, connectables.connectableB);
 				}
 				else if (side == ConnectorSide.B)
 				{
-					Connectables = (Connectables.connectableA, null);
+					connectables = (connectables.connectableA, null);
 				}
 
 				PhysicsObject.Enabled = true;
 				UpdateProxy();
 
-				if (Connectables.connectableA is null && Connectables.connectableB is null)
+				if (connectables.connectableA is null && connectables.connectableB is null)
 				{
 					Destroy();
-				} 
+				}
 			}
 		}
 
@@ -227,26 +225,33 @@ namespace Space_Refinery_Game
 		{
 			lock (SyncRoot)
 			{
-				if (!Vacant)
+				if (!Vacant) // If the connector is vacant the proxy should be disabled.
 				{
+					Proxy?.Disable();
 					return;
 				}
 
-				if (Proxy is null)
+				if (Proxy is null) // Make sure there is a proxy.
 				{
 					Proxy = new(this);
 				}
 
-				if (Proxy.PhysicsObject is not null)
+				if (Proxy.PhysicsObject is not null) // Always remove physics object to "make room" for new one that will be created shortly. Could theoretically repurpose old one for those mad performance gainz?
 				{
 					Proxy.PhysicsObject.Destroy();
 				}
 
-				var proxyPhysicsObject = new PhysicsObjectDescription<ConvexHull>(GameData.PhysicsWorld.GetConvexHullForMesh(GameData.UI.SelectedPipeType.Mesh), GameWorld.GenerateTransformForConnector(GameData.UI.SelectedPipeType.ConnectorPlacements[GameData.UI.ConnectorSelection], this, GameData.UI.RotationIndex * 45 * FixedDecimalLong8.DegreesToRadians), 0, true);
+				var proxyPhysicsObject = new PhysicsObjectDescription<ConvexHull>(
+					GameData.PhysicsWorld.GetConvexHullForMesh(GameData.UI.SelectedPipeType.Mesh),
+					GameWorld.GenerateTransformForConnector(
+						GameData.UI.SelectedPipeType.ConnectorPlacements[GameData.UI.ConnectorSelection],
+						this, GameData.UI.RotationIndex * 45 * FixedDecimalLong8.DegreesToRadians),
+					0,
+					true);
 
 				Proxy.PhysicsObject = GameData.PhysicsWorld.AddPhysicsObject(proxyPhysicsObject, Proxy);
 
-				Proxy.Enable(); 
+				Proxy.Enable();
 			}
 		}
 
@@ -261,7 +266,7 @@ namespace Space_Refinery_Game
 						return null;
 					}
 
-					return VacantSide.Value.Opposite(); 
+					return VacantSide.Value.Opposite();
 				}
 			}
 		}
@@ -278,7 +283,7 @@ namespace Space_Refinery_Game
 
 				MainGame.DebugRender.DrawOrientationMarks(PhysicsObject.Transform);
 
-				MainGame.DebugRender.DrawCube(new Transform(PhysicsObject.Transform) { Scale = new((FixedDecimalInt4).4f, (FixedDecimalInt4).4f, (FixedDecimalInt4).25f) }, VacantSide is null ? RgbaFloat.Green : RgbaFloat.Cyan); 
+				MainGame.DebugRender.DrawCube(new Transform(PhysicsObject.Transform) { Scale = new((FixedDecimalInt4).4f, (FixedDecimalInt4).4f, (FixedDecimalInt4).25f) }, VacantSide is null ? RgbaFloat.Green : RgbaFloat.Cyan);
 			}
 		}
 
@@ -305,7 +310,7 @@ namespace Space_Refinery_Game
 						writer.SerializeReference(Connectables.connectableB, $"{nameof(Connectables.connectableB)}_GUID");
 					}
 				}
-				writer.WriteEndElement(); 
+				writer.WriteEndElement();
 			}
 		}
 
@@ -354,7 +359,7 @@ namespace Space_Refinery_Game
 
 					serializationData.GameData.GameWorld.AddEntity(this);
 				}
-				reader.ReadEndElement(); 
+				reader.ReadEndElement();
 			}
 		}
 
@@ -379,7 +384,7 @@ namespace Space_Refinery_Game
 
 				GameData.GameWorld.RemoveEntity(this);
 
-				GameData.ReferenceHandler.RemoveReference(this); 
+				GameData.ReferenceHandler.RemoveReference(this);
 			}
 		}
 

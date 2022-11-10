@@ -47,6 +47,9 @@ public sealed class GraphicsWorld
 
 	public ShaderLoader ShaderLoader { get; private set; }
 
+	private string responseSpinner = "_";
+	public string ResponseSpinner { get { lock(responseSpinner) return responseSpinner; } }
+
 	public readonly object SynchronizationObject = new();
 
 	public Camera Camera;
@@ -121,6 +124,9 @@ public sealed class GraphicsWorld
 				window.PumpEvents();
 
 				RenderScene(FixedDecimalLong8.Max(deltaTime, FrametimeLowerLimit));
+
+				lock (responseSpinner)
+					responseSpinner = "|/-\\"[(int)(time / 0.05) & 3].ToString(); // https://github.com/ocornut/imgui/issues/1901#issuecomment-400563921
 
 				if (ShouldLimitFramerate)
 				{

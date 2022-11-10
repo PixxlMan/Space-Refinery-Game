@@ -22,9 +22,9 @@ namespace Space_Refinery_Game
 
 		private GameData gameData;
 
-		public List<PipeType> PipeTypes = new();
+		private List<PipeType> pipeTypes = new();
 
-		public PipeType SelectedPipeType => PipeTypes[EntitySelection];
+		public PipeType SelectedPipeType { get { lock (syncRoot) return pipeTypes[EntitySelection]; } }
 
 		public int EntitySelection;
 
@@ -36,23 +36,23 @@ namespace Space_Refinery_Game
 
 		public event Action<IEntityType> SelectedEntityTypeChanged;
 
-		private object SyncRoot = new();
+		private object syncRoot = new();
 
 		public void ChangeEntitySelection(int selectionDelta)
 		{
-			lock (SyncRoot)
+			lock (syncRoot)
 			{
 				EntitySelection += selectionDelta;
 
-				while (EntitySelection >= PipeTypes.Count || EntitySelection < 0)
+				while (EntitySelection >= pipeTypes.Count || EntitySelection < 0)
 				{
 					if (EntitySelection < 0)
 					{
-						EntitySelection += PipeTypes.Count;
+						EntitySelection += pipeTypes.Count;
 					}
-					else if (EntitySelection >= PipeTypes.Count)
+					else if (EntitySelection >= pipeTypes.Count)
 					{
-						EntitySelection -= PipeTypes.Count;
+						EntitySelection -= pipeTypes.Count;
 					}
 				}
 
@@ -66,7 +66,7 @@ namespace Space_Refinery_Game
 
 		public void ChangeConnectorSelection(int selectionDelta)
 		{
-			lock (SyncRoot)
+			lock (syncRoot)
 			{
 				ConnectorSelection += selectionDelta;
 
@@ -99,7 +99,7 @@ namespace Space_Refinery_Game
 
 		private void WindowResized(int width, int height)
 		{
-			lock (SyncRoot)
+			lock (syncRoot)
 			{
 				imGuiRenderer.WindowResized(width, height);
 
@@ -125,7 +125,7 @@ namespace Space_Refinery_Game
 
 		public void EnterMenu(Action doMenu, string title)
 		{
-			lock (SyncRoot)
+			lock (syncRoot)
 			{
 				InMenu = true;
 
@@ -149,7 +149,7 @@ namespace Space_Refinery_Game
 
 			gameData.GraphicsWorld.AddRenderable(ui, 1);
 
-			ui.PipeTypes.AddRange(PipeType.PipeTypes.Values);
+			ui.pipeTypes.AddRange(PipeType.PipeTypes.Values);
 
 			ui.Style();
 
@@ -158,7 +158,7 @@ namespace Space_Refinery_Game
 
 		public void AddDrawCommands(CommandList cl)
 		{
-			lock (SyncRoot)
+			lock (syncRoot)
 			{
 				imGuiRenderer.Update(1, InputTracker.CreateInputTrackerCloneSnapshot());
 
@@ -215,7 +215,7 @@ namespace Space_Refinery_Game
 
 		public void TogglePause()
 		{
-			lock (SyncRoot)
+			lock (syncRoot)
 			{
 				if (Paused)
 				{
@@ -230,7 +230,7 @@ namespace Space_Refinery_Game
 
 		public void Pause()
 		{
-			lock (SyncRoot)
+			lock (syncRoot)
 			{
 				if (Paused)
 				{
@@ -245,7 +245,7 @@ namespace Space_Refinery_Game
 
 		public void Unpause()
 		{
-			lock (SyncRoot)
+			lock (syncRoot)
 			{
 				if (!Paused)
 				{
@@ -262,7 +262,7 @@ namespace Space_Refinery_Game
 
 		public void DoUI()
 		{
-			lock (SyncRoot)
+			lock (syncRoot)
 			{
 				if (!Paused)
 				{
@@ -277,7 +277,7 @@ namespace Space_Refinery_Game
 
 		private void DoDebugSettingsUI()
 		{
-			lock (SyncRoot)
+			lock (syncRoot)
 			{
 				if (ImGui.Begin("Debug Settings", ImGuiWindowFlags.AlwaysAutoResize))
 				{
@@ -387,55 +387,12 @@ namespace Space_Refinery_Game
 
 				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Display performance information"))
 				{
-					ImGui.TextColored(RgbaFloat.White.ToVector4(), $"Frame time:				  {gameData.PerformanceStatisticsCollector.RendererFrameTime * 1000} ms ({gameData.PerformanceStatisticsCollector.RendererFramerate} FPS)");
+					DoPerformanceInfo();
+				}
 
-					RgbaFloat tickColor;
-					if (gameData.PerformanceStatisticsCollector.TickBudgetUse > 1)
-					{
-						tickColor = RgbaFloat.Red;
-					}
-					else if (gameData.PerformanceStatisticsCollector.TickBudgetUse > (DecimalNumber)0.75)
-					{
-						tickColor = RgbaFloat.Yellow;
-					}
-					else
-					{
-						tickColor = RgbaFloat.Green;
-					}
-
-					ImGui.TextColored(tickColor.ToVector4(), $"Tick time:					   {gameData.PerformanceStatisticsCollector.TickTime * 1000} ms ({gameData.PerformanceStatisticsCollector.TicksPerSecond} TPS, {(gameData.PerformanceStatisticsCollector.TickBudgetUse * 100).ToInt32()} percent)");
-
-					RgbaFloat updateColor;
-					if (gameData.PerformanceStatisticsCollector.UpdateBudgetUse > 1)
-					{
-						updateColor = RgbaFloat.Red;
-					}
-					else if (gameData.PerformanceStatisticsCollector.UpdateBudgetUse > (DecimalNumber)0.75)
-					{
-						updateColor = RgbaFloat.Yellow;
-					}
-					else
-					{
-						updateColor = RgbaFloat.Green;
-					}
-
-					ImGui.TextColored(updateColor.ToVector4(), $"Update time:				 {gameData.PerformanceStatisticsCollector.UpdateTime * 1000} ms ({gameData.PerformanceStatisticsCollector.UpdatesPerSecond} UPS, {(gameData.PerformanceStatisticsCollector.UpdateBudgetUse * 100).ToInt32()} percent)");
-
-					RgbaFloat physicsUpdateColor;
-					if (gameData.PerformanceStatisticsCollector.PhysicsBudgetUse > 1)
-					{
-						physicsUpdateColor = RgbaFloat.Red;
-					}
-					else if (gameData.PerformanceStatisticsCollector.PhysicsBudgetUse > (DecimalNumber)0.75)
-					{
-						physicsUpdateColor = RgbaFloat.Yellow;
-					}
-					else
-					{
-						physicsUpdateColor = RgbaFloat.Green;
-					}
-
-					ImGui.TextColored(physicsUpdateColor.ToVector4(), $"Physics update time:	{gameData.PerformanceStatisticsCollector.PhysicsTime * 1000} ms ({gameData.PerformanceStatisticsCollector.PhysicsUpdatesPerSecond} PUPS, {(gameData.PerformanceStatisticsCollector.PhysicsBudgetUse * 100).ToInt32()} percent)");
+				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("System response spinners", true))
+				{
+					ImGui.TextUnformatted(gameData.GraphicsWorld.ResponseSpinner.ToString());
 				}
 			}
 			ImGui.End();
@@ -473,10 +430,10 @@ namespace Space_Refinery_Game
 			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2 - ImGui.GetWindowWidth() / 2, gd.MainSwapchain.Framebuffer.Height / 5 * 4 - ImGui.GetWindowHeight() / 2), ImGuiCond.Always);
 			ImGui.SetWindowSize(new Vector2(500, 50), ImGuiCond.Always);
 			{
-				ImGui.Columns(PipeTypes.Count);
-				for (int i = 0; i < PipeTypes.Count; i++)
+				ImGui.Columns(pipeTypes.Count);
+				for (int i = 0; i < pipeTypes.Count; i++)
 				{
-					if (PipeTypes[i] is null)
+					if (pipeTypes[i] is null)
 					{
 						if (EntitySelection == i)
 						{
@@ -493,17 +450,70 @@ namespace Space_Refinery_Game
 
 					if (EntitySelection == i)
 					{
-						ImGui.TextColored(RgbaFloat.CornflowerBlue.ToVector4(), (PipeTypes[i].Name));
+						ImGui.TextColored(RgbaFloat.CornflowerBlue.ToVector4(), (pipeTypes[i].Name));
 					}
 					else
 					{
-						ImGui.TextDisabled(PipeTypes[i].Name);
+						ImGui.TextDisabled(pipeTypes[i].Name);
 					}
 
 					ImGui.NextColumn();
 				}
 			}
 			ImGui.End();
+		}
+
+		private void DoPerformanceInfo()
+		{
+			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"Frame time:				  {gameData.PerformanceStatisticsCollector.RendererFrameTime * 1000} ms ({gameData.PerformanceStatisticsCollector.RendererFramerate} FPS)");
+
+			RgbaFloat tickColor;
+			if (gameData.PerformanceStatisticsCollector.TickBudgetUse > 1)
+			{
+				tickColor = RgbaFloat.Red;
+			}
+			else if (gameData.PerformanceStatisticsCollector.TickBudgetUse > (DecimalNumber)0.75)
+			{
+				tickColor = RgbaFloat.Yellow;
+			}
+			else
+			{
+				tickColor = RgbaFloat.Green;
+			}
+
+			ImGui.TextColored(tickColor.ToVector4(), $"Tick time:					   {gameData.PerformanceStatisticsCollector.TickTime * 1000} ms ({gameData.PerformanceStatisticsCollector.TicksPerSecond} TPS, {(gameData.PerformanceStatisticsCollector.TickBudgetUse * 100).ToInt32()} percent)");
+
+			RgbaFloat updateColor;
+			if (gameData.PerformanceStatisticsCollector.UpdateBudgetUse > 1)
+			{
+				updateColor = RgbaFloat.Red;
+			}
+			else if (gameData.PerformanceStatisticsCollector.UpdateBudgetUse > (DecimalNumber)0.75)
+			{
+				updateColor = RgbaFloat.Yellow;
+			}
+			else
+			{
+				updateColor = RgbaFloat.Green;
+			}
+
+			ImGui.TextColored(updateColor.ToVector4(), $"Update time:				 {gameData.PerformanceStatisticsCollector.UpdateTime * 1000} ms ({gameData.PerformanceStatisticsCollector.UpdatesPerSecond} UPS, {(gameData.PerformanceStatisticsCollector.UpdateBudgetUse * 100).ToInt32()} percent)");
+
+			RgbaFloat physicsUpdateColor;
+			if (gameData.PerformanceStatisticsCollector.PhysicsBudgetUse > 1)
+			{
+				physicsUpdateColor = RgbaFloat.Red;
+			}
+			else if (gameData.PerformanceStatisticsCollector.PhysicsBudgetUse > (DecimalNumber)0.75)
+			{
+				physicsUpdateColor = RgbaFloat.Yellow;
+			}
+			else
+			{
+				physicsUpdateColor = RgbaFloat.Green;
+			}
+
+			ImGui.TextColored(physicsUpdateColor.ToVector4(), $"Physics update time:	{gameData.PerformanceStatisticsCollector.PhysicsTime * 1000} ms ({gameData.PerformanceStatisticsCollector.PhysicsUpdatesPerSecond} PUPS, {(gameData.PerformanceStatisticsCollector.PhysicsBudgetUse * 100).ToInt32()} percent)");
 		}
 
 		public void Style() // https://github.com/ocornut/imgui/issues/707

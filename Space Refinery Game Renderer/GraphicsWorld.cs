@@ -48,7 +48,7 @@ public sealed class GraphicsWorld
 	public ShaderLoader ShaderLoader { get; private set; }
 
 	private string responseSpinner = "_";
-	public string ResponseSpinner { get { lock(responseSpinner) return responseSpinner; } }
+	public string ResponseSpinner { get { lock(responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
 
 	public readonly object SynchronizationObject = new();
 

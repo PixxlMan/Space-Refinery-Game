@@ -355,6 +355,8 @@ namespace Space_Refinery_Game
 			}
 			ImGui.End();
 
+			DoStatus();
+
 			DoDebugSettingsUI();
 		}
 
@@ -377,25 +379,7 @@ namespace Space_Refinery_Game
 				}
 			}
 
-			ImGui.Begin("Status", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
-			ImGui.SetWindowPos(new Vector2(0, 0), ImGuiCond.Always);
-			{
-				if (MainGame.DebugRender.ShouldRender)
-				{
-					ImGui.TextColored(RgbaFloat.Red.ToVector4(), "Debug drawing");
-				}
-
-				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Display performance information"))
-				{
-					DoPerformanceInfo();
-				}
-
-				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("System response spinners", true))
-				{
-					ImGui.TextUnformatted(gameData.GraphicsWorld.ResponseSpinner.ToString());
-				}
-			}
-			ImGui.End();
+			DoStatus();
 
 			ImGui.Begin("Center", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
 			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2, gd.MainSwapchain.Framebuffer.Height / 2), ImGuiCond.Always);
@@ -463,9 +447,31 @@ namespace Space_Refinery_Game
 			ImGui.End();
 		}
 
+		private void DoStatus()
+		{
+			ImGui.Begin("Status", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
+			ImGui.SetWindowPos(new Vector2(0, 0), ImGuiCond.Always);
+			{
+				if (MainGame.DebugRender.ShouldRender)
+				{
+					ImGui.TextColored(RgbaFloat.Red.ToVector4(), "Debug drawing");
+				}
+
+				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Display performance information"))
+				{
+					DoPerformanceInfo();
+				}
+				else if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("System response spinners", true))
+				{
+					ImGui.TextUnformatted(gameData.GraphicsWorld.ResponseSpinner.ToString());
+				}
+			}
+			ImGui.End();
+		}
+
 		private void DoPerformanceInfo()
 		{
-			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"Frame time:				  {gameData.PerformanceStatisticsCollector.RendererFrameTime * 1000} ms ({gameData.PerformanceStatisticsCollector.RendererFramerate} FPS)");
+			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"Frame time:				  {gameData.PerformanceStatisticsCollector.RendererFrameTime * 1000} ms ({gameData.PerformanceStatisticsCollector.RendererFramerate} FPS) {gameData.GraphicsWorld.ResponseSpinner}");
 
 			RgbaFloat tickColor;
 			if (gameData.PerformanceStatisticsCollector.TickBudgetUse > 1)

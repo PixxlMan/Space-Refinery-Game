@@ -487,7 +487,7 @@ namespace Space_Refinery_Game
 				tickColor = RgbaFloat.Green;
 			}
 
-			ImGui.TextColored(tickColor.ToVector4(), $"Tick time:					   {gameData.PerformanceStatisticsCollector.TickTime * 1000} ms ({gameData.PerformanceStatisticsCollector.TicksPerSecond} TPS, {(gameData.PerformanceStatisticsCollector.TickBudgetUse * 100).ToInt32()} percent)");
+			ImGui.TextColored(tickColor.ToVector4(), $"Tick time:					   {gameData.PerformanceStatisticsCollector.TickTime * 1000} ms ({gameData.PerformanceStatisticsCollector.TicksPerSecond} TPS, {(gameData.PerformanceStatisticsCollector.TickBudgetUse * 100).ToInt32()} percent) {gameData.GameWorld.ResponseSpinner}");
 
 			RgbaFloat updateColor;
 			if (gameData.PerformanceStatisticsCollector.UpdateBudgetUse > 1)
@@ -503,7 +503,7 @@ namespace Space_Refinery_Game
 				updateColor = RgbaFloat.Green;
 			}
 
-			ImGui.TextColored(updateColor.ToVector4(), $"Update time:				 {gameData.PerformanceStatisticsCollector.UpdateTime * 1000} ms ({gameData.PerformanceStatisticsCollector.UpdatesPerSecond} UPS, {(gameData.PerformanceStatisticsCollector.UpdateBudgetUse * 100).ToInt32()} percent)");
+			ImGui.TextColored(updateColor.ToVector4(), $"Update time:				 {gameData.PerformanceStatisticsCollector.UpdateTime * 1000} ms ({gameData.PerformanceStatisticsCollector.UpdatesPerSecond} UPS, {(gameData.PerformanceStatisticsCollector.UpdateBudgetUse * 100).ToInt32()} percent) {gameData.MainGame.ResponseSpinner}");
 
 			RgbaFloat physicsUpdateColor;
 			if (gameData.PerformanceStatisticsCollector.PhysicsBudgetUse > 1)
@@ -519,7 +519,7 @@ namespace Space_Refinery_Game
 				physicsUpdateColor = RgbaFloat.Green;
 			}
 
-			ImGui.TextColored(physicsUpdateColor.ToVector4(), $"Physics update time:	{gameData.PerformanceStatisticsCollector.PhysicsTime * 1000} ms ({gameData.PerformanceStatisticsCollector.PhysicsUpdatesPerSecond} PUPS, {(gameData.PerformanceStatisticsCollector.PhysicsBudgetUse * 100).ToInt32()} percent)");
+			ImGui.TextColored(physicsUpdateColor.ToVector4(), $"Physics update time:	{gameData.PerformanceStatisticsCollector.PhysicsTime * 1000} ms ({gameData.PerformanceStatisticsCollector.PhysicsUpdatesPerSecond} PUPS, {(gameData.PerformanceStatisticsCollector.PhysicsBudgetUse * 100).ToInt32()} percent) {gameData.PhysicsWorld.ResponseSpinner}");
 		}
 
 		public void Style() // https://github.com/ocornut/imgui/issues/707

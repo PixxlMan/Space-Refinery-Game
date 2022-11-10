@@ -30,6 +30,9 @@ namespace Space_Refinery_Game
 
 		public event Action<FixedDecimalLong8> CollectPhysicsPerformanceData;
 
+		private string responseSpinner = "_";
+		public string ResponseSpinner { get { lock (responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
+
 		public void SetUp()
 		{
 			lock (SyncRoot)
@@ -68,6 +71,9 @@ namespace Space_Refinery_Game
 					{
 						simulation.Timestep(Time.PhysicsInterval.ToFloat(), threadDispatcher);
 					}
+
+					lock (responseSpinner)
+						responseSpinner = Time.ResponseSpinner(time);
 
 					Time.WaitIntervalLimit(Time.PhysicsInterval, time, stopwatch, out var timeOfContinuation);
 

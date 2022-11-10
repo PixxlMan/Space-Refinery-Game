@@ -30,6 +30,9 @@ namespace Space_Refinery_Game
 
 		public event Action<FixedDecimalLong8> CollectTickPerformanceData;
 
+		private string responseSpinner = "_";
+		public string ResponseSpinner { get { lock (responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
+
 		public void AddEntity(Entity entity)
 		{
 			lock (SynchronizationObject)
@@ -113,6 +116,9 @@ namespace Space_Refinery_Game
 						Interlocked.Increment(ref Time.TicksElapsed);
 
 						Tick();
+
+						lock (responseSpinner)
+							responseSpinner = Time.ResponseSpinner(time);
 
 						Time.WaitIntervalLimit(Time.TickInterval, time, stopwatch, out var timeOfContinuation);
 

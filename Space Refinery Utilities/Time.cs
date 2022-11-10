@@ -30,5 +30,10 @@ namespace Space_Refinery_Game
 
 			timeOfContinuation = timeToStopWaiting;
 		}
+
+		public static string ResponseSpinner(DecimalNumber time)
+		{
+			return "|/-\\"[(int)(time / 0.05) & 3].ToString(); // https://github.com/ocornut/imgui/issues/1901#issuecomment-400563921
+		}
 	}
 }

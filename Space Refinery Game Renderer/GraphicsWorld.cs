@@ -126,7 +126,7 @@ public sealed class GraphicsWorld
 				RenderScene(FixedDecimalLong8.Max(deltaTime, FrametimeLowerLimit));
 
 				lock (responseSpinner)
-					responseSpinner = "|/-\\"[(int)(time / 0.05) & 3].ToString(); // https://github.com/ocornut/imgui/issues/1901#issuecomment-400563921
+					responseSpinner = Time.ResponseSpinner(time);
 
 				if (ShouldLimitFramerate)
 				{

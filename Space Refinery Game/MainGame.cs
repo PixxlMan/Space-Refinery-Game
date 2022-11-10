@@ -67,6 +67,9 @@ public sealed class MainGame
 
 	public event Action<FixedDecimalLong8> CollectUpdatePerformanceData;
 
+	private string responseSpinner = "_";
+	public string ResponseSpinner { get { lock (responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
+
 	public void Start(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
 		GameData = new();
@@ -161,6 +164,9 @@ public sealed class MainGame
 				CollectUpdatePerformanceData?.Invoke(deltaTime);
 
 				Update(FixedDecimalLong8.Max(deltaTime, Time.UpdateInterval));
+
+				lock (responseSpinner)
+					responseSpinner = Time.ResponseSpinner(time);
 
 				Time.WaitIntervalLimit(Time.UpdateInterval, time, stopwatch, out var timeOfContinuation);
 

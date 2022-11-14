@@ -11,6 +11,13 @@ namespace Space_Refinery_Game
 			ImGui.Indent();
 		}
 
+		public static void BeginSub(Guid guid)
+		{
+			ImGui.PushID(guid.ToString());
+			ImGui.BeginGroup();
+			ImGui.Indent();
+		}
+
 		public static void EndSub()
 		{
 			ImGui.Unindent();
@@ -29,13 +36,14 @@ namespace Space_Refinery_Game
 			ImGui.PopStyleVar();
 		}
 
-		public static void DoSelector<T>(ICollection<T> selectables, ref int selection, out bool hasSelection, out T selected) where T : IUIInspectable
+		public static void DoSelector<T>(ICollection<T> selectables, Guid guid, ref int selection, out bool hasSelection, out T selected)
+			where T : IUIInspectable
 		{
 			hasSelection = false;
 
 			selected = default;
 
-			ImGui.Indent();
+			BeginSub(guid);
 			{
 				int selectionIndex = 0;
 				foreach (T selectable in selectables)
@@ -54,7 +62,7 @@ namespace Space_Refinery_Game
 					selectionIndex++;
 				}			
 			}
-			ImGui.Unindent();
+			EndSub();
 
 			if (!hasSelection)
 			{
@@ -62,11 +70,82 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		public static void DoListManipulation<T>(IList<T> collection, bool allowEditingItems) where T : IUIInspectable
+		public static void DoSelector<TEnum>(ref int selection, Guid guid, out bool hasSelection, out TEnum selected)
+			where TEnum : struct, Enum
+		{
+			hasSelection = false;
+
+			selected = default;
+
+			BeginSub(guid);
+			{
+				int selectionIndex = 0;
+				foreach (TEnum selectable in Enum.GetValues<TEnum>())
+				{
+					selectable.ToString();
+
+					if (ImGui.Selectable($"Select {selectionIndex}", selectionIndex == selection) || selectionIndex == selection)
+					{
+						selection = selectionIndex;
+
+						hasSelection = true;
+
+						selected = selectable;
+					}
+
+					selectionIndex++;
+				}			
+			}
+			EndSub();
+
+			if (!hasSelection)
+			{
+				selection = -1;
+			}
+		}
+
+		/// <summary>
+		/// The purpose of using this instead of DoSelector<TEnum> is to allow choosing which enums to allow with selectables collection.
+		/// </summary>
+		public static void DoSelectorEnums<TEnum>(ICollection<TEnum> selectables, Guid guid, ref int selection, out bool hasSelection, out TEnum selected)
+			where TEnum : struct, Enum
+		{
+			hasSelection = false;
+
+			selected = default;
+
+			BeginSub(guid);
+			{
+				int selectionIndex = 0;
+				foreach (TEnum selectable in selectables)
+				{
+					ImGui.TextUnformatted(selectable.ToString());
+
+					if (ImGui.Selectable($"Select {selectionIndex}", selectionIndex == selection) || selectionIndex == selection)
+					{
+						selection = selectionIndex;
+
+						hasSelection = true;
+
+						selected = selectable;
+					}
+
+					selectionIndex++;
+				}
+			}
+			EndSub();
+
+			if (!hasSelection)
+			{
+				selection = -1;
+			}
+		}
+
+		public static void DoListManipulation<T>(IList<T> collection, Guid guid, bool allowEditingItems) where T : IUIInspectable
 		{
 			List<int> indexesToRemove = new();
 
-			ImGui.Indent();
+			BeginSub(guid);
 			{
 				int currentIndex = 0;
 				foreach (var item in collection)
@@ -80,7 +159,7 @@ namespace Space_Refinery_Game
 						item.DoUIInspectorReadonly();
 					}
 
-					if (ImGui.Button("Delete"))
+					if (ImGui.Button($"Delete {currentIndex}"))
 					{
 						indexesToRemove.Add(currentIndex);
 					}
@@ -93,7 +172,7 @@ namespace Space_Refinery_Game
 					collection.RemoveAt(index);
 				}
 			}
-			ImGui.Unindent();
+			EndSub();
 		}
 	}
 }

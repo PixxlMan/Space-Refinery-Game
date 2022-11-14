@@ -93,7 +93,11 @@ namespace Space_Refinery_Game
 			{
 				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Insert resource with button") && construction is OrdinaryPipe pipe)
 				{
-					ResourceUnitData resource = new(ChemicalType.Water.LiquidPhaseType, ChemicalType.MassToMoles(ChemicalType.Water, 10));
+					ChemicalType chemicalType = MainGame.DebugSettings.AccessSetting<ComboDebugSetting<ChemicalType>>("Chemical type to insert with button", new(ChemicalType.ChemicalTypes.ToArray(), ChemicalType.Water));
+
+					ChemicalPhase chemicalPhase = MainGame.DebugSettings.AccessSetting<EnumDebugSetting<ChemicalPhase>>("Chemical phase to insert with button", ChemicalPhase.Liquid);
+
+					ResourceUnitData resource = new(chemicalType.GetResourceTypeForPhase(chemicalPhase), ChemicalType.MassToMoles(chemicalType, 10));
 
 					if (InputTracker.GetKeyDown(Key.U) && pipe.ResourceContainer.Volume + resource.Volume < pipe.ResourceContainer.MaxVolume)
 					{

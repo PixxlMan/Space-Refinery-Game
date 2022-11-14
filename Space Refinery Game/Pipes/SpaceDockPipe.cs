@@ -72,13 +72,14 @@ namespace Space_Refinery_Game
 
 		int selection = -1;
 		ResourceUnitData newResourceUnit;
+		private Guid guid = Guid.NewGuid();
 		private void DoMenu()
 		{
 			lock (this)
 			{
 				if (ImGui.CollapsingHeader("Resource selection"))
 				{
-					UIFunctions.DoSelector(ChemicalType.ChemicalTypes.ToArray(), ref selection, out bool hasSelection, out ChemicalType selected);
+					UIFunctions.DoSelector(ChemicalType.ChemicalTypes.ToArray(), guid, ref selection, out bool hasSelection, out ChemicalType selected);
 
 					if (hasSelection)
 					{
@@ -93,7 +94,7 @@ namespace Space_Refinery_Game
 
 				if (ImGui.CollapsingHeader("Selected orderables"))
 				{
-					UIFunctions.DoListManipulation(Orders, false);
+					UIFunctions.DoListManipulation(Orders, guid, false);
 				}
 
 				if (ImGui.Button("Place order"))

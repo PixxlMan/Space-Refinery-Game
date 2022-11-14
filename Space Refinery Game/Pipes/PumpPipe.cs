@@ -1,6 +1,7 @@
 ﻿using FixedPrecision;
 using ImGuiNET;
 using System.Xml;
+using static Space_Refinery_Game.DecimalNumber;
 
 namespace Space_Refinery_Game
 {
@@ -65,13 +66,14 @@ namespace Space_Refinery_Game
 
 			lock (this)
 			{
-				var transferVolume = DecimalNumber.Min(
-					Transferer.Volume * (DecimalNumber)Time.TickInterval,
-					DecimalNumber.Min(
-						MaxFlowRate * (DecimalNumber)Time.TickInterval,
-						Recipient.MaxVolume - Recipient.Volume - (DecimalNumber)0.0001));
-
-				Transferer.TransferResourceByVolume(Recipient, transferVolume);
+				Transferer.TransferResourceByVolume(
+					Recipient,
+					Min(
+						Min(
+							MaxFlowRate * (DecimalNumber)Time.TickInterval
+							, Transferer.Volume * 0.5)
+						, Recipient.FreeVolume * 0.5)
+					);
 			}
 		}
 

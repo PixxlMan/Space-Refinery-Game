@@ -86,7 +86,7 @@ namespace Space_Refinery_Game
 
 			ImGui.TextUnformatted(SettingText);
 
-			UIFunctions.DoSelectorEnums<T>(enumValues, guid, ref selectionIndex, out var hasSelection, out var selected);
+			UIFunctions.DoSelectorEnums<T>(enumValues, SettingText, guid, ref selectionIndex, out var hasSelection, out var selected);
 			HasSelection = hasSelection;
 			Selected = selected;
 		}

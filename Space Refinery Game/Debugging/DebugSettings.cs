@@ -10,39 +10,47 @@ namespace Space_Refinery_Game
 	{
 		public Dictionary<string, IDebugSetting> DebugSettingsDictionary = new();
 
+		private object syncRoot = new();
+
 		public TSetting AccessSetting<TSetting>(string name)
-			where TSetting : struct, IDebugSetting
+			where TSetting : IDebugSetting
 		{
-			if (DebugSettingsDictionary.ContainsKey(name))
+			lock (syncRoot)
 			{
-				return (TSetting)DebugSettingsDictionary[name];
-			}
-			else
-			{
-				var setting = default(TSetting);
+				if (DebugSettingsDictionary.ContainsKey(name))
+				{
+					return (TSetting)DebugSettingsDictionary[name];
+				}
+				else
+				{
+					var setting = default(TSetting);
 
-				setting.SettingText = name;
+					setting.SettingText = name;
 
-				DebugSettingsDictionary.Add(name, setting);
+					DebugSettingsDictionary.Add(name, setting);
 
-				return setting;
+					return setting;
+				}
 			}
 		}
 
 		public TSetting AccessSetting<TSetting>(string name, TSetting defaultSettingValue)
-			where TSetting : struct, IDebugSetting
+			where TSetting : IDebugSetting
 		{
-			if (DebugSettingsDictionary.ContainsKey(name))
+			lock (syncRoot)
 			{
-				return (TSetting)DebugSettingsDictionary[name];
-			}
-			else
-			{
-				defaultSettingValue.SettingText = name;
-				
-				DebugSettingsDictionary.Add(name, defaultSettingValue);
+				if (DebugSettingsDictionary.ContainsKey(name))
+				{
+					return (TSetting)DebugSettingsDictionary[name];
+				}
+				else
+				{
+					defaultSettingValue.SettingText = name;
 
-				return defaultSettingValue;
+					DebugSettingsDictionary.Add(name, defaultSettingValue);
+
+					return defaultSettingValue;
+				}
 			}
 		}
 	}

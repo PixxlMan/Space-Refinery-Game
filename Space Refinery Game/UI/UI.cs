@@ -284,6 +284,7 @@ namespace Space_Refinery_Game
 					foreach (var debugSetting in MainGame.DebugSettings.DebugSettingsDictionary.Values)
 					{
 						debugSetting.DrawUIElement();
+						ImGui.Separator();
 					}
 
 					ImGui.End();

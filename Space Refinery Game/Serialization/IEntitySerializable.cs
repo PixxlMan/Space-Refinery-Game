@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using Singulink.Reflection;
+using System.Xml;
 
 namespace Space_Refinery_Game
 {
@@ -31,7 +32,7 @@ namespace Space_Refinery_Game
 		public static T DeserializeWithoutEmbeddedType<T>(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler, string name = nameof(IEntitySerializable))
 			where T : IEntitySerializable
 		{
-			T t = Activator.CreateInstance<T>();
+			T t = ObjectFactory.CreateInstance<T>();
 
 			reader.ReadStartElement(name);
 			{
@@ -53,7 +54,7 @@ namespace Space_Refinery_Game
 					throw new Exception($"Cannot deserialize object of type '{type.AssemblyQualifiedName}' as it does not inherit from {nameof(IEntitySerializable)}.");
 				}
 
-				IEntitySerializable entitySerializable = (IEntitySerializable)Activator.CreateInstance(type, true);
+				IEntitySerializable entitySerializable = (IEntitySerializable)ObjectFactory.CreateInstance(type, true);
 
 				entitySerializable.DeserializeState(reader, serializationData, referenceHandler);
 

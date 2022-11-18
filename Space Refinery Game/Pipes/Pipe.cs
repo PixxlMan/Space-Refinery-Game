@@ -1,6 +1,7 @@
 ﻿using BepuPhysics.Collidables;
 using FixedPrecision;
 using FXRenderer;
+using Singulink.Reflection;
 using Space_Refinery_Game_Renderer;
 using System;
 using System.Collections.Generic;
@@ -69,7 +70,7 @@ namespace Space_Refinery_Game
 		{
 			lock (gameData.GameWorld.TickSyncObject)
 			{
-				Pipe pipe = (Pipe)Activator.CreateInstance(pipeType.TypeOfPipe, true);
+				Pipe pipe = (Pipe)ObjectFactory.CreateInstance(pipeType.TypeOfPipe, true);
 
 				pipe.Transform = transform;
 
@@ -220,7 +221,7 @@ namespace Space_Refinery_Game
 
 				Transform transform = GameWorld.GenerateTransformForConnector(pipeType.ConnectorPlacements[indexOfSelectedConnector], pipeConnector, rotation);
 
-				Pipe pipe = (Pipe)Activator.CreateInstance(pipeType.TypeOfPipe, true);
+				Pipe pipe = (Pipe)ObjectFactory.CreateInstance(pipeType.TypeOfPipe, true);
 
 				pipe.Transform = transform;
 

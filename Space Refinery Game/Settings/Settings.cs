@@ -32,7 +32,7 @@ namespace Space_Refinery_Game
 		}
 
 		public void RegisterToSetting<TSetting>(string name, Action<TSetting> settingChangeAcceptedHandler, Action<TSetting>? settingChangedHandler = null, ISetting? defaultValue = null)
-			where TSetting : ISetting
+			where TSetting : ICreatableSetting
 		{
 			ISetting setting;
 

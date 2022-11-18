@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Space_Refinery_Game
 {
-	public struct BooleanSetting : ISetting
+	public struct BooleanSetting : ICreatableSetting
 	{
 		public event Action<ISetting> AcceptedSettingChange;
 		public event Action<ISetting> SettingChanged;
@@ -55,10 +55,14 @@ namespace Space_Refinery_Game
 
 		bool lastValue;
 
+		public BooleanSetting()
+		{
+		}
+
 		public bool Dirty => uiValue != Value;
 
 		public ISettingOptions Options { get; set; }
 
-		public Guid Guid { get; } = Guid.NewGuid();
+		public Guid Guid { get; init; } = Guid.NewGuid();
 	}
 }

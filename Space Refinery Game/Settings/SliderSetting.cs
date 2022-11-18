@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace Space_Refinery_Game
 {
-	public struct SliderSetting : ISetting
+	public struct SliderSetting : ICreatableSetting
 	{
 		public event Action<ISetting> AcceptedSettingChange;
 		public event Action<ISetting> SettingChanged;
 
 		public static ISetting Create()
 		{
-			return new SliderSetting();
+			return new SliderSetting() { Guid = Guid.NewGuid() };
 		}
 
 		public void Accept()
@@ -56,10 +56,14 @@ namespace Space_Refinery_Game
 
 		float lastValue;
 
+		public SliderSetting()
+		{
+		}
+
 		public bool Dirty => (DecimalNumber)uiValue != Value;
 
 		public ISettingOptions Options { get; set; } = new SliderSettingOptions(0, 1000, Guid.NewGuid().ToString());
 
-		public Guid Guid { get; } = Guid.NewGuid();
+		public Guid Guid { get; init; } = Guid.NewGuid();
 	}
 }

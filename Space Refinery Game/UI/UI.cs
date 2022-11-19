@@ -39,6 +39,8 @@ namespace Space_Refinery_Game
 
 		private object syncRoot = new();
 
+		private DecimalNumber hotbarFading = 1;
+
 		public void ChangeEntitySelection(int selectionDelta)
 		{
 			lock (syncRoot)
@@ -56,6 +58,8 @@ namespace Space_Refinery_Game
 						EntitySelection -= pipeTypes.Count;
 					}
 				}
+
+				hotbarFading = 1;
 
 				ChangeConnectorSelection(0);
 
@@ -271,7 +275,7 @@ namespace Space_Refinery_Game
 				}
 				else if (Paused)
 				{
-					DoPauseMenuUI();
+					DoPauseMenuUI(deltaTime);
 				}
 			}
 		}
@@ -390,28 +394,33 @@ namespace Space_Refinery_Game
 			}
 			ImGui.End();
 
+			ImGui.SetNextWindowBgAlpha(CurrentlySelectedInformationProvider is null ? 0.5f : 1);
 			ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoInputs);
 			ImGui.SetWindowPos(new Vector2((gd.MainSwapchain.Framebuffer.Width / 4 * 3)/* - ImGui.GetWindowSize().X / 2*/, (gd.MainSwapchain.Framebuffer.Height / 2) - ImGui.GetWindowSize().Y / 2), ImGuiCond.Always);
 			{
 				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show player info"))
 				{
+					ImGui.TextDisabled("Information for: Player");
 					ImGui.Text("Connector: " + ConnectorSelection);
 					ImGui.Text("Entity: " + EntitySelection);
 					ImGui.Text("Rotation: " + RotationIndex);
+					ImGui.Separator();
 				}
 
 				if (CurrentlySelectedInformationProvider is not null)
 				{
-					ImGui.Text($"Information for: {CurrentlySelectedInformationProvider.Name}");
+					ImGui.TextDisabled($"Information for: {CurrentlySelectedInformationProvider.Name}");
 					CurrentlySelectedInformationProvider.InformationUI();
 				}
 				else
 				{
-					ImGui.Text("Nothing to view information for.");
+					ImGui.TextDisabled("Nothing to view information for.");
 				}
 			}
 			ImGui.End();
 
+			ImGui.SetNextWindowBgAlpha((float)DecimalNumber.Max(hotbarFading, 0.35));
+			hotbarFading -= hotbarFading * 0.5 * (DecimalNumber)deltaTime;
 			ImGui.Begin("Hotbar", /*ImGuiWindowFlags.AlwaysAutoResize | */ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
 			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2 - ImGui.GetWindowWidth() / 2, gd.MainSwapchain.Framebuffer.Height / 5 * 4 - ImGui.GetWindowHeight() / 2), ImGuiCond.Always);
 			ImGui.SetWindowSize(new Vector2(500, 50), ImGuiCond.Always);

@@ -137,7 +137,7 @@ public sealed class EntityRenderable : IRenderable
 		return entityRenderable;
 	}
 
-	public void AddDrawCommands(CommandList commandList)
+	public void AddDrawCommands(CommandList commandList, FixedDecimalLong8 deltaTime)
 	{
 		if (transformChangedSinceDraw)
 			commandList.UpdateBuffer(transformationBuffer, 0, Transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero));

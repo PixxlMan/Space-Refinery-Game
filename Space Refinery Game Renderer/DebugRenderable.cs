@@ -24,7 +24,7 @@ namespace Space_Refinery_Game_Renderer
 
 		public readonly DeviceBuffer ColorBuffer;
 
-		public void AddDrawCommands(CommandList commandList)
+		public void AddDrawCommands(CommandList commandList, FixedDecimalLong8 deltaTime)
 		{
 			commandList.SetVertexBuffer(0, Mesh.VertexBuffer);
 			commandList.SetIndexBuffer(Mesh.IndexBuffer, Mesh.IndexFormat);

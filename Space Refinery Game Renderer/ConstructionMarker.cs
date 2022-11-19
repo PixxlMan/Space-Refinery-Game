@@ -157,7 +157,7 @@ namespace Space_Refinery_Game_Renderer
 
 		private ConstructionMarkerState state;
 
-		public void AddDrawCommands(CommandList cl)
+		public void AddDrawCommands(CommandList cl, FixedDecimalLong8 deltaTime)
 		{
 			if (!ShouldDraw)
 				return;

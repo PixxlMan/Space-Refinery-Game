@@ -124,13 +124,13 @@ namespace Space_Refinery_Game_Renderer
 
 				foreach (var renderable in debugRenderables)
 				{
-					renderable.AddDrawCommands(cl);
+					renderable.AddDrawCommands(cl, 0);
 					//renderable.Dispose();
 				}
 
 				foreach (var renderable in persistentRenderables)
 				{
-					renderable.AddDrawCommands(cl);
+					renderable.AddDrawCommands(cl, 0);
 				}
 
 				cl.PopDebugGroup();

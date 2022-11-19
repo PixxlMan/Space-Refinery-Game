@@ -240,7 +240,7 @@ public sealed class GraphicsWorld
 				{
 					foreach (var renderable in unorderedRenderables)
 					{
-						renderable.AddDrawCommands(commandList);
+						renderable.AddDrawCommands(commandList, deltaTime);
 					}
 				}
 			}
@@ -257,7 +257,7 @@ public sealed class GraphicsWorld
 							{
 								foreach (var renderable in unorderedRenderables)
 								{
-									renderable.AddDrawCommands(commandList);
+									renderable.AddDrawCommands(commandList, deltaTime);
 
 									hasRenderedUnorderedRenderables = true;
 								}
@@ -266,7 +266,7 @@ public sealed class GraphicsWorld
 
 						foreach (var renderable in specificOrderRenderables[index])
 						{
-							renderable.AddDrawCommands(commandList);
+							renderable.AddDrawCommands(commandList, deltaTime);
 						}
 					}
 				}
@@ -277,7 +277,7 @@ public sealed class GraphicsWorld
 					{
 						foreach (var renderable in unorderedRenderables)
 						{
-							renderable.AddDrawCommands(commandList);
+							renderable.AddDrawCommands(commandList, deltaTime);
 						}
 					}
 				}

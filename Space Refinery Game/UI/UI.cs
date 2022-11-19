@@ -157,13 +157,13 @@ namespace Space_Refinery_Game
 			return ui;
 		}
 
-		public void AddDrawCommands(CommandList cl)
+		public void AddDrawCommands(CommandList cl, FixedDecimalLong8 deltaTime)
 		{
 			lock (syncRoot)
 			{
 				imGuiRenderer.Update(1, InputTracker.CreateInputTrackerCloneSnapshot());
 
-				DoUI();
+				DoUI(deltaTime);
 
 				imGuiRenderer.WindowResized((int)gd.MainSwapchain.Framebuffer.Width, (int)gd.MainSwapchain.Framebuffer.Height);
 
@@ -261,13 +261,13 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		public void DoUI()
+		public void DoUI(FixedDecimalLong8 deltaTime)
 		{
 			lock (syncRoot)
 			{
 				if (!Paused)
 				{
-					DoGameRunningUI();
+					DoGameRunningUI(deltaTime);
 				}
 				else if (Paused)
 				{
@@ -299,7 +299,7 @@ namespace Space_Refinery_Game
 
 		bool inSettings;
 
-		private void DoPauseMenuUI()
+		private void DoPauseMenuUI(FixedDecimalLong8 deltaTime)
 		{
 			ImGui.Begin("Pause menu", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
 			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2 - pauseMenuSize.X / 2, gd.MainSwapchain.Framebuffer.Height / 2 - pauseMenuSize.Y / 2), ImGuiCond.Always);
@@ -362,7 +362,7 @@ namespace Space_Refinery_Game
 			DoDebugSettingsUI();
 		}
 
-		private void DoGameRunningUI()
+		private void DoGameRunningUI(FixedDecimalLong8 deltaTime)
 		{
 			if (InMenu)
 			{

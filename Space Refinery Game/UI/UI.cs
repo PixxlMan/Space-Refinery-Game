@@ -14,7 +14,8 @@ namespace Space_Refinery_Game
 {
 	public sealed class UI : IRenderable
 	{
-		public IInformationProvider CurrentlySelectedInformationProvider;
+		private IInformationProvider currentlySelectedInformationProvider;
+		public IInformationProvider CurrentlySelectedInformationProvider { get { return currentlySelectedInformationProvider; } set { lock (syncRoot) currentlySelectedInformationProvider = value; } }
 
 		private ImGuiRenderer imGuiRenderer;
 

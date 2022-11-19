@@ -394,6 +394,13 @@ namespace Space_Refinery_Game
 			}
 			ImGui.End();
 
+			DoInformationPanel();
+
+			DoHotbar(deltaTime);
+		}
+
+		private void DoInformationPanel()
+		{
 			ImGui.SetNextWindowBgAlpha(CurrentlySelectedInformationProvider is null ? 0.5f : 1);
 			ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoInputs);
 			ImGui.SetWindowPos(new Vector2((gd.MainSwapchain.Framebuffer.Width / 4 * 3)/* - ImGui.GetWindowSize().X / 2*/, (gd.MainSwapchain.Framebuffer.Height / 2) - ImGui.GetWindowSize().Y / 2), ImGuiCond.Always);
@@ -418,7 +425,10 @@ namespace Space_Refinery_Game
 				}
 			}
 			ImGui.End();
+		}
 
+		private void DoHotbar(FixedDecimalLong8 deltaTime)
+		{
 			ImGui.SetNextWindowBgAlpha((float)DecimalNumber.Max(hotbarFading, 0.35));
 			hotbarFading -= hotbarFading * 0.5 * (DecimalNumber)deltaTime;
 			ImGui.Begin("Hotbar", /*ImGuiWindowFlags.AlwaysAutoResize | */ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);

@@ -21,16 +21,16 @@ namespace Space_Refinery_Game
 
 		public void InformationUI()
 		{
-			ImGui.Text($"Vacant side: {PipeConnector.VacantSide}");
-
-			ImGui.Text($"Connector position: {PipeConnector.Transform.Position.ToString("", null)}");
-			ImGui.Text($"Connector rotation: {PipeConnector.Transform.Rotation}");
-
-			ImGui.Text($"Pipe A: {(PipeConnector.Pipes.pipeA is null ? "None" : "Connected")}");
-			ImGui.Text($"Pipe B: {(PipeConnector.Pipes.pipeB is null ? "None" : "Connected")}");
-
 			if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show debug information in information provider"))
 			{
+				ImGui.Text($"Vacant side: {PipeConnector.VacantSide}");
+
+				ImGui.Text($"Connector position: {PipeConnector.Transform.Position.ToString("", null)}");
+				ImGui.Text($"Connector rotation: {PipeConnector.Transform.Rotation}");
+
+				ImGui.Text($"Pipe A: {(PipeConnector.Pipes.pipeA is null ? "None" : "Connected")}");
+				ImGui.Text($"Pipe B: {(PipeConnector.Pipes.pipeB is null ? "None" : "Connected")}");
+
 				ImGui.Text("GUID: " + PipeConnector.SerializableReferenceGUID.ToString());
 
 				ImGui.Text("Postition: " + PipeConnector.Transform.Position.ToString());

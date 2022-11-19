@@ -77,7 +77,7 @@ namespace Space_Refinery_Game
 				{
 					constructionMarker.State = ConstructionMarker.ConstructionMarkerState.LegalBuild;
 
-					if (InputTracker.GetMouseButtonDown(MouseButton.Left))
+					if (InputTracker.GetMouseButton(MouseButton.Left))
 					{
 						Pipe.Build(pipeConnector, gameData.UI.SelectedPipeType, gameData.UI.ConnectorSelection, RotationSnapped, gameData, gameData.ReferenceHandler);
 
@@ -105,7 +105,7 @@ namespace Space_Refinery_Game
 					}
 				}
 
-				if (InputTracker.GetMouseButtonDown(MouseButton.Right))
+				if (InputTracker.GetMouseButton(MouseButton.Right))
 				{
 					gameData.GameWorld.Deconstruct(construction);
 				}

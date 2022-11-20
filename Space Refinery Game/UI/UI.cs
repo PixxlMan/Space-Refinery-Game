@@ -430,7 +430,7 @@ namespace Space_Refinery_Game
 		private void DoHotbar(FixedDecimalLong8 deltaTime)
 		{
 			ImGui.SetNextWindowBgAlpha((float)DecimalNumber.Max(hotbarFading, 0.35));
-			hotbarFading -= hotbarFading * 0.5 * (DecimalNumber)deltaTime;
+			hotbarFading -= hotbarFading * 0.3 * (DecimalNumber)deltaTime;
 			ImGui.Begin("Hotbar", /*ImGuiWindowFlags.AlwaysAutoResize | */ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
 			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2 - ImGui.GetWindowWidth() / 2, gd.MainSwapchain.Framebuffer.Height / 5 * 4 - ImGui.GetWindowHeight() / 2), ImGuiCond.Always);
 			ImGui.SetWindowSize(new Vector2(500, 50), ImGuiCond.Always);

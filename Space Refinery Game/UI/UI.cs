@@ -394,14 +394,18 @@ namespace Space_Refinery_Game
 			}
 			ImGui.End();
 
-			DoInformationPanel();
+			DoInformationPanel(deltaTime);
 
 			DoHotbar(deltaTime);
 		}
 
-		private void DoInformationPanel()
+		private DecimalNumber informationPanelFading = 1;
+		
+		private void DoInformationPanel(DecimalNumber deltaTime)
 		{
-			ImGui.SetNextWindowBgAlpha(CurrentlySelectedInformationProvider is null ? 0.5f : 1);
+			informationPanelFading += 1 * /*informationPanelFading **/ deltaTime * (CurrentlySelectedInformationProvider is null ? -1 : 4);
+			informationPanelFading = DecimalNumber.Clamp(informationPanelFading, 0, 1);
+			ImGui.SetNextWindowBgAlpha((float)informationPanelFading);
 			ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoInputs);
 			ImGui.SetWindowPos(new Vector2((gd.MainSwapchain.Framebuffer.Width / 4 * 3)/* - ImGui.GetWindowSize().X / 2*/, (gd.MainSwapchain.Framebuffer.Height / 2) - ImGui.GetWindowSize().Y / 2), ImGuiCond.Always);
 			{

@@ -1,5 +1,7 @@
 ﻿using FixedPrecision;
 using FXRenderer;
+using SharpDX;
+using System.Numerics;
 using Veldrid;
 
 namespace Space_Refinery_Game_Renderer;
@@ -13,6 +15,8 @@ public sealed class EntityRenderable : IRenderable
 	private ResourceSet textureSet;
 
 	private ResourceSet resourceSet;
+
+	private ResourceSet pbrSet;
 
 	private DeviceBuffer transformationBuffer;
 
@@ -61,20 +65,30 @@ public sealed class EntityRenderable : IRenderable
 
 		TextureView textureView = graphicsWorld.Factory.CreateTextureView(texture);
 
+		ResourceLayoutElementDescription[] pbrLayoutDescriptions =
+		{
+			new ResourceLayoutElementDescription("PBRData", ResourceKind.UniformBuffer, ShaderStages.Fragment),
+		};
+		ResourceLayout pbrDataLayout = graphicsWorld.Factory.CreateResourceLayout(new ResourceLayoutDescription(pbrLayoutDescriptions));
+
+		DeviceBuffer pbrBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(PBRData.SizeInBytes, BufferUsage.UniformBuffer));
+		graphicsWorld.GraphicsDevice.UpdateBuffer(pbrBuffer, 0, new PBRData(0.75f, 0.25f, 0));
+		entityRenderable.pbrSet = graphicsWorld.Factory.CreateResourceSet(new ResourceSetDescription(pbrDataLayout, pbrBuffer));
+
 		ResourceLayoutElementDescription[] textureLayoutDescriptions =
 		{
-				new ResourceLayoutElementDescription("Tex", ResourceKind.TextureReadOnly, ShaderStages.Fragment),
-				new ResourceLayoutElementDescription("Samp", ResourceKind.Sampler, ShaderStages.Fragment)
-			};
+			new ResourceLayoutElementDescription("Tex", ResourceKind.TextureReadOnly, ShaderStages.Fragment),
+			new ResourceLayoutElementDescription("Samp", ResourceKind.Sampler, ShaderStages.Fragment),
+		};
 		ResourceLayout textureLayout = graphicsWorld.Factory.CreateResourceLayout(new ResourceLayoutDescription(textureLayoutDescriptions));
 
 		entityRenderable.textureSet = graphicsWorld.Factory.CreateResourceSet(new ResourceSetDescription(textureLayout, textureView, graphicsWorld.GraphicsDevice.Aniso4xSampler));
 
 		ResourceLayoutElementDescription[] resourceLayoutElementDescriptions =
-			{
-				new ResourceLayoutElementDescription("LightInfo", ResourceKind.UniformBuffer, ShaderStages.Fragment),
-				new ResourceLayoutElementDescription("ProjView", ResourceKind.UniformBuffer, ShaderStages.Vertex),
-			};
+		{
+			new ResourceLayoutElementDescription("LightInfo", ResourceKind.UniformBuffer, ShaderStages.Fragment),
+			new ResourceLayoutElementDescription("ProjView", ResourceKind.UniformBuffer, ShaderStages.Vertex),
+		};
 		ResourceLayoutDescription resourceLayoutDescription = new ResourceLayoutDescription(resourceLayoutElementDescriptions);
 		ResourceLayout sharedLayout = graphicsWorld.Factory.CreateResourceLayout(resourceLayoutDescription);
 
@@ -116,7 +130,7 @@ public sealed class EntityRenderable : IRenderable
 			scissorTestEnabled: false
 			),
 			PrimitiveTopology = PrimitiveTopology.TriangleList,
-			ResourceLayouts = new ResourceLayout[] { sharedLayout, textureLayout },
+			ResourceLayouts = new ResourceLayout[] { sharedLayout, textureLayout, pbrDataLayout },
 			ShaderSet = new ShaderSetDescription(
 				vertexLayouts: new VertexLayoutDescription[] { vertexLayout, transformationVertexShaderParameterLayout },
 				shaders: graphicsWorld.ShaderLoader.LoadCached("EntityRenderable")
@@ -127,7 +141,7 @@ public sealed class EntityRenderable : IRenderable
 		entityRenderable.pipeline = graphicsWorld.Factory.CreateGraphicsPipeline(pipelineDescription);
 
 		BindableResource[] bindableResources = new BindableResource[] { lightInfoBuffer, cameraProjViewBuffer };
-		ResourceSetDescription resourceSetDescription = new ResourceSetDescription(sharedLayout, bindableResources);
+		ResourceSetDescription resourceSetDescription = new ResourceSetDescription(sharedLayout, bindableResources );
 		entityRenderable.resourceSet = graphicsWorld.Factory.CreateResourceSet(resourceSetDescription);
 
 		entityRenderable.graphicsWorld = graphicsWorld;
@@ -164,4 +178,19 @@ public sealed class EntityRenderable : IRenderable
 			shouldDraw = false;
 		}			
 	}
+}
+
+public struct PBRData
+{
+	public PBRData(float metallic, float roughness, float ao)
+	{
+		Metallic = metallic;
+		Roughness = roughness;
+		Ao = ao;
+	}
+
+	public const int SizeInBytes = 16; // Size has to be a multiple of 16! //4;
+	public float Metallic;
+	public float Roughness;
+	public float Ao;
 }

@@ -5,6 +5,7 @@ using BepuUtilities;
 using BepuUtilities.Memory;
 using FixedPrecision;
 using FXRenderer;
+using SharpDX.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -218,6 +219,18 @@ namespace Space_Refinery_Game
 				RigidPose pose = simulation.Bodies[bodyHandle].Pose;
 
 				return new(pose.Position.ToFixed<Vector3FixedDecimalInt4>(), pose.Orientation.ToFixed<QuaternionFixedDecimalInt4>());
+			}
+		}
+
+		public void SetTransform(BodyHandle bodyHandle, Transform transform)
+		{
+			lock (SyncRoot)
+			{
+				RigidPose pose = simulation.Bodies[bodyHandle].Pose;
+
+				pose.Position = transform.Position.ToVector3();
+
+				pose.Orientation = transform.Rotation.ToQuaternion();
 			}
 		}
 	}

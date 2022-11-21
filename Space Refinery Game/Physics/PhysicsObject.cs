@@ -14,7 +14,7 @@ namespace Space_Refinery_Game
 
 		public readonly PhysicsWorld World;
 
-		public Transform Transform => World.GetTransform(BodyHandle);
+		public Transform Transform { get => World.GetTransform(BodyHandle); set { World.SetTransform(BodyHandle, value); } }
 
 		public readonly BodyHandle BodyHandle;
 

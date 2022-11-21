@@ -43,12 +43,12 @@ namespace Space_Refinery_Game
 
 			GameData.UI.SelectedEntityTypeChanged += UpdateProxyOnEntityTypeChanged;
 
-			UpdateProxy();
+			UpdateProxyAndPhysicsObject();
 		}
 
 		private void UpdateProxyOnEntityTypeChanged(IEntityType _)
 		{
-			UpdateProxy();
+			UpdateProxyAndPhysicsObject();
 		}
 
 		public bool Destroyed { get; protected set; }
@@ -176,10 +176,7 @@ namespace Space_Refinery_Game
 					Connectables = (Connectables.connectableA, connectable);
 				}
 
-				PhysicsObject.Enabled = false;
-				Proxy?.Disable();
-
-				UpdateProxy();
+				UpdateProxyAndPhysicsObject();
 			}
 		}
 
@@ -196,8 +193,7 @@ namespace Space_Refinery_Game
 					connectables = (connectables.connectableA, null);
 				}
 
-				PhysicsObject.Enabled = true;
-				UpdateProxy();
+				UpdateProxyAndPhysicsObject();
 
 				if (connectables.connectableA is null && connectables.connectableB is null)
 				{
@@ -221,12 +217,26 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		public void UpdateProxy()
+		private void CreatePhysicsObject()
+		{
+			lock (SyncRoot)
+			{
+				var physicsObjectDescription = new PhysicsObjectDescription<Box>(new Box(.1f, .1f, .1f), Transform, 0, true);
+
+				PhysicsObject = GameData.PhysicsWorld.AddPhysicsObject(physicsObjectDescription, this);
+
+				PhysicsObject.Enabled = Vacant;
+			}
+		}
+
+		public void UpdateProxyAndPhysicsObject()
 		{
 			lock (SyncRoot)
 			{
 				if (!Vacant) // If the connector is vacant the proxy should be disabled.
 				{
+					if (PhysicsObject is not null)
+						PhysicsObject.Enabled = false;
 					Proxy?.Disable();
 					return;
 				}
@@ -251,7 +261,21 @@ namespace Space_Refinery_Game
 
 				Proxy.PhysicsObject = GameData.PhysicsWorld.AddPhysicsObject(proxyPhysicsObject, Proxy);
 
-				Proxy.Enable();
+				if (Vacant)
+				{
+					Proxy.Enable();
+				}
+
+				if (PhysicsObject is null)
+				{
+					CreatePhysicsObject();
+				}
+				else if (PhysicsObject.Enabled && !PhysicsObject.Destroyed)
+				{
+					PhysicsObject.Transform = Transform;
+				}
+
+				PhysicsObject.Enabled = Vacant;
 			}
 		}
 
@@ -281,7 +305,7 @@ namespace Space_Refinery_Game
 				if (!MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>($"{nameof(Connector)} debug objects"))
 					return;
 
-				MainGame.DebugRender.DrawOrientationMarks(PhysicsObject.Transform);
+				MainGame.DebugRender.DrawOrientationMarks(Transform);
 
 				MainGame.DebugRender.DrawCube(new Transform(PhysicsObject.Transform) { Scale = new((FixedDecimalInt4).4f, (FixedDecimalInt4).4f, (FixedDecimalInt4).25f) }, VacantSide is null ? RgbaFloat.Green : RgbaFloat.Cyan);
 			}

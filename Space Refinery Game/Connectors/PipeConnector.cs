@@ -26,15 +26,6 @@ namespace Space_Refinery_Game
 			base.SetUp();
 
 			informationProvider = new PipeConnectorInformationProvider(this);
-
-			CreatePhysicsObject(Transform, GameData.PhysicsWorld);
-		}
-
-		private void CreatePhysicsObject(Transform transform, PhysicsWorld physicsWorld)
-		{
-			var physicsObjectDescription = new PhysicsObjectDescription<Box>(new Box(.1f, .1f, .1f), transform, 0, true);
-
-			PhysicsObject = physicsWorld.AddPhysicsObject(physicsObjectDescription, this);
 		}
 
 		public PipeConnectorProperties PipeConnectorProperties;
@@ -93,8 +84,6 @@ namespace Space_Refinery_Game
 			base.DeserializeState(reader, serializationData, referenceHandler);
 
 			reader.DeserializeReference<PipeConnectorProperties>(MainGame.GlobalReferenceHandler, (p) => PipeConnectorProperties = p, nameof(PipeConnectorProperties));
-
-			SetUp();
 		}
 	}
 }

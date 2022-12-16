@@ -61,7 +61,7 @@ namespace Space_Refinery_Game
 
 		public PhysicsObject PhysicsObject;
 
-		public object SyncRoot = new();
+		protected object SyncRoot = new();
 
 		public ConnectorSide? VacantSide
 		{
@@ -264,6 +264,10 @@ namespace Space_Refinery_Game
 				if (Vacant)
 				{
 					Proxy.Enable();
+				}
+				else
+				{
+					Proxy.Disable();
 				}
 
 				if (PhysicsObject is null)

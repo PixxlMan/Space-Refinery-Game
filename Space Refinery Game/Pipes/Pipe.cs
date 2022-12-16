@@ -56,6 +56,8 @@ namespace Space_Refinery_Game
 
 		public bool Destroyed { get; private set; }
 
+		protected readonly object SyncRoot = new();
+
 		public abstract void TransferResourceFromConnector(ResourceContainer source, DecimalNumber volume, PipeConnector transferingConnector);
 
 		public virtual void AddDebugObjects()
@@ -249,7 +251,7 @@ namespace Space_Refinery_Game
 
 		private void SetUp(PipeType pipeType, ConstructionInfo? constructionInfo, PipeConnector[] connectors, EntityRenderable renderable, PhysicsObject physicsObject, GameData gameData)
 		{
-			lock (this)
+			lock (SyncRoot)
 			{
 				PipeType = pipeType;
 				ConstructionInfo = constructionInfo;
@@ -274,7 +276,7 @@ namespace Space_Refinery_Game
 
 		public virtual void Deconstruct()
 		{
-			lock (this)
+			lock (SyncRoot)
 			{
 				if (Destroyed)
 				{
@@ -304,32 +306,38 @@ namespace Space_Refinery_Game
 
 		public virtual void SerializeState(XmlWriter writer)
 		{
-			writer.WriteStartElement(nameof(Pipe));
+			lock (SyncRoot)
 			{
-				writer.SerializeReference(this);
+				writer.WriteStartElement(nameof(Pipe));
+				{
+					writer.SerializeReference(this);
 
-				writer.WriteElementString("PipeType", PipeType.Name);
+					writer.WriteElementString("PipeType", PipeType.Name);
 
-				writer.Serialize(Transform);
+					writer.Serialize(Transform);
 
-				writer.Serialize(Connectors, (w, c) => w.SerializeReference(c), nameof(Connectors));
+					writer.Serialize(Connectors, (w, c) => w.SerializeReference(c), nameof(Connectors));
+				}
+				writer.WriteEndElement();
 			}
-			writer.WriteEndElement();
 		}
 
 		public virtual void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 		{
-			reader.ReadStartElement(nameof(Pipe));
+			lock (SyncRoot)
 			{
-				SerializableReferenceGUID = reader.ReadReferenceGUID();
+				reader.ReadStartElement(nameof(Pipe));
+				{
+					SerializableReferenceGUID = reader.ReadReferenceGUID();
 
-				PipeType pipeType = PipeType.PipeTypes[reader.ReadElementString("PipeType")];
+					PipeType pipeType = PipeType.PipeTypes[reader.ReadElementString("PipeType")];
 
-				Transform transform = reader.DeserializeTransform();
+					Transform transform = reader.DeserializeTransform();
 
-				SetupDeserialized(pipeType, transform, serializationData);
+					SetupDeserialized(pipeType, transform, serializationData);
+				}
+				reader.ReadEndElement();
 			}
-			reader.ReadEndElement();
 
 			void SetupDeserialized(PipeType pipeType, Transform transform, SerializationData serializationData)
 			{
@@ -369,24 +377,27 @@ namespace Space_Refinery_Game
 
 		public virtual void Destroy()
 		{
-			if (Destroyed)
+			lock (SyncRoot)
 			{
-				return;
+				if (Destroyed)
+				{
+					return;
+				}
+
+				Destroyed = true;
+
+				PhysicsObject.Destroy();
+				Renderable.Destroy();
+
+				MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
+
+				foreach (var connector in Connectors)
+				{
+					connector.Disconnect(this);
+				}
+
+				ReferenceHandler.RemoveReference(this);
 			}
-
-			Destroyed = true;
-
-			PhysicsObject.Destroy();
-			Renderable.Destroy();
-
-			MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
-
-			foreach (var connector in Connectors)
-			{
-				connector.Disconnect(this);
-			}
-
-			ReferenceHandler.RemoveReference(this);
 		}
 	}
 }

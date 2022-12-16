@@ -259,7 +259,7 @@ public sealed class MainGame
 
 	public void Deserialize(string path)
 	{
-		lock (GameWorld.TickSyncObject) lock (SynchronizationObject)
+		lock (GameWorld.TickSyncObject)// lock (SynchronizationObject)
 		{
 			Console.WriteLine($"Deserialization started.");
 
@@ -288,7 +288,9 @@ public sealed class MainGame
 
 				Player = Player.Deserialize(reader, serializationData);
 
+				stopwatch.Stop(); // Ignore time taken to clear gameworld from performance profiling.
 				GameWorld.ClearAll();
+				stopwatch.Start();
 
 				ReferenceHandler = SerializationReferenceHandler.Deserialize(reader, serializationData);
 			}

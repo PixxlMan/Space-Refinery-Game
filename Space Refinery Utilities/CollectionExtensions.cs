@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Collections.Concurrent;
+using Space_Refinery_Utilities;
 
 namespace Space_Refinery_Game
 {
@@ -38,6 +39,24 @@ namespace Space_Refinery_Game
 			if (!dictionary.Remove(key, out _))
 			{
 				throw new Exception(exceptionText ?? $"Item does not exist in this {nameof(ConcurrentDictionary<TKey, TValue>)}.");
+			}
+		}
+
+		[DebuggerHidden]
+		public static void AddUnique<TKey>(this ConcurrentDictionary<TKey, EmptyType> dictionary, TKey key, string? exceptionText = null)
+		{
+			if (!dictionary.TryAdd(key, default))
+			{
+				throw new Exception(exceptionText ?? $"Item has already been added to this {nameof(ConcurrentDictionary<TKey, EmptyType>)}. It is not unique.");
+			}
+		}
+
+		[DebuggerHidden]
+		public static void RemoveStrict<TKey>(this ConcurrentDictionary<TKey, EmptyType> dictionary, TKey key, string? exceptionText = null)
+		{
+			if (!dictionary.Remove(key, out _))
+			{
+				throw new Exception(exceptionText ?? $"Item does not exist in this {nameof(ConcurrentDictionary<TKey, EmptyType>)}.");
 			}
 		}
 	}

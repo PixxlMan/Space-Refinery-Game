@@ -1,7 +1,9 @@
 ﻿using FixedPrecision;
 using FXRenderer;
 using Space_Refinery_Game_Renderer;
+using Space_Refinery_Utilities;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -22,11 +24,11 @@ namespace Space_Refinery_Game
 
 		public object TickSyncObject = new();
 
-		public HashSet<IConstruction> Constructions = new();
+		public ConcurrentDictionary<IConstruction, EmptyType> Constructions = new();
 
 		public GameData GameData;
 
-		public HashSet<Entity> Entities = new();
+		public ConcurrentDictionary<Entity, EmptyType> Entities = new();
 
 		public event Action<FixedDecimalLong8> CollectTickPerformanceData;
 
@@ -35,21 +37,15 @@ namespace Space_Refinery_Game
 
 		public void AddEntity(Entity entity)
 		{
-			lock (SynchronizationObject)
-			{
-				Entities.AddUnique(entity, $"This {nameof(Entity)} has already been added.");
-			}
+			Entities.AddUnique(entity, $"This {nameof(Entity)} has already been added.");
 		}
 
 		public void RemoveEntity(Entity entity)
 		{
-			lock (SynchronizationObject)
-			{
-				//Entities.RemoveStrict(entity, $"This {nameof(Entity)} cannot be found.");
-				Entities.Remove(entity);
+			//Entities.RemoveStrict(entity, $"This {nameof(Entity)} cannot be found.");
+			Entities.Remove(entity, out _);
 
-				entity.Destroy();
-			}
+			entity.Destroy();
 		}
 
 		public void AddConstruction(IConstruction construction)
@@ -60,14 +56,11 @@ namespace Space_Refinery_Game
 
 		public void Deconstruct(IConstruction construction)
 		{
-			lock (SynchronizationObject)
-			{
-				Constructions.RemoveStrict(construction);
+			Constructions.RemoveStrict(construction);
 
-				construction.Deconstruct();
+			construction.Deconstruct();
 
-				RemoveEntity(construction);				
-			}
+			RemoveEntity(construction);
 		}
 
 		public static Transform GenerateTransformForConnector(PositionAndDirection chosenConnectorTransform, Connector connector, FixedDecimalLong8 rotation)
@@ -135,7 +128,7 @@ namespace Space_Refinery_Game
 		{
 			lock (TickSyncObject)
 			{
-				foreach (var entity in Entities)
+				foreach (var entity in Entities.Keys)
 				{
 					entity.Tick();
 				}
@@ -144,17 +137,9 @@ namespace Space_Refinery_Game
 
 		public void ClearAll()
 		{
-			lock (TickSyncObject) lock (SynchronizationObject)
+			lock (TickSyncObject)
 			{
-				foreach (var entity in Entities)
-				{
-					RemoveEntity(entity);
-
-					if (entity is IDisposable disposable)
-					{
-						disposable.Dispose();
-					}
-				}
+				Parallel.ForEach(Entities.Keys, RemoveEntity);
 			}
 		}
 	}

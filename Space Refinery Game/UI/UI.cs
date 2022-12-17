@@ -329,7 +329,7 @@ namespace Space_Refinery_Game
 				{
 					Task.Run(() =>
 					{
-						lock (gameData.GameWorld.TickSyncObject) lock (gameData.GameWorld.SynchronizationObject)
+						lock (gameData.GameWorld.TickSyncObject)// lock (gameData.GameWorld.SynchronizationObject)
 						{
 							gameData.MainGame.Deserialize(@"R:\save.xml");
 						}

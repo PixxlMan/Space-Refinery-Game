@@ -25,7 +25,7 @@ layout(location = 13) in vec3 InstanceScale;
 
 layout(location = 0) out vec3 fsin_Position_WorldSpace;
 layout(location = 1) out vec3 fsin_Normal;
-layout(location = 2) out vec3 fsin_TexCoord;
+layout(location = 2) out vec2 fsin_TexCoord;
 
 void main()
 {
@@ -37,5 +37,5 @@ void main()
     fsin_Position_WorldSpace = transformedPos;
     gl_Position = Proj * View * pos;
     fsin_Normal = normalize(instanceRotFull * Normal);
-    fsin_TexCoord = vec3(TexCoord, 0/*InstanceTexArrayIndex*/);
+    fsin_TexCoord = vec2(TexCoord);//, 0/*InstanceTexArrayIndex*/);
 }

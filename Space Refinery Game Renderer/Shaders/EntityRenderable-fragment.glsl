@@ -1,5 +1,5 @@
 #version 450
-#extension GL_KHR_vulkan_glsl : enable
+#extension GL_KHR_vulkan_glsl : enable // just to satisfy my plugin for source highlighting
 
 layout(set = 0, binding = 0) uniform LightInfo
 {
@@ -36,32 +36,39 @@ void main() // https://learnopengl.com/PBR/Lighting
 {
 	vec3 texColor = vec3(texture(sampler2D(Tex, Samp), fsin_TexCoord));
 
-	vec3 N = normalize(fsin_Normal); 
-	vec3 V = normalize(fsin_Position_WorldSpace);
+    vec3 N = normalize(fsin_Normal);
+    vec3 V = normalize(fsin_Position_WorldSpace);
 
     vec3 F0 = vec3(0.04); 
     F0 = mix(F0, texColor, metallic);
-
-	// reflectance equation
+	           
+    // reflectance equation
     vec3 Lo = vec3(0.0);
-    // calculate per-light radiance
+    {
+        // calculate per-light radiance
+        vec3 L = normalize(LightDirection);
+        vec3 H = normalize(V + L);
+        //float distance    = length(lightPositions[i] - worldPos);
+        //float attenuation = 1.0 / (distance * distance);
+        vec3 radiance     = vec3(1, 1, 1);//lightColors[i] * attenuation;        
         
-    // cook-torrance brdf
-    float NDF = DistributionGGX(N, LightDirection, roughness);        
-    float G   = GeometrySmith(N, V, LightDirection, roughness);      
-    vec3 F    = fresnelSchlick(max(dot(LightDirection, N), 0.0), F0);       
+        // cook-torrance brdf
+        float NDF = DistributionGGX(N, H, roughness);        
+        float G   = GeometrySmith(N, V, L, roughness);      
+        vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);       
         
-    vec3 kS = F;
-    vec3 kD = vec3(1.0) - kS;
-    kD *= 1.0 - metallic;	  
+        vec3 kS = F;
+        vec3 kD = vec3(1.0) - kS;
+        kD *= 1.0 - metallic;	  
         
-    vec3 numerator    = NDF * G * F;
-    float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, LightDirection), 0.0) + 0.0001;
-    vec3 specular     = numerator / denominator;  
+        vec3 numerator    = NDF * G * F;
+        float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
+        vec3 specular     = numerator / denominator;  
             
-    // add to outgoing radiance Lo
-    float NdotL = max(dot(N, LightDirection), 0.0);                
-    Lo += (kD * texColor / PI + specular) * NdotL;
+        // add to outgoing radiance Lo
+        float NdotL = max(dot(N, L), 0.0);                
+        Lo += (kD * texColor / PI + specular) * radiance * NdotL; 
+    }   
   
     vec3 ambient = vec3(0.03) * texColor * ao;
     vec3 color = ambient + Lo;

@@ -12,7 +12,7 @@ using static Space_Refinery_Game.InterlockedExtensions;
 
 namespace Space_Refinery_Game
 {
-	public sealed class UI : IRenderable
+	public sealed partial class UI : IRenderable
 	{
 		private IInformationProvider currentlySelectedInformationProvider;
 		public IInformationProvider CurrentlySelectedInformationProvider { get { return currentlySelectedInformationProvider; } set { lock (syncRoot) currentlySelectedInformationProvider = value; } }
@@ -40,6 +40,9 @@ namespace Space_Refinery_Game
 		private object syncRoot = new();
 
 		private DecimalNumber hotbarFading = 1;
+
+		private int width;
+		private int height;
 
 		public void ChangeEntitySelection(int selectionDelta)
 		{
@@ -95,7 +98,7 @@ namespace Space_Refinery_Game
 
 			gd = gameData.GraphicsWorld.GraphicsDevice;
 
-			imGuiRenderer = new(gd, gd.MainSwapchain.Framebuffer.OutputDescription, (int)gd.MainSwapchain.Framebuffer.Width, (int)gd.MainSwapchain.Framebuffer.Height);
+			imGuiRenderer = new(gd, gd.MainSwapchain.Framebuffer.OutputDescription, (int)width, (int)height);
 
 			imGuiRenderer.CreateDeviceResources(gd, gd.MainSwapchain.Framebuffer.OutputDescription);
 
@@ -111,6 +114,10 @@ namespace Space_Refinery_Game
 				imGuiRenderer.DestroyDeviceObjects();
 
 				imGuiRenderer.CreateDeviceResources(gd, gameData.GraphicsWorld.Swapchain.Framebuffer.OutputDescription);
+
+				this.width = width;
+
+				this.height = height;
 
 				//imGuiRenderer.Dispose();
 
@@ -169,7 +176,7 @@ namespace Space_Refinery_Game
 
 				DoUI(deltaTime);
 
-				imGuiRenderer.WindowResized((int)gd.MainSwapchain.Framebuffer.Width, (int)gd.MainSwapchain.Framebuffer.Height);
+				imGuiRenderer.WindowResized((int)width, (int)height);
 
 				imGuiRenderer.Render(gd, cl);
 			}
@@ -278,274 +285,7 @@ namespace Space_Refinery_Game
 					DoPauseMenuUI(deltaTime);
 				}
 			}
-		}
-
-		private void DoDebugSettingsUI()
-		{
-			lock (syncRoot)
-			{
-				if (ImGui.Begin("Debug Settings", ImGuiWindowFlags.AlwaysAutoResize))
-				{
-					foreach (var debugSetting in MainGame.DebugSettings.DebugSettingsDictionary.Values)
-					{
-						debugSetting.DrawUIElement();
-						ImGui.Separator();
-					}
-
-					ImGui.End();
-				}
-			}
-		}
-
-		private Vector2 pauseMenuSize => new Vector2(gd.MainSwapchain.Framebuffer.Width / 3, (gd.MainSwapchain.Framebuffer.Height / 10) * 8);
-
-		private Vector2 settingsMenuSize => new Vector2(gd.MainSwapchain.Framebuffer.Width / 2, (gd.MainSwapchain.Framebuffer.Height / 10) * 8);
-
-		bool inSettings;
-
-		private void DoPauseMenuUI(FixedDecimalLong8 deltaTime)
-		{
-			ImGui.Begin("Pause menu", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
-			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2 - pauseMenuSize.X / 2, gd.MainSwapchain.Framebuffer.Height / 2 - pauseMenuSize.Y / 2), ImGuiCond.Always);
-			ImGui.SetWindowSize(pauseMenuSize, ImGuiCond.Always);
-			{
-				if (ImGui.Button("Resume"))
-				{
-					Unpause();
-				}
-
-				if (ImGui.Button("Save"))
-				{
-					Task.Run(() =>
-					{
-						lock (gameData.GameWorld.TickSyncObject) lock (gameData.GameWorld.SynchronizationObject)
-							{
-								gameData.MainGame.Serialize(@"R:\save.xml");
-							}
-					});
-				}
-
-				if (ImGui.Button("Load"))
-				{
-					Task.Run(() =>
-					{
-						lock (gameData.GameWorld.TickSyncObject)// lock (gameData.GameWorld.SynchronizationObject)
-						{
-							gameData.MainGame.Deserialize(@"R:\save.xml");
-						}
-					});
-				}
-
-				if (ImGui.Button("Settings"))
-				{
-					inSettings = !inSettings;
-				}
-
-				if (inSettings)
-				{
-					inSettings = ImGui.Begin("Settings", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
-					ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2 - settingsMenuSize.X / 2, gd.MainSwapchain.Framebuffer.Height / 2 - settingsMenuSize.Y / 2), ImGuiCond.Always);
-					ImGui.SetWindowSize(settingsMenuSize, ImGuiCond.Always);
-					{
-						MainGame.GlobalSettings.DoSettingsUI();
-					}
-					ImGui.SetWindowCollapsed(false);
-					ImGui.End();
-				}
-
-				if (ImGui.Button("Exit game"))
-				{
-					GC.WaitForPendingFinalizers();
-					Environment.Exit(69);
-				}
-			}
-			ImGui.End();
-
-			DoStatus();
-
-			DoDebugSettingsUI();
-		}
-
-		private void DoGameRunningUI(FixedDecimalLong8 deltaTime)
-		{
-			if (InMenu)
-			{
-				if (ImGui.Begin(MenuTitle, ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoMove))
-				{
-					ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2 - ImGui.GetWindowSize().X / 2, gd.MainSwapchain.Framebuffer.Height / 2 - ImGui.GetWindowSize().Y / 2), ImGuiCond.Always);
-					{
-						doMenu();
-						//InMenu = !ImGui.Button("Close");
-					}
-					ImGui.End();
-				}
-				else
-				{
-					InMenu = false;
-				}
-			}
-
-			DoStatus();
-
-			ImGui.Begin("Center", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
-			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2, gd.MainSwapchain.Framebuffer.Height / 2), ImGuiCond.Always);
-			{
-				ImGui.Bullet();
-			}
-			ImGui.End();
-
-			DoInformationPanel(deltaTime);
-
-			DoHotbar(deltaTime);
-		}
-
-		private DecimalNumber informationPanelFading = 1;
-		
-		private void DoInformationPanel(DecimalNumber deltaTime)
-		{
-			informationPanelFading += 1 * /*informationPanelFading **/ deltaTime * (CurrentlySelectedInformationProvider is null ? -1 : 4);
-			informationPanelFading = DecimalNumber.Clamp(informationPanelFading, 0, 1);
-			ImGui.SetNextWindowBgAlpha((float)informationPanelFading);
-			ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoInputs);
-			ImGui.SetWindowPos(new Vector2((gd.MainSwapchain.Framebuffer.Width / 4 * 3)/* - ImGui.GetWindowSize().X / 2*/, (gd.MainSwapchain.Framebuffer.Height / 2) - ImGui.GetWindowSize().Y / 2), ImGuiCond.Always);
-			{
-				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show player info"))
-				{
-					ImGui.TextDisabled("Information for: Player");
-					ImGui.Text("Connector: " + ConnectorSelection);
-					ImGui.Text("Entity: " + EntitySelection);
-					ImGui.Text("Rotation: " + RotationIndex);
-					ImGui.Separator();
-				}
-
-				if (CurrentlySelectedInformationProvider is not null)
-				{
-					ImGui.TextDisabled($"Information for: {CurrentlySelectedInformationProvider.Name}");
-					CurrentlySelectedInformationProvider.InformationUI();
-				}
-				else
-				{
-					ImGui.TextDisabled("Nothing to view information for.");
-				}
-			}
-			ImGui.End();
-		}
-
-		private void DoHotbar(FixedDecimalLong8 deltaTime)
-		{
-			ImGui.SetNextWindowBgAlpha((float)DecimalNumber.Max(hotbarFading, 0.35));
-			hotbarFading -= hotbarFading * 0.3 * (DecimalNumber)deltaTime;
-			ImGui.Begin("Hotbar", /*ImGuiWindowFlags.AlwaysAutoResize | */ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
-			ImGui.SetWindowPos(new Vector2(gd.MainSwapchain.Framebuffer.Width / 2 - ImGui.GetWindowWidth() / 2, gd.MainSwapchain.Framebuffer.Height / 5 * 4 - ImGui.GetWindowHeight() / 2), ImGuiCond.Always);
-			ImGui.SetWindowSize(new Vector2(500, 50), ImGuiCond.Always);
-			{
-				ImGui.Columns(pipeTypes.Count);
-				for (int i = 0; i < pipeTypes.Count; i++)
-				{
-					if (pipeTypes[i] is null)
-					{
-						if (EntitySelection == i)
-						{
-							ImGui.TextColored(RgbaFloat.CornflowerBlue.ToVector4(), "None");
-						}
-						else
-						{
-							ImGui.TextDisabled("None");
-						}
-
-						ImGui.NextColumn();
-						continue;
-					}
-
-					if (EntitySelection == i)
-					{
-						ImGui.TextColored(RgbaFloat.CornflowerBlue.ToVector4(), (pipeTypes[i].Name));
-					}
-					else
-					{
-						ImGui.TextDisabled(pipeTypes[i].Name);
-					}
-
-					ImGui.NextColumn();
-				}
-			}
-			ImGui.End();
-		}
-
-		private void DoStatus()
-		{
-			ImGui.Begin("Status", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
-			ImGui.SetWindowPos(new Vector2(0, 0), ImGuiCond.Always);
-			{
-				if (MainGame.DebugRender.ShouldRender)
-				{
-					ImGui.TextColored(RgbaFloat.Red.ToVector4(), "Debug drawing");
-				}
-
-				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Display performance information"))
-				{
-					DoPerformanceInfo();
-				}
-				else if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("System response spinners", true))
-				{
-					ImGui.TextUnformatted(gameData.GraphicsWorld.ResponseSpinner.ToString());
-				}
-			}
-			ImGui.End();
-		}
-
-		private void DoPerformanceInfo()
-		{
-			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"Frame time:				  {gameData.PerformanceStatisticsCollector.RendererFrameTime * 1000} ms ({gameData.PerformanceStatisticsCollector.RendererFramerate} FPS) {gameData.GraphicsWorld.ResponseSpinner}");
-
-			RgbaFloat tickColor;
-			if (gameData.PerformanceStatisticsCollector.TickBudgetUse > 1)
-			{
-				tickColor = RgbaFloat.Red;
-			}
-			else if (gameData.PerformanceStatisticsCollector.TickBudgetUse > (DecimalNumber)0.75)
-			{
-				tickColor = RgbaFloat.Yellow;
-			}
-			else
-			{
-				tickColor = RgbaFloat.Green;
-			}
-
-			ImGui.TextColored(tickColor.ToVector4(), $"Tick time:					   {gameData.PerformanceStatisticsCollector.TickTime * 1000} ms ({gameData.PerformanceStatisticsCollector.TicksPerSecond} TPS, {(gameData.PerformanceStatisticsCollector.TickBudgetUse * 100).ToInt32()} percent) {gameData.GameWorld.ResponseSpinner}");
-
-			RgbaFloat updateColor;
-			if (gameData.PerformanceStatisticsCollector.UpdateBudgetUse > 1)
-			{
-				updateColor = RgbaFloat.Red;
-			}
-			else if (gameData.PerformanceStatisticsCollector.UpdateBudgetUse > (DecimalNumber)0.75)
-			{
-				updateColor = RgbaFloat.Yellow;
-			}
-			else
-			{
-				updateColor = RgbaFloat.Green;
-			}
-
-			ImGui.TextColored(updateColor.ToVector4(), $"Update time:				 {gameData.PerformanceStatisticsCollector.UpdateTime * 1000} ms ({gameData.PerformanceStatisticsCollector.UpdatesPerSecond} UPS, {(gameData.PerformanceStatisticsCollector.UpdateBudgetUse * 100).ToInt32()} percent) {gameData.MainGame.ResponseSpinner}");
-
-			RgbaFloat physicsUpdateColor;
-			if (gameData.PerformanceStatisticsCollector.PhysicsBudgetUse > 1)
-			{
-				physicsUpdateColor = RgbaFloat.Red;
-			}
-			else if (gameData.PerformanceStatisticsCollector.PhysicsBudgetUse > (DecimalNumber)0.75)
-			{
-				physicsUpdateColor = RgbaFloat.Yellow;
-			}
-			else
-			{
-				physicsUpdateColor = RgbaFloat.Green;
-			}
-
-			ImGui.TextColored(physicsUpdateColor.ToVector4(), $"Physics update time:	{gameData.PerformanceStatisticsCollector.PhysicsTime * 1000} ms ({gameData.PerformanceStatisticsCollector.PhysicsUpdatesPerSecond} PUPS, {(gameData.PerformanceStatisticsCollector.PhysicsBudgetUse * 100).ToInt32()} percent) {gameData.PhysicsWorld.ResponseSpinner}");
-		}
+		}		
 
 		public void Style() // https://github.com/ocornut/imgui/issues/707
 		{

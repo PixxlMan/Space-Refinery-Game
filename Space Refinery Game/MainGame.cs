@@ -72,9 +72,10 @@ public sealed class MainGame
 
 	public void Start(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
-		GameData = new();
-
-		GameData.MainGame = this;
+		GameData = new()
+		{
+			MainGame = this
+		};
 
 		GlobalSettings = new();
 
@@ -115,7 +116,7 @@ public sealed class MainGame
 
 		InputTracker.IgnoreNextFrameMousePosition = true;
 
-		//DebugRender.ShouldRender = true;
+		DebugRender.ShouldRender = true;
 
 		StartUpdating();
 

@@ -3,13 +3,12 @@ using FXRenderer;
 using SharpDX;
 using System.Numerics;
 using Veldrid;
+using static Space_Refinery_Game_Renderer.RenderingResources;
 
 namespace Space_Refinery_Game_Renderer;
 
 public sealed class EntityRenderable : IRenderable
 {
-	private bool transformChangedSinceDraw;
-
 	private Mesh mesh;
 
 	private ResourceSet textureSet;
@@ -49,111 +48,12 @@ public sealed class EntityRenderable : IRenderable
 	private EntityRenderable(Transform transform)
 	{
 		Transform = transform;
-
-		Transform.TransformChanged += (_) => transformChangedSinceDraw = true;
 	}
 
 	public Transform Transform;
 
-	public static bool HasCreatedStaticDeviceResources { get; private set; } = false;
-
-	public static ResourceLayout PBRDataLayout { get; private set; }
-
-	public static ResourceLayout AuxillaryDataLayout { get; private set; }
-
-	public static ResourceLayout TextureLayout { get; private set; }
-
-	public static ResourceLayout SharedLayout { get; private set; }
-
-	public static VertexLayoutDescription TransformationVertexShaderParameterLayout { get; private set; }
-
-	public static VertexLayoutDescription VertexLayout { get; private set; }
-
-	public static Pipeline Pipeline { get; private set; }
-
-	public static void CreateStaticDeviceResources(GraphicsWorld graphicsWorld)
-	{
-		if (HasCreatedStaticDeviceResources)
-		{
-			return;
-		}
-
-		ResourceLayoutElementDescription[] pbrLayoutDescriptions =
-		{
-			new ResourceLayoutElementDescription("PBRData", ResourceKind.UniformBuffer, ShaderStages.Fragment),
-		};
-		PBRDataLayout = graphicsWorld.Factory.CreateResourceLayout(new ResourceLayoutDescription(pbrLayoutDescriptions));
-
-		ResourceLayoutElementDescription[] textureLayoutDescriptions =
-		{
-			new ResourceLayoutElementDescription("Tex", ResourceKind.TextureReadOnly, ShaderStages.Fragment),
-			new ResourceLayoutElementDescription("Samp", ResourceKind.Sampler, ShaderStages.Fragment),
-		};
-		TextureLayout = graphicsWorld.Factory.CreateResourceLayout(new ResourceLayoutDescription(textureLayoutDescriptions));
-
-		ResourceLayoutElementDescription[] resourceLayoutElementDescriptions =
-		{
-			new ResourceLayoutElementDescription("LightInfo", ResourceKind.UniformBuffer, ShaderStages.Fragment),
-			new ResourceLayoutElementDescription("ProjView", ResourceKind.UniformBuffer, ShaderStages.Vertex),
-		};
-		ResourceLayoutDescription resourceLayoutDescription = new ResourceLayoutDescription(resourceLayoutElementDescriptions);
-		SharedLayout = graphicsWorld.Factory.CreateResourceLayout(resourceLayoutDescription);
-
-		TransformationVertexShaderParameterLayout = new VertexLayoutDescription(
-			new VertexElementDescription("InstancePosition", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3),
-			new VertexElementDescription("InstanceRotationM11", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float1),
-			new VertexElementDescription("InstanceRotationM12", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float1),
-			new VertexElementDescription("InstanceRotationM13", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float1),
-			new VertexElementDescription("InstanceRotationM21", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float1),
-			new VertexElementDescription("InstanceRotationM22", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float1),
-			new VertexElementDescription("InstanceRotationM23", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float1),
-			new VertexElementDescription("InstanceRotationM31", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float1),
-			new VertexElementDescription("InstanceRotationM32", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float1),
-			new VertexElementDescription("InstanceRotationM33", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float1),
-			new VertexElementDescription("InstanceScale", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3)
-			)
-		{ InstanceStepRate = 1 };
-
-		VertexLayout = new VertexLayoutDescription(
-			new VertexElementDescription("Position", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3),
-			new VertexElementDescription("Normal", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3),
-			new VertexElementDescription("TexCoord", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float2));
-
-		GraphicsPipelineDescription pipelineDescription = new GraphicsPipelineDescription()
-		{
-			BlendState = BlendStateDescription.SingleOverrideBlend,
-			DepthStencilState = new DepthStencilStateDescription(
-			depthTestEnabled: true,
-			depthWriteEnabled: true,
-			comparisonKind: ComparisonKind.LessEqual),
-			RasterizerState = new RasterizerStateDescription(
-			cullMode: FaceCullMode.Back,
-			fillMode: PolygonFillMode.Solid,
-			frontFace: FrontFace.Clockwise,
-			depthClipEnabled: true,
-			scissorTestEnabled: false
-			),
-			PrimitiveTopology = PrimitiveTopology.TriangleList,
-			ResourceLayouts = new ResourceLayout[] { SharedLayout, TextureLayout, PBRDataLayout, AuxillaryDataLayout },
-			ShaderSet = new ShaderSetDescription(
-				vertexLayouts: new VertexLayoutDescription[] { VertexLayout, TransformationVertexShaderParameterLayout },
-				shaders: graphicsWorld.ShaderLoader.LoadCached("EntityRenderable")
-			),
-			Outputs = graphicsWorld.GraphicsDevice.MainSwapchain.Framebuffer.OutputDescription
-		};
-
-		Pipeline = graphicsWorld.Factory.CreateGraphicsPipeline(pipelineDescription);
-
-		HasCreatedStaticDeviceResources = true;
-	}
-
 	public static EntityRenderable Create(GraphicsWorld graphicsWorld, Transform transform, Mesh mesh, Texture texture, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
 	{
-		if (!HasCreatedStaticDeviceResources)
-		{
-			CreateStaticDeviceResources(graphicsWorld);
-		}
-
 		EntityRenderable entityRenderable = new(transform);
 
 		entityRenderable.mesh = mesh;
@@ -183,10 +83,9 @@ public sealed class EntityRenderable : IRenderable
 
 	public void AddDrawCommands(CommandList commandList, FixedDecimalLong8 deltaTime)
 	{
-		if (transformChangedSinceDraw)
-			commandList.UpdateBuffer(transformationBuffer, 0, Transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
+		commandList.UpdateBuffer(transformationBuffer, 0, Transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
 
-		commandList.SetPipeline(Pipeline);
+		commandList.SetPipeline(PipelineResource);
 		commandList.SetGraphicsResourceSet(0, resourceSet);
 		commandList.SetGraphicsResourceSet(1, textureSet);
 		commandList.SetVertexBuffer(0, mesh.VertexBuffer);

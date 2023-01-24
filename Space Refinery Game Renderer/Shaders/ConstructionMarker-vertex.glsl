@@ -22,17 +22,14 @@ layout(location = 10) in float InstanceRotationM23;
 layout(location = 11) in float InstanceRotationM31;
 layout(location = 12) in float InstanceRotationM32;
 layout(location = 13) in float InstanceRotationM33;
-layout(location = 14) in vec3 InstanceScale;
 
 layout(location = 0) out vec4 color;
 
 void main()
 {
     mat3 instanceRotFull = mat3(InstanceRotationM11, InstanceRotationM12, InstanceRotationM13, InstanceRotationM21, InstanceRotationM22, InstanceRotationM23,InstanceRotationM31, InstanceRotationM32, InstanceRotationM33);
-    mat3 scalingMat = mat3(InstanceScale.x, 0, 0, 0, InstanceScale.y, 0, 0, 0, InstanceScale.z);
 
-    // Could multiplying with scalingMat after the other matrices fix potential bug with scaling being applied globally instead of locally?
-    vec3 transformedPos = (scalingMat * instanceRotFull * Position) + InstancePosition;
+    vec3 transformedPos = (instanceRotFull * Position) + InstancePosition;
     vec4 pos = vec4(transformedPos, 1); 
     gl_Position = Proj * View * pos;
 

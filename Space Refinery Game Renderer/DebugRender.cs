@@ -197,30 +197,33 @@ namespace Space_Refinery_Game_Renderer
 			}
 		}
 
-		// TODO: use separate size? instead of using transform.scale...
-		public void DrawCube(Transform transform, RgbaFloat color)
+		public void DrawCube(Transform transform, RgbaFloat color) => DrawCube(transform, color, Vector3FixedDecimalInt4.One);
+
+		public void DrawCube(Transform transform, RgbaFloat color, Vector3FixedDecimalInt4 scale)
 		{
 			lock (sync)
 			{
 				DeviceBuffer transformationBuffer, colorBuffer;
 
-				GetBuffers(color, new(transform) { Scale = Vector3FixedDecimalInt4.One }, out transformationBuffer, out colorBuffer);
+				GetBuffers(color, new(transform), out transformationBuffer, out colorBuffer);
 
-				DebugRenderable renderable = new(GetCubeMesh(transform.Scale), transformationBuffer, colorBuffer);
+				DebugRenderable renderable = new(GetCubeMesh(scale), transformationBuffer, colorBuffer);
 
 				debugRenderables.Add(renderable);
 			}
 		}
 
-		public void PersistentCube(Transform transform, RgbaFloat color)
+		public void PersistentCube(Transform transform, RgbaFloat color) => PersistentCube(transform, color, Vector3FixedDecimalInt4.One);
+
+		public void PersistentCube(Transform transform, RgbaFloat color, Vector3FixedDecimalInt4 scale)
 		{
 			lock (sync)
 			{
 				DeviceBuffer transformationBuffer, colorBuffer;
 
-				GetBuffers(color, new(transform) { Scale = Vector3FixedDecimalInt4.One }, out transformationBuffer, out colorBuffer);
+				GetBuffers(color, new(transform), out transformationBuffer, out colorBuffer);
 
-				DebugRenderable renderable = new(GetCubeMesh(transform.Scale), transformationBuffer, colorBuffer);
+				DebugRenderable renderable = new(GetCubeMesh(scale), transformationBuffer, colorBuffer);
 
 				persistentRenderables.Add(renderable);
 			}

@@ -87,6 +87,8 @@ public sealed class GraphicsWorld
 		ShaderLoader = new(this);
 
 		CreateDeviceObjects(gd, factory, swapchain);
+
+		RenderingResources.CreateStaticDeviceResources(this);
 	}
 
 	private void HandleWindowResized()

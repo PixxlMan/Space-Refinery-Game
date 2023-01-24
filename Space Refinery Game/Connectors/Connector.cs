@@ -311,7 +311,7 @@ namespace Space_Refinery_Game
 
 				MainGame.DebugRender.DrawOrientationMarks(Transform);
 
-				MainGame.DebugRender.DrawCube(new Transform(PhysicsObject.Transform) { Scale = new((FixedDecimalInt4).4f, (FixedDecimalInt4).4f, (FixedDecimalInt4).25f) }, VacantSide is null ? RgbaFloat.Green : RgbaFloat.Cyan);
+				MainGame.DebugRender.DrawCube(new Transform(PhysicsObject.Transform), VacantSide is null ? RgbaFloat.Green : RgbaFloat.Cyan, new((FixedDecimalInt4).4f, (FixedDecimalInt4).4f, (FixedDecimalInt4).25f));
 			}
 		}
 

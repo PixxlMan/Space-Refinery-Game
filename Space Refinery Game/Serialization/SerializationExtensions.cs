@@ -82,8 +82,6 @@ namespace Space_Refinery_Game
 				Serialize(writer, transform.Position, nameof(Transform.Position));
 
 				Serialize(writer, transform.Rotation, nameof(Transform.Rotation));
-
-				Serialize(writer, transform.Scale, nameof(Transform.Scale));
 			}
 			writer.WriteEndElement();
 		}
@@ -98,9 +96,7 @@ namespace Space_Refinery_Game
 
 				QuaternionFixedDecimalInt4 rotation = reader.DeserializeQuaternionFixedDecimalInt4(nameof(Transform.Rotation));
 
-				Vector3FixedDecimalInt4 scale = reader.DeserializeVector3FixedDecimalInt4(nameof(Transform.Scale));
-
-				transform = new(position, rotation, scale);
+				transform = new(position, rotation);
 
 				reader.ReadEndElement();
 

@@ -121,7 +121,16 @@ namespace Space_Refinery_Game
 
 			for (int i = 0; i < pipeType.ConnectorPlacements.Length; i++)
 			{
-				MainGame.DebugRender.PersistentCube(new (pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation), pipe.Transform.Rotation, new((DecimalNumber).125, (DecimalNumber).125, (DecimalNumber).125)), new RgbaFloat((float)i / (float)pipeType.ConnectorPlacements.Length, (float)i / 10f + .1f, 0, 1));
+				MainGame.DebugRender.PersistentCube(
+					new (
+						pipe.Transform.Position +
+						Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation)
+						, pipe.Transform.Rotation
+						),
+					new RgbaFloat((float)i / (float)pipeType.ConnectorPlacements.Length, (float)i / 10f + .1f, 0, 1),
+					new((DecimalNumber).125, (DecimalNumber).125, (DecimalNumber).125)
+					);
+
 				if (gameData.PhysicsWorld.ApproxOverlapPoint<PipeConnector>(pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation), out PhysicsObject physicsObject))
 				{
 					PipeConnector pipeConnector = (PipeConnector)physicsObject.Entity;

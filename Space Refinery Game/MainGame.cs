@@ -116,7 +116,7 @@ public sealed class MainGame
 
 		InputTracker.IgnoreNextFrameMousePosition = true;
 
-		DebugRender.ShouldRender = true;
+		//DebugRender.ShouldRender = true;
 
 		StartUpdating();
 

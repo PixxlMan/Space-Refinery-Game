@@ -450,10 +450,10 @@ namespace Space_Refinery_Game
 				}
 				else
 				{
-					ImGui.Text($"{nameof(Mass)}: {Mass} kg");
-					ImGui.Text($"{nameof(Volume)}: {Volume} m³");
-					ImGui.Text($"{nameof(MaxVolume)}: {MaxVolume} m³");
-					ImGui.Text($"{nameof(Fullness)}: {Fullness}");
+					ImGui.Text($"{nameof(Mass)}: {Mass.FormatMass()}");
+					ImGui.Text($"{nameof(Volume)}: {Volume.FormatVolume()}");
+					ImGui.Text($"{nameof(MaxVolume)}: {MaxVolume.FormatVolume()}");
+					ImGui.Text($"{nameof(Fullness)}: {Fullness.FormatPercentage()}");
 					ImGui.Text($"Different types of resources: {resources.Count}");
 
 					foreach (var resourceUnit in resources.Values)

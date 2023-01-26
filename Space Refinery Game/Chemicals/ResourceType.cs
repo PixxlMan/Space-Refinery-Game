@@ -46,8 +46,8 @@ public abstract class ResourceType : IUIInspectable, IEntitySerializable
 			{
 				ChemicalType.DoUIInspectorReadonly();
 			}
-			ImGui.Text($"Density: {Density} kg/m3");
-			ImGui.Text($"Density: {SpecificHeatCapacity}");
+			ImGui.Text($"Density: {Density.FormatDensity()}");
+			ImGui.Text($"Specific Heat Capacity: {SpecificHeatCapacity.FormatSpecificHeatCapacity()}");
 		}
 		UIFunctions.EndSub();
 	}

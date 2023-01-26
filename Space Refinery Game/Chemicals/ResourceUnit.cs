@@ -103,9 +103,9 @@ namespace Space_Refinery_Game
 			{
 				ImGui.Text($"Resource type: {ResourceType.ResourceName}");
 
-				ImGui.Text($"{nameof(Moles)}: {Moles} mol");
-				ImGui.Text($"{nameof(Mass)}: {Mass} kg");
-				ImGui.Text($"{nameof(Volume)}: {Volume} m³");
+				ImGui.Text($"{nameof(Moles)}: {Moles.FormatSubstanceAmount()}");
+				ImGui.Text($"{nameof(Mass)}: {Mass.FormatMass()}");
+				ImGui.Text($"{nameof(Volume)}: {Volume.FormatVolume()}");
 			}
 			UIFunctions.EndSub();
 		}

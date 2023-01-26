@@ -369,6 +369,11 @@ namespace Space_Refinery_Game
 		{
 			return Value.ToString(null, null);
 		}
+		
+		public string ToString(int decimals) // OPTIMIZE: use proper solution when proper ToString is implemented.
+		{
+			return ToDecimal().ToString($"F{decimals}");
+		}
 
 		public string ToString(string? format, IFormatProvider? formatProvider)
 		{

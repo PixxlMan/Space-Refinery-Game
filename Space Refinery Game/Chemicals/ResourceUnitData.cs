@@ -63,9 +63,9 @@ namespace Space_Refinery_Game
 					ResourceType.DoUIInspectorReadonly();
 				}
 
-				ImGui.Text($"Moles: {Moles} mol");
-				ImGui.Text($"Mass: {Mass} kg");
-				ImGui.Text($"Volume: {Volume} m³");
+				ImGui.Text($"Moles: {Moles.FormatSubstanceAmount()}");
+				ImGui.Text($"Mass: {Mass.FormatMass()}");
+				ImGui.Text($"Volume: {Volume.FormatVolume()}");
 			}
 			UIFunctions.EndSub();
 		}

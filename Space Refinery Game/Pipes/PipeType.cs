@@ -32,6 +32,8 @@ namespace Space_Refinery_Game
 
 		public Type TypeOfPipe;
 
+		public BatchRenderable BatchRenderable { get; private set; }
+
 		public Guid SerializableReferenceGUID { get; private set; }
 
 		private static PipeConnectorProperties standardPipeConnectorProperties;
@@ -41,7 +43,7 @@ namespace Space_Refinery_Game
 			{
 				if (standardPipeConnectorProperties is null)
 				{
-					standardPipeConnectorProperties = (PipeConnectorProperties)MainGame.GlobalReferenceHandler[Guid.Parse("a2f1a2e0-529e-41e3-bb90-544104b85d2a")];
+					standardPipeConnectorProperties = (PipeConnectorProperties)MainGame.GlobalReferenceHandler[Guid.Parse(/*Reference to standard pipe connector properties.*/"a2f1a2e0-529e-41e3-bb90-544104b85d2a")];
 				}
 
 				return standardPipeConnectorProperties;
@@ -137,6 +139,10 @@ namespace Space_Refinery_Game
 			{
 				throw new Exception($"Couldn't add {nameof(PipeType)} '{Name}' to dictionary of all available PipeTypes.");
 			}
+
+			BatchRenderable = BatchRenderable.Create(serializationData.GameData.GraphicsWorld, RenderingResources.DefaultPBRData, Mesh, RenderingResources.DefaultTexture, serializationData.GameData.GraphicsWorld.CameraProjViewBuffer, serializationData.GameData.GraphicsWorld.LightInfoBuffer);
+
+			serializationData.GameData.GraphicsWorld.AddRenderable(BatchRenderable);
 		}
 	}
 }

@@ -28,7 +28,7 @@ namespace Space_Refinery_Game
 
 		public MainGame MainGame;
 
-		public EntityRenderable Renderable;
+		public BatchRenderableEntityHandle RenderableHandle;
 		
 		public PipeConnector[] Connectors;
 
@@ -78,7 +78,7 @@ namespace Space_Refinery_Game
 
 				MainGame.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
 
-				EntityRenderable renderable = CreateRenderable(pipeType, gameData.GraphicsWorld, transform);
+				BatchRenderableEntityHandle renderableHandle = pipeType.BatchRenderable.CreateBatchRenderableEntity(transform);
 
 				PhysicsObject physObj = CreatePhysicsObject(gameData.PhysicsWorld, transform, pipe, pipeType.Mesh);
 
@@ -86,7 +86,7 @@ namespace Space_Refinery_Game
 
 				pipe.Created = true;
 
-				pipe.SetUp(pipeType, null, connectors, renderable, physObj, gameData);
+				pipe.SetUp(pipeType, null, connectors, renderableHandle, physObj, gameData);
 
 				gameData.GameWorld.AddEntity(pipe);
 
@@ -99,13 +99,6 @@ namespace Space_Refinery_Game
 		}
 
 		public abstract ResourceContainer GetResourceContainerForConnector(PipeConnector pipeConnector);
-
-		private static EntityRenderable CreateRenderable(PipeType pipeType, GraphicsWorld graphWorld, Transform transform)
-		{
-			EntityRenderable renderable = EntityRenderable.Create(graphWorld, transform, pipeType.Mesh, Utils.GetSolidColoredTexture(RgbaByte.LightGrey, graphWorld.GraphicsDevice, graphWorld.Factory), graphWorld.CameraProjViewBuffer, graphWorld.LightInfoBuffer);
-
-			return renderable;
-		}
 
 		private static PhysicsObject CreatePhysicsObject(PhysicsWorld physWorld, Transform transform, Pipe pipeStraight, FXRenderer.Mesh mesh)
 		{
@@ -238,13 +231,13 @@ namespace Space_Refinery_Game
 
 				MainGame.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
 
-				EntityRenderable renderable = CreateRenderable(pipeType, gameData.GraphicsWorld, transform);
+				BatchRenderableEntityHandle renderableHandle = pipeType.BatchRenderable.CreateBatchRenderableEntity(transform);
 
 				PhysicsObject physObj = CreatePhysicsObject(gameData.PhysicsWorld, transform, pipe, pipeType.Mesh);
 
 				var connectors = CreateConnectors(pipeType, pipe, gameData);
 
-				pipe.SetUp(pipeType, new(indexOfSelectedConnector, rotation), connectors, renderable, physObj, gameData);
+				pipe.SetUp(pipeType, new(indexOfSelectedConnector, rotation), connectors, renderableHandle, physObj, gameData);
 
 				pipe.Created = false;
 
@@ -258,7 +251,7 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		private void SetUp(PipeType pipeType, ConstructionInfo? constructionInfo, PipeConnector[] connectors, EntityRenderable renderable, PhysicsObject physicsObject, GameData gameData)
+		private void SetUp(PipeType pipeType, ConstructionInfo? constructionInfo, PipeConnector[] connectors, BatchRenderableEntityHandle renderableHandle, PhysicsObject physicsObject, GameData gameData)
 		{
 			lock (SyncRoot)
 			{
@@ -269,7 +262,7 @@ namespace Space_Refinery_Game
 				PhysicsObject = physicsObject;
 				Connectors = connectors;
 				GraphicsWorld = gameData.GraphicsWorld;
-				Renderable = renderable;
+				RenderableHandle = renderableHandle;
 				GameWorld = gameData.GameWorld;
 				MainGame = gameData.MainGame;
 				ReferenceHandler = gameData.ReferenceHandler;
@@ -354,7 +347,7 @@ namespace Space_Refinery_Game
 
 				MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
 
-				EntityRenderable renderable = CreateRenderable(pipeType, serializationData.GameData.GraphicsWorld, transform);
+				BatchRenderableEntityHandle renderableHandle = pipeType.BatchRenderable.CreateBatchRenderableEntity(transform);
 
 				PhysicsObject physObj = CreatePhysicsObject(serializationData.GameData.PhysicsWorld, transform, this, pipeType.Mesh);
 
@@ -373,7 +366,7 @@ namespace Space_Refinery_Game
 
 				serializationData.DeserializationCompleteEvent += () =>
 				{
-					SetUp(pipeType, null, connectors, renderable, physObj, serializationData.GameData);
+					SetUp(pipeType, null, connectors, renderableHandle, physObj, serializationData.GameData);
 				};
 
 				Created = true;
@@ -396,7 +389,7 @@ namespace Space_Refinery_Game
 				Destroyed = true;
 
 				PhysicsObject.Destroy();
-				Renderable.Destroy();
+				PipeType.BatchRenderable.RemoveBatchRenderableEntity(RenderableHandle);
 
 				MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
 

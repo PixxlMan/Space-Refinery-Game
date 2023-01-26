@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FXRenderer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,15 @@ namespace Space_Refinery_Game_Renderer;
 
 public static class RenderingResources
 {
+	public static PBRData DefaultPBRData { get; private set; } = new()
+	{
+		Metallic = .85f,
+		Roughness = .25f,
+		Ao = 0,
+	};
+
+	public static Texture DefaultTexture { get; private set; }
+
 	public static bool HasCreatedStaticDeviceResources { get; private set; } = false;
 
 	public static ResourceLayout PBRDataLayout { get; private set; }
@@ -31,6 +41,8 @@ public static class RenderingResources
 		{
 			return;
 		}
+
+		DefaultTexture = Utils.GetSolidColoredTexture(RgbaByte.LightGrey, graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
 
 		ResourceLayoutElementDescription[] pbrLayoutDescriptions =
 		{

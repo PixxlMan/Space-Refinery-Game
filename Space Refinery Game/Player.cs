@@ -29,9 +29,10 @@ namespace Space_Refinery_Game
 
 		public static Player Create(GameData gameData)
 		{
-			Player player = new(gameData);
-
-			player.constructionMarker = ConstructionMarker.Create(gameData.GraphicsWorld);
+			Player player = new(gameData)
+			{
+				constructionMarker = ConstructionMarker.Create(gameData.GraphicsWorld)
+			};
 
 			return player;
 		}

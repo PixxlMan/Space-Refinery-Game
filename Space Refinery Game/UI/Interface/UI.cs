@@ -172,7 +172,8 @@ namespace Space_Refinery_Game
 		{
 			lock (syncRoot)
 			{
-				imGuiRenderer.Update(1, InputTracker.CreateInputTrackerCloneSnapshot());
+				var snapshot = InputTracker.CreateInputTrackerCloneSnapshot();
+				imGuiRenderer.Update(1, snapshot);
 
 				DoUI(deltaTime);
 

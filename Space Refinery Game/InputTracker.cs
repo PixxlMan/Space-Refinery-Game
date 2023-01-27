@@ -5,8 +5,8 @@ using FixedPrecision;
 using static FixedPrecision.Convenience;
 using FXRenderer;
 
-namespace Space_Refinery_Game
-{
+namespace Space_Refinery_Game;
+
 	public static class InputTracker
 	{
 		private static HashSet<Key> _currentlyPressedKeys = new();

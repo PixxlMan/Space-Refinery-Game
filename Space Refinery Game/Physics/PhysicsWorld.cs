@@ -1,5 +1,6 @@
 ﻿using BepuPhysics;
 using BepuPhysics.Collidables;
+using BepuPhysics.CollisionDetection;
 using BepuPhysics.Trees;
 using BepuUtilities;
 using BepuUtilities.Memory;
@@ -108,6 +109,18 @@ namespace Space_Refinery_Game
 				PhysicsObjectLookup.Add(bodyHandle, physicsObject);
 
 				return physicsObject;
+			}
+		}
+
+		public void ChangeShape(PhysicsObject physicsObject, ConvexHull shape)
+		{ // OPTIMIZE: remove old shapes and don't always add the new ones if identical ones are already used (pass TypedIndex instead of TShape to the AddPhysicsObject method to accomodate more easily sharing the same shape between pipes of the same type)
+			lock (SyncRoot)
+			{
+				var oldShape = simulation.Bodies[physicsObject.BodyHandle].Collidable.Shape;
+				simulation.Bodies[physicsObject.BodyHandle].SetShape(simulation.Shapes.Add(shape));
+				//simulation.Shapes.RecursivelyRemoveAndDispose(oldShape, bufferPool);
+				//simulation.Shapes.RemoveAndDispose(oldShape, bufferPool);
+				simulation.Shapes.Remove(oldShape);
 			}
 		}
 

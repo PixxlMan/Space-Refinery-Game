@@ -1,4 +1,5 @@
-﻿using BepuPhysics.Collidables;
+﻿using BepuPhysics;
+using BepuPhysics.Collidables;
 using FixedPrecision;
 using FXRenderer;
 using System;
@@ -246,20 +247,22 @@ namespace Space_Refinery_Game
 					Proxy = new(this);
 				}
 
-				if (Proxy.PhysicsObject is not null) // Always remove physics object to "make room" for new one that will be created shortly. Could theoretically repurpose old one for those mad performance gainz?
+				var shape = GameData.PhysicsWorld.GetConvexHullForMesh(GameData.UI.SelectedPipeType.Mesh);
+
+				var transform = GameWorld.GenerateTransformForConnector(
+							GameData.UI.SelectedPipeType.ConnectorPlacements[GameData.UI.ConnectorSelection],
+							this, GameData.UI.RotationIndex * 45 * FixedDecimalLong8.DegreesToRadians);
+
+				if (Proxy.PhysicsObject is null)
 				{
-					Proxy.PhysicsObject.Destroy();
+					var proxyPhysicsObject = new PhysicsObjectDescription<ConvexHull>(shape, transform, 0, true);
+
+					Proxy.PhysicsObject = GameData.PhysicsWorld.AddPhysicsObject(proxyPhysicsObject, Proxy);
 				}
-
-				var proxyPhysicsObject = new PhysicsObjectDescription<ConvexHull>(
-					GameData.PhysicsWorld.GetConvexHullForMesh(GameData.UI.SelectedPipeType.Mesh),
-					GameWorld.GenerateTransformForConnector(
-						GameData.UI.SelectedPipeType.ConnectorPlacements[GameData.UI.ConnectorSelection],
-						this, GameData.UI.RotationIndex * 45 * FixedDecimalLong8.DegreesToRadians),
-					0,
-					true);
-
-				Proxy.PhysicsObject = GameData.PhysicsWorld.AddPhysicsObject(proxyPhysicsObject, Proxy);
+				else
+				{
+					Proxy.PhysicsObject.World.ChangeShape(Proxy.PhysicsObject, shape);
+				}
 
 				if (Vacant)
 				{

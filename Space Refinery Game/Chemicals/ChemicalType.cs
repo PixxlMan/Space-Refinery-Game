@@ -50,9 +50,25 @@ namespace Space_Refinery_Game
 		/// </summary>
 		public DecimalNumber MolarMass; // M
 
+		/// <summary>
+		/// Energy in [J] required to vaporize 1 kg of this chemical.
+		/// </summary>
 		public DecimalNumber EnthalpyOfVaporization;
 
+		/// <summary>
+		/// Complicated way of saying boiling point.
+		/// </summary>
+		public DecimalNumber TemperatureOfVaporization;
+
+		/// <summary>
+		/// Energy in [J] required to melt 1 kg of this chemical.
+		/// </summary>
 		public DecimalNumber EnthalpyOfFusion;
+
+		/// <summary>
+		/// Complicated way of saying melting point.
+		/// </summary>
+		public DecimalNumber TemperatureOfFusion;
 
 		public ChemicalType()
 		{
@@ -135,6 +151,45 @@ namespace Space_Refinery_Game
 			return (mass / 1000) / chemicalType.MolarMass;
 		}
 
+		/// <summary>
+		/// [J] to [K]
+		/// </summary>
+		/// <param name="internalEnergy">[J]</param>
+		/// <returns>[K]</returns>
+		public static DecimalNumber InternalEnergyToTemperature(ResourceType resourceType, DecimalNumber internalEnergy, DecimalNumber mass)
+		{
+			// E = C * m * dT
+			// E = Internal Energy
+			// m = Mass
+			// C = Specific Heat Capacity
+			// dT = Delta Temperature
+
+			// solve for dT:
+			// dT = E / (C * m)
+
+			return internalEnergy / (resourceType.SpecificHeatCapacity * mass);
+		}
+
+		/// <summary>
+		/// [K] to [J]
+		/// </summary>
+		/// <param name="temperature">[K]</param>
+		/// <param name="mass">[kg]</param>
+		/// <returns>[J]</returns>
+		public static DecimalNumber TemperatureToInternalEnergy(ResourceType resourceType, DecimalNumber temperature, DecimalNumber mass)
+		{
+			// E = C * m * dT
+			// E = Internal Energy
+			// m = mass
+			// C = Specific Heat Capacity
+			// dT = Delta Temperature
+
+			// solve for E: well...
+			// E = C * m * dT
+
+			return resourceType.SpecificHeatCapacity * mass * temperature;
+		}
+
 		public void SerializeState(XmlWriter writer)
 		{
 			writer.WriteStartElement(nameof(ChemicalType));
@@ -143,7 +198,9 @@ namespace Space_Refinery_Game
 				writer.Serialize(ChemicalName, nameof(ChemicalName));
 				writer.Serialize(MolarMass, nameof(MolarMass));
 				writer.Serialize(EnthalpyOfVaporization, nameof(EnthalpyOfVaporization));
+				writer.Serialize(TemperatureOfVaporization, nameof(TemperatureOfVaporization));
 				writer.Serialize(EnthalpyOfFusion, nameof(EnthalpyOfFusion));
+				writer.Serialize(TemperatureOfFusion, nameof(TemperatureOfFusion));
 				writer.Serialize(CommonPhase, nameof(CommonPhase));
 				IEntitySerializable.SerializeWithoutEmbeddedType(writer, GasPhaseType, nameof(GasPhaseType));
 				IEntitySerializable.SerializeWithoutEmbeddedType(writer, LiquidPhaseType, nameof(LiquidPhaseType));
@@ -160,7 +217,9 @@ namespace Space_Refinery_Game
 				ChemicalName = reader.ReadString(nameof(ChemicalName));
 				MolarMass = reader.DeserializeDecimalNumber(nameof(MolarMass));
 				EnthalpyOfVaporization = reader.DeserializeDecimalNumber(nameof(EnthalpyOfVaporization));
+				TemperatureOfVaporization = reader.DeserializeDecimalNumber(nameof(TemperatureOfVaporization));
 				EnthalpyOfFusion = reader.DeserializeDecimalNumber(nameof(EnthalpyOfFusion));
+				TemperatureOfFusion = reader.DeserializeDecimalNumber(nameof(TemperatureOfFusion));
 				CommonPhase = reader.DeserializeEnum<ChemicalPhase>(nameof(CommonPhase));
 				GasPhaseType = IEntitySerializable.DeserializeWithoutEmbeddedType<GasType>(reader, serializationData, referenceHandler, nameof(GasPhaseType));
 				LiquidPhaseType = IEntitySerializable.DeserializeWithoutEmbeddedType<LiquidType>(reader, serializationData, referenceHandler, nameof(LiquidPhaseType));

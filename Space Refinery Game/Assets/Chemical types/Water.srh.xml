@@ -9,27 +9,29 @@
 				<ChemicalName>Water</ChemicalName>
 				<MolarMass>18.016</MolarMass>
 				<EnthalpyOfVaporization>2257</EnthalpyOfVaporization>
+				<TemperatureOfVaporization>100</TemperatureOfVaporization>
 				<EnthalpyOfFusion>334</EnthalpyOfFusion>
+				<TemperatureOfFusion>0</TemperatureOfFusion>
 				<CommonPhase>Liquid</CommonPhase>
 				<GasPhaseType>
 					<ResourceType>
 						<ResourceName>Water Vapor</ResourceName>
 						<Density>200</Density>
-						<SpecificHeatCapacity>3.77</SpecificHeatCapacity>
+						<SpecificHeatCapacity>3770</SpecificHeatCapacity>
 					</ResourceType>
 				</GasPhaseType>
 				<LiquidPhaseType>
 					<ResourceType>
 						<ResourceName>Water</ResourceName>
 						<Density>1000</Density>
-						<SpecificHeatCapacity>4.16</SpecificHeatCapacity>
+						<SpecificHeatCapacity>4160</SpecificHeatCapacity>
 					</ResourceType>
 				</LiquidPhaseType>
 				<SolidPhaseType>
 					<ResourceType>
 						<ResourceName>Ice</ResourceName>
 						<Density>917</Density>
-						<SpecificHeatCapacity>3.11</SpecificHeatCapacity>
+						<SpecificHeatCapacity>3110</SpecificHeatCapacity>
 					</ResourceType>
 				</SolidPhaseType>
 			</ChemicalType>				

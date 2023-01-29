@@ -18,7 +18,7 @@ public abstract class ResourceType : IUIInspectable, IEntitySerializable
 	public DecimalNumber Density;
 
 	/// <summary>
-	/// [kJ/K]
+	/// [J/K]
 	/// </summary>
 	public DecimalNumber SpecificHeatCapacity;
 

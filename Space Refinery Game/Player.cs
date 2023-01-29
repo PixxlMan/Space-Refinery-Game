@@ -92,20 +92,45 @@ namespace Space_Refinery_Game
 			}
 			else if (lookedAtPhysicsObject is not null && lookedAtPhysicsObject.Entity is IConstruction construction)
 			{
-				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Insert resource with button") && construction is OrdinaryPipe pipe)
 				{
-					ChemicalType chemicalType = MainGame.DebugSettings.AccessSetting<ComboDebugSetting<ChemicalType>>("Chemical type to insert with button", new(ChemicalType.ChemicalTypes.ToArray(), ChemicalType.Water));
-
-					ChemicalPhase chemicalPhase = MainGame.DebugSettings.AccessSetting<EnumDebugSetting<ChemicalPhase>>("Chemical phase to insert with button", ChemicalPhase.Liquid);
-
-					ResourceUnitData resource = new(chemicalType.GetResourceTypeForPhase(chemicalPhase), ChemicalType.MassToMoles(chemicalType, 10));
-
-					if (InputTracker.GetKeyDown(Key.U) && pipe.ResourceContainer.Volume + resource.Volume < pipe.ResourceContainer.MaxVolume)
+					if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Insert resource with button") && construction is OrdinaryPipe pipe)
 					{
-						pipe.ResourceContainer.AddResource(resource);
+						ChemicalType chemicalType = MainGame.DebugSettings.AccessSetting<ComboDebugSetting<ChemicalType>>("Chemical type to insert with button", new(ChemicalType.ChemicalTypes.ToArray(), ChemicalType.Water));
+
+						ChemicalPhase chemicalPhase = MainGame.DebugSettings.AccessSetting<EnumDebugSetting<ChemicalPhase>>("Chemical phase to insert with button", ChemicalPhase.Liquid);
+
+						// todo: somehow keep track of temperature to use as well
+
+						ResourceUnitData resource = new(chemicalType.GetResourceTypeForPhase(chemicalPhase), ChemicalType.MassToMoles(chemicalType, 10), 0);
+
+						if (InputTracker.GetKeyDown(Key.U) && pipe.ResourceContainer.Volume + resource.Volume < pipe.ResourceContainer.MaxVolume)
+						{
+							pipe.ResourceContainer.AddResource(resource);
+						}
 					}
 				}
+				{
+					if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Modify heat with buttons") && construction is OrdinaryPipe pipe)
+					{
+						DecimalNumber energy = MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Internal energy to modify per unit", new(1_000_000, 0, 10 * DecimalNumber.Mega));
 
+						if (InputTracker.GetKeyDown(Key.H))
+						{
+							foreach (var unitData in pipe.ResourceContainer.EnumerateResources())
+							{
+								pipe.ResourceContainer.AddResource(new(unitData.ResourceType, 0, energy));
+							}
+						}
+
+						/*if (InputTracker.GetKeyDown(Key.J))
+						{
+							foreach (var unitData in pipe.ResourceContainer.EnumerateResources())
+							{
+								pipe.ResourceContainer.AddResource(new(unitData.ResourceType, 0, -energy));
+							}
+						}*/
+					}
+				}
 				if (InputTracker.GetMouseButton(MouseButton.Right))
 				{
 					gameData.GameWorld.Deconstruct(construction);

@@ -12,14 +12,25 @@ namespace Space_Refinery_Game
 {
 	public struct ResourceUnitData : IUIInspectable, IEquatable<ResourceUnit>
 	{
+		// Fields
+
 		public ResourceType ResourceType;
 
 		public ChemicalType ChemicalType => ResourceType.ChemicalType;
+
+		// Properties
 
 		/// <summary>
 		/// [mol]
 		/// </summary>
 		public DecimalNumber Moles;
+
+		/// <summary>
+		/// [J]
+		/// </summary>
+		public DecimalNumber InternalEnergy;
+
+		// Driven properties
 
 		/// <summary>
 		/// [kg]
@@ -31,27 +42,43 @@ namespace Space_Refinery_Game
 		/// </summary>
 		public DecimalNumber Volume => Mass / ResourceType.Density;
 
+		/// <summary>
+		/// [K]
+		/// </summary>
+		public DecimalNumber Temperature => ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass);
+
+		// Methods
+
 		public void BreakInto(int currentSubstanceAmountRatio, out IReadOnlyDictionary<ResourceType, ResourceUnitData> resourceUnitDatas, params (ResourceType resourceType, int substanceAmountRatio)[] resourceAndSMRs)
 		{
 			Dictionary<ResourceType, ResourceUnitData> resourceUnitDataDictionary = new();
 
 			foreach (var (resourceType, SMR) in resourceAndSMRs)
 			{
-				resourceUnitDataDictionary.Add(resourceType, new(resourceType, (Moles * SMR) / currentSubstanceAmountRatio));
+				resourceUnitDataDictionary.Add(
+					resourceType,
+						new(
+							resourceType,
+							(Moles * SMR) / currentSubstanceAmountRatio, // Distribute moles according to SMR and substance amount ratio (Sorry, I don't know what that actually means either - it was like this when I came! Promise.).
+							InternalEnergy / resourceAndSMRs.Length)); // Evenly distribute energy.
 			}
 
 			resourceUnitDatas = resourceUnitDataDictionary;
 		}
 
-		public ResourceUnitData(ResourceType resourceType, DecimalNumber moles)
+		public ResourceUnitData(ResourceType resourceType, DecimalNumber moles, DecimalNumber internalEnergy)
 		{
+			Debug.Assert(resourceType is not null, $"Argument {nameof(resourceType)} should never be null.");
+
+			Debug.Assert(moles >= 0, "The number of moles cannot be lower than zero.");
+
+			Debug.Assert(internalEnergy >= 0, "Internal energy cannot be lower than zero.");
+
 			ResourceType = resourceType;
 
 			Moles = moles;
 
-			Debug.Assert(resourceType is not null, $"Argument {nameof(resourceType)} should never be null.");
-
-			Debug.Assert(moles >= 0, "The number of moles cannot be less than zero.");
+			InternalEnergy = internalEnergy;
 		}
 
 		public void DoUIInspectorReadonly()
@@ -85,9 +112,11 @@ namespace Space_Refinery_Game
 				ImGui.SliderFloat("Mass (kg)", ref mass, 0, 100);
 				newResourceUnit.Moles = ChemicalType.MassToMoles(selected, DecimalNumber.FromFloat(mass));
 
-				ImGui.Text($"Moles: {newResourceUnit.Moles} mol");
+				ImGui.Text($"Moles: {newResourceUnit.Moles.FormatSubstanceAmount()}");
 
-				ImGui.Text($"Volume: {newResourceUnit.Volume} m³");
+				ImGui.Text($"Volume: {newResourceUnit.Volume.FormatVolume()}");
+
+				// Temperature here...
 			}
 			ImGui.Unindent();
 		}
@@ -102,6 +131,7 @@ namespace Space_Refinery_Game
 			writer.WriteElementString(nameof(ChemicalType.ChemicalName), ChemicalType.ChemicalName);
 			writer.Serialize(ResourceType.ChemicalPhase.ToString(), nameof(ChemicalPhase));
 			writer.Serialize(Moles, nameof(Moles));
+			writer.Serialize(InternalEnergy, nameof(InternalEnergy));
 		}
 
 		public static ResourceUnitData Deserialize(XmlReader reader)
@@ -109,12 +139,14 @@ namespace Space_Refinery_Game
 			ChemicalType chemicalType;
 			ResourceType resourceType;
 			DecimalNumber moles;
+			DecimalNumber internalEnergy;
 
 			chemicalType = ChemicalType.GetChemicalType(reader.ReadString(nameof(Space_Refinery_Game.ChemicalType.ChemicalName)));
 			resourceType = chemicalType.GetResourceTypeForPhase(reader.DeserializeEnum<ChemicalPhase>(nameof(ChemicalPhase)));
 			moles = reader.DeserializeDecimalNumber(nameof(Moles));
+			internalEnergy = reader.DeserializeDecimalNumber(nameof(InternalEnergy));
 
-			return new(resourceType, moles);
+			return new(resourceType, moles, internalEnergy);
 		}
 
 		public override bool Equals([NotNullWhen(true)] object obj)
@@ -126,7 +158,8 @@ namespace Space_Refinery_Game
 		public bool Equals(ResourceUnit other)
 		{
 			return other.ResourceType == ResourceType
-				&& other.Moles == Moles;
+				&& other.Moles == Moles
+				&& other.InternalEnergy == InternalEnergy;
 		}
 	}
 }

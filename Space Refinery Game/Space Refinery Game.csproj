@@ -45,6 +45,7 @@
     <None Remove="Assets\Models\Pipe\Special\PipeSpecialValveInternalBlocker.obj" />
     <None Remove="Assets\Reaction Types\Electrolysis.srh.xml" />
     <None Remove="Assets\Reaction Types\HydrogenOxygenCombustion.srh.xml" />
+    <None Remove="Assets\Reaction Types\PhaseChange.srh.xml" />
     <None Remove="Pipe_1mx1m_Straight.obj" />
   </ItemGroup>
 
@@ -122,6 +123,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Models\Pipe\Special\PipeSpecialValveInternalBlocker.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Reaction Types\PhaseChange.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Reaction Types\HydrogenOxygenCombustion.srh.xml">

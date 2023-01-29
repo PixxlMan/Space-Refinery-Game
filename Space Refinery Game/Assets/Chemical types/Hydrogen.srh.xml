@@ -9,27 +9,29 @@
 				<ChemicalName>Hydrogen</ChemicalName>
 				<MolarMass>1.008</MolarMass>
 				<EnthalpyOfVaporization>446.1</EnthalpyOfVaporization>
+				<TemperatureOfVaporization>20.271</TemperatureOfVaporization>
 				<EnthalpyOfFusion>58</EnthalpyOfFusion>
+				<TemperatureOfFusion>13.99</TemperatureOfFusion>
 				<CommonPhase>Gas</CommonPhase>
 				<GasPhaseType>
 					<ResourceType>
 						<ResourceName>Hydrogen Gas</ResourceName>
 						<Density>0.08988</Density>
-						<SpecificHeatCapacity>14.38</SpecificHeatCapacity>
+						<SpecificHeatCapacity>14380</SpecificHeatCapacity>
 					</ResourceType>
 				</GasPhaseType>
 				<LiquidPhaseType>
 					<ResourceType>
 						<ResourceName>Liquid Hydrogen</ResourceName>
 						<Density>700</Density>
-						<SpecificHeatCapacity>13.12</SpecificHeatCapacity>
+						<SpecificHeatCapacity>13120</SpecificHeatCapacity>
 					</ResourceType>
 				</LiquidPhaseType>
 				<SolidPhaseType>
 					<ResourceType>
 						<ResourceName>Solid Hydrogen</ResourceName>
 						<Density>860</Density>
-						<SpecificHeatCapacity>13.12</SpecificHeatCapacity>
+						<SpecificHeatCapacity>13120</SpecificHeatCapacity>
 					</ResourceType>
 				</SolidPhaseType>
 			</ChemicalType>				

@@ -20,6 +20,7 @@ namespace Space_Refinery_Game
 		public ChemicalType ChemicalType => ResourceType.ChemicalType;
 
 		private DecimalNumber moles;
+
 		/// <summary>
 		/// [mol]
 		/// </summary>
@@ -44,6 +45,34 @@ namespace Space_Refinery_Game
 			}
 		}
 
+		private DecimalNumber internalEnergy;
+
+		/// <summary>
+		/// Internal energy in [J].
+		/// </summary>
+		public DecimalNumber InternalEnergy
+		{
+			get
+			{
+				lock (syncRoot)
+					return internalEnergy;
+			}
+
+			private set
+			{
+				Debug.Assert(value >= 0, "Internal energy cannot be less than zero.");
+
+				ResourceUnitChanged?.Invoke(this);
+
+				lock (syncRoot)
+				{
+					internalEnergy = value;
+				}
+			}
+		}
+
+		public DecimalNumber Temperature => ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass);
+
 		private object syncRoot = new();
 
 		public DecimalNumber Mass => ChemicalType.MolesToMass(ChemicalType, Moles); // [kg]
@@ -52,13 +81,14 @@ namespace Space_Refinery_Game
 
 		public event Action<ResourceUnit> ResourceUnitChanged;
 
-		public ResourceUnitData ResourceUnitData => new(ResourceType, Moles);
+		public ResourceUnitData ResourceUnitData => new(ResourceType, Moles, InternalEnergy);
 
 		public ResourceUnit(ResourceType resourceType, ResourceContainer resourceContainer, ResourceUnitData resourceUnitData)
 		{
 			ResourceType = resourceType;
 			ResourceContainer = resourceContainer;
 			moles = resourceUnitData.Moles;
+			internalEnergy = resourceUnitData.InternalEnergy;
 		}
 
 		public override bool Equals(object? obj)
@@ -69,7 +99,8 @@ namespace Space_Refinery_Game
 		public bool Equals(ResourceUnit other)
 		{
 			return ReferenceEquals(ResourceType, other.ResourceType) &&
-				   Moles.Equals(other.Moles);
+				   Moles.Equals(other.Moles) &&
+				   InternalEnergy.Equals(other.internalEnergy);
 		}
 
 		public void Add(ResourceUnitData resourceUnitData)
@@ -80,6 +111,7 @@ namespace Space_Refinery_Game
 			}
 
 			Moles += resourceUnitData.Moles;
+			InternalEnergy += resourceUnitData.InternalEnergy;
 		}
 
 		public void Remove(ResourceUnitData resourceUnitData)
@@ -90,6 +122,7 @@ namespace Space_Refinery_Game
 			}
 
 			Moles -= resourceUnitData.Moles;
+			InternalEnergy -= resourceUnitData.InternalEnergy;
 		}
 
 		public override int GetHashCode()
@@ -106,6 +139,8 @@ namespace Space_Refinery_Game
 				ImGui.Text($"{nameof(Moles)}: {Moles.FormatSubstanceAmount()}");
 				ImGui.Text($"{nameof(Mass)}: {Mass.FormatMass()}");
 				ImGui.Text($"{nameof(Volume)}: {Volume.FormatVolume()}");
+				ImGui.Text($"{nameof(InternalEnergy)}: {InternalEnergy.FormatEnergy()}");
+				ImGui.Text($"{nameof(Temperature)}: {Temperature.FormatTemperature()}");
 			}
 			UIFunctions.EndSub();
 		}

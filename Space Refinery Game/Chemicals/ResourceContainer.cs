@@ -122,19 +122,28 @@ namespace Space_Refinery_Game
 		{
 			if (moles == DecimalNumber.Zero)
 			{
-				return new ResourceUnitData(resourceType, DecimalNumber.Zero);
+				return new ResourceUnitData(resourceType, DecimalNumber.Zero, DecimalNumber.Zero);
 			}
 
-			resources[resourceType].Remove(new(resourceType, moles));
+			ResourceUnit unit = resources[resourceType];
 
-			return new(resourceType, moles);
+			DecimalNumber partTaken = moles / unit.Moles;
+			DecimalNumber internalEnergyToTake = unit.InternalEnergy * partTaken;
+
+			ResourceUnitData unitDataToTake = new(resourceType, moles, internalEnergyToTake);
+
+			unit.Remove(unitDataToTake);
+
+			return unitDataToTake;
 		}
 
 		public ResourceUnitData TakeAllResource(ResourceType resourceType)
 		{
-			ResourceUnitData takenResource = new(resourceType, resources[resourceType].Moles);
+			ResourceUnit unit = resources[resourceType];
 
-			resources[resourceType].Remove(new(resourceType, resources[resourceType].Moles));
+			ResourceUnitData takenResource = new(resourceType, unit.Moles, unit.InternalEnergy);
+
+			unit.Remove(takenResource);
 
 			return takenResource;
 		}
@@ -241,6 +250,8 @@ namespace Space_Refinery_Game
 
 				ResourceCountChanged();
 
+				RecalculatePossibleReactionTypes();
+
 				return resourceUnit;
 			},
 			(_, ru) =>
@@ -345,26 +356,28 @@ namespace Space_Refinery_Game
 								* desiredPartOfVolume
 									* resourceUnit.ResourceType.Density); // portion of current resource to transfer
 
-				targetContainer.AddResource(new(resourceUnit.ResourceType, moles));
+				ResourceUnitData takenUnitData = new(resourceUnit.ResourceType, moles, resourceUnit.InternalEnergy * desiredPartOfVolume);
 
-				resources[resourceUnit.ResourceType].Remove(new(resourceUnit.ResourceType, moles));
+				targetContainer.AddResource(takenUnitData);
+
+				resourceUnit.Remove(takenUnitData);
 			}
 
 			Debug.Assert(DecimalNumber.Difference(intialVolume - Volume, volume) < acceptableVolumeTransferError, "Volume error too large!");
 		}
 
-		public void TransferResourceByVolume(ResourceContainer targetContainer, ResourceType resourceType, DecimalNumber volume)
+		public void TransferResourceByVolume(ResourceContainer targetContainer, ResourceType resourceType, DecimalNumber volumeToTransfer)
 		{
-			if (Volume - volume < 0)
+			if (Volume - volumeToTransfer < 0)
 			{
 				throw new InvalidOperationException("Cannot transfer more resource volume than there is volume available.");
 			}
-			else if (volume < 0)
+			else if (volumeToTransfer < 0)
 			{
-				throw new ArgumentException("The volume to transfer must be larger than or equal to zero.", nameof(volume));
+				throw new ArgumentException("The volume to transfer must be larger than or equal to zero.", nameof(volumeToTransfer));
 			}
 
-			if (volume == DecimalNumber.Zero)
+			if (volumeToTransfer == DecimalNumber.Zero)
 			{
 				return;
 			}
@@ -373,15 +386,21 @@ namespace Space_Refinery_Game
 			DecimalNumber intialVolume = Volume;
 #endif
 
-			var resourceUnit = resources[resourceType];
+			var unit = resources[resourceType];
 
-			var moles = ChemicalType.MassToMoles(resourceUnit.ChemicalType, volume * resourceUnit.ResourceType.Density); // moles of resource to transfer
+			var portion = unit.Volume / volumeToTransfer;
 
-			targetContainer.AddResource(new(resourceUnit.ResourceType, moles));
+			var moles = ChemicalType.MassToMoles(unit.ChemicalType, volumeToTransfer * resourceType.Density);
 
-			resources[resourceType].Remove(new(resourceType, moles));
+			ResourceUnitData takenUnitData = new(resourceType, moles, unit.InternalEnergy * portion);
 
-			Debug.Assert(DecimalNumber.Difference(intialVolume - Volume, volume) < acceptableVolumeTransferError, "Volume error too large!");
+			targetContainer.AddResource(takenUnitData);
+
+			unit.Remove(takenUnitData);
+
+#if DEBUG
+			Debug.Assert(DecimalNumber.Difference(intialVolume - Volume, volumeToTransfer) < acceptableVolumeTransferError, "Volume error too large!");
+#endif
 		}
 
 		public void TransferAllResource(ResourceContainer targetContainer, ResourceType resourceType)
@@ -404,7 +423,7 @@ namespace Space_Refinery_Game
 				return resourceUnit.ResourceUnitData;
 			}
 
-			return new ResourceUnitData(resourceType, 0);
+			return new ResourceUnitData(resourceType, 0, 0);
 		}
 
 		public void Serialize(XmlWriter writer)
@@ -468,6 +487,17 @@ namespace Space_Refinery_Game
 		public IUIInspectable DoUIInspectorEditable()
 		{
 			throw new NotImplementedException();
+		}
+
+		public IEnumerable<ResourceUnitData> EnumerateResources()
+		{
+			lock (SyncRoot)
+			{
+				foreach (var resourceUnit in resources.Values)
+				{
+					yield return resourceUnit.ResourceUnitData;
+				}
+			}
 		}
 	}
 }

@@ -67,6 +67,26 @@ public static class FormatUnit
 	{
 		return $"{specificHeatCapacity.ToString(decimals: 2)} J/kg";
 	}
+	
+	/// <summary>
+	/// Formats temperature in kelvin according to player preferences.
+	/// </summary>
+	/// <param name="temperature">[K]</param>
+	/// <returns>Formatted temperature</returns>
+	public static string FormatTemperature(this DecimalNumber temperature)
+	{
+		return $"{temperature.ToString(decimals: 2)} K";
+	}
+
+	/// <summary>
+	/// Formats energy in joules according to player preferences.
+	/// </summary>
+	/// <param name="temperature">[J]</param>
+	/// <returns>Formatted energy</returns>
+	public static string FormatEnergy(this DecimalNumber energy)
+	{
+		return $"{energy.ToString(decimals: 2)} J";
+	}
 
 	/// <summary>
 	/// Formats a value between zero and one as a percentage according to player preferences.

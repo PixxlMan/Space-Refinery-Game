@@ -37,12 +37,19 @@ namespace Space_Refinery_Game
 				}
 			}
 
+			foreach (var universalReaction in UniversalReactions) // Make sure to include universal reactions.
+			{
+				refinedPossibleReactions.Add(universalReaction);
+			}
+
 			return refinedPossibleReactions;
 		}
 
 		public static List<ReactionType> ReactionTypes = new();
 
 		public static ConcurrentDictionary<ChemicalType, HashSet<ReactionType>> PossibleReactionsPerChemicalType = new();
+
+		public static ConcurrentBag<ReactionType> UniversalReactions = new();
 
 		public string ReactionName { get; protected set; }
 
@@ -90,16 +97,23 @@ namespace Space_Refinery_Game
 
 					if (CanOccurSpontaneously)
 					{
-						foreach (ChemicalType chemicalType in NecessaryChemicals)
+						if (NecessaryChemicals.Count != 0)
 						{
-							if (PossibleReactionsPerChemicalType.ContainsKey(chemicalType))
+							foreach (ChemicalType chemicalType in NecessaryChemicals)
 							{
-								PossibleReactionsPerChemicalType[chemicalType].Add(this);
+								if (PossibleReactionsPerChemicalType.ContainsKey(chemicalType))
+								{
+									PossibleReactionsPerChemicalType[chemicalType].Add(this);
+								}
+								else
+								{
+									PossibleReactionsPerChemicalType.TryAdd(chemicalType, new() { this });
+								}
 							}
-							else
-							{
-								PossibleReactionsPerChemicalType.TryAdd(chemicalType, new() { this });
-							}
+						}
+						else // No necessary chemicals means it's a universal reaction.
+						{
+							UniversalReactions.Add(this);
 						}
 					}
 				};

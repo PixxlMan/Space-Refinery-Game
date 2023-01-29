@@ -22,6 +22,11 @@ namespace Space_Refinery_Game
 
 		public ResourceContainer ResourceContainer;
 
+		public override void Tick()
+		{
+			ResourceContainer.Tick(Time.TickInterval);
+		}
+
 		public override void TransferResourceFromConnector(ResourceContainer source, DecimalNumber volume, PipeConnector _)
 		{
 			lock (this)

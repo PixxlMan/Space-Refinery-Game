@@ -167,6 +167,7 @@ namespace Space_Refinery_Game
 			// solve for dT:
 			// dT = E / (C * m)
 
+			return (DecimalNumber)(internalEnergy.ToDecimal() / (resourceType.SpecificHeatCapacity.ToDecimal() * mass.ToDecimal()));
 			return internalEnergy / (resourceType.SpecificHeatCapacity * mass);
 		}
 

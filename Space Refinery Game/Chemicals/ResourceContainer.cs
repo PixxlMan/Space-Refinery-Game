@@ -250,8 +250,6 @@ namespace Space_Refinery_Game
 
 				ResourceCountChanged();
 
-				RecalculatePossibleReactionTypes();
-
 				return resourceUnit;
 			},
 			(_, ru) =>

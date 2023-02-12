@@ -14,6 +14,9 @@ namespace Space_Refinery_Game
 	public sealed class ResourceContainer : IUIInspectable
 	{
 		private DecimalNumber volume;
+		/// <summary>
+		/// Volume in cubic meters [m³]
+		/// </summary>
 		public DecimalNumber Volume
 		{
 			get
@@ -45,6 +48,9 @@ namespace Space_Refinery_Game
 		}
 
 		private DecimalNumber mass;
+		/// <summary>
+		/// Mass in kilograms [kg]
+		/// </summary>
 		public DecimalNumber Mass
 		{
 			get

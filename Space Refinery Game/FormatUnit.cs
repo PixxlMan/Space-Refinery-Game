@@ -29,6 +29,16 @@ public static class FormatUnit
 	}
 
 	/// <summary>
+	/// Formats a pressure in pascal according to player preferences.
+	/// </summary>
+	/// <param name="pessure">[kg/m³]</param>
+	/// <returns>Formatted pressure</returns>
+	public static string FormatPressure(this DecimalNumber pressure)
+	{
+		return $"{pressure.ToString(decimals: 2)} m³";
+	}
+
+	/// <summary>
 	/// Formats a distance in meters according to player preferences.
 	/// </summary>
 	/// <param name="distance">[m]</param>

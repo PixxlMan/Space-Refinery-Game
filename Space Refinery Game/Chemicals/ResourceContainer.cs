@@ -472,10 +472,12 @@ namespace Space_Refinery_Game
 					ImGui.Text($"{nameof(MaxVolume)}: {MaxVolume.FormatVolume()}");
 					ImGui.Text($"{nameof(Fullness)}: {Fullness.FormatPercentage()}");
 					ImGui.Text($"Different types of resources: {resources.Count}");
+					ImGui.Separator();
 
 					foreach (var resourceUnit in resources.Values)
 					{
 						resourceUnit.DoUIInspectorReadonly();
+						ImGui.Separator();
 					}
 				}
 			}

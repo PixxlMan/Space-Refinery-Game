@@ -35,6 +35,8 @@ namespace Space_Refinery_Game
 
 		private DecimalNumber RecalculateVolume()
 		{
+			lock (SyncRoot)
+			{
 			recalculateVolume = false;
 			
 			DecimalNumber volume = 0;
@@ -45,6 +47,7 @@ namespace Space_Refinery_Game
 			}
 
 			return volume;
+		}
 		}
 
 		private DecimalNumber mass;
@@ -69,6 +72,10 @@ namespace Space_Refinery_Game
 
 		private DecimalNumber RecalculateMass()
 		{
+			lock (SyncRoot)
+			{
+				recalculateMass = false;
+
 			DecimalNumber mass = 0;
 
 			foreach (var resourceUnit in resources.Values)
@@ -77,6 +84,7 @@ namespace Space_Refinery_Game
 			}
 
 			return mass;
+		}
 		}
 
 		private DecimalNumber maxVolume;

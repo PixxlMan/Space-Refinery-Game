@@ -9,9 +9,9 @@
 				<ChemicalName>Water</ChemicalName>
 				<MolarMass>18.016</MolarMass>
 				<EnthalpyOfVaporization>2257</EnthalpyOfVaporization>
-				<TemperatureOfVaporization>100</TemperatureOfVaporization>
+				<TemperatureOfVaporization>373.15</TemperatureOfVaporization>
 				<EnthalpyOfFusion>334</EnthalpyOfFusion>
-				<TemperatureOfFusion>0</TemperatureOfFusion>
+				<TemperatureOfFusion>273.15</TemperatureOfFusion>
 				<CommonPhase>Liquid</CommonPhase>
 				<GasPhaseType>
 					<ResourceType>

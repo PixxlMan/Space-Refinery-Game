@@ -92,9 +92,136 @@ namespace Space_Refinery_Game
 
 		public DecimalNumber FreeVolume => DecimalNumber.Max(MaxVolume - Volume, 0);
 
+		private DecimalNumber pressure;
+		/// <summary>
+		/// Pressure in pascal [kg/m³]
+		/// </summary>
+		public DecimalNumber Pressure
+		{
+			get
+			{
+				lock (SyncRoot)
+				{
+					if (recalculatePressure)
+					{
+						pressure = RecalculatePressure();
+					}
+
+					return pressure;
+				}
+			}
+		}
+
+		private DecimalNumber averageTemperature;
+		/// <summary>
+		/// The average temperature of all resources in this container in kelvin [K]
+		/// </summary>
+		public DecimalNumber AverageTemperature
+		{
+			get
+			{
+				lock (SyncRoot)
+				{
+					if (recalculateAverageTemperature)
+					{
+						averageTemperature = RecalculateAverageTemperature();
+					}
+
+					return averageTemperature;
+				}
+			}
+		}
+
+		private DecimalNumber gasSubstanceAmount;
+		/// <summary>
+		/// The substance amount of all gas resources in this container in mols [mol]
+		/// </summary>
+		private DecimalNumber GasSubstanceAmount
+		{
+			get
+			{
+				lock (SyncRoot)
+				{
+					if (recalculateAverageTemperature)
+					{
+						gasSubstanceAmount = RecalculateGasSubstanceAmount();
+					}
+
+					return gasSubstanceAmount;
+				}
+			}
+		}
+
+		private DecimalNumber RecalculateGasSubstanceAmount()
+		{
+			lock (SyncRoot)
+			{
+				recalculateGasSubstanceAmount = false;
+
+				DecimalNumber totalSubstanceAmount = 0;
+
+				foreach (var resourceUnit in resources.Values)
+				{
+					if (resourceUnit.ResourceType.ChemicalPhase == ChemicalPhase.Gas)
+					{
+						totalSubstanceAmount += resourceUnit.Moles;
+					}
+				}
+
+				return totalSubstanceAmount / resources.Count;
+			}
+		}
+
+		public static readonly /*DecimalNumber*/ decimal BoltzmansConstant = 1.380649m * (decimal)Math.Pow(10, -23);
+
+		private DecimalNumber RecalculatePressure()
+		{
+			lock (SyncRoot)
+			{
+				recalculatePressure = false;
+
+				// P * V = n * k * T
+				// P = pressure [kg/m³]
+				// V = volume [m³]
+				// n = substance amount [mol]
+				// k = boltzman's constant (1.380649 * 10^-23) [J/K]
+				// T = temperature [K]
+				//
+				// Solve for P:
+				// P = (n * k * T) / V
+
+				var pressure = (GasSubstanceAmount.ToDecimal() * BoltzmansConstant * AverageTemperature.ToDecimal()) / Volume.ToDecimal();
+
+				return (DecimalNumber)pressure;
+			}
+		}
+
+		private DecimalNumber RecalculateAverageTemperature()
+		{
+			lock (SyncRoot)
+			{
+				recalculateAverageTemperature = false;
+
+				DecimalNumber totalTemperature = 0;
+
+				foreach (var resourceUnit in resources.Values)
+				{
+					totalTemperature += resourceUnit.Temperature;
+				}
+
+				return totalTemperature / resources.Count;
+			}
+		}
+
 		bool recalculateVolume = false;
 
 		bool recalculateMass = false;
+
+		bool recalculatePressure = false;
+
+		bool recalculateAverageTemperature = false;
+
+		bool recalculateGasSubstanceAmount = false;
 
 		public object SyncRoot = new();
 
@@ -337,6 +464,9 @@ namespace Space_Refinery_Game
 			{
 				recalculateVolume = true;
 				recalculateMass = true;
+				recalculatePressure = true;
+				recalculateAverageTemperature = true;
+				recalculateGasSubstanceAmount = true;
 			}
 		}
 
@@ -485,6 +615,8 @@ namespace Space_Refinery_Game
 					ImGui.Text($"{nameof(Volume)}: {Volume.FormatVolume()}");
 					ImGui.Text($"{nameof(MaxVolume)}: {MaxVolume.FormatVolume()}");
 					ImGui.Text($"{nameof(Fullness)}: {Fullness.FormatPercentage()}");
+					ImGui.Text($"{nameof(AverageTemperature)}: {AverageTemperature.FormatTemperature()}");
+					ImGui.Text($"{nameof(Pressure)}: {Pressure.FormatPressure()}");
 					ImGui.Text($"Different types of resources: {resources.Count}");
 					ImGui.Separator();
 

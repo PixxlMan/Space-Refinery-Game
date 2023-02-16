@@ -116,11 +116,12 @@ namespace Space_Refinery_Game
 		{ // OPTIMIZE: remove old shapes and don't always add the new ones if identical ones are already used (pass TypedIndex instead of TShape to the AddPhysicsObject method to accomodate more easily sharing the same shape between pipes of the same type)
 			lock (SyncRoot)
 			{
+				// Something here causes bepu physics to get unstable.
 				var oldShape = simulation.Bodies[physicsObject.BodyHandle].Collidable.Shape;
 				simulation.Bodies[physicsObject.BodyHandle].SetShape(simulation.Shapes.Add(shape));
 				//simulation.Shapes.RecursivelyRemoveAndDispose(oldShape, bufferPool);
 				//simulation.Shapes.RemoveAndDispose(oldShape, bufferPool);
-				simulation.Shapes.Remove(oldShape);
+				//simulation.Shapes.Remove(oldShape); // Least broken option
 			}
 		}
 

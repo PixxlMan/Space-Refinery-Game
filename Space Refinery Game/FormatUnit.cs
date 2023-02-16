@@ -35,7 +35,7 @@ public static class FormatUnit
 	/// <returns>Formatted pressure</returns>
 	public static string FormatPressure(this DecimalNumber pressure)
 	{
-		return $"{pressure.ToString(decimals: 2)} m³";
+		return $"{pressure.ToString(decimals: 2)} kg/m³";
 	}
 
 	/// <summary>

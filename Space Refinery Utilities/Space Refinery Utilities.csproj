@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <Reference Include="FixedPrecision">
-      <HintPath>..\..\FixedPrecision\FixedPrecision\bin\Debug\net6.0\FixedPrecision.dll</HintPath>
+      <HintPath>..\..\FixedPrecision\FixedPrecision\bin\Debug\net7.0\FixedPrecision.dll</HintPath>
     </Reference>
   </ItemGroup>
 

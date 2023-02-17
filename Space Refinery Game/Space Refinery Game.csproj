@@ -5,7 +5,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>Space_Refinery_Game</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
-	<LangVersion>10</LangVersion>
+	<LangVersion>Latest</LangVersion>
 	  <!--
 	  <Nullable>enable</Nullable>
 	  -->
@@ -154,8 +154,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="FixedPrecision">
-      <HintPath>..\..\FixedPrecision\FixedPrecision\bin\Debug\net6.0\FixedPrecision.dll</HintPath>
+   <Reference Include="FixedPrecision">
+      <HintPath>..\..\FixedPrecision\FixedPrecision\bin\Debug\net7.0\FixedPrecision.dll</HintPath>
     </Reference>
     <Reference Include="FXRenderer">
       <HintPath>..\..\FXPRenderer\FXRenderer\bin\Debug\net7.0\FXRenderer.dll</HintPath>

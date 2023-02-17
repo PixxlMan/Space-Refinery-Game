@@ -7,7 +7,7 @@
 			<ChemicalType>
 				<GUID>6b3a9e4d-531d-4976-bacb-ae680dbc74a5</GUID>
 				<ChemicalName>Water</ChemicalName>
-				<MolarMass>18.016</MolarMass>
+				<MolarMass>18.0153<!--[g/mol]--></MolarMass>
 				<EnthalpyOfVaporization>2257</EnthalpyOfVaporization>
 				<TemperatureOfVaporization>373.15</TemperatureOfVaporization>
 				<EnthalpyOfFusion>334</EnthalpyOfFusion>
@@ -16,14 +16,14 @@
 				<GasPhaseType>
 					<ResourceType>
 						<ResourceName>Water Vapor</ResourceName>
-						<Density>200</Density>
+						<Density>0.013</Density>
 						<SpecificHeatCapacity>3770</SpecificHeatCapacity>
 					</ResourceType>
 				</GasPhaseType>
 				<LiquidPhaseType>
 					<ResourceType>
 						<ResourceName>Water</ResourceName>
-						<Density>1000</Density>
+						<Density>997.77</Density>
 						<SpecificHeatCapacity>4160</SpecificHeatCapacity>
 					</ResourceType>
 				</LiquidPhaseType>

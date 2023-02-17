@@ -37,17 +37,17 @@ namespace Space_Refinery_Game
 		{
 			lock (SyncRoot)
 			{
-			recalculateVolume = false;
+				recalculateVolume = false;
 			
-			DecimalNumber volume = 0;
+				DecimalNumber volume = 0;
 
-			foreach (var resourceUnit in resources.Values)
-			{
-				volume += resourceUnit.Volume;
+				foreach (var resourceUnit in resources.Values)
+				{
+					volume += resourceUnit.Volume;
+				}
+
+				return volume;
 			}
-
-			return volume;
-		}
 		}
 
 		private DecimalNumber mass;
@@ -76,15 +76,15 @@ namespace Space_Refinery_Game
 			{
 				recalculateMass = false;
 
-			DecimalNumber mass = 0;
+				DecimalNumber mass = 0;
 
-			foreach (var resourceUnit in resources.Values)
-			{
-				mass += resourceUnit.Mass;
+				foreach (var resourceUnit in resources.Values)
+				{
+					mass += resourceUnit.Mass;
+				}
+
+				return mass;
 			}
-
-			return mass;
-		}
 		}
 
 		private DecimalNumber maxVolume;
@@ -142,7 +142,7 @@ namespace Space_Refinery_Game
 			{
 				lock (SyncRoot)
 				{
-					if (recalculateAverageTemperature)
+					if (recalculateGasSubstanceAmount)
 					{
 						gasSubstanceAmount = RecalculateGasSubstanceAmount();
 					}
@@ -172,7 +172,7 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		public static readonly /*DecimalNumber*/ decimal BoltzmansConstant = 1.380649m * (decimal)Math.Pow(10, -23);
+		public static readonly DecimalNumber GasConstant = (DecimalNumber)8.314;
 
 		private DecimalNumber RecalculatePressure()
 		{
@@ -184,15 +184,15 @@ namespace Space_Refinery_Game
 				// P = pressure [kg/m³]
 				// V = volume [m³]
 				// n = substance amount [mol]
-				// k = boltzman's constant (1.380649 * 10^-23) [J/K]
+				// k = gas constant (8.314 J K-1) [J/K⁻¹]
 				// T = temperature [K]
 				//
 				// Solve for P:
 				// P = (n * k * T) / V
 
-				var pressure = (GasSubstanceAmount.ToDecimal() * BoltzmansConstant * AverageTemperature.ToDecimal()) / Volume.ToDecimal();
+				var pressure = (GasSubstanceAmount * GasConstant * AverageTemperature) / (MaxVolume/* - VolumeOfUncompressables*/);
 
-				return (DecimalNumber)pressure;
+				return pressure;
 			}
 		}
 

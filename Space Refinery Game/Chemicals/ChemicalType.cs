@@ -41,7 +41,7 @@ namespace Space_Refinery_Game
 		public SolidType SolidPhaseType;
 
 		/// <summary>
-		/// Phase at room temperature. For instance, oxygen or hydrogen will be in gas form, water will be in liquid form, etc.
+		/// Phase at room temperature (20 °C). For instance, oxygen or hydrogen will be in gas form, water will be in liquid form, etc.
 		/// </summary>
 		public ChemicalPhase CommonPhase;
 
@@ -138,6 +138,8 @@ namespace Space_Refinery_Game
 		/// <returns>[kg]</returns>
 		public static DecimalNumber MolesToMass(ChemicalType chemicalType, DecimalNumber moles)
 		{
+			// (mol * [g/mol]) * 1000 = kg
+
 			return (moles * chemicalType.MolarMass) * 1000;
 		}
 
@@ -148,6 +150,8 @@ namespace Space_Refinery_Game
 		/// <returns>[mol]</returns>
 		public static DecimalNumber MassToMoles(ChemicalType chemicalType, DecimalNumber mass)
 		{
+			// (kg / 1000) * [g/mol] = mol
+
 			return (mass / 1000) / chemicalType.MolarMass;
 		}
 

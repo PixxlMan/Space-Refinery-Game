@@ -173,7 +173,14 @@ namespace Space_Refinery_Game
 			lock (syncRoot)
 			{
 				var snapshot = InputTracker.CreateInputTrackerCloneSnapshot();
-				imGuiRenderer.Update(1, snapshot);
+				try
+				{
+					imGuiRenderer.Update(1, snapshot);
+				}
+				catch (ArgumentOutOfRangeException)
+				{
+					Console.WriteLine("That weird argument out of range exception again... Oh well!");
+				}
 
 				DoUI(deltaTime);
 

@@ -53,38 +53,47 @@ public sealed class BatchRenderable : IRenderable
 
 	private const uint initialCapacity = 128;
 
-	public BatchRenderableEntityHandle CreateBatchRenderableEntity(Transform transform)
+	public BatchRenderableEntityHandle CreateBatchRenderableEntity(Transform transform) // Seems there is a bug where a renderable entity is assigned to the wrong entity?
 	{
-		BatchRenderableEntityHandle handle = new(0);
-
-		while (transformsDictionary.ContainsKey(handle)) // Generate unique handle. Should be sufficently efficent.
+		lock (SyncRoot)
 		{
-			handle.Handle = Random.Shared.Next(int.MinValue, int.MaxValue);
+			BatchRenderableEntityHandle handle = new(0);
+
+			while (transformsDictionary.ContainsKey(handle)) // Generate unique handle. Should be sufficently efficent.
+			{
+				handle.Handle = Random.Shared.Next(int.MinValue, int.MaxValue);
+			}
+
+			var blittableTransform = transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero);
+
+			transformsDictionary.Add(handle, blittableTransform);
+
+			ManageTransformsBuffer();
+
+			UpdateTransform(handle, transform);
+
+			return handle;
 		}
-
-		var blittableTransform = transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero);
-
-		transformsDictionary.Add(handle, blittableTransform);
-
-		ManageTransformsBuffer();
-
-		UpdateTransform(handle, transform);
-
-		return handle;
 	}
 
 	public void RemoveBatchRenderableEntity(BatchRenderableEntityHandle handle)
 	{
-		transformsDictionary.Remove(handle);
+		lock (SyncRoot)
+		{
+			transformsDictionary.Remove(handle);
 
-		ManageTransformsBuffer();
+			ManageTransformsBuffer();
+		}
 	}
 
 	public void UpdateTransform(BatchRenderableEntityHandle handle, Transform transform)
 	{
-		transformsDictionary[handle] = transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero);
+		lock (SyncRoot)
+		{
+			transformsDictionary[handle] = transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero);
 
-		graphicsWorld.GraphicsDevice.UpdateBuffer(transformationsBuffer, (uint)transformsDictionary.IndexOf(handle) * BlittableTransform.SizeInBytes, transformsDictionary[handle]);
+			graphicsWorld.GraphicsDevice.UpdateBuffer(transformationsBuffer, (uint)transformsDictionary.IndexOf(handle) * BlittableTransform.SizeInBytes, transformsDictionary[handle]);
+		}
 	}
 
 	public static BatchRenderable Create(GraphicsWorld graphicsWorld, PBRData pBRData, Mesh mesh, Texture texture, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
@@ -117,73 +126,82 @@ public sealed class BatchRenderable : IRenderable
 
 	private void ManageTransformsBuffer()
 	{
-		// The buffer has not been created yet and should be initialized to the initialCapacity.
-		if (currentCapacity == 0 || transformationsBuffer is null)
+		lock (SyncRoot)
 		{
-			transformationsBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes * initialCapacity, BufferUsage.VertexBuffer));
+			// The buffer has not been created yet and should be initialized to the initialCapacity.
+			if (currentCapacity == 0 || transformationsBuffer is null)
+			{
+				transformationsBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes * initialCapacity, BufferUsage.VertexBuffer));
 
-			currentCapacity = initialCapacity;
+				currentCapacity = initialCapacity;
 
-			ReuploadTransformsBuffer();
+				ReuploadTransformsBuffer();
 
-			return;
-		}
+				return;
+			}
 
-		// OPTIMIZE: It might be possible to improve performance in the rest of the method by copying data from old transformation buffer instead of reuploading it. It would need access to a CommandList though.
+			// OPTIMIZE: It might be possible to improve performance in the rest of the method by copying data from old transformation buffer instead of reuploading it. It would need access to a CommandList though.
 
-		// Too large capacity, should recreate buffer, smaller.
-		if ((currentCapacity / 4) - 32 > transformsDictionary.Count)
-		{
-			var oldTransformationsBuffer = transformationsBuffer;
+			// Too large capacity, should recreate buffer, smaller.
+			if ((currentCapacity / 4) - 32 > transformsDictionary.Count)
+			{
+				var oldTransformationsBuffer = transformationsBuffer;
 
-			transformationsBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes * currentCapacity / 2, BufferUsage.VertexBuffer));
+				transformationsBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes * currentCapacity / 2, BufferUsage.VertexBuffer));
 
-			currentCapacity = currentCapacity / 2;
+				currentCapacity = currentCapacity / 2;
 
-			oldTransformationsBuffer.Dispose();
+				oldTransformationsBuffer.Dispose();
 
-			ReuploadTransformsBuffer();
+				ReuploadTransformsBuffer();
 
-			return;
-		}
+				return;
+			}
 
-		// Number of transforms exceeds capacity, needs to recreate buffer, but bigger.
-		if (transformsDictionary.Count > currentCapacity)
-		{
-			var oldTransformationsBuffer = transformationsBuffer;
+			// Number of transforms exceeds capacity, needs to recreate buffer, but bigger.
+			if (transformsDictionary.Count > currentCapacity)
+			{
+				var oldTransformationsBuffer = transformationsBuffer;
 
-			transformationsBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes * currentCapacity * 2, BufferUsage.VertexBuffer));
+				transformationsBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes * currentCapacity * 2, BufferUsage.VertexBuffer));
 
-			currentCapacity = currentCapacity * 2;
+				currentCapacity = currentCapacity * 2;
 
-			oldTransformationsBuffer.Dispose();
+				oldTransformationsBuffer.Dispose();
 
-			ReuploadTransformsBuffer();
+				ReuploadTransformsBuffer();
 
-			return;
+				return;
+			}
 		}
 	}
 
 	private void ReuploadTransformsBuffer()
 	{
-		graphicsWorld.GraphicsDevice.UpdateBuffer(transformationsBuffer, 0, transformsDictionary.Values.ToArray());
+		lock (SyncRoot)
+		{
+			graphicsWorld.GraphicsDevice.UpdateBuffer(transformationsBuffer, 0, transformsDictionary.Values.ToArray());
+		}
 	}
 
 	public void AddDrawCommands(CommandList commandList, FixedDecimalLong8 deltaTime)
 	{
-		if (transformsDictionary.Count == 0)
+		lock (SyncRoot)
 		{
-			return;
+			if (transformsDictionary.Count == 0)
+			{
+				return;
+			}
+
+			commandList.SetPipeline(PipelineResource);
+			commandList.SetGraphicsResourceSet(0, resourceSet);
+			commandList.SetGraphicsResourceSet(1, textureSet);
+			commandList.SetVertexBuffer(0, mesh.VertexBuffer);
+			commandList.SetIndexBuffer(mesh.IndexBuffer, mesh.IndexFormat);
+			commandList.SetVertexBuffer(1, transformationsBuffer);
+
+			commandList.DrawIndexed(mesh.IndexCount, (uint)transformsDictionary.Count, 0, 0, 0);
 		}
-
-		commandList.SetPipeline(PipelineResource);
-		commandList.SetGraphicsResourceSet(0, resourceSet);
-		commandList.SetGraphicsResourceSet(1, textureSet);
-		commandList.SetVertexBuffer(0, mesh.VertexBuffer);
-		commandList.SetIndexBuffer(mesh.IndexBuffer, mesh.IndexFormat);
-		commandList.SetVertexBuffer(1, transformationsBuffer);
-
-		commandList.DrawIndexed(mesh.IndexCount, (uint)transformsDictionary.Count, 0, 0, 0);
 	}
 
 	public void Destroy()

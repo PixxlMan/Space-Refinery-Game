@@ -33,6 +33,7 @@ partial class UI
 		}
 		ImGui.End();
 	}
+
 	private void DoPerformanceInfo()
 	{
 		ImGui.Columns(3);

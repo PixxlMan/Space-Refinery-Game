@@ -23,9 +23,9 @@ namespace Space_Refinery_Game
 
 		private GameData gameData;
 
-		private List<PipeType> pipeTypes = new();
+		private List<PipeType?> hotbarItems = new();
 
-		public PipeType SelectedPipeType { get { lock (syncRoot) return pipeTypes[EntitySelection]; } }
+		public PipeType? SelectedPipeType { get { lock (syncRoot) return hotbarItems[EntitySelection]; } }
 
 		public int EntitySelection;
 
@@ -50,15 +50,15 @@ namespace Space_Refinery_Game
 			{
 				EntitySelection += selectionDelta;
 
-				while (EntitySelection >= pipeTypes.Count || EntitySelection < 0)
+				while (EntitySelection >= hotbarItems.Count || EntitySelection < 0)
 				{
 					if (EntitySelection < 0)
 					{
-						EntitySelection += pipeTypes.Count;
+						EntitySelection += hotbarItems.Count;
 					}
-					else if (EntitySelection >= pipeTypes.Count)
+					else if (EntitySelection >= hotbarItems.Count)
 					{
-						EntitySelection -= pipeTypes.Count;
+						EntitySelection -= hotbarItems.Count;
 					}
 				}
 
@@ -76,6 +76,11 @@ namespace Space_Refinery_Game
 		{
 			lock (syncRoot)
 			{
+				if (SelectedPipeType is null)
+				{
+					return;
+				}
+
 				ConnectorSelection += selectionDelta;
 
 				while (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length || ConnectorSelection < 0)
@@ -161,7 +166,8 @@ namespace Space_Refinery_Game
 
 			gameData.GraphicsWorld.AddRenderable(ui, 1);
 
-			ui.pipeTypes.AddRange(PipeType.PipeTypes.Values);
+			ui.hotbarItems.Add(null); // Add empty slot
+			ui.hotbarItems.AddRange(PipeType.PipeTypes.Values);
 
 			ui.Style();
 

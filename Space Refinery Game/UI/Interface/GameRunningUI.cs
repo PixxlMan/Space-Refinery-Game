@@ -87,10 +87,10 @@ partial class UI
 		ImGui.SetWindowPos(new Vector2(width / 2 - ImGui.GetWindowWidth() / 2, height / 5 * 4 - ImGui.GetWindowHeight() / 2), ImGuiCond.Always);
 		ImGui.SetWindowSize(new Vector2(500, 50), ImGuiCond.Always);
 		{
-			ImGui.Columns(pipeTypes.Count);
-			for (int i = 0; i < pipeTypes.Count; i++)
+			ImGui.Columns(hotbarItems.Count);
+			for (int i = 0; i < hotbarItems.Count; i++)
 			{
-				if (pipeTypes[i] is null)
+				if (hotbarItems[i] is null)
 				{
 					if (EntitySelection == i)
 					{
@@ -107,11 +107,11 @@ partial class UI
 
 				if (EntitySelection == i)
 				{
-					ImGui.TextColored(RgbaFloat.CornflowerBlue.ToVector4(), (pipeTypes[i].Name));
+					ImGui.TextColored(RgbaFloat.CornflowerBlue.ToVector4(), (hotbarItems[i].Name));
 				}
 				else
 				{
-					ImGui.TextDisabled(pipeTypes[i].Name);
+					ImGui.TextDisabled(hotbarItems[i].Name);
 				}
 
 				ImGui.NextColumn();

@@ -11,6 +11,8 @@ namespace Space_Refinery_Game;
 
 partial class UI
 {
+	SaveCreatorUIPrototype saveCreator = new();
+
 	private void DoDebugSettingsUI()
 	{
 		lock (syncRoot)
@@ -26,6 +28,8 @@ partial class UI
 				}
 
 				ImGui.End();
+
+				saveCreator.DoUI();
 			}
 		}
 	}

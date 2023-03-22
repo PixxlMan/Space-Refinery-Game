@@ -2,6 +2,7 @@
 using FixedPrecision;
 using FXRenderer;
 using Space_Refinery_Game_Renderer;
+using Space_Refinery_Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,10 @@ namespace Space_Refinery_Game
 
 		public override void Tick()
 		{
+#if DEBUG
+			DebugStopPoints.TickStopPoint(SerializableReferenceGUID);
+#endif
+
 			ResourceContainer.Tick(Time.TickInterval);
 		}
 

@@ -1,6 +1,8 @@
-﻿using FixedPrecision;
+﻿using BepuPhysics.Constraints;
+using FixedPrecision;
 using FXRenderer;
 using Space_Refinery_Game_Renderer;
+using Space_Refinery_Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -92,6 +94,12 @@ namespace Space_Refinery_Game
 			}
 			else if (lookedAtPhysicsObject is not null && lookedAtPhysicsObject.Entity is IConstruction construction)
 			{
+#if DEBUG
+				if (InputTracker.GetKeyDown(Key.F10))
+				{
+					DebugStopPoints.RegisterStopPoint(construction.SerializableReferenceGUID);
+				}
+#endif
 				{
 					if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Insert resource with button") && construction is OrdinaryPipe pipe)
 					{

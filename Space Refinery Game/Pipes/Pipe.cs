@@ -3,6 +3,7 @@ using FixedPrecision;
 using FXRenderer;
 using Singulink.Reflection;
 using Space_Refinery_Game_Renderer;
+using Space_Refinery_Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -295,7 +296,9 @@ namespace Space_Refinery_Game
 		{
 		}
 
-		public virtual void Tick() { }
+		public virtual void Tick()
+		{
+		}
 
 		void Entity.Interacted()
 		{

@@ -24,7 +24,7 @@ public sealed class PhaseChangeReactionType : ReactionType
 						{
 							TransitionPhase(resourceContainer, unit, ChemicalPhase.Liquid, chemicalType.TemperatureOfFusion, chemicalType.EnthalpyOfFusion);
 							producedReactionFactors.Add(new Melting());
-							Console.Write("Melting");
+							Console.WriteLine("Melting");
 						}
 						break;
 					case ChemicalPhase.Liquid:
@@ -35,13 +35,13 @@ public sealed class PhaseChangeReactionType : ReactionType
 						{
 							TransitionPhase(resourceContainer, unit, ChemicalPhase.Gas, chemicalType.TemperatureOfVaporization, chemicalType.EnthalpyOfVaporization);
 							producedReactionFactors.Add(new Vaporizing());
-							Console.Write("Vaporizing");
+							Console.WriteLine("Vaporizing");
 						}
 						else if (unit.Temperature < type.ChemicalType.TemperatureOfFusion)
 						{
 							TransitionPhase(resourceContainer, unit, ChemicalPhase.Solid, chemicalType.TemperatureOfFusion, chemicalType.EnthalpyOfFusion);
 							producedReactionFactors.Add(new Solidifying());
-							Console.Write("Solidifying");
+							Console.WriteLine("Solidifying");
 						}
 						break;
 					case ChemicalPhase.Gas:
@@ -52,7 +52,7 @@ public sealed class PhaseChangeReactionType : ReactionType
 						{
 							TransitionPhase(resourceContainer, unit, ChemicalPhase.Liquid, chemicalType.TemperatureOfVaporization, chemicalType.EnthalpyOfVaporization);
 							producedReactionFactors.Add(new Condensating());
-							Console.Write("Condensating");
+							Console.WriteLine("Condensating");
 						}
 						break;
 					default:

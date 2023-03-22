@@ -99,9 +99,13 @@ namespace Space_Refinery_Game
 
 						ChemicalPhase chemicalPhase = MainGame.DebugSettings.AccessSetting<EnumDebugSetting<ChemicalPhase>>("Chemical phase to insert with button", ChemicalPhase.Liquid);
 
-						// todo: somehow keep track of temperature to use as well
+						DecimalNumber mass = MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Mass to insert with button", new(10, 0, 1_000));
 
-						ResourceUnitData resource = new(chemicalType.GetResourceTypeForPhase(chemicalPhase), ChemicalType.MassToMoles(chemicalType, 10), 0);
+						ResourceType resourceType = chemicalType.GetResourceTypeForPhase(chemicalPhase);
+
+						DecimalNumber internalEnergy = ChemicalType.TemperatureToInternalEnergy(resourceType, MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Temperature of resource to insert with button", new(10, 0, 1_000)), mass);
+
+						ResourceUnitData resource = new(resourceType, ChemicalType.MassToMoles(chemicalType, mass), internalEnergy);
 
 						if (InputTracker.GetKeyDown(Key.U) && pipe.ResourceContainer.Volume + resource.Volume < pipe.ResourceContainer.MaxVolume)
 						{
@@ -122,13 +126,13 @@ namespace Space_Refinery_Game
 							}
 						}
 
-						/*if (InputTracker.GetKeyDown(Key.J))
+						if (InputTracker.GetKeyDown(Key.J))
 						{
 							foreach (var unitData in pipe.ResourceContainer.EnumerateResources())
 							{
 								pipe.ResourceContainer.AddResource(new(unitData.ResourceType, 0, -energy));
 							}
-						}*/
+						}
 					}
 				}
 				if (InputTracker.GetMouseButton(MouseButton.Right))

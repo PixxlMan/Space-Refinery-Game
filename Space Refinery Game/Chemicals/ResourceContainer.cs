@@ -328,9 +328,9 @@ namespace Space_Refinery_Game
 					reactionType.Tick(tickInterval, this, reactionFactors, producedReactionFactors);
 				}
 #if DEBUG
+			Debug.Assert(DecimalNumber.Difference(initialMass, Mass) < permittedMaxPostReactionMassDiscrepancy);
 			}
 #endif
-			Debug.Assert(DecimalNumber.Difference(initialMass, Mass) < permittedMaxPostReactionMassDiscrepancy);
 
 			bool needsToRecalculatePossibleReactionTypes;
 			lock (SyncRoot)
@@ -373,14 +373,6 @@ namespace Space_Refinery_Game
 
 		public void AddResource(ResourceUnitData resourceUnitData)
 		{
-			lock (SyncRoot)
-			{
-				if (Volume + resourceUnitData.Volume > MaxVolume + acceptableVolumeTransferError)
-				{
-					throw new InvalidOperationException("Cannot exceed maximum volume.");
-				}
-			}
-
 			resources.AddOrUpdate(resourceUnitData.ResourceType, (_) =>
 			{
 				ResourceUnit resourceUnit = new(resourceUnitData.ResourceType, this, resourceUnitData);
@@ -607,7 +599,7 @@ namespace Space_Refinery_Game
 
 					ImGui.Text("Empty");
 
-					UIFunctions.PopDisabled();
+					UIFunctions.PopEnabledOrDisabledState();
 				}
 				else
 				{

@@ -60,8 +60,8 @@ namespace Space_Refinery_Game
 
 			private set
 			{
-				Debug.Assert(value >= 0, "Internal energy cannot be less than zero.");
-
+				//Debug.Assert(value >= 0, "Internal energy cannot be less than zero.");
+				// Disable this assert since being able to create resources with negative internalEnergy might be useful for removing energy. Will have to see if this should be reimplemented in some other way.
 				ResourceUnitChanged?.Invoke(this);
 
 				lock (syncRoot)
@@ -71,7 +71,7 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		public DecimalNumber Temperature => ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass);
+		public DecimalNumber Temperature => Moles != 0 ? ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass) : 0;
 
 		private object syncRoot = new();
 

@@ -45,7 +45,7 @@ namespace Space_Refinery_Game
 		/// <summary>
 		/// [K]
 		/// </summary>
-		public DecimalNumber Temperature => ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass);
+		public DecimalNumber Temperature => Moles != 0 ? ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass) : 0;
 
 		// Methods
 
@@ -72,7 +72,7 @@ namespace Space_Refinery_Game
 
 			Debug.Assert(moles >= 0, "The number of moles cannot be lower than zero.");
 
-			Debug.Assert(internalEnergy >= 0, "Internal energy cannot be lower than zero.");
+			//Debug.Assert(internalEnergy >= 0, "Internal energy cannot be lower than zero.");
 
 			ResourceType = resourceType;
 

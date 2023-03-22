@@ -114,7 +114,7 @@ namespace Space_Refinery_Game
 			}
 			if (!dirty)
 			{
-				UIFunctions.PopDisabled();
+				UIFunctions.PopEnabledOrDisabledState();
 			}
 		}
 

@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using SharpDX.Direct3D11;
 using System.Numerics;
 
 namespace Space_Refinery_Game
@@ -26,14 +27,31 @@ namespace Space_Refinery_Game
 			ImGui.PopID();
 		}
 
+		private static Stack<bool> enabledStack = new(new[] { true } /*make sure to initialize system as enabled*/);
+
+		public static bool IsEnabled => enabledStack.Peek();
+
+		public static bool IsDisabled => !IsEnabled;
+
 		public static void PushDisabled()
 		{
 			//ImGui.PushStyleColor(ImGuiCol.Button, RgbaByte.LightGrey);
 			ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.5f);
+			enabledStack.Push(false);
 		}
 
-		public static void PopDisabled()
+		public static void PushEnabled()
 		{
+			ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha);
+			enabledStack.Push(true);
+		}
+
+		public static void PopEnabledOrDisabledState()
+		{
+			if (!enabledStack.TryPop(out _) || enabledStack.Count == 0)
+			{
+				throw new InvalidOperationException("You canney just pop more than you push ya greedy bastard!");
+			}
 			ImGui.PopStyleVar();
 		}
 

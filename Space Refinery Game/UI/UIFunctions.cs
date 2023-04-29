@@ -1,5 +1,4 @@
 ﻿using ImGuiNET;
-using SharpDX.Direct3D11;
 using System.Numerics;
 
 namespace Space_Refinery_Game

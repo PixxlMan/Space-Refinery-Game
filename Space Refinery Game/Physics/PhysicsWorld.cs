@@ -6,7 +6,6 @@ using BepuUtilities;
 using BepuUtilities.Memory;
 using FixedPrecision;
 using FXRenderer;
-using SharpDX.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BepuPhysics.Collidables;
+using FXRenderer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +10,11 @@ namespace Space_Refinery_Game
 {
 	public sealed class InformationProxy : Entity
 	{
-		public Entity ProxiedEntity;
+		public Entity ProxiedEntity { get; }
 
-		public PhysicsObject PhysicsObject;
+		private PhysicsObject? physicsObject;
+
+		private bool enabled = false;
 
 		public InformationProxy(Connector connector)
 		{
@@ -19,19 +23,48 @@ namespace Space_Refinery_Game
 
 		public void Enable()
 		{
-			PhysicsObject.Enabled = true;
+			enabled = true;
+
+			if (physicsObject is not null)
+			{
+				physicsObject.Enabled = true;
+			}
 		}
 
 		public void Disable()
 		{
-			PhysicsObject.Enabled = false;
+			enabled = false;
+
+			if (physicsObject is not null)
+			{
+				physicsObject.Enabled = false;
+			}
 		}
 
-		public void Tick() { }
+		public void SetPhysicsObjectState(Transform transform, ConvexHull shape, PhysicsWorld physicsWorld)
+		{
+			if (physicsObject is null)
+			{
+				var proxyPhysicsObject = new PhysicsObjectDescription<ConvexHull>(shape, transform, 0, true);
 
-		public void Interacted() { }
+				physicsObject = physicsWorld.AddPhysicsObject(proxyPhysicsObject, this);
 
-		public void Destroy() { }
+				physicsObject.Enabled = enabled;
+			}
+			else
+			{
+				physicsObject.World.ChangeShape(physicsObject, shape);
+			}
+		}
+
+		public void Tick() => throw new NotSupportedException();
+
+		public void Interacted() => throw new NotSupportedException();
+
+		public void Destroy()
+		{
+			physicsObject?.Destroy();
+		}
 
 		public IInformationProvider InformationProvider => ((Entity)ProxiedEntity).InformationProvider;
 	}

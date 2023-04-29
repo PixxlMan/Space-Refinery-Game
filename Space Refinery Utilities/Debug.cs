@@ -28,6 +28,7 @@ namespace Space_Refinery_Utilities
 #if DEBUG
 			if (guid == guidToStop)
 			{
+				guidToStop = Guid.NewGuid(); // Make sure to only stop once.
 				Debugger.Break();
 			}
 #endif

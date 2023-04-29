@@ -9,7 +9,7 @@ using static Space_Refinery_Game_Renderer.RenderingResources;
 
 namespace Space_Refinery_Game_Renderer;
 
-public sealed class BatchRenderable : IRenderable
+public sealed partial class BatchRenderable : IRenderable
 {
 	private Mesh mesh;
 
@@ -24,6 +24,8 @@ public sealed class BatchRenderable : IRenderable
 	private GraphicsWorld graphicsWorld;
 
 	private object SyncRoot = new();
+
+	public string Name;
 
 	private bool shouldDraw = true;
 	public bool ShouldDraw
@@ -47,60 +49,112 @@ public sealed class BatchRenderable : IRenderable
 		}
 	}
 
-	private OrderedDictionary<BatchRenderableEntityHandle, BlittableTransform> transformsDictionary = new();
+
+	private List<BlittableTransform> transforms = new((int)initialCapacity);
+	// Is it even neccessary to keep data? Everything is already on the GPU, and if I won't do any compacting anyways... anycase, just keep bools to keep track occupation, which also allows for compacting, although talking that much with the GPU to compact with it might not be ideal...?
+
+	private PriorityQueue<int, int> availableIndexesQueue = new();
+
+	private Dictionary<object, int> transformsDictionary = new((int)initialCapacity, ReferenceEqualityComparer.Instance);
+
+	private static Transform noEntryTransform = new Transform(new(FixedDecimalInt4.MaxValue, FixedDecimalInt4.MaxValue, FixedDecimalInt4.MaxValue), QuaternionFixedDecimalInt4.Zero)/*.GetBlittableTransform(Vector3FixedDecimalInt4.Zero)*/;
+
 
 	private uint currentCapacity;
 
 	private const uint initialCapacity = 128;
 
-	public BatchRenderableEntityHandle CreateBatchRenderableEntity(Transform transform) // Seems there is a bug where a renderable entity is assigned to the wrong entity?
+
+	/// <summary>
+	/// Returns the internal batch renderer index associated with an object, or -1 if the object is not associated with any index.
+	/// </summary>
+	/// <remarks>Used for debugging purposes only, do not rely on this method's behaviour or results.</remarks>
+	/// <returns>The internal renderer index associated with the object, or -1 if there is no index associated with the object.</returns>
+	public int DebugGetRenderableIndex(object associatedObject)
 	{
 		lock (SyncRoot)
 		{
-			BatchRenderableEntityHandle handle = new(0);
-
-			while (transformsDictionary.ContainsKey(handle)) // Generate unique handle. Should be sufficently efficent.
+			if (!transformsDictionary.TryGetValue(associatedObject, out var index))
 			{
-				handle.Handle = Random.Shared.Next(int.MinValue, int.MaxValue);
+				index = -1;
 			}
 
+			return index;
+		}
+	}
+
+
+	public void CreateBatchRenderableEntity(Transform transform, object associatedObject)
+	{
+		lock (SyncRoot)
+		{
 			var blittableTransform = transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero);
 
-			transformsDictionary.Add(handle, blittableTransform);
+			int index = AppendTransformsList(transform);
+
+			transformsDictionary.Add(associatedObject, index);
 
 			ManageTransformsBuffer();
 
-			UpdateTransform(handle, transform);
-
-			return handle;
+			UpdateTransform(associatedObject, transform);
 		}
 	}
 
-	public void RemoveBatchRenderableEntity(BatchRenderableEntityHandle handle)
+	private int AppendTransformsList(Transform transform)
+	{
+		var blittableTransform = transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero);
+
+		if (availableIndexesQueue.Count != 0)
+		{
+			// If there are availables indexes in the list from previous deletions
+			int index = availableIndexesQueue.Dequeue();
+			transforms[index] = blittableTransform;
+			return index;
+		}
+		else
+		{
+			// If there are not any available indexes we must create new ones
+			transforms.Add(blittableTransform);
+			return transforms.Count - 1;
+		}
+	}
+
+	public void RemoveBatchRenderableEntity(object associatedObject)
 	{
 		lock (SyncRoot)
 		{
-			transformsDictionary.Remove(handle);
+			int index = transformsDictionary[associatedObject];
+
+			UpdateTransform(associatedObject, noEntryTransform);
+
+			availableIndexesQueue.Enqueue(index, index);
+
+			transformsDictionary.Remove(associatedObject);
 
 			ManageTransformsBuffer();
 		}
 	}
 
-	public void UpdateTransform(BatchRenderableEntityHandle handle, Transform transform)
+	public void UpdateTransform(object associatedObject, Transform transform)
 	{
 		lock (SyncRoot)
 		{
-			transformsDictionary[handle] = transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero);
+			var blittableTransform = transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero);
 
-			graphicsWorld.GraphicsDevice.UpdateBuffer(transformationsBuffer, (uint)transformsDictionary.IndexOf(handle) * BlittableTransform.SizeInBytes, transformsDictionary[handle]);
+			int index = transformsDictionary[associatedObject];
+
+			transforms[index] = blittableTransform;
+
+			graphicsWorld.GraphicsDevice.UpdateBuffer(transformationsBuffer, (uint)index * BlittableTransform.SizeInBytes, ref blittableTransform, BlittableTransform.SizeInBytes);			
 		}
 	}
 
-	public static BatchRenderable Create(GraphicsWorld graphicsWorld, PBRData pBRData, Mesh mesh, Texture texture, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
+	public static BatchRenderable Create(string name, GraphicsWorld graphicsWorld, PBRData pBRData, Mesh mesh, Texture texture, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
 	{
 		BatchRenderable batchRenderable = new()
 		{
-			mesh = mesh
+			mesh = mesh,
+			Name = name
 		};
 
 		TextureView textureView = graphicsWorld.Factory.CreateTextureView(texture);
@@ -121,6 +175,8 @@ public sealed class BatchRenderable : IRenderable
 
 		graphicsWorld.AddRenderable(batchRenderable);
 
+		RegisterBatchRenderable(batchRenderable);
+
 		return batchRenderable;
 	}
 
@@ -132,6 +188,7 @@ public sealed class BatchRenderable : IRenderable
 			if (currentCapacity == 0 || transformationsBuffer is null)
 			{
 				transformationsBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes * initialCapacity, BufferUsage.VertexBuffer));
+				transformationsBuffer.Name = $"{Name} Transformation Buffer";
 
 				currentCapacity = initialCapacity;
 
@@ -148,10 +205,11 @@ public sealed class BatchRenderable : IRenderable
 				var oldTransformationsBuffer = transformationsBuffer;
 
 				transformationsBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes * currentCapacity / 2, BufferUsage.VertexBuffer));
+				transformationsBuffer.Name = $"{Name} Transformation Buffer";
 
 				currentCapacity = currentCapacity / 2;
 
-				oldTransformationsBuffer.Dispose();
+				oldTransformationsBuffer.Dispose(); // TODO? Hmm why do this afterwards? Should check this out...
 
 				ReuploadTransformsBuffer();
 
@@ -180,7 +238,7 @@ public sealed class BatchRenderable : IRenderable
 	{
 		lock (SyncRoot)
 		{
-			graphicsWorld.GraphicsDevice.UpdateBuffer(transformationsBuffer, 0, transformsDictionary.Values.ToArray());
+			graphicsWorld.GraphicsDevice.UpdateBuffer(transformationsBuffer, 0, transforms.ToArray());
 		}
 	}
 
@@ -188,7 +246,7 @@ public sealed class BatchRenderable : IRenderable
 	{
 		lock (SyncRoot)
 		{
-			if (transformsDictionary.Count == 0)
+			if (transformsDictionary.Count == 0 || !shouldDraw)
 			{
 				return;
 			}
@@ -200,7 +258,7 @@ public sealed class BatchRenderable : IRenderable
 			commandList.SetIndexBuffer(mesh.IndexBuffer, mesh.IndexFormat);
 			commandList.SetVertexBuffer(1, transformationsBuffer);
 
-			commandList.DrawIndexed(mesh.IndexCount, (uint)transformsDictionary.Count, 0, 0, 0);
+			commandList.DrawIndexed(mesh.IndexCount, (uint)transforms.Count, 0, 0, 0);
 		}
 	}
 
@@ -214,41 +272,8 @@ public sealed class BatchRenderable : IRenderable
 			}
 
 			shouldDraw = false;
+
+			UnregisterBatchRenderable(this);
 		}			
-	}
-}
-
-public struct BatchRenderableEntityHandle : IEquatable<BatchRenderableEntityHandle>
-{
-	public BatchRenderableEntityHandle(int handle)
-	{
-		this.Handle = handle;
-	}
-
-	internal int Handle;
-
-	public override bool Equals(object obj)
-	{
-		return obj is BatchRenderableEntityHandle handle && Equals(handle);
-	}
-
-	public bool Equals(BatchRenderableEntityHandle other)
-	{
-		return Handle == other.Handle;
-	}
-
-	public override int GetHashCode()
-	{
-		return Handle;
-	}
-
-	public static bool operator ==(BatchRenderableEntityHandle left, BatchRenderableEntityHandle right)
-	{
-		return left.Equals(right);
-	}
-
-	public static bool operator !=(BatchRenderableEntityHandle left, BatchRenderableEntityHandle right)
-	{
-		return !(left == right);
 	}
 }

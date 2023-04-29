@@ -140,7 +140,7 @@ namespace Space_Refinery_Game
 				throw new Exception($"Couldn't add {nameof(PipeType)} '{Name}' to dictionary of all available PipeTypes.");
 			}
 
-			BatchRenderable = BatchRenderable.Create(serializationData.GameData.GraphicsWorld, RenderingResources.DefaultPBRData, Mesh, RenderingResources.DefaultTexture, serializationData.GameData.GraphicsWorld.CameraProjViewBuffer, serializationData.GameData.GraphicsWorld.LightInfoBuffer);
+			BatchRenderable = BatchRenderable.Create($"{Name} Pipe Type Batch Renderable", serializationData.GameData.GraphicsWorld, RenderingResources.DefaultPBRData, Mesh, RenderingResources.DefaultTexture, serializationData.GameData.GraphicsWorld.CameraProjViewBuffer, serializationData.GameData.GraphicsWorld.LightInfoBuffer);
 
 			serializationData.GameData.GraphicsWorld.AddRenderable(BatchRenderable);
 		}

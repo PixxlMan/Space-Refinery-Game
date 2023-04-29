@@ -1,8 +1,10 @@
 ﻿using ImGuiNET;
+using Space_Refinery_Game_Renderer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Veldrid;
@@ -99,5 +101,13 @@ partial class UI
 			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"({gameData.PerformanceStatisticsCollector.UpdatesPerSecond} UPS) {gameData.MainGame.ResponseSpinner}");
 			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"({gameData.PerformanceStatisticsCollector.PhysicsUpdatesPerSecond} PUPS) {gameData.PhysicsWorld.ResponseSpinner}");
 		}
+	}
+
+	private static void DoUIOfDisparateDebuggingMenus()
+	{
+		if (!MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show miscellaneous debugging menus"))
+			return;
+
+		BatchRenderable.DoDebugUI();
 	}
 }

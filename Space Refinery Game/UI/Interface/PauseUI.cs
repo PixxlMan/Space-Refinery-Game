@@ -103,5 +103,7 @@ partial class UI
 		DoStatus();
 
 		DoDebugSettingsUI();
+
+		DoUIOfDisparateDebuggingMenus();
 	}
 }

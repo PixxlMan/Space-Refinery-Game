@@ -25,6 +25,15 @@ namespace Space_Refinery_Game
 				ImGui.Text("Postition: " + Pipe.Transform.Position.ToString());
 
 				ImGui.Text("Orientation: " + Pipe.Transform.Rotation.ToString());
+
+				ImGui.Text("Pipe Type: " + Pipe.PipeType.Name);
+
+				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show rendering debug information in information provider"))
+				{
+					ImGui.Text("Batch renderer: " + Pipe.PipeType.BatchRenderable.Name);
+
+					ImGui.Text("Rendering index: " + Pipe.PipeType.BatchRenderable.DebugGetRenderableIndex(Pipe));
+				}
 			}
 		}
 	}

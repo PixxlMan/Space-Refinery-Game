@@ -1,0 +1,4 @@
+﻿SharpAudio
+OpenALSoft URL: https://www.openal-soft.org/ LICENSE: LGPL
+
+todo: fill this...

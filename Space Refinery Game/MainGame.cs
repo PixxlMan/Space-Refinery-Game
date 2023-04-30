@@ -1,5 +1,6 @@
 ﻿using FixedPrecision;
 using FXRenderer;
+using Space_Refinery_Game.Audio;
 using Space_Refinery_Game_Renderer;
 using System.Diagnostics;
 using System.Xml;
@@ -11,6 +12,7 @@ namespace Space_Refinery_Game;
 public sealed class MainGame
 {
 	private GraphicsWorld GraphicsWorld { get => GameData.GraphicsWorld; set => GameData.GraphicsWorld = value; }
+	private AudioWorld AudioWorld { get => GameData.AudioWorld; set => GameData.AudioWorld = value; }
 	private PhysicsWorld PhysicsWorld { get => GameData.PhysicsWorld; set => GameData.PhysicsWorld = value; }
 	private GameWorld GameWorld { get => GameData.GameWorld; set => GameData.GameWorld = value; }
 	private SerializationReferenceHandler ReferenceHandler { get => GameData.ReferenceHandler; set => GameData.ReferenceHandler = value; }
@@ -88,6 +90,14 @@ public sealed class MainGame
 		GraphicsWorld.SetUp(window, gd, factory, swapchain);
 
 		DebugRender = DebugRender.Create(GraphicsWorld);
+
+		AudioWorld = AudioWorld.Create();
+
+		AudioWorld.MusicSystem.SetTags(MusicTag.Intense);
+
+		DebugSettings.AccessSetting("Fill music queue", (ActionDebugSetting)AudioWorld.MusicSystem.FillQueue);
+
+		DebugSettings.AccessSetting("Play next", (ActionDebugSetting)AudioWorld.MusicSystem.PlayNext);
 
 		if (GlobalReferenceHandler is null)
 		{

@@ -1,4 +1,5 @@
 ﻿using Space_Refinery_Game_Renderer;
+using Space_Refinery_Game.Audio;
 
 namespace Space_Refinery_Game
 {
@@ -9,6 +10,7 @@ namespace Space_Refinery_Game
 			UI,
 			PhysicsWorld,
 			GraphicsWorld,
+			AudioWorld,
 			GameWorld,
 			MainGame,
 			ReferenceHandler,
@@ -17,6 +19,7 @@ namespace Space_Refinery_Game
 		private UI uI;
 		private PhysicsWorld physicsWorld;
 		private GraphicsWorld graphicsWorld;
+		private AudioWorld audioWorld;
 		private GameWorld gameWorld;
 		private MainGame mainGame;
 		private SerializationReferenceHandler referenceHandler;
@@ -28,11 +31,12 @@ namespace Space_Refinery_Game
 
 		}
 
-		public GameData(UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler)
+		public GameData(UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, AudioWorld audioWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler)
 		{
 			UI = ui;
 			PhysicsWorld = physicsWorld;
 			GraphicsWorld = graphicsWorld;
+			AudioWorld = audioWorld;
 			GameWorld = gameWorld;
 			MainGame = mainGame;
 			ReferenceHandler = referenceHandler;
@@ -57,6 +61,8 @@ namespace Space_Refinery_Game
 		public PhysicsWorld PhysicsWorld { get => physicsWorld; set { physicsWorld = value; GameDataChanged(GameDataChange.PhysicsWorld); } }
 
 		public GraphicsWorld GraphicsWorld { get => graphicsWorld; set { graphicsWorld = value; GameDataChanged(GameDataChange.GraphicsWorld); } }
+
+		public AudioWorld AudioWorld { get => audioWorld; set { audioWorld = value; GameDataChanged(GameDataChange.AudioWorld); } }
 
 		public GameWorld GameWorld { get => gameWorld; set { gameWorld = value; GameDataChanged(GameDataChange.GameWorld); } }
 

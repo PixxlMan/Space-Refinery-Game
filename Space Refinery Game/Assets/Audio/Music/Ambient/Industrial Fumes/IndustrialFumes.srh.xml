@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SerializationReferenceHandler>
+	<Count>3</Count>
+	<Elements>
+		<IEntitySerializable>
+			<Type>Space_Refinery_Game.Audio.AudioResource</Type>
+			<GUID>e3a0ef41-d682-43f2-8238-5945cac64618</GUID>
+			<Name>Industrial Fumes Loop</Name>
+			<ResourcePath>Assets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Loop - Export 1.mp3</ResourcePath>
+		</IEntitySerializable><IEntitySerializable>
+			<Type>Space_Refinery_Game.Audio.AudioResource</Type>
+			<GUID>72241C36-2DDE-4622-A6D3-FDFD1ED29E2E</GUID>
+			<Name>Industrial Fumes Whole</Name>
+			<ResourcePath>Assets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Whole - Export 1.mp3</ResourcePath>
+		</IEntitySerializable>
+		<IEntitySerializable>
+			<Type>Space_Refinery_Game.Audio.MusicResource</Type>
+			<GUID>537454ea-3bb6-4cea-849b-232796d68f2e</GUID>
+			<Name>Industrial Fumes Music</Name>
+			<Tracks>
+				<Count>2</Count>
+				<Elements>
+					<GUID>72241C36-2DDE-4622-A6D3-FDFD1ED29E2E</GUID>
+					<GUID>e3a0ef41-d682-43f2-8238-5945cac64618</GUID>
+				</Elements>
+			</Tracks>
+			<Tags>
+				<Count>1</Count>
+				<Elements>
+					<Tag>Intense</Tag>
+				</Elements>
+			</Tags>
+		</IEntitySerializable>
+	</Elements>
+</SerializationReferenceHandler>

@@ -379,7 +379,8 @@ namespace Space_Refinery_Game
 			reader.ReadEndElement();
 		}
 
-		public static void DeserializeReferenceCollection<T>(this XmlReader reader, ConcurrentBag<T> bagToAddTo, SerializationReferenceHandler referenceHandler, string? name = null)
+		// This is necessary to allow deserializing to a concurrent bag.
+		public static void DeserializeReferenceCollection<T>(this XmlReader reader, ConcurrentBag<T> concurrentBag, SerializationReferenceHandler referenceHandler, string? name = null)
 			where T : ISerializableReference
 		{
 			reader.ReadStartElement(name ?? "Collection");
@@ -397,7 +398,33 @@ namespace Space_Refinery_Game
 
 					for (int i = 0; i < count; i++)
 					{
-						DeserializeReference(reader, referenceHandler, (s) => bagToAddTo.Add((T)s));
+						DeserializeReference(reader, referenceHandler, (s) => concurrentBag.Add((T)s));
+					}
+				}
+				reader.ReadEndElement();
+			}
+			reader.ReadEndElement();
+		}
+
+		public static void DeserializeReferenceCollection<T>(this XmlReader reader, ICollection<T> collectionToAddTo, SerializationReferenceHandler referenceHandler, string? name = null)
+			where T : ISerializableReference
+		{
+			reader.ReadStartElement(name ?? "Collection");
+			{
+				int count = int.Parse(reader.ReadElementString("Count"));
+
+				reader.ReadStartElement("Elements");
+				{
+					if (count == 0)
+					{
+						reader.ReadEndElement();
+
+						return;
+					}
+
+					for (int i = 0; i < count; i++)
+					{
+						DeserializeReference(reader, referenceHandler, (s) => collectionToAddTo.Add((T)s));
 					}
 				}
 				reader.ReadEndElement();

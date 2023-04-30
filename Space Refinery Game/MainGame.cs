@@ -91,6 +91,9 @@ public sealed class MainGame
 
 		DebugRender = DebugRender.Create(GraphicsWorld);
 
+		GlobalSettings.SetSettingOptions<SliderSetting>("Master volume", new SliderSettingOptions(0, 100, "%"), new SliderSetting() { Value = 50 });
+		GlobalSettings.SetSettingOptions<SliderSetting>("Music volume", new SliderSettingOptions(0, 100, "%"), new SliderSetting() { Value = 50 });
+
 		AudioWorld = AudioWorld.Create();
 
 		AudioWorld.MusicSystem.SetTags(MusicTag.Intense);
@@ -132,17 +135,17 @@ public sealed class MainGame
 
 		GameWorld.StartTicking();
 
-		GlobalSettings.SetSettingOptions("FoV", new SliderSettingOptions(30, 120, "degrees"));
+		GlobalSettings.SetSettingOptions<SliderSetting>("FoV", new SliderSettingOptions(30, 120, "degrees"), defaultValue: new SliderSetting() { Value = 65 });
 
-		GlobalSettings.RegisterToSetting<SliderSetting>("FoV", (se) => GraphicsWorld.Camera.FieldOfView = se.Value * DecimalNumber.DegreesToRadians, defaultValue: new SliderSetting() { Value = 65 });
+		GlobalSettings.RegisterToSetting<SliderSetting>("FoV", (se) => GraphicsWorld.Camera.FieldOfView = se.Value * DecimalNumber.DegreesToRadians);
 
-		GlobalSettings.SetSettingOptions("Max framerate", new SliderSettingOptions(1, 1000, "FPS"));
+		GlobalSettings.SetSettingOptions<SliderSetting>("Max framerate", new SliderSettingOptions(1, 1000, "FPS"), defaultValue: new SliderSetting() { Value = 500 });
 
-		GlobalSettings.RegisterToSetting<SliderSetting>("Max framerate", (se) => GraphicsWorld.FrametimeLowerLimit = 1 / se.Value, defaultValue: new SliderSetting() { Value = 500 });
+		GlobalSettings.RegisterToSetting<SliderSetting>("Max framerate", (se) => GraphicsWorld.FrametimeLowerLimit = 1 / se.Value);
 
-		GlobalSettings.SetSettingOptions("Limit framerate", null);
+		GlobalSettings.SetSettingOptions<BooleanSetting>("Limit framerate", null, defaultValue: new BooleanSetting() { Value = true });
 
-		GlobalSettings.RegisterToSetting<BooleanSetting>("Limit framerate", (bs) => GraphicsWorld.ShouldLimitFramerate = bs.Value, defaultValue: new BooleanSetting() { Value = true });
+		GlobalSettings.RegisterToSetting<BooleanSetting>("Limit framerate", (bs) => GraphicsWorld.ShouldLimitFramerate = bs.Value);
 	}
 
 	private void UI_PauseStateChanged(bool paused)

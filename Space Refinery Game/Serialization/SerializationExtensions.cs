@@ -378,6 +378,33 @@ namespace Space_Refinery_Game
 			}
 			reader.ReadEndElement();
 		}
+		
+		public static void DeserializeCollection(this XmlReader reader, Action<XmlReader, int> deserializationAction, Action<int> collectionSizeKnown, string? name = null)
+		{
+			reader.ReadStartElement(name ?? "Collection");
+			{
+				int count = int.Parse(reader.ReadElementString("Count"));
+
+				collectionSizeKnown.Invoke(count);
+
+				reader.ReadStartElement("Elements");
+				{
+					if (count == 0)
+					{
+						reader.ReadEndElement();
+
+						return;
+					}
+
+					for (int i = 0; i < count; i++)
+					{
+						deserializationAction(reader, i);
+					}
+				}
+				reader.ReadEndElement();
+			}
+			reader.ReadEndElement();
+		}
 
 		// This is necessary to allow deserializing to a concurrent bag.
 		public static void DeserializeReferenceCollection<T>(this XmlReader reader, ConcurrentBag<T> concurrentBag, SerializationReferenceHandler referenceHandler, string? name = null)
@@ -406,7 +433,8 @@ namespace Space_Refinery_Game
 			reader.ReadEndElement();
 		}
 
-		public static void DeserializeReferenceCollection<T>(this XmlReader reader, ICollection<T> collectionToAddTo, SerializationReferenceHandler referenceHandler, string? name = null)
+		// The order of the returned objects is uncertain due to the unordered nature of DeserializeReference.
+		public static void DeserializeReferenceCollectionUnordered<T>(this XmlReader reader, ICollection<T> collectionToAddTo, SerializationReferenceHandler referenceHandler, string? name = null)
 			where T : ISerializableReference
 		{
 			reader.ReadStartElement(name ?? "Collection");

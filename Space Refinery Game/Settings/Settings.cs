@@ -18,7 +18,8 @@ namespace Space_Refinery_Game
 		[DataMember]
 		private Dictionary<string, ISettingOptions> settingsOptions = new();
 
-		public void SetSettingOptions(string name, ISettingOptions options)
+		public void SetSettingOptions<TSetting>(string name, ISettingOptions options, ISetting defaultValue = null)
+			where TSetting : ICreatableSetting
 		{
 			if (!settingsOptions.ContainsKey(name))
 			{
@@ -29,11 +30,7 @@ namespace Space_Refinery_Game
 			{
 				settings[name].Options = options;
 			}
-		}
 
-		public void RegisterToSetting<TSetting>(string name, Action<TSetting> settingChangeAcceptedHandler, Action<TSetting>? settingChangedHandler = null, ISetting? defaultValue = null)
-			where TSetting : ICreatableSetting
-		{
 			ISetting setting;
 
 			if (!settings.ContainsKey(name))
@@ -60,6 +57,12 @@ namespace Space_Refinery_Game
 			{
 				setting = settings[name];
 			}
+		}
+
+		public void RegisterToSetting<TSetting>(string name, Action<TSetting> settingChangeAcceptedHandler, Action<TSetting>? settingChangedHandler = null)
+			where TSetting : ICreatableSetting
+		{
+			var setting = settings[name];
 
 			setting.AcceptedSettingChange += (ISetting setting) => settingChangeAcceptedHandler((TSetting)setting);
 

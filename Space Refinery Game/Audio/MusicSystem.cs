@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualBasic;
+﻿using FixedPrecision;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -14,7 +15,11 @@ namespace Space_Refinery_Game.Audio
 		public MusicSystem(AudioWorld audioWorld)
 		{
 			this.audioWorld = audioWorld;
+
+			MainGame.GlobalSettings.RegisterToSetting<SliderSetting>("Music volume", (volumeSlider) => MusicVolume = volumeSlider.Value / 100);
 		}
+
+		private FixedDecimalLong8 musicVolume;
 
 		private object SyncRoot = new();
 
@@ -29,6 +34,15 @@ namespace Space_Refinery_Game.Audio
 		private Queue<MusicResource> musicQueue = new();
 
 		private HashSet<MusicTag> musicTags = new();
+
+		/// <summary>
+		/// Setting the value below zero or above one will result in the value being clamped to whichever is closest.
+		/// </summary>
+		public FixedDecimalLong8 MusicVolume
+		{
+			get => musicVolume;
+			set => FixedDecimalLong8.Clamp(musicVolume = value, 0, 1);
+		}
 
 		public void RegisterMusic(MusicResource musicResource)
 		{
@@ -101,7 +115,7 @@ namespace Space_Refinery_Game.Audio
 				}
 
 				var music = musicQueue.Dequeue();
-				music.Tracks[0].Play();
+				music.Tracks[0].Play(musicVolume);
 			}
 		}
 

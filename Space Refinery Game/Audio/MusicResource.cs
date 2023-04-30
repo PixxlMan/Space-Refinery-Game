@@ -1,6 +1,7 @@
 ﻿using SharpAudio.Codec;
 using System.Collections.Generic;
 using System.Xml;
+using Vortice.Direct3D11;
 
 namespace Space_Refinery_Game.Audio
 {
@@ -17,9 +18,9 @@ namespace Space_Refinery_Game.Audio
 
 		public Guid SerializableReferenceGUID { get; private set; } = Guid.NewGuid();
 
-		public List<AudioResource> Tracks { get; private set; } = new();
+		public AudioResource[] Tracks { get; private set; }
 
-		public List<MusicTag> Tags { get; private set; } = new();
+		public HashSet<MusicTag> Tags { get; private set; } = new();
 
 		public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 		{
@@ -29,11 +30,18 @@ namespace Space_Refinery_Game.Audio
 
 			Name = reader.ReadString(nameof(Name));
 
-			reader.DeserializeReferenceCollection(Tracks, referenceHandler, nameof(Tracks));
+			AudioResource[] tracks = null;
 
-			Tags.AddRange(reader.DeserializeCollection((reader) => reader.DeserializeEnum<MusicTag>("Tag"), nameof(Tags)));
+			reader.DeserializeCollection((reader, i) => reader.DeserializeReference<AudioResource>(referenceHandler, (audioResource) => tracks[i] = audioResource), (count) => tracks = new AudioResource[count], nameof(Tracks));
+			
+			reader.DeserializeCollection((reader) => Tags.AddUnique(reader.DeserializeEnum<MusicTag>("Tag"), "Duplicate tag"), nameof(Tags));
 
 			AudioWorld.MusicSystem.RegisterMusic(this);
+
+			serializationData.DeserializationCompleteEvent += () =>
+			{
+				Tracks = tracks;
+			};
 		}
 
 		public void SerializeState(XmlWriter writer)
@@ -47,4 +55,19 @@ namespace Space_Refinery_Game.Audio
 			writer.Serialize(Tags, (writer, tag) => writer.Serialize(tag, "Tag"), nameof(Tags));
 		}
 	}
+
+	/*public struct Track : IEntitySerializable
+	{
+		public AudioResource AudioResource { get; private set; }
+
+		public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SerializeState(XmlWriter writer)
+		{
+			throw new NotImplementedException();
+		}
+	}*/
 }

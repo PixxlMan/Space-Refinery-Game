@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Space_Refinery_Utilities
+namespace Space_Refinery_Utilities;
+
+internal class MultiItemDictionary
 {
-	internal class MultiItemDictionary
-	{
-	}
 }

@@ -1,7 +1,10 @@
-﻿using FixedPrecision;
+﻿//#define SilenceWeirdErrors
+
+using FixedPrecision;
 using FXRenderer;
 using Space_Refinery_Game;
 using Space_Refinery_Game_Renderer;
+using Space_Refinery_Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -123,7 +126,18 @@ public sealed class GraphicsWorld
 
 				CollectRenderingPerformanceData?.Invoke(deltaTime);
 
-				window.PumpEvents();
+#if SilenceWeirdErrors
+				try
+				{
+#endif
+					window.PumpEvents();
+#if SilenceWeirdErrors
+				}
+				catch (Exception ex)
+				{
+					Logging.LogError($"An exception occured (and was swiftly silenced) while pumping window events. Weird. Here it is: {ex}");
+				}
+#endif
 
 				RenderScene(FixedDecimalLong8.Max(deltaTime, FrametimeLowerLimit));
 

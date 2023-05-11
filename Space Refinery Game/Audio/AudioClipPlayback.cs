@@ -1,53 +1,105 @@
 ﻿using NVorbis;
+using SharpAudio;
 using SharpAudio.Codec;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using Vortice;
+using Vortice.DXGI;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Space_Refinery_Game.Audio
 {
+	/// <remarks>
+	/// Not thread safe.
+	/// </remarks>
 	public sealed class AudioClipPlayback
 	{
-		private readonly VorbisReader decoder;
+		// From SoundStream
+		private byte[] _data;
+		//private readonly Decoder _decoder;
+		private readonly VorbisReader _reader;
+		private static readonly TimeSpan SampleQuantum = TimeSpan.FromSeconds(0.05);
+		private int sampleQuantumToNumSamples => (int)(SampleQuantum.TotalSeconds * _audioFormat.SampleRate * _audioFormat.Channels);
+
+		// From VorbisDecoder
+		private float[] _readBuf;
+
+		// From Decoder
+		protected AudioFormat _audioFormat;
+		protected int _numSamples = 0;
+		protected int _readSize;
 
 		public AudioClipPlayback(string path)
 		{
 			Logging.Log($"Streaming audio file from path '{Path.GetFullPath(path)}'.");
+			_reader = new VorbisReader(path);
 
-			decoder = new VorbisReader(path);
+			_audioFormat.Channels = _reader.Channels;
+			_audioFormat.BitsPerSample = 16;
+			_audioFormat.SampleRate = _reader.SampleRate;
+
+			_numSamples = (int)_reader.TotalSamples;
 		}
 
-		/// <summary>
-		/// Converts a buffer from a 32 bit floating point format to a 16 bit integer format.
-		/// </summary>
-		private static void ConvertBuffer(ReadOnlySpan<float> inBuffer, Span<byte> outBuffer) // From VorbisDecoder in SharpAudio
+		public bool SubmitSamples(SequencialPlayback sequencialPlayback)
 		{
-			for (int i = 0; i < inBuffer.Length; i++)
+			var res = GetSamples(sampleQuantumToNumSamples, ref _data);
+
+			if (res == 0)
 			{
-				int num = (int)(32767f * inBuffer[i]);
-				if (num > 32767)
+				return false;
+			}
+
+			if (res == -1)
+			{
+				isFinished = true;
+				return false;
+			}
+
+			sequencialPlayback.Send(_data);
+
+			return true;
+		}
+
+		private static void CastBuffer(float[] inBuffer, byte[] outBuffer, int length)
+		{
+			for (int i = 0; i < length; i++)
+			{
+				var temp = (int)(short.MaxValue * inBuffer[i]);
+
+				if (temp > short.MaxValue)
 				{
-					num = 32767;
+					temp = short.MaxValue;
 				}
-				else if (num < -32768)
+				else if (temp < short.MinValue)
 				{
-					num = -32768;
+					temp = short.MinValue;
 				}
 
-				outBuffer[2 * i] = (byte)((uint)(short)num & 0xFFu);
-				outBuffer[2 * i + 1] = (byte)((short)num >> 8);
+				outBuffer[2 * i] = (byte)(((short)temp) & 0xFF);
+				outBuffer[2 * i + 1] = (byte)(((short)temp) >> 8);
 			}
 		}
 
-		public void GetSamples(Span<byte> data)
+		private long GetSamples(int samples, ref byte[] data)
 		{
+			int bytes = _audioFormat.BytesPerSample * samples;
+			Array.Resize(ref data, bytes);
+
+			Array.Resize(ref _readBuf, samples);
+			_reader.ReadSamples(_readBuf, 0, samples);
+
+			CastBuffer(_readBuf, data, samples);
+
+			return samples;
 		}
 
-		public bool IsFinished => decoder.IsEndOfStream;
+		public void Dispose()
+		{
+			_reader.Dispose();
+		}
+
+		bool isFinished;
+
+		public bool IsFinished => isFinished;
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using NVorbis;
 using SharpAudio;
 using SharpAudio.Codec;
+using Space_Refinery_Utilities;
 using System;
 using Vortice;
 using Vortice.DXGI;
@@ -51,7 +52,6 @@ namespace Space_Refinery_Game.Audio
 
 			if (res == -1)
 			{
-				isFinished = true;
 				return false;
 			}
 
@@ -98,8 +98,6 @@ namespace Space_Refinery_Game.Audio
 			_reader.Dispose();
 		}
 
-		bool isFinished;
-
-		public bool IsFinished => isFinished;
+		public bool IsFinished => _reader.IsEndOfStream;
 	}
 }

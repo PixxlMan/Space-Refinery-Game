@@ -41,7 +41,12 @@ namespace Space_Refinery_Game.Audio
 		{
 			lock (SyncRoot)
 			{
-				if (musicQueue.Count == 0)
+				if (playedTracks > currentMusic?.Tracks.Length)
+				{
+					currentMusic = null;
+				}
+
+				if (currentMusic is null && musicQueue.Count == 0)
 				{
 					return null;
 				}
@@ -51,8 +56,12 @@ namespace Space_Refinery_Game.Audio
 					playedTracks = 0;
 					currentMusic = musicQueue.Dequeue();
 				}
+				
+				AudioClipPlayback playback = currentMusic.Tracks[playedTracks].CreatePlayback();
 
-				return currentMusic.Tracks[playedTracks].CreatePlayback();
+				playedTracks++;
+
+				return playback;
 			}
 		}
 

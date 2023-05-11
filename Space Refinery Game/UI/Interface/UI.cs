@@ -8,7 +8,7 @@ using FixedPrecision;
 using System.Numerics;
 using FXRenderer;
 using Space_Refinery_Game_Renderer;
-using static Space_Refinery_Game.InterlockedExtensions;
+using static Space_Refinery_Utilities.InterlockedExtensions;
 
 namespace Space_Refinery_Game
 {

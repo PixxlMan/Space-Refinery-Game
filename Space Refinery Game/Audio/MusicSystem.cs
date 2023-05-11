@@ -1,4 +1,5 @@
 ﻿using FixedPrecision;
+using ImGuiNET;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.IO.Pipes;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Vortice.Multimedia;
 
 namespace Space_Refinery_Game.Audio
 {
@@ -16,7 +18,42 @@ namespace Space_Refinery_Game.Audio
 		{
 			this.audioWorld = audioWorld;
 
-			MainGame.GlobalSettings.RegisterToSetting<SliderSetting>("Music volume", (volumeSlider) => MusicVolume = volumeSlider.Value / 100);
+			sequencialPlayback = SequencialPlayback.Create(audioWorld.AudioEngine);
+
+			sequencialPlayback.RequestNextClip += RequestNextClip;
+
+			audioWorld.VolumeChanged += (_) => VolumeChanged();
+
+			sequencialPlayback.Start();
+
+			MainGame.GlobalSettings.RegisterToSetting<SliderSetting>("Music volume", (volumeSlider) => MusicVolume = volumeSlider.Value / 100 );
+		}
+
+		public void VolumeChanged()
+		{
+			lock (SyncRoot)
+			{
+				sequencialPlayback.VolumeChanged(MusicVolume * audioWorld.MasterVolume);
+			}
+		}
+
+		private AudioClipPlayback RequestNextClip()
+		{
+			lock (SyncRoot)
+			{
+				if (musicQueue.Count == 0)
+				{
+					return null;
+				}
+
+				if (currentMusic is null || playedTracks == currentMusic.Tracks.Length)
+				{
+					playedTracks = 0;
+					currentMusic = musicQueue.Dequeue();
+				}
+
+				return currentMusic.Tracks[playedTracks].CreatePlayback();
+			}
 		}
 
 		private FixedDecimalLong8 musicVolume;
@@ -35,13 +72,24 @@ namespace Space_Refinery_Game.Audio
 
 		private HashSet<MusicTag> musicTags = new();
 
+		private SequencialPlayback sequencialPlayback;
+
+		private int playedTracks;
+
+		private MusicResource currentMusic;
+
 		/// <summary>
 		/// Setting the value below zero or above one will result in the value being clamped to whichever is closest.
 		/// </summary>
 		public FixedDecimalLong8 MusicVolume
 		{
 			get => musicVolume;
-			set => FixedDecimalLong8.Clamp(musicVolume = value, 0, 1);
+			set
+			{
+				musicVolume = FixedDecimalLong8.Clamp(value, 0, 1);
+
+				VolumeChanged();
+			}
 		}
 
 		public void RegisterMusic(MusicResource musicResource)
@@ -102,20 +150,6 @@ namespace Space_Refinery_Game.Audio
 						musicQueue.Enqueue(musicResource);
 					}
 				}
-			}
-		}
-
-		public void PlayNext()
-		{
-			lock (SyncRoot)
-			{
-				if (musicQueue.Count == 0)
-				{
-					return;
-				}
-
-				var music = musicQueue.Dequeue();
-				music.Tracks[0].Play(musicVolume);
 			}
 		}
 

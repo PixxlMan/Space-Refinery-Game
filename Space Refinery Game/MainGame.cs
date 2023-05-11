@@ -100,8 +100,6 @@ public sealed class MainGame
 
 		DebugSettings.AccessSetting("Fill music queue", (ActionDebugSetting)AudioWorld.MusicSystem.FillQueue);
 
-		DebugSettings.AccessSetting("Play next", (ActionDebugSetting)AudioWorld.MusicSystem.PlayNext);
-
 		if (GlobalReferenceHandler is null)
 		{
 			GlobalReferenceHandler = DeserializeGlobalReferenceHandler(new SerializationData(GameData));

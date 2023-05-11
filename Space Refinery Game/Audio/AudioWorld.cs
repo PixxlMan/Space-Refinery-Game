@@ -40,8 +40,15 @@ namespace Space_Refinery_Game.Audio
 		public FixedDecimalLong8 MasterVolume
 		{
 			get => masterVolume;
-			set => FixedDecimalLong8.Clamp(masterVolume = value, 0, 1);
+			set
+			{
+				masterVolume = FixedDecimalLong8.Clamp(value, 0, 1);
+
+				VolumeChanged?.Invoke(masterVolume);
+			}
 		}
+
+		public event Action<FixedDecimalLong8> VolumeChanged;
 
 		public MusicSystem MusicSystem { get; private set; }
 

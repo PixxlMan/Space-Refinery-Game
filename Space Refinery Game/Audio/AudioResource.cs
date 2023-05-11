@@ -1,9 +1,14 @@
 ﻿using FixedPrecision;
-using SharpAudio.Codec;
 using System.Xml;
 
 namespace Space_Refinery_Game.Audio
 {
+	/// <summary>
+	/// Represents a serializable auditory resource.
+	/// </summary>
+	/// <remarks>
+	/// Not thread safe.
+	/// </remarks>
 	public class AudioResource : ISerializableReference
 	{
 		private AudioResource()
@@ -12,8 +17,6 @@ namespace Space_Refinery_Game.Audio
 		}
 
 		public AudioWorld AudioWorld { get; private set; }
-		
-		public SoundStream SoundStream { get; private set; }
 
 		public string ResourcePath { get; private set; }
 
@@ -23,16 +26,9 @@ namespace Space_Refinery_Game.Audio
 
 		public Guid SerializableReferenceGUID { get; private set; } = Guid.NewGuid();
 
-		public void Play(FixedDecimalLong8 playbackVolume)
+		public AudioClipPlayback CreatePlayback()
 		{
-			SoundStream.Volume = (float)(AudioWorld.MasterVolume * ClipVolume * playbackVolume);
-			SoundStream.Play();
-		}
-
-		public void PlayAbsolute(FixedDecimalLong8 absoluteVolume)
-		{
-			SoundStream.Volume = (float)absoluteVolume;
-			SoundStream.Play();
+			return new AudioClipPlayback(ResourcePath);
 		}
 
 		public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
@@ -44,10 +40,6 @@ namespace Space_Refinery_Game.Audio
 			Name = reader.ReadString(nameof(Name));
 
 			ResourcePath = reader.ReadString(nameof(ResourcePath));
-
-			Logging.Log($"Streaming audio file '{Name}' from path '{Path.GetFullPath(ResourcePath)}'.");
-
-			SoundStream = new(File.OpenRead(ResourcePath), serializationData.GameData.AudioWorld.AudioEngine);
 
 			ClipVolume = reader.DeserializeFixedDecimalLong8(nameof(ClipVolume));
 		}

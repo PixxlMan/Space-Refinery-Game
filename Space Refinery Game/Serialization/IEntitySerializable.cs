@@ -73,11 +73,25 @@ namespace Space_Refinery_Game
 		public static T DeserializeEntitySerializableWithoutEmbeddedType<T>(this XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 			where T : IEntitySerializable
 			=> IEntitySerializable.DeserializeWithoutEmbeddedType<T>(reader, serializationData, referenceHandler);
-		
+
 		public static void SerializeWithEmbeddedType(this XmlWriter writer, IEntitySerializable entitySerializable)
 			=> IEntitySerializable.SerializeWithEmbeddedType(writer, entitySerializable);
 
 		public static IEntitySerializable DeserializeEntitySerializableWithEmbeddedType(this XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 			=> IEntitySerializable.DeserializeWithEmbeddedType(reader, serializationData, referenceHandler);
+
+
+		public static void SerializeWithoutEmbeddedType(this XmlWriter writer, IEntitySerializable entitySerializable, string name)
+			=> IEntitySerializable.SerializeWithoutEmbeddedType(writer, entitySerializable, name);
+
+		public static T DeserializeEntitySerializableWithoutEmbeddedType<T>(this XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler, string name)
+			where T : IEntitySerializable
+			=> IEntitySerializable.DeserializeWithoutEmbeddedType<T>(reader, serializationData, referenceHandler, name);
+		
+		public static void SerializeWithEmbeddedType(this XmlWriter writer, IEntitySerializable entitySerializable, string name)
+			=> IEntitySerializable.SerializeWithEmbeddedType(writer, entitySerializable, name);
+
+		public static IEntitySerializable DeserializeEntitySerializableWithEmbeddedType(this XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler, string name)
+			=> IEntitySerializable.DeserializeWithEmbeddedType(reader, serializationData, referenceHandler, name);
 	}
 }

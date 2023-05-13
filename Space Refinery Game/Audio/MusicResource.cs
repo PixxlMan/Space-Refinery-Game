@@ -1,10 +1,14 @@
 ﻿using SharpAudio.Codec;
+using Space_Refinery_Utilities;
 using System.Collections.Generic;
 using System.Xml;
 using Vortice.Direct3D11;
 
 namespace Space_Refinery_Game.Audio
 {
+	/// <remarks>
+	/// Not thread safe.
+	/// </remarks>
 	public class MusicResource : ISerializableReference
 	{
 		private MusicResource()
@@ -18,7 +22,13 @@ namespace Space_Refinery_Game.Audio
 
 		public Guid SerializableReferenceGUID { get; private set; } = Guid.NewGuid();
 
-		public AudioResource[] Tracks { get; private set; }
+		public Track[] Tracks { get; private set; }
+
+		public Track Intro { get; private set; }
+
+		public List<Track> Loops { get; private set; } = new();
+
+		public Track? Outro { get; private set; }
 
 		public HashSet<MusicTag> Tags { get; private set; } = new();
 
@@ -30,9 +40,9 @@ namespace Space_Refinery_Game.Audio
 
 			Name = reader.ReadString(nameof(Name));
 
-			AudioResource[] tracks = null;
+			Track[] tracks = null;
 
-			reader.DeserializeCollection((reader, i) => reader.DeserializeReference<AudioResource>(referenceHandler, (audioResource) => tracks[i] = audioResource), (count) => tracks = new AudioResource[count], nameof(Tracks));
+			reader.DeserializeCollection((reader, i) => tracks[i] = reader.DeserializeEntitySerializableWithoutEmbeddedType<Track>(serializationData, referenceHandler, nameof(Track)), (count) => tracks = new Track[count], nameof(Tracks));
 			
 			reader.DeserializeCollection((reader) => Tags.AddUnique(reader.DeserializeEnum<MusicTag>("Tag"), "Duplicate tag"), nameof(Tags));
 
@@ -41,6 +51,24 @@ namespace Space_Refinery_Game.Audio
 			serializationData.DeserializationCompleteEvent += () =>
 			{
 				Tracks = tracks;
+
+				foreach (Track track in Tracks)
+				{
+					switch (track.MusicPart)
+					{
+						case MusicPart.Intro:
+							Intro = track;
+							break;
+						case MusicPart.Loop:
+							Loops.Add(track);
+							break;
+						case MusicPart.Outro:
+							Outro = track;
+							break;
+						default:
+							throw new GlitchInTheMatrixException();
+					}
+				}
 			};
 		}
 
@@ -50,24 +78,55 @@ namespace Space_Refinery_Game.Audio
 
 			writer.Serialize(Name, nameof(Name));
 
-			writer.Serialize(Tracks, nameof(Tracks));
+			writer.Serialize(Tracks, (writer, track) => writer.SerializeWithoutEmbeddedType(track, nameof(Track)), nameof(Tracks));
 
 			writer.Serialize(Tags, (writer, tag) => writer.Serialize(tag, "Tag"), nameof(Tags));
 		}
 	}
 
-	/*public struct Track : IEntitySerializable
+	public class Track : IEntitySerializable
 	{
 		public AudioResource AudioResource { get; private set; }
 
+		public MusicPart MusicPart { get; private set; }
+
 		public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 		{
-			throw new NotImplementedException();
+			//reader.ReadStartElement(nameof(Track));
+			{
+				reader.DeserializeReference<AudioResource>(referenceHandler, (ar) => AudioResource = ar, nameof(AudioResource));
+				MusicPart = reader.DeserializeEnum<MusicPart>(nameof(MusicPart));
+			}
+			//reader.ReadEndElement();
 		}
 
 		public void SerializeState(XmlWriter writer)
 		{
-			throw new NotImplementedException();
+			//writer.WriteStartElement(nameof(Track));
+			{
+				writer.SerializeReference(AudioResource, nameof(AudioResource));
+				writer.Serialize(MusicPart, nameof(MusicPart));
+			}
+			//writer.WriteEndElement();
 		}
-	}*/
+	}
+
+	/// <summary>
+	/// Describes how the audio in a track should be used in the conext of a song.
+	/// </summary>
+	public enum MusicPart
+	{
+		/// <summary>
+		/// This audio is played once, at the start of the song. Should seamlessly transition from silence to any loop.
+		/// </summary>
+		Intro,
+		/// <summary>
+		/// This audio can be looped and combined with any other loop, plays after the intro but before the outro. Should seamlessly transition to any loop or the outro.
+		/// </summary>
+		Loop,
+		/// <summary>
+		/// This audio is played once, at the end of the song. Should seamlessly transition from any loop to silence.
+		/// </summary>
+		Outro
+	}
 }

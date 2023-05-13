@@ -1,6 +1,7 @@
 ﻿using FixedPrecision;
 using ImGuiNET;
 using Microsoft.VisualBasic;
+using Space_Refinery_Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -41,27 +42,50 @@ namespace Space_Refinery_Game.Audio
 		{
 			lock (SyncRoot)
 			{
-				if (playedTracks > currentMusic?.Tracks.Length)
+				if (currentMusic is null)
 				{
-					currentMusic = null;
+					return NewMusic();
 				}
 
-				if (currentMusic is null && musicQueue.Count == 0)
+				if (nextMusicPart == MusicPart.Loop)
+				{
+					if (playedLoops >= loops)
+					{
+						nextMusicPart = MusicPart.Outro;
+					}
+					playedLoops++;
+					return currentMusic.Loops.SelectRandom().AudioResource.CreatePlayback();
+				}
+
+				if (nextMusicPart == MusicPart.Outro)
+				{
+					if (currentMusic.Outro is null)
+					{
+						return NewMusic();
+					}
+					else
+					{
+						var playback = currentMusic.Outro.AudioResource.CreatePlayback();
+						currentMusic = null;
+						playedLoops = 0;
+						loops = Random.Shared.Next(1, 4);
+						return playback;
+					}
+				}
+			}
+
+			throw new GlitchInTheMatrixException();
+
+			AudioClipPlayback NewMusic()
+			{
+				if (musicQueue.Count == 0)
 				{
 					return null;
 				}
 
-				if (currentMusic is null || playedTracks == currentMusic.Tracks.Length)
-				{
-					playedTracks = 0;
-					currentMusic = musicQueue.Dequeue();
-				}
-				
-				AudioClipPlayback playback = currentMusic.Tracks[playedTracks].CreatePlayback();
-
-				playedTracks++;
-
-				return playback;
+				nextMusicPart = MusicPart.Loop;
+				currentMusic = musicQueue.Dequeue();
+				return currentMusic.Intro.AudioResource.CreatePlayback();
 			}
 		}
 
@@ -83,9 +107,13 @@ namespace Space_Refinery_Game.Audio
 
 		private SequencialPlayback sequencialPlayback;
 
-		private int playedTracks;
-
 		private MusicResource currentMusic;
+
+		private int loops;
+
+		private int playedLoops;
+
+		private MusicPart nextMusicPart;
 
 		/// <summary>
 		/// Setting the value below zero or above one will result in the value being clamped to whichever is closest.

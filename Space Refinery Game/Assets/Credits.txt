@@ -1,4 +1,4 @@
-﻿SharpAudio MIT
-OpenALSoft URL: https://www.openal-soft.org/ LICENSE: LGPL
+﻿SharpAudio															LICENSE: MIT
+OpenALSoft		URL: https://www.openal-soft.org/					LICENSE: LGPL
 
 todo: fill this...

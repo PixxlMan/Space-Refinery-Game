@@ -130,7 +130,7 @@ namespace Space_Refinery_Game
 				writer.Serialize(guidToSerializableReference.Values, (w, s) => w.SerializeWithEmbeddedType(s), nameof(SerializationReferenceHandler));
 			}
 		}
-		
+
 		public static SerializationReferenceHandler Deserialize(XmlReader reader, SerializationData serializationData, bool exitAllowEventualReferenceModeBeforeReturning = true)
 		{
 			SerializationReferenceHandler referenceHandler = new();

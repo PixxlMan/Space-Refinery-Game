@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SerializationReferenceHandler>
+	<Count>1</Count>
+	<Elements>
+		<IEntitySerializable>
+			<Type>Space_Refinery_Game.PipeType</Type>
+			<GUID>a5238a39-a752-417c-8027-6686e2bb7b74</GUID>
+			<Name>Space Dock</Name>
+			<Shape>Cylindrical</Shape>
+			<FlowableVolume>0.08</FlowableVolume>
+			<Friction>0.04</Friction>
+			<ConnectorPlacements>
+				<Count>1</Count>
+				<Elements>
+					<Position>
+						<X>0.5</X>
+						<Y>0</Y>
+						<Z>0</Z>
+					</Position>
+					<Direction>
+						<X>1</X>
+						<Y>0</Y>
+						<Z>0</Z>
+					</Direction>
+				</Elements>
+			</ConnectorPlacements>
+			<ConnectorProperties>
+				<Count>1</Count>
+				<Elements>
+					<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
+				</Elements>
+			</ConnectorProperties>
+			<HasConnectorNames>False</HasConnectorNames>
+			<ModelPath>Assets\Models\Machinery\SpaceDock.obj</ModelPath>
+			<Type>Space_Refinery_Game.SpaceDockPipe</Type>
+		</IEntitySerializable>
+	</Elements>
+</SerializationReferenceHandler>

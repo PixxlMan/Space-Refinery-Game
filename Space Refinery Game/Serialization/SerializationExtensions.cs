@@ -391,7 +391,7 @@ namespace Space_Refinery_Game
 				{
 					if (count == 0)
 					{
-						reader.ReadEndElement();
+						reader.ReadEndElement(); // shouldn't it be two read end elements?
 
 						return;
 					}

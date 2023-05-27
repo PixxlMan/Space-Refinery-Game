@@ -28,13 +28,7 @@ public sealed class MainGame
 		var stopwatch = new Stopwatch();
 		stopwatch.Start();
 
-		using var reader = XmlReader.Create(Path.Combine(Environment.CurrentDirectory, "Assets", "GlobalReferences.xml"));
-
-		reader.ReadStartElement("GlobalReferences");
-
-		var globalReferenceHandler = SerializationReferenceHandler.Deserialize(reader, serializationData, false);
-
-		reader.ReadEndElement();
+		var globalReferenceHandler = new SerializationReferenceHandler();
 
 		foreach (var serializationReferenceXmlFiles in Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "Assets"), "*.srh.xml", SearchOption.AllDirectories))
 		{

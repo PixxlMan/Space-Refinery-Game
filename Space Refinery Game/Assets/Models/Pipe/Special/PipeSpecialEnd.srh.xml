@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SerializationReferenceHandler>
+	<Count>1</Count>
+	<Elements>
+		<IEntitySerializable>
+			<Type>Space_Refinery_Game.PipeType</Type>
+			<GUID>ba59d074-7593-4e93-924a-99b455758164</GUID>
+			<Name>Pipe End</Name>
+			<Shape>Cylindrical</Shape>
+			<FlowableVolume>0</FlowableVolume>
+			<Friction>0.04</Friction>
+			<ConnectorPlacements>
+				<Count>1</Count>
+				<Elements>
+					<Position>
+						<X>0.0125</X>
+						<Y>0</Y>
+						<Z>0</Z>
+					</Position>
+					<Direction>
+						<X>1</X>
+						<Y>0</Y>
+						<Z>0</Z>
+					</Direction>
+				</Elements>
+			</ConnectorPlacements>
+			<ConnectorProperties>
+				<Count>2</Count>
+				<Elements>
+					<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
+					<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
+				</Elements>
+			</ConnectorProperties>
+			<HasConnectorNames>False</HasConnectorNames>
+			<ModelPath>Assets\Models\Pipe\Special\PipeSpecialEnd.obj</ModelPath>
+			<Type>Space_Refinery_Game.OrdinaryPipe</Type>
+		</IEntitySerializable>
+	</Elements>
+</SerializationReferenceHandler>

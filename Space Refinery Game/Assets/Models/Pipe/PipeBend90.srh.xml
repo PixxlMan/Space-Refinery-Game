@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SerializationReferenceHandler>
+	<Count>1</Count>
+	<Elements>
+		<IEntitySerializable>
+			<Type>Space_Refinery_Game.PipeType</Type>
+			<GUID>133ddca8-9878-41cf-8aef-0f223098c8fa</GUID>
+			<Name>90 Bend Pipe</Name>
+			<Shape>Cylindrical</Shape>
+			<FlowableVolume>0.16</FlowableVolume>
+			<Friction>0.04</Friction>
+			<ConnectorPlacements>
+				<Count>2</Count>
+				<Elements>
+					<Position>
+						<X>0</X>
+						<Y>-0.5</Y>
+						<Z>0</Z>
+					</Position>
+					<Direction>
+						<X>0</X>
+						<Y>-1</Y>
+						<Z>0</Z>
+					</Direction>
+					<Position>
+						<X>-0.5</X>
+						<Y>0</Y>
+						<Z>0</Z>
+					</Position>
+					<Direction>
+						<X>-1</X>
+						<Y>0</Y>
+						<Z>0</Z>
+					</Direction>
+				</Elements>
+			</ConnectorPlacements>
+			<ConnectorProperties>
+				<Count>2</Count>
+				<Elements>
+					<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
+					<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
+				</Elements>
+			</ConnectorProperties>
+			<HasConnectorNames>False</HasConnectorNames>
+			<ModelPath>Assets\Models\Pipe\PipeBend90.obj</ModelPath>
+			<Type>Space_Refinery_Game.OrdinaryPipe</Type>
+		</IEntitySerializable>
+	</Elements>
+</SerializationReferenceHandler>

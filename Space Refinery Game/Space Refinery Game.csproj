@@ -25,17 +25,19 @@
     <None Remove="Assets\Chemical types\Hydrogen.srh.xml" />
     <None Remove="Assets\Chemical types\Oxygen.srh.xml" />
     <None Remove="Assets\Chemical types\Water.srh.xml" />
+    <None Remove="Assets\DefaultPipeConnector.srh.xml" />
     <None Remove="Assets\External\Fonts\OpenSans\LICENSE.txt" />
     <None Remove="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Bold.ttf" />
     <None Remove="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Light.ttf" />
     <None Remove="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Regular.ttf" />
-    <None Remove="Assets\GlobalReferences.xml" />
     <None Remove="Assets\Models\Machinery\MachineryCombustionChamber.obj" />
     <None Remove="Assets\Models\Machinery\MachineryCombustionChamber.srh.xml" />
     <None Remove="Assets\Models\Machinery\MachineryElectrolysis.obj" />
     <None Remove="Assets\Models\Machinery\MachineryElectrolysis.srh.xml" />
     <None Remove="Assets\Models\Machinery\MachineryGeneric.obj" />
     <None Remove="Assets\Models\Machinery\SpaceDock.obj" />
+    <None Remove="Assets\Models\Machinery\SpaceDock.srh.xml" />
+    <None Remove="Assets\Models\PipeEnd.srh.xml" />
     <None Remove="Assets\Models\Pipe\CleanedUpPipe.obj" />
     <None Remove="Assets\Models\Pipe\Pipe.obj" />
     <None Remove="Assets\Models\Pipe\Pipe180Bend.obj" />
@@ -43,14 +45,21 @@
     <None Remove="Assets\Models\Pipe\PipeBend180.obj" />
     <None Remove="Assets\Models\Pipe\PipeBend45.obj" />
     <None Remove="Assets\Models\Pipe\PipeBend90.obj" />
+    <None Remove="Assets\Models\Pipe\PipeBend90.srh.xml" />
+    <None Remove="Assets\Models\Pipe\PipeDivergeT.xml" />
+    <None Remove="Assets\Models\Pipe\PipeDivergeX.srh.xml" />
+    <None Remove="Assets\Models\Pipe\PipeSpecialPump.srh.xml" />
     <None Remove="Assets\Models\Pipe\PipeStraight.obj" />
     <None Remove="Assets\Models\Pipe\PipeStraightDivergeT.obj" />
     <None Remove="Assets\Models\Pipe\PipeStraightDivergeX.obj" />
     <None Remove="Assets\Models\Pipe\PipeStraightDivergeY.obj" />
+    <None Remove="Assets\Models\Pipe\Special\MachineryElectrolysis.srh.xml" />
     <None Remove="Assets\Models\Pipe\Special\PipeSpecialEnd.obj" />
     <None Remove="Assets\Models\Pipe\Special\PipeSpecialPump.obj" />
     <None Remove="Assets\Models\Pipe\Special\PipeSpecialValve.obj" />
+    <None Remove="Assets\Models\Pipe\Special\PipeSpecialValve.srh.xml" />
     <None Remove="Assets\Models\Pipe\Special\PipeSpecialValveInternalBlocker.obj" />
+    <None Remove="Assets\Models\SpaceDock.srh.xml" />
     <None Remove="Assets\Reaction Types\Electrolysis.srh.xml" />
     <None Remove="Assets\Reaction Types\HydrogenOxygenCombustion.srh.xml" />
     <None Remove="Assets\Reaction Types\PhaseChange.srh.xml" />
@@ -93,7 +102,7 @@
     <Content Include="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Regular.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\GlobalReferences.xml">
+    <Content Include="Assets\DefaultPipeConnector.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Models\Machinery\MachineryCombustionChamber.obj">
@@ -111,7 +120,13 @@
     <Content Include="Assets\Models\Machinery\MachineryGeneric.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Models\Machinery\SpaceDock.srh.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Models\Machinery\SpaceDock.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Models\Pipe\PipeDivergeX.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Models\Pipe\PipeBend180.obj">
@@ -121,6 +136,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Models\Pipe\PipeBend90.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Models\Pipe\PipeDivergeT.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Models\Pipe\PipeBend90.srh.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Models\Pipe\Special\PipeSpecialPump.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Models\Pipe\PipeStraight.obj">
@@ -135,6 +159,9 @@
     <Content Include="Assets\Models\Pipe\PipeStraightDivergeY.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Models\Pipe\PipeStraight.srh.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Models\Pipe\Special\PipeSpecialEnd.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -145,6 +172,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Models\Pipe\Special\PipeSpecialValveInternalBlocker.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Models\Pipe\Special\PipeSpecialEnd.srh.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Models\Pipe\Special\PipeSpecialValve.srh.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\EmptySRHFile.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Reaction Types\PhaseChange.srh.xml">

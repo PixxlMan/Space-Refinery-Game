@@ -13,6 +13,8 @@ namespace Space_Refinery_Game;
 
 partial class UI
 {
+	public static Action DoDebugStatusUI;
+
 	private void DoStatus()
 	{
 		ImGui.Begin("Status", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
@@ -32,6 +34,8 @@ partial class UI
 			{
 				ImGui.TextUnformatted(gameData.GraphicsWorld.ResponseSpinner.ToString());
 			}
+
+			DoDebugStatusUI?.Invoke();
 		}
 		ImGui.End();
 	}

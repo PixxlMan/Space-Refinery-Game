@@ -13,23 +13,31 @@ namespace Space_Refinery_Utilities;
 /// </summary>
 public static class DebugStopPoints
 {
-	static Guid guidToStop;
+	static object objectToStop;
+
+	static object syncRoot = new();
 
 #if DEBUG
-	public static void RegisterStopPoint(Guid guid)
+	public static void RegisterStopPoint(object objectToStop)
 	{
-		guidToStop = guid;
+		lock (syncRoot)
+		{
+			DebugStopPoints.objectToStop = objectToStop;
+		}
 	}
 #endif
 
 	[DebuggerHidden]
-	public static void TickStopPoint(Guid guid)
+	public static void TickStopPoint(object obj)
 	{
 #if DEBUG
-		if (guid == guidToStop)
+		lock (syncRoot)
 		{
-			guidToStop = Guid.NewGuid(); // Make sure to only stop once.
-			Debugger.Break();
+			if (ReferenceEquals(objectToStop, obj))
+			{
+				obj = syncRoot; // Make sure to only stop once.
+				Debugger.Break();
+			}
 		}
 #endif
 	}

@@ -97,7 +97,7 @@ namespace Space_Refinery_Game
 #if DEBUG
 				if (InputTracker.GetKeyDown(Key.F10))
 				{
-					DebugStopPoints.RegisterStopPoint(construction.SerializableReferenceGUID);
+					DebugStopPoints.RegisterStopPoint(construction.SerializableReference);
 				}
 #endif
 				{

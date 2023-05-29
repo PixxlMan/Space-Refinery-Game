@@ -26,7 +26,7 @@ namespace Space_Refinery_Game
 		public override void Tick()
 		{
 #if DEBUG
-			DebugStopPoints.TickStopPoint(SerializableReferenceGUID);
+			DebugStopPoints.TickStopPoint(SerializableReference);
 #endif
 
 			ResourceContainer.Tick(Time.TickInterval);

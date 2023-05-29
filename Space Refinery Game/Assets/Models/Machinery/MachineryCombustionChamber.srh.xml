@@ -4,7 +4,7 @@
 	<Elements>
 		<IEntitySerializable>
 			<Type>Space_Refinery_Game.PipeType</Type>
-			<GUID>3cb911a4-cecd-48c5-b793-a8776476feee</GUID>
+			<Reference>Combustion Chamber</Reference>
 			<Name>Combustion Chamber</Name>
 			<Shape>Cylindrical</Shape>
 			<FlowableVolume>0.16</FlowableVolume>
@@ -47,9 +47,9 @@
 			<ConnectorProperties>
 				<Count>3</Count>
 				<Elements>
-					<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
-					<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
-					<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
+					<Reference>DefaultPipeConnector</Reference>
+					<Reference>DefaultPipeConnector</Reference>
+					<Reference>DefaultPipeConnector</Reference>
 				</Elements>
 			</ConnectorProperties>
 			<HasConnectorNames>True</HasConnectorNames>

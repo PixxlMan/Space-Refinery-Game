@@ -18,7 +18,7 @@ namespace Space_Refinery_Game
 			ConnectorDiameter = connectorDiameter;
 			ConnectorFlowAreaDiameter = connectorFlowAreaDiameter;
 
-			SerializableReferenceGUID = Guid.NewGuid();
+			SerializableReference = Guid.NewGuid();
 
 			referenceHandler.RegisterReference(this);
 		}
@@ -28,7 +28,7 @@ namespace Space_Refinery_Game
 
 		}
 
-		public Guid SerializableReferenceGUID { get; private set; }
+		public SerializableReference SerializableReference { get; private set; }
 
 		public void SerializeState(XmlWriter writer)
 		{
@@ -43,7 +43,7 @@ namespace Space_Refinery_Game
 
 		public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 		{
-			SerializableReferenceGUID = reader.ReadReferenceGUID();
+			SerializableReference = reader.ReadReference();
 
 			Shape = reader.DeserializeEnum<PipeShape>(nameof(Shape));
 

@@ -57,7 +57,7 @@ namespace Space_Refinery_Game
 
 		public HashSet<ChemicalType> NecessaryChemicals { get; private set; }
 
-		public Guid SerializableReferenceGUID { get; private set; }
+		public SerializableReference SerializableReference { get; private set; }
 
 		public bool CanOccurSpontaneously { get; protected set; }
 
@@ -82,7 +82,7 @@ namespace Space_Refinery_Game
 		{
 			reader.ReadStartElement(nameof(ReactionType));
 			{
-				SerializableReferenceGUID = reader.ReadReferenceGUID();
+				SerializableReference = reader.ReadReference();
 
 				ReactionName = reader.ReadString(nameof(ReactionName));
 

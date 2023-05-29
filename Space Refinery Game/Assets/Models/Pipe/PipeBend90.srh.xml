@@ -4,7 +4,7 @@
 	<Elements>
 		<IEntitySerializable>
 			<Type>Space_Refinery_Game.PipeType</Type>
-			<GUID>133ddca8-9878-41cf-8aef-0f223098c8fa</GUID>
+			<Reference>90 Bend Pipe</Reference>
 			<Name>90 Bend Pipe</Name>
 			<Shape>Cylindrical</Shape>
 			<FlowableVolume>0.16</FlowableVolume>
@@ -37,8 +37,8 @@
 			<ConnectorProperties>
 				<Count>2</Count>
 				<Elements>
-					<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
-					<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
+					<Reference>DefaultPipeConnector</Reference>
+					<Reference>DefaultPipeConnector</Reference>
 				</Elements>
 			</ConnectorProperties>
 			<HasConnectorNames>False</HasConnectorNames>

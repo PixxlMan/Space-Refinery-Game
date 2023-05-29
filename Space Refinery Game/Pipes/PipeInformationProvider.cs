@@ -20,7 +20,7 @@ namespace Space_Refinery_Game
 
 			if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show debug information in information provider"))
 			{
-				ImGui.Text("GUID: " + Pipe.SerializableReferenceGUID.ToString());
+				ImGui.Text("GUID: " + Pipe.SerializableReference.ToString());
 
 				ImGui.Text("Postition: " + Pipe.Transform.Position.ToString());
 

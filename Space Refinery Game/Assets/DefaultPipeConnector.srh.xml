@@ -4,7 +4,7 @@
 	<Elements>
 		<IEntitySerializable>
 			<Type>Space_Refinery_Game.PipeConnectorProperties</Type>
-			<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
+			<Reference>DefaultPipeConnector</Reference>
 			<Shape>Cylindrical</Shape>
 			<ConnectorDiameter>0.475</ConnectorDiameter>
 			<ConnectorFlowAreaDiameter>0.425</ConnectorFlowAreaDiameter>

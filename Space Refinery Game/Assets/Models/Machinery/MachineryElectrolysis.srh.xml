@@ -4,7 +4,7 @@
 	<Elements>
 		<IEntitySerializable>
 			<Type>Space_Refinery_Game.PipeType</Type>
-			<GUID>0490792d-b771-42e9-8e57-a0cb2dec1138</GUID>
+			<Reference>Electrolysis Machine</Reference>
 			<Name>Electrolysis Machine</Name>
 			<Shape>Cylindrical</Shape>
 			<FlowableVolume>0.16</FlowableVolume>
@@ -47,9 +47,9 @@
 			<ConnectorProperties>
 				<Count>3</Count>
 				<Elements>
-					<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
-					<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
-					<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
+					<Reference>DefaultPipeConnector</Reference>
+					<Reference>DefaultPipeConnector</Reference>
+					<Reference>DefaultPipeConnector</Reference>
 				</Elements>
 			</ConnectorProperties>
 			<HasConnectorNames>True</HasConnectorNames>

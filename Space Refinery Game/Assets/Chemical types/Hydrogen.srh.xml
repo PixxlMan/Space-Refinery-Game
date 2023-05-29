@@ -5,7 +5,7 @@
 		<IEntitySerializable>
 			<Type>Space_Refinery_Game.ChemicalType</Type>
 			<ChemicalType>
-				<GUID>b0ccba05-c046-4378-b45e-52fcb715b1f4</GUID>
+				<Reference>Hydrogen</Reference>
 				<ChemicalName>Hydrogen</ChemicalName>
 				<MolarMass>1.008</MolarMass>
 				<EnthalpyOfVaporization>446.1</EnthalpyOfVaporization>

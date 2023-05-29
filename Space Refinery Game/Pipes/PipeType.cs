@@ -34,7 +34,7 @@ namespace Space_Refinery_Game
 
 		public BatchRenderable BatchRenderable { get; private set; }
 
-		public Guid SerializableReferenceGUID { get; private set; }
+		public SerializableReference SerializableReference { get; private set; }
 
 		private static PipeConnectorProperties standardPipeConnectorProperties;
 		public static PipeConnectorProperties StandardConnectorProperties
@@ -63,7 +63,7 @@ namespace Space_Refinery_Game
 			PipeProperties = pipeProperties;
 			TypeOfPipe = typeOfPipe;
 
-			SerializableReferenceGUID = Guid.NewGuid();
+			SerializableReference = Guid.NewGuid();
 
 			if (!PipeTypes.TryAdd(Name, this))
 			{
@@ -102,7 +102,7 @@ namespace Space_Refinery_Game
 
 		public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 		{
-			SerializableReferenceGUID = reader.ReadReferenceGUID();
+			SerializableReference = reader.ReadReference();
 
 			Name = reader.ReadString(nameof(Name));
 

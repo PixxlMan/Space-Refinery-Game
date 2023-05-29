@@ -5,8 +5,8 @@
 		<IEntitySerializable>
 			<Type>Space_Refinery_Game.PhaseChangeReactionType</Type>
 			<ReactionType>
-				<GUID>758dd8ae-49d2-4432-90a0-f53b3ed34735</GUID>
-				<ReactionName>Phase change</ReactionName>
+				<Reference>Phase Change</Reference>
+				<ReactionName>Phase Change</ReactionName>
 				<CanOccurSpontaneously>True</CanOccurSpontaneously>
 				<NecessaryChemicals>
 					<Count>0</Count>

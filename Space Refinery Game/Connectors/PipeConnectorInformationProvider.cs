@@ -31,7 +31,7 @@ namespace Space_Refinery_Game
 				ImGui.Text($"Pipe A: {(PipeConnector.Pipes.pipeA is null ? "None" : "Connected")}");
 				ImGui.Text($"Pipe B: {(PipeConnector.Pipes.pipeB is null ? "None" : "Connected")}");
 
-				ImGui.Text("GUID: " + PipeConnector.SerializableReferenceGUID.ToString());
+				ImGui.Text("GUID: " + PipeConnector.SerializableReference.ToString());
 
 				ImGui.Text("Postition: " + PipeConnector.Transform.Position.ToString());
 

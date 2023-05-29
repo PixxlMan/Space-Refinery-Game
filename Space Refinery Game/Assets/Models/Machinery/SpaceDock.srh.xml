@@ -4,7 +4,7 @@
 	<Elements>
 		<IEntitySerializable>
 			<Type>Space_Refinery_Game.PipeType</Type>
-			<GUID>a5238a39-a752-417c-8027-6686e2bb7b74</GUID>
+			<Reference>Space Dock</Reference>
 			<Name>Space Dock</Name>
 			<Shape>Cylindrical</Shape>
 			<FlowableVolume>0.08</FlowableVolume>
@@ -27,7 +27,7 @@
 			<ConnectorProperties>
 				<Count>1</Count>
 				<Elements>
-					<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
+					<Reference>DefaultPipeConnector</Reference>
 				</Elements>
 			</ConnectorProperties>
 			<HasConnectorNames>False</HasConnectorNames>

@@ -485,26 +485,24 @@ namespace Space_Refinery_Game
 			reader.ReadEndElement();
 		}
 
-		public static void SerializeReference(this XmlWriter writer, ISerializableReference serializableReference, string name = "GUID")
+		public static void SerializeReference(this XmlWriter writer, ISerializableReference serializableReference, string name = "Reference")
 		{
-			writer.WriteElementString(name, serializableReference.SerializableReferenceGUID.ToString());
+			writer.WriteElementString(name, serializableReference.SerializableReference.ToString());
 		}
 
-		public static Guid ReadReferenceGUID(this XmlReader reader, string name = "GUID")
+		public static SerializableReference ReadReference(this XmlReader reader, string name = "Reference")
 		{
-			Guid guid = Guid.Parse(reader.ReadElementString(name));
+			SerializableReference serializableReference = SerializableReference.ParseString(reader.ReadElementString(name));
 
-			return guid;
+			return serializableReference;
 		}
 
-		public static void DeserializeReference(this XmlReader reader, SerializationReferenceHandler referenceHandler, Action<ISerializableReference> referenceRegisteredCallback, string name = "GUID")
+		public static void DeserializeReference(this XmlReader reader, SerializationReferenceHandler referenceHandler, Action<ISerializableReference> referenceRegisteredCallback, string name = "Reference")
 		{
-			Guid guid = Guid.Parse(reader.ReadElementString(name));
-
-			referenceHandler.GetEventualReference(guid, referenceRegisteredCallback);
+			referenceHandler.GetEventualReference(ReadReference(reader, name), referenceRegisteredCallback);
 		}
 
-		public static void DeserializeReference<T>(this XmlReader reader, SerializationReferenceHandler referenceHandler, Action<T> refrenceRegisteredCallback, string? name = "GUID")
+		public static void DeserializeReference<T>(this XmlReader reader, SerializationReferenceHandler referenceHandler, Action<T> refrenceRegisteredCallback, string? name = "Reference")
 			where T : ISerializableReference
 		{
 			DeserializeReference(reader, referenceHandler, (s) => refrenceRegisteredCallback((T)s), name);

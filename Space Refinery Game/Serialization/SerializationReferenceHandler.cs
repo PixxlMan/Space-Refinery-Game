@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -15,16 +16,27 @@ namespace Space_Refinery_Game
 	{
 		public ISerializableReference this[Guid guid]
 		{
-			get { lock (SyncRoot) return guidToSerializableReference[guid]; }
+			get { lock (SyncRoot) return serializableReferenceLookup[guid]; }
 		}
 
-		public int ReferenceCount { get { lock (SyncRoot) return guidToSerializableReference.Count; } }
+		public ISerializableReference this[string referenceName]
+		{
+			get { lock (SyncRoot) return serializableReferenceLookup[referenceName]; }
+		}
+
+		public ISerializableReference this[SerializableReference reference]
+		{
+			get { lock (SyncRoot) return serializableReferenceLookup[reference]; }
+		}
+
+		public int ReferenceCount { get { lock (SyncRoot) return serializableReferenceLookup.Count; } }
 
 		public object SyncRoot = new();
 
-		private Dictionary<Guid, ISerializableReference> guidToSerializableReference = new();
+		// Even though it may seem like it, consider that the SerializableReferenceHandler isn't really a hot path anyways, except during serialization and deserialization.
+		private Dictionary<SerializableReference, ISerializableReference> serializableReferenceLookup = new(); // Possible optimization: would it be faster to have separate dictionaries for string lookups and guid lookups, or would it work out to about the same?
 
-		private Dictionary<Guid, List<Action<ISerializableReference>>> eventualReferencesToFulfill = new();
+		private Dictionary<SerializableReference, List<Action<ISerializableReference>>> eventualReferencesToFulfill = new();
 
 		public bool AllowUnresolvedEventualReferences { get; private set; }
 
@@ -53,7 +65,7 @@ namespace Space_Refinery_Game
 		{
 			lock (SyncRoot)
 			{
-				return guidToSerializableReference.ContainsKey(serializableReference.SerializableReferenceGUID);
+				return serializableReferenceLookup.ContainsKey(serializableReference.SerializableReference);
 			}
 		}
 
@@ -61,7 +73,23 @@ namespace Space_Refinery_Game
 		{
 			lock (SyncRoot)
 			{
-				return guidToSerializableReference.ContainsKey(guid);
+				return serializableReferenceLookup.ContainsKey(guid);
+			}
+		}
+
+		public bool ContainsReference(string name)
+		{
+			lock (SyncRoot)
+			{
+				return serializableReferenceLookup.ContainsKey(name);
+			}
+		}
+
+		public bool ContainsReference(SerializableReference serializableReference)
+		{
+			lock (SyncRoot)
+			{
+				return serializableReferenceLookup.ContainsKey(serializableReference);
 			}
 		}
 
@@ -69,35 +97,32 @@ namespace Space_Refinery_Game
 		{
 			lock (SyncRoot)
 			{
-				if (serializableReference.SerializableReferenceGUID == Guid.Empty)
-				{
-					throw new ArgumentException($"The GUID of this {nameof(ISerializableReference)} is not initialized!", nameof(serializableReference));
-				}
+				Debug.Assert(serializableReference.SerializableReference.IsValid, "The SerializableReference that was attempted to be registered was invalid.");
 
 				if (AllowUnresolvedEventualReferences)
 				{
-					if (eventualReferencesToFulfill.ContainsKey(serializableReference.SerializableReferenceGUID))
+					if (eventualReferencesToFulfill.ContainsKey(serializableReference.SerializableReference))
 					{
-						foreach (var eventualReferenceCallback in eventualReferencesToFulfill[serializableReference.SerializableReferenceGUID])
+						foreach (var eventualReferenceCallback in eventualReferencesToFulfill[serializableReference.SerializableReference])
 						{
 							eventualReferenceCallback(serializableReference);
 						}
 
-						eventualReferencesToFulfill.Remove(serializableReference.SerializableReferenceGUID);
+						eventualReferencesToFulfill.Remove(serializableReference.SerializableReference);
 					}
 				}
 
-				guidToSerializableReference.Add(serializableReference.SerializableReferenceGUID, serializableReference);
+				serializableReferenceLookup.Add(serializableReference.SerializableReference, serializableReference);
 			}
 		}
 
-		public void GetEventualReference(Guid guid, Action<ISerializableReference> referenceRegisteredCallback)
+		public void GetEventualReference(SerializableReference serializableReference, Action<ISerializableReference> referenceRegisteredCallback)
 		{
 			lock (SyncRoot)
 			{
-				if (ContainsReference(guid))
+				if (ContainsReference(serializableReference))
 				{
-					referenceRegisteredCallback(this[guid]);
+					referenceRegisteredCallback(this[serializableReference]);
 				}
 				else
 				{
@@ -106,13 +131,13 @@ namespace Space_Refinery_Game
 						throw new InvalidOperationException($"Cannot use eventual references when {nameof(AllowUnresolvedEventualReferences)} mode is not active!");
 					}
 
-					if (eventualReferencesToFulfill.ContainsKey(guid))
+					if (eventualReferencesToFulfill.ContainsKey(serializableReference))
 					{
-						eventualReferencesToFulfill[guid].Add(referenceRegisteredCallback);
+						eventualReferencesToFulfill[serializableReference].Add(referenceRegisteredCallback);
 					}
 					else
 					{
-						eventualReferencesToFulfill.TryAdd(guid, new List<Action<ISerializableReference>>() { referenceRegisteredCallback });
+						eventualReferencesToFulfill.TryAdd(serializableReference, new List<Action<ISerializableReference>>() { referenceRegisteredCallback });
 					}
 				}
 			}
@@ -124,10 +149,11 @@ namespace Space_Refinery_Game
 			{
 				if (AllowUnresolvedEventualReferences)
 				{
+					// add justification why in comment here
 					throw new InvalidOperationException($"Cannot serialize when {nameof(AllowUnresolvedEventualReferences)} mode is active!");
 				}
 
-				writer.Serialize(guidToSerializableReference.Values, (w, s) => w.SerializeWithEmbeddedType(s), nameof(SerializationReferenceHandler));
+				writer.Serialize(serializableReferenceLookup.Values, (w, s) => w.SerializeWithEmbeddedType(s), nameof(SerializationReferenceHandler));
 			}
 		}
 
@@ -166,7 +192,7 @@ namespace Space_Refinery_Game
 		{
 			lock (SyncRoot)
 			{
-				guidToSerializableReference.Remove(serializableReference.SerializableReferenceGUID);
+				serializableReferenceLookup.Remove(serializableReference.SerializableReference);
 			}
 		}
 	}

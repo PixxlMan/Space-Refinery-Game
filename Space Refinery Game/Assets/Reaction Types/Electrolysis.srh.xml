@@ -5,13 +5,13 @@
 		<IEntitySerializable>
 			<Type>Space_Refinery_Game.ElectrolysisReactionType</Type>
 			<ReactionType>
-				<GUID>4c340359-2c09-41c9-97dd-858501c99368</GUID>
+				<Reference>Electrolysis</Reference>
 				<ReactionName>Electrolysis</ReactionName>
 				<CanOccurSpontaneously>False</CanOccurSpontaneously>
 				<NecessaryChemicals>
 					<Count>1</Count>
 					<Elements>
-						<GUID>6b3a9e4d-531d-4976-bacb-ae680dbc74a5</GUID>
+						<Reference>Water</Reference>
 					</Elements>
 				</NecessaryChemicals>
 			</ReactionType>				

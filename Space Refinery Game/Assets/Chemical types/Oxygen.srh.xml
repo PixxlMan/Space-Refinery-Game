@@ -5,7 +5,7 @@
 		<IEntitySerializable>
 			<Type>Space_Refinery_Game.ChemicalType</Type>
 			<ChemicalType>
-				<GUID>8c22ca6f-030b-41d1-a4ff-d54eaeb06640</GUID>
+				<Reference>Oxygen</Reference>
 				<ChemicalName>Oxygen</ChemicalName>
 				<MolarMass>16</MolarMass>
 				<EnthalpyOfVaporization>446.1</EnthalpyOfVaporization>

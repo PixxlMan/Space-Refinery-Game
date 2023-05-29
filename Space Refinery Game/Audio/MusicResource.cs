@@ -20,7 +20,7 @@ namespace Space_Refinery_Game.Audio
 
 		public string Name { get; private set; }
 
-		public Guid SerializableReferenceGUID { get; private set; } = Guid.NewGuid();
+		public SerializableReference SerializableReference { get; private set; } = Guid.NewGuid();
 
 		public Track[] Tracks { get; private set; }
 
@@ -36,7 +36,7 @@ namespace Space_Refinery_Game.Audio
 		{
 			AudioWorld = serializationData.GameData.AudioWorld;
 
-			SerializableReferenceGUID = reader.ReadReferenceGUID();
+			SerializableReference = reader.ReadReference();
 
 			Name = reader.ReadString(nameof(Name));
 

@@ -281,7 +281,7 @@ public sealed class MainGame
 
 			reader.ReadStartElement(nameof(MainGame));
 			{
-				var newSaveGuid = reader.ReadReferenceGUID(nameof(SaveGuid));
+				var newSaveGuid = Guid.Parse(reader.ReadString(nameof(SaveGuid)));
 
 				if (newSaveGuid != SaveGuid)
 				{
@@ -301,6 +301,7 @@ public sealed class MainGame
 				ReferenceHandler = SerializationReferenceHandler.Deserialize(reader, serializationData);
 			}
 			//reader.ReadEndElement();
+			// This line above is disabled because, well, we're never gonna need it, are we?
 
 			serializationData.SerializationComplete();
 

@@ -192,7 +192,7 @@ namespace Space_Refinery_Game
 
 		public abstract IInformationProvider InformationProvider { get; }
 
-		public Guid SerializableReferenceGUID { get; private set; } = Guid.NewGuid();
+		public SerializableReference SerializableReference { get; private set; } = Guid.NewGuid();
 
 		private (IConnectable connectableA, IConnectable connectableB) connectables;
 		/// <summary>
@@ -403,7 +403,7 @@ namespace Space_Refinery_Game
 			{
 				reader.ReadStartElement(nameof(Connector));
 				{
-					SerializableReferenceGUID = reader.ReadReferenceGUID();
+					SerializableReference = reader.ReadReference();
 
 					Transform = reader.DeserializeTransform();
 

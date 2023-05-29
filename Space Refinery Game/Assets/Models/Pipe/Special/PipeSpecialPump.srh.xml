@@ -4,7 +4,7 @@
 	<Elements>
 		<IEntitySerializable>
 			<Type>Space_Refinery_Game.PipeType</Type>
-			<GUID>d4824118-1824-403e-ae18-9786f9f0772a</GUID>
+			<Reference>Pump</Reference>
 			<Name>Pump</Name>
 			<Shape>Cylindrical</Shape>
 			<FlowableVolume>0.1</FlowableVolume>
@@ -37,8 +37,8 @@
 			<ConnectorProperties>
 				<Count>2</Count>
 				<Elements>
-					<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
-					<GUID>a2f1a2e0-529e-41e3-bb90-544104b85d2a</GUID>
+					<Reference>DefaultPipeConnector</Reference>
+					<Reference>DefaultPipeConnector</Reference>
 				</Elements>
 			</ConnectorProperties>
 			<HasConnectorNames>True</HasConnectorNames>

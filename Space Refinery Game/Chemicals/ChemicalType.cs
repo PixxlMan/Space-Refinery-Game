@@ -75,7 +75,7 @@ namespace Space_Refinery_Game
 			ChemicalTypes.Add(this);
 		}
 
-		public Guid SerializableReferenceGUID { get; private set; }
+		public SerializableReference SerializableReference { get; private set; }
 
 		public void DoUIInspectorReadonly()
 		{
@@ -218,7 +218,7 @@ namespace Space_Refinery_Game
 		{
 			reader.ReadStartElement(nameof(ChemicalType));
 			{
-				SerializableReferenceGUID = reader.ReadReferenceGUID();
+				SerializableReference = reader.ReadReference();
 				ChemicalName = reader.ReadString(nameof(ChemicalName));
 				MolarMass = reader.DeserializeDecimalNumber(nameof(MolarMass));
 				EnthalpyOfVaporization = reader.DeserializeDecimalNumber(nameof(EnthalpyOfVaporization));

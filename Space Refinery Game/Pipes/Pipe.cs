@@ -47,7 +47,7 @@ namespace Space_Refinery_Game
 
 		public bool Constructed => !Created;
 
-		public Guid SerializableReferenceGUID { get; private set; } = Guid.NewGuid();
+		public SerializableReference SerializableReference { get; private set; } = Guid.NewGuid();
 
 		public SerializationReferenceHandler ReferenceHandler { get; private set; }
 
@@ -330,7 +330,7 @@ namespace Space_Refinery_Game
 			{
 				reader.ReadStartElement(nameof(Pipe));
 				{
-					SerializableReferenceGUID = reader.ReadReferenceGUID();
+					SerializableReference = reader.ReadReference();
 
 					PipeType pipeType = PipeType.PipeTypes[reader.ReadElementString("PipeType")];
 

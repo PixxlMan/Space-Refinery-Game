@@ -1,4 +1,7 @@
-﻿SharpAudio															LICENSE: MIT
-OpenALSoft		URL: https://www.openal-soft.org/					LICENSE: LGPL
+﻿SharpAudio		LICENSE: MIT
+OpenALSoft		LICENSE: LGPL		URL: https://www.openal-soft.org/
+
+Dotmore			LICENSE: MIT		AUTHOR: Mattmc3			URL: https://github.com/mattmc3/dotmore/blob/master/dotmore/Collections/Generic/OrderedDictionary.cs
+	-> MODIFIED: for performance and specialized use cases
 
 todo: fill this...

@@ -86,7 +86,7 @@ partial class UI
 				ImGui.SetWindowPos(new Vector2(width / 2 - settingsMenuSize.X / 2, height / 2 - settingsMenuSize.Y / 2), ImGuiCond.Always);
 				ImGui.SetWindowSize(settingsMenuSize, ImGuiCond.Always);
 				{
-					MainGame.GlobalSettings.DoSettingsUI();
+					gameData.Settings.DoSettingsUI();
 				}
 				ImGui.SetWindowCollapsed(false);
 				ImGui.End();

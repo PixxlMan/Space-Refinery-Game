@@ -3,7 +3,7 @@ using Space_Refinery_Game.Audio;
 
 namespace Space_Refinery_Game
 {
-	public sealed class GameData
+	public sealed class GameData // Should this be thread safe? Or maybe just made readonly?
 	{
 		public enum GameDataChange
 		{
@@ -14,6 +14,7 @@ namespace Space_Refinery_Game
 			GameWorld,
 			MainGame,
 			ReferenceHandler,
+			Settings,
 		}
 
 		private UI uI;
@@ -23,6 +24,7 @@ namespace Space_Refinery_Game
 		private GameWorld gameWorld;
 		private MainGame mainGame;
 		private SerializationReferenceHandler referenceHandler;
+		private Settings settings;
 
 		public event Action<GameDataChange> GameDataChangedEvent;
 
@@ -31,7 +33,7 @@ namespace Space_Refinery_Game
 
 		}
 
-		public GameData(UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, AudioWorld audioWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler)
+		public GameData(UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, AudioWorld audioWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler, Settings settings)
 		{
 			UI = ui;
 			PhysicsWorld = physicsWorld;
@@ -40,6 +42,7 @@ namespace Space_Refinery_Game
 			GameWorld = gameWorld;
 			MainGame = mainGame;
 			ReferenceHandler = referenceHandler;
+			Settings = settings;
 
 			PerformanceStatisticsCollector = new(this, PerformanceStatisticsCollector.PerformanceStatisticsCollectorMode.Averaged);
 		}
@@ -69,5 +72,7 @@ namespace Space_Refinery_Game
 		public MainGame MainGame { get => mainGame; set { mainGame = value; GameDataChanged(GameDataChange.MainGame); } }
 
 		public SerializationReferenceHandler ReferenceHandler { get => referenceHandler; set { referenceHandler = value; GameDataChanged(GameDataChange.ReferenceHandler); } }
+
+		public Settings Settings { get => settings; set { settings = value; GameDataChanged(GameDataChange.Settings); } }
 	}
 }

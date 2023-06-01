@@ -16,7 +16,7 @@ namespace Space_Refinery_Game.Audio
 		private AudioWorld()
 		{ }
 
-		public static AudioWorld Create()
+		public static AudioWorld Create(GameData gameData)
 		{
 			AudioWorld audioWorld = new();
 
@@ -27,9 +27,9 @@ namespace Space_Refinery_Game.Audio
 				throw new Exception("Could not create audio engine!");
 			}
 
-			audioWorld.MusicSystem = new(audioWorld);
+			audioWorld.MusicSystem = new(gameData, audioWorld);
 
-			MainGame.GlobalSettings.RegisterToSetting<SliderSetting>("Master volume", (volumeSlider) => audioWorld.MasterVolume = volumeSlider.Value / 100);
+			gameData.Settings.RegisterToSettingValue<SliderSettingValue>("Main Volume", (value) => audioWorld.MasterVolume = value.SliderValue / 100);
 
 			return audioWorld;
 		}

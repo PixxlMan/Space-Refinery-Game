@@ -5,9 +5,9 @@ namespace Space_Refinery_Game
 {
 	public sealed class SerializationData // rename to deserializationdata?
 	{
-		public SerializationData(UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, AudioWorld audioWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler)
+		public SerializationData(UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, AudioWorld audioWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler, Settings settings)
 		{
-			GameData = new(ui, physicsWorld, graphicsWorld, audioWorld, gameWorld, mainGame, referenceHandler);
+			GameData = new(ui, physicsWorld, graphicsWorld, audioWorld, gameWorld, mainGame, referenceHandler, settings);
 		}
 
 		public SerializationData(GameData gameData)

@@ -1,77 +1,79 @@
 ﻿using ImGuiNET;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Veldrid;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace Space_Refinery_Game
+namespace Space_Refinery_Game // Is this really thread safe? It's accessed statically, so it ought to be.
 {
-	[DataContract]
+	/// <summary>
+	/// Handles all settings that are global for the entire game, such as volume, graphics settings or language etc.
+	/// Does not store debug settings or per-save settings, such as difficulty preset.
+	/// </summary>
 	public sealed class Settings
 	{
-		[DataMember]
-		private Dictionary<string, ISetting> settings = new();
+		private SerializationReferenceHandler settingsReferenceHandler = new();
+		private ConcurrentDictionary<string, Setting> settings = new();
 
-		[DataMember]
-		private Dictionary<string, ISettingOptions> settingsOptions = new();
-
-		public void SetSettingOptions<TSetting>(string name, ISettingOptions options, ISetting defaultValue = null)
-			where TSetting : ICreatableSetting
+		public Settings()
 		{
-			if (!settingsOptions.ContainsKey(name))
+			settingsReferenceHandler.EnterAllowEventualReferenceMode(false);
+		}
+
+		public SerializableReference SerializableReference { get; private set; }
+
+		/// <summary>
+		/// Registers an action for handling an accepted change and optionally an action for handling any change.
+		/// Will register once the reference can be resolved if called during deserialization. Uses eventual references.
+		/// </summary>
+		/// <typeparam name="TSettingValue">The type of the value expected to be provided by the setting.</typeparam>
+		/// <param name="settingName">The reference name of the setting.</param>
+		/// <param name="settingChangeAcceptedHandler">An action to be invoked when the settings value has been changed and accepted.</param>
+		/// <param name="settingChangedHandler">An action to be invoked when the settings value has been changed, regardless of whether it has been accepted.</param>
+		public void RegisterToSettingValue<TSettingValue>(string settingName, Action<TSettingValue> settingChangeAcceptedHandler, Action<TSettingValue>? settingChangedHandler = null)
+			where TSettingValue : ISettingValue
+		{
+			if (settingsReferenceHandler.AllowEventualReferences)
 			{
-				settingsOptions.Add(name, options);
-			}
-
-			if (settings.ContainsKey(name))
-			{
-				settings[name].Options = options;
-			}
-
-			ISetting setting;
-
-			if (!settings.ContainsKey(name))
-			{
-				if (defaultValue is not null)
+				settingsReferenceHandler.GetEventualReference(settingName, (reference) =>
 				{
-					setting = defaultValue;
-					setting.SetUp();
-				}
-				else
-				{
-					setting = TSetting.Create();
-					setting.SetUp();
-				}
+					var setting = (Setting)reference;
 
-				if (settingsOptions.ContainsKey(name))
-				{
-					setting.Options = settingsOptions[name];
-				}
+					setting.AcceptedSettingChange += (ISettingValue settingValue) => settingChangeAcceptedHandler((TSettingValue)settingValue);
 
-				settings.Add(name, setting);
+					if (settingChangedHandler is not null)
+					{
+						setting.SettingChanged += (ISettingValue settingValue) => settingChangedHandler((TSettingValue)settingValue);
+					}
+
+					settingChangeAcceptedHandler((TSettingValue)setting.SettingValue);
+				});
 			}
 			else
 			{
-				setting = settings[name];
+				if (!settings.ContainsKey(settingName))
+				{
+					throw new ArgumentException($"No setting named '{settingName}' exists.", nameof(settingName));
+				}
+
+				var setting = settings[settingName];
+
+				setting.AcceptedSettingChange += (ISettingValue settingValue) => settingChangeAcceptedHandler((TSettingValue)settingValue);
+
+				if (settingChangedHandler is not null)
+				{
+					setting.SettingChanged += (ISettingValue settingValue) => settingChangedHandler((TSettingValue)settingValue);
+				}
+
+				settingChangeAcceptedHandler((TSettingValue)setting.SettingValue);
 			}
-		}
-
-		public void RegisterToSetting<TSetting>(string name, Action<TSetting> settingChangeAcceptedHandler, Action<TSetting>? settingChangedHandler = null)
-			where TSetting : ICreatableSetting
-		{
-			var setting = settings[name];
-
-			setting.AcceptedSettingChange += (ISetting setting) => settingChangeAcceptedHandler((TSetting)setting);
-
-			if (settingChangedHandler is not null)
-			{
-				setting.SettingChanged += (ISetting setting) => settingChangedHandler((TSetting)setting);
-			}
-
-			settingChangeAcceptedHandler((TSetting)setting);
 		}
 
 		public void DoSettingsUI()
@@ -84,7 +86,7 @@ namespace Space_Refinery_Game
 
 				ImGui.SameLine();
 
-				ImGui.PushID(nameSettingPair.Value.Guid.ToString());
+				ImGui.PushID(nameSettingPair.Value.SerializableReference.ToString());
 					nameSettingPair.Value.DoUI();
 				ImGui.PopID();
 
@@ -100,10 +102,7 @@ namespace Space_Refinery_Game
 			}
 			if (ImGui.Button("Accept"))
 			{
-				foreach (var setting in settings.Values)
-				{
-					setting.Accept();
-				}
+				AcceptAllSettings();
 			}
 
 			ImGui.SameLine();
@@ -119,15 +118,38 @@ namespace Space_Refinery_Game
 			{
 				UIFunctions.PopEnabledOrDisabledState();
 			}
+
+			if (ImGui.Button("Reset to default"))
+			{
+				SetDefault();
+			}
 		}
 
-		public void Serialize(string path)
+		public void AcceptAllSettings()
 		{
-			using FileStream stream = File.OpenWrite(path);
+			foreach (var setting in settings.Values)
+			{
+				setting.Accept();
+			}
+		}
 
-			DataContractSerializer dataContractSerializer = new(typeof(Settings));
+		public void AddSetting(Setting setting)
+		{
+			settingsReferenceHandler.RegisterReference(setting);
+			settings.AddUnique(setting.Name, setting, "A setting with this name already exists.");
+		}
 
-			dataContractSerializer.WriteObject(stream, this);
+		public void SetDefault()
+		{
+			foreach (Setting setting in settings.Values)
+			{
+				setting.SetDefault();
+			}
+		}
+
+		internal void EndDeserialization()
+		{
+			settingsReferenceHandler.ExitAllowEventualReferenceMode();
 		}
 	}
 }

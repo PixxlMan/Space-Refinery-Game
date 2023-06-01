@@ -15,7 +15,7 @@ namespace Space_Refinery_Game.Audio
 {
 	public class MusicSystem
 	{
-		public MusicSystem(AudioWorld audioWorld)
+		public MusicSystem(GameData gameData, AudioWorld audioWorld /*gameData.AudioWorld can't be accessed because it hasn't been filled yet.*/)
 		{
 			this.audioWorld = audioWorld;
 
@@ -27,17 +27,24 @@ namespace Space_Refinery_Game.Audio
 
 			sequencialPlayback.Start();
 
-			MainGame.GlobalSettings.RegisterToSetting<SliderSetting>("Music volume", (volumeSlider) => MusicVolume = volumeSlider.Value / 100 );
+			gameData.Settings.RegisterToSettingValue<SliderSettingValue>("Music Volume", (value) => MusicVolume = value.SliderValue / 100 );
 
 			UI.DoDebugStatusUI += () =>
 			{
 				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show music system debug status"))
 				{
 					ImGui.Separator();
-					ImGui.Text($"Now playing: {currentMusic.Name}");
-					ImGui.Text($"Next part: {nextMusicPart}");
-					ImGui.Text($"Loops: {loops}");
-					ImGui.Text($"Played loops: {loops}");
+					if (currentMusic is null)
+					{
+						ImGui.Text("Not playing anything.");
+					}
+					else
+					{
+						ImGui.Text($"Now playing: {currentMusic.Name}");
+						ImGui.Text($"Next part: {nextMusicPart}");
+						ImGui.Text($"Loops: {loops}");
+						ImGui.Text($"Played loops: {playedLoops}");
+					}
 				}
 			};
 		}

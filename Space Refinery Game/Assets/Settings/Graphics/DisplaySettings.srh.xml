@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SerializationReferenceHandler>
+	<Count>3</Count>
+	<Elements>
+		<IEntitySerializable>
+			<Type>Space_Refinery_Game.SliderSetting</Type>
+			<Reference>Field Of View</Reference>
+			<Name>FoV</Name>
+			<DefaultValue>
+				<Type>Space_Refinery_Game.SliderSettingValue</Type>
+				<SliderValue>65</SliderValue>
+			</DefaultValue>
+			<Min>30</Min>
+			<Max>120</Max>
+			<SliderValueSuffix>degrees</SliderValueSuffix>
+		</IEntitySerializable>
+		<IEntitySerializable>
+			<Type>Space_Refinery_Game.SliderSetting</Type>
+			<Reference>Max Framerate</Reference>
+			<Name>Max FPS</Name>
+			<DefaultValue>
+				<Type>Space_Refinery_Game.SliderSettingValue</Type>
+				<SliderValue>500</SliderValue>
+			</DefaultValue>
+			<Min>1</Min>
+			<Max>100</Max>
+			<SliderValueSuffix>FPS</SliderValueSuffix>
+		</IEntitySerializable>
+		<IEntitySerializable>
+			<Type>Space_Refinery_Game.SwitchSetting</Type>
+			<Reference>Limit Framerate</Reference>
+			<Name>Limit FPS</Name>
+			<DefaultValue>
+				<Type>Space_Refinery_Game.SwitchSettingValue</Type>
+				<SwitchValue>True</SwitchValue>
+			</DefaultValue>
+		</IEntitySerializable>
+	</Elements>
+</SerializationReferenceHandler>

@@ -3,6 +3,7 @@ using FXRenderer;
 using Space_Refinery_Game.Audio;
 using Space_Refinery_Game_Renderer;
 using System.Diagnostics;
+using System.IO;
 using System.Xml;
 using Veldrid;
 using static FixedPrecision.Convenience;
@@ -18,17 +19,16 @@ public sealed class MainGame
 	private SerializationReferenceHandler ReferenceHandler { get => GameData.ReferenceHandler; set => GameData.ReferenceHandler = value; }
 	private Player Player { get; set; }
 	private UI UI { get => GameData.UI; set => GameData.UI = value; }
+	private Settings Settings { get => GameData.Settings; set => GameData.Settings = value; }
 
 	public GameData GameData { get; private set; }
 
 	public static SerializationReferenceHandler GlobalReferenceHandler;
 
-	private static SerializationReferenceHandler DeserializeGlobalReferenceHandler(SerializationData serializationData)
+	private static void DeserializeIntoGlobalReferenceHandler(SerializationReferenceHandler globalReferenceHandler, SerializationData serializationData)
 	{
 		var stopwatch = new Stopwatch();
 		stopwatch.Start();
-
-		var globalReferenceHandler = new SerializationReferenceHandler();
 
 		foreach (var serializationReferenceXmlFiles in Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "Assets"), "*.srh.xml", SearchOption.AllDirectories))
 		{
@@ -37,17 +37,11 @@ public sealed class MainGame
 			globalReferenceHandler.DeserializeInto(individualFileReader, serializationData, false);
 		}
 
-		globalReferenceHandler.ExitAllowEventualReferenceMode();
-
 		serializationData.SerializationComplete();
 
 		stopwatch.Stop();
 		Console.WriteLine($"Deserialized all ({globalReferenceHandler.ReferenceCount}!) global references in {stopwatch.ElapsedMilliseconds} ms");
-
-		return globalReferenceHandler;
 	}
-
-	public static Settings GlobalSettings;
 
 	public static DebugRender DebugRender;
 
@@ -73,8 +67,6 @@ public sealed class MainGame
 			MainGame = this
 		};
 
-		GlobalSettings = new();
-
 		this.window = window;
 
 		InputTracker.ListenToWindow(window);
@@ -85,19 +77,22 @@ public sealed class MainGame
 
 		DebugRender = DebugRender.Create(GraphicsWorld);
 
-		GlobalSettings.SetSettingOptions<SliderSetting>("Master volume", new SliderSettingOptions(0, 100, "%"), new SliderSetting() { Value = 50 });
-		GlobalSettings.SetSettingOptions<SliderSetting>("Music volume", new SliderSettingOptions(0, 100, "%"), new SliderSetting() { Value = 50 });
+		GlobalReferenceHandler = new();
+		GlobalReferenceHandler.EnterAllowEventualReferenceMode(false);
 
-		AudioWorld = AudioWorld.Create();
+		Settings = new();
+
+		AudioWorld = AudioWorld.Create(GameData);
 
 		AudioWorld.MusicSystem.SetTags(MusicTag.Intense);
 
 		DebugSettings.AccessSetting("Fill music queue", (ActionDebugSetting)AudioWorld.MusicSystem.FillQueue);
 
-		if (GlobalReferenceHandler is null)
-		{
-			GlobalReferenceHandler = DeserializeGlobalReferenceHandler(new SerializationData(GameData));
-		}
+		DeserializeIntoGlobalReferenceHandler(GlobalReferenceHandler , new SerializationData(GameData));
+
+		LoadSettingValues();
+
+		GlobalReferenceHandler.ExitAllowEventualReferenceMode();
 
 		PhysicsWorld = new();
 
@@ -127,17 +122,31 @@ public sealed class MainGame
 
 		GameWorld.StartTicking();
 
-		GlobalSettings.SetSettingOptions<SliderSetting>("FoV", new SliderSettingOptions(30, 120, "degrees"), defaultValue: new SliderSetting() { Value = 65 });
+		Settings.RegisterToSettingValue<SliderSettingValue>("FoV", (value) => GraphicsWorld.Camera.FieldOfView = value * DecimalNumber.DegreesToRadians);
 
-		GlobalSettings.RegisterToSetting<SliderSetting>("FoV", (se) => GraphicsWorld.Camera.FieldOfView = se.Value * DecimalNumber.DegreesToRadians);
+		Settings.RegisterToSettingValue<SliderSettingValue>("Max FPS", (value) => GraphicsWorld.FrametimeLowerLimit = 1 / value.SliderValue);
 
-		GlobalSettings.SetSettingOptions<SliderSetting>("Max framerate", new SliderSettingOptions(1, 1000, "FPS"), defaultValue: new SliderSetting() { Value = 500 });
+		Settings.RegisterToSettingValue<SwitchSettingValue>("Limit FPS", (value) => GraphicsWorld.ShouldLimitFramerate = value.SwitchValue);
+	}
 
-		GlobalSettings.RegisterToSetting<SliderSetting>("Max framerate", (se) => GraphicsWorld.FrametimeLowerLimit = 1 / se.Value);
+	public static readonly string settingsPath = Path.Combine(Environment.CurrentDirectory, "UserData", "Settings.srh.c.xml");
 
-		GlobalSettings.SetSettingOptions<BooleanSetting>("Limit framerate", null, defaultValue: new BooleanSetting() { Value = true });
+	private void LoadSettingValues()
+	{
+		if (File.Exists(settingsPath))
+		{
+			using var settingsFileReader = XmlReader.Create(settingsPath, new XmlReaderSettings() { ConformanceLevel = ConformanceLevel.Document });
 
-		GlobalSettings.RegisterToSetting<BooleanSetting>("Limit framerate", (bs) => GraphicsWorld.ShouldLimitFramerate = bs.Value);
+			GlobalReferenceHandler.DeserializeInto(settingsFileReader, new SerializationData(GameData));
+		}
+		else
+		{
+			Settings.SetDefault();
+		}
+
+		Settings.EndDeserialization();
+
+		Settings.AcceptAllSettings();
 	}
 
 	private void UI_PauseStateChanged(bool paused)

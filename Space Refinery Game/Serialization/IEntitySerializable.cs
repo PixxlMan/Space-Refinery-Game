@@ -34,15 +34,24 @@ namespace Space_Refinery_Game
 		public static T DeserializeWithoutEmbeddedType<T>(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler, string name = nameof(IEntitySerializable))
 			where T : IEntitySerializable
 		{
-			T t = ObjectFactory.CreateInstance<T>();
+			T entitySerializable;
+
+			if (typeof(T) == typeof(ValueType))
+			{
+				entitySerializable = (T)FormatterServices.GetUninitializedObject(typeof(T));
+			}
+			else
+			{
+				entitySerializable = ObjectFactory.CreateInstance<T>();
+			}
 
 			reader.ReadStartElement(name);
 			{
-				t.DeserializeState(reader, serializationData, referenceHandler);
+				entitySerializable.DeserializeState(reader, serializationData, referenceHandler);
 			}
 			reader.ReadEndElement();
 
-			return t;
+			return entitySerializable;
 		}
 
 		public static IEntitySerializable DeserializeWithEmbeddedType(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler, string name = nameof(IEntitySerializable))

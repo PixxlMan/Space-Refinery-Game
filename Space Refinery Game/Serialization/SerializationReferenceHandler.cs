@@ -38,13 +38,16 @@ namespace Space_Refinery_Game
 
 		private Dictionary<SerializableReference, List<Action<ISerializableReference>>> eventualReferencesToFulfill = new();
 
+		public bool AllowEventualReferences { get; private set; }
+
 		public bool AllowUnresolvedEventualReferences { get; private set; }
 
-		public void EnterAllowEventualReferenceMode()
+		public void EnterAllowEventualReferenceMode(bool allowUnresolvedEventualReferences)
 		{
 			lock (SyncRoot)
 			{
-				AllowUnresolvedEventualReferences = true;
+				AllowEventualReferences = true;
+				AllowUnresolvedEventualReferences = allowUnresolvedEventualReferences;
 			}
 		}
 
@@ -52,12 +55,17 @@ namespace Space_Refinery_Game
 		{
 			lock (SyncRoot)
 			{
-				AllowUnresolvedEventualReferences = false;
+				AllowEventualReferences = false;
 
-				if (eventualReferencesToFulfill.Count > 0)
+				if (!AllowUnresolvedEventualReferences)
 				{
-					throw new Exception("Not all eventual references have been resolved yet! Either this was called too early, or there is a missing reference.");
+					if (eventualReferencesToFulfill.Count > 0)
+					{
+						throw new Exception("Not all eventual references have been resolved yet! Either this was called too early, or there is a missing reference.");
+					}
 				}
+
+				AllowUnresolvedEventualReferences = false;
 			}
 		}
 
@@ -99,7 +107,7 @@ namespace Space_Refinery_Game
 			{
 				Debug.Assert(serializableReference.SerializableReference.IsValid, "The SerializableReference that was attempted to be registered was invalid.");
 
-				if (AllowUnresolvedEventualReferences)
+				if (AllowEventualReferences)
 				{
 					if (eventualReferencesToFulfill.ContainsKey(serializableReference.SerializableReference))
 					{
@@ -126,9 +134,9 @@ namespace Space_Refinery_Game
 				}
 				else
 				{
-					if (!AllowUnresolvedEventualReferences)
+					if (!AllowEventualReferences)
 					{
-						throw new InvalidOperationException($"Cannot use eventual references when {nameof(AllowUnresolvedEventualReferences)} mode is not active!");
+						throw new InvalidOperationException($"Cannot use eventual references when {nameof(AllowEventualReferences)} mode is not active!");
 					}
 
 					if (eventualReferencesToFulfill.ContainsKey(serializableReference))
@@ -147,10 +155,10 @@ namespace Space_Refinery_Game
 		{
 			lock (SyncRoot)
 			{
-				if (AllowUnresolvedEventualReferences)
+				if (AllowEventualReferences)
 				{
 					// add justification why in comment here
-					throw new InvalidOperationException($"Cannot serialize when {nameof(AllowUnresolvedEventualReferences)} mode is active!");
+					throw new InvalidOperationException($"Cannot serialize when {nameof(AllowEventualReferences)} mode is active!");
 				}
 
 				writer.Serialize(serializableReferenceLookup.Values, (w, s) => w.SerializeWithEmbeddedType(s), nameof(SerializationReferenceHandler));
@@ -161,7 +169,7 @@ namespace Space_Refinery_Game
 		{
 			SerializationReferenceHandler referenceHandler = new();
 
-			referenceHandler.EnterAllowEventualReferenceMode();
+			referenceHandler.EnterAllowEventualReferenceMode(false);
 
 			reader.DeserializeCollection((r) => referenceHandler.RegisterReference((ISerializableReference)r.DeserializeEntitySerializableWithEmbeddedType(serializationData, referenceHandler)), nameof(SerializationReferenceHandler));
 
@@ -177,7 +185,7 @@ namespace Space_Refinery_Game
 		{
 			lock (SyncRoot)
 			{
-				EnterAllowEventualReferenceMode();
+				EnterAllowEventualReferenceMode(false);
 
 				reader.DeserializeCollection((r) => RegisterReference((ISerializableReference)r.DeserializeEntitySerializableWithEmbeddedType(serializationData, this)), nameof(SerializationReferenceHandler));
 

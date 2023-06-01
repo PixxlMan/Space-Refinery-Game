@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using Space_Refinery_Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -158,6 +159,8 @@ namespace Space_Refinery_Game // Is this really thread safe? It's accessed stati
 
 		public void SaveSettingValues()
 		{
+			Logging.Log("Saving setting values");
+
 			Directory.CreateDirectory(settingValuesDirectoryPath);
 
 			using var stream = File.Create(settingValuesPath);
@@ -176,6 +179,8 @@ namespace Space_Refinery_Game // Is this really thread safe? It's accessed stati
 
 		public void LoadSettingValues()
 		{
+			Logging.Log("Loading setting values");
+
 			if (File.Exists(settingValuesPath))
 			{
 				using var reader = XmlReader.Create(settingValuesPath, new XmlReaderSettings() { ConformanceLevel = ConformanceLevel.Document });

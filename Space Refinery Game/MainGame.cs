@@ -2,6 +2,7 @@
 using FXRenderer;
 using Space_Refinery_Game.Audio;
 using Space_Refinery_Game_Renderer;
+using Space_Refinery_Utilities;
 using System.Diagnostics;
 using System.IO;
 using System.Xml;
@@ -40,7 +41,7 @@ public sealed class MainGame
 		serializationData.SerializationComplete();
 
 		stopwatch.Stop();
-		Console.WriteLine($"Deserialized all ({globalReferenceHandler.ReferenceCount}!) global references in {stopwatch.ElapsedMilliseconds} ms");
+		Logging.Log($"Deserialized all ({globalReferenceHandler.ReferenceCount}!) global references in {stopwatch.ElapsedMilliseconds} ms");
 	}
 
 	public static DebugRender DebugRender;
@@ -210,7 +211,7 @@ public sealed class MainGame
 	{
 		lock (GameWorld.TickSyncObject)	lock (SynchronizationObject)
 		{
-			Console.WriteLine($"Serialization started. Serializing {ReferenceHandler.ReferenceCount} references.");
+			Logging.Log($"Serialization started. Serializing {ReferenceHandler.ReferenceCount} references.");
 
 			File.Delete(path);
 
@@ -243,7 +244,7 @@ public sealed class MainGame
 
 			stopwatch.Stop();
 
-			Console.WriteLine($"Serialized all state in {stopwatch.Elapsed.TotalMilliseconds} ms.");
+			Logging.Log($"Serialized all state in {stopwatch.Elapsed.TotalMilliseconds} ms.");
 		}
 	}
 
@@ -251,7 +252,7 @@ public sealed class MainGame
 	{
 		lock (GameWorld.TickSyncObject)// lock (SynchronizationObject)
 		{
-			Console.WriteLine($"Deserialization started.");
+			Logging.Log($"Deserialization started.");
 
 			Stopwatch stopwatch = new();
 
@@ -269,7 +270,7 @@ public sealed class MainGame
 
 				if (newSaveGuid != SaveGuid)
 				{
-					Console.WriteLine($"Deserializing a save with another guid. Guid: {newSaveGuid}");
+					Logging.Log($"Deserializing a save with another guid. Guid: {newSaveGuid}");
 				}
 
 				SaveGuid = newSaveGuid;
@@ -299,7 +300,7 @@ public sealed class MainGame
 
 			stopwatch.Stop();
 			
-			Console.WriteLine($"Deserialized all state in {stopwatch.Elapsed.TotalMilliseconds} ms. Deserialized {ReferenceHandler.ReferenceCount} references.");
+			Logging.Log($"Deserialized all state in {stopwatch.Elapsed.TotalMilliseconds} ms. Deserialized {ReferenceHandler.ReferenceCount} references.");
 		}
 	}
 }

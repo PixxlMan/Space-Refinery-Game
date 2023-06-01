@@ -9,6 +9,7 @@ using System.Numerics;
 using FXRenderer;
 using Space_Refinery_Game_Renderer;
 using static Space_Refinery_Utilities.InterlockedExtensions;
+using Space_Refinery_Utilities;
 
 namespace Space_Refinery_Game
 {
@@ -185,7 +186,7 @@ namespace Space_Refinery_Game
 				}
 				catch (ArgumentOutOfRangeException)
 				{
-					Console.WriteLine("That weird argument out of range exception again... Oh well!");
+					Logging.LogError("That weird argument out of range exception again... Oh well!");
 				}
 
 				DoUI(deltaTime);

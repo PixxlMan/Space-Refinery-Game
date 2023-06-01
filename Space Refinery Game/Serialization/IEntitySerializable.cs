@@ -1,4 +1,6 @@
 ﻿using Singulink.Reflection;
+using System.ComponentModel;
+using System.Runtime.Serialization;
 using System.Xml;
 
 namespace Space_Refinery_Game
@@ -54,7 +56,16 @@ namespace Space_Refinery_Game
 					throw new Exception($"Cannot deserialize object of type '{type.AssemblyQualifiedName}' as it does not inherit from {nameof(IEntitySerializable)}.");
 				}
 
-				IEntitySerializable entitySerializable = (IEntitySerializable)ObjectFactory.CreateInstance(type, true);
+				IEntitySerializable entitySerializable;
+
+				if (type.IsValueType)
+				{
+					entitySerializable = (IEntitySerializable)FormatterServices.GetUninitializedObject(type);
+				}
+				else
+				{
+					entitySerializable = (IEntitySerializable)ObjectFactory.CreateInstance(type, true);
+				}
 
 				entitySerializable.DeserializeState(reader, serializationData, referenceHandler);
 

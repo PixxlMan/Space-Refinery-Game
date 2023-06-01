@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Veldrid;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Space_Refinery_Game // Is this really thread safe? It's accessed statically, so it ought to be.
 {
@@ -131,6 +130,8 @@ namespace Space_Refinery_Game // Is this really thread safe? It's accessed stati
 			{
 				setting.Accept();
 			}
+
+			SaveSettingValues();
 		}
 
 		public void AddSetting(Setting setting)
@@ -150,6 +151,70 @@ namespace Space_Refinery_Game // Is this really thread safe? It's accessed stati
 		internal void EndDeserialization()
 		{
 			settingsReferenceHandler.ExitAllowEventualReferenceMode();
+		}
+
+		public static readonly string settingValuesPath = Path.Combine(Environment.CurrentDirectory, "UserData", "Settings.srh.c.xml");
+		public static readonly string settingValuesDirectoryPath = Path.Combine(Environment.CurrentDirectory, "UserData");
+
+		public void SaveSettingValues()
+		{
+			Directory.CreateDirectory(settingValuesDirectoryPath);
+
+			using var stream = File.Create(settingValuesPath);
+
+			using var writer = XmlWriter.Create(stream, new XmlWriterSettings() { Indent = true, IndentChars = "\t" });
+
+			SerializeSettingValues(writer);
+
+			writer.Flush();
+			writer.Close();
+			stream.Flush(true);
+			stream.Close();
+			writer.Dispose();
+			stream.Dispose();
+		}
+
+		public void LoadSettingValues()
+		{
+			if (File.Exists(settingValuesPath))
+			{
+				using var reader = XmlReader.Create(settingValuesPath, new XmlReaderSettings() { ConformanceLevel = ConformanceLevel.Document });
+
+				DeserializeSettingValues(reader);
+			}
+			else
+			{
+				SetDefault();
+			}
+
+			EndDeserialization();
+
+			AcceptAllSettings();
+		}
+
+		public void SerializeSettingValues(XmlWriter writer)
+		{
+			writer.Serialize(settings.Values, (w, st) =>
+			{ 
+				w.WriteStartElement(nameof(ISettingValue));
+				{
+					w.SerializeReference(st, "SettingReference");
+					w.SerializeWithEmbeddedType(st.SettingValue);
+				}
+				w.WriteEndElement();
+			}, "SettingValues");
+		}
+
+		public void DeserializeSettingValues(XmlReader reader)
+		{
+			reader.DeserializeCollection((r) =>
+			{
+				r.ReadStartElement(nameof(ISettingValue));
+				{
+					r.DeserializeReference<Setting>(settingsReferenceHandler, (st) => st.SettingValue = (ISettingValue)r.DeserializeEntitySerializableWithEmbeddedType(null, settingsReferenceHandler), "SettingReference");
+				}
+				r.ReadEndElement();
+			}, "SettingValues");
 		}
 	}
 }

@@ -103,7 +103,7 @@ namespace Space_Refinery_Game
 
 		public SliderSettingValue Value { get => value; private set { this.value = value; ValueChanged(); } }
 
-		public override ISettingValue SettingValue { get => Value; protected set => Value = (SliderSettingValue)value; }
+		public override ISettingValue SettingValue { get => Value; set => Value = (SliderSettingValue)value; }
 
 		public override event Action<ISettingValue> AcceptedSettingChange;
 

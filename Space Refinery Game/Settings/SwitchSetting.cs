@@ -93,7 +93,7 @@ namespace Space_Refinery_Game
 
 		public SwitchSettingValue Value { get => value; private set { this.value = value; ValueChanged(); } }
 
-		public override ISettingValue SettingValue { get => Value; protected set => Value = (SwitchSettingValue)value; }
+		public override ISettingValue SettingValue { get => Value; set => Value = (SwitchSettingValue)value; }
 
 		public override event Action<ISettingValue> AcceptedSettingChange;
 

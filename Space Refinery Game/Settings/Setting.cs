@@ -9,7 +9,7 @@ namespace Space_Refinery_Game
 {
 	public abstract class Setting : ISerializableReference
 	{
-		public abstract ISettingValue SettingValue { get; protected set; }
+		public abstract ISettingValue SettingValue { get; set; }
 
 		public abstract bool Dirty { get; }
 

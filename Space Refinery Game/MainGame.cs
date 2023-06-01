@@ -90,7 +90,7 @@ public sealed class MainGame
 
 		DeserializeIntoGlobalReferenceHandler(GlobalReferenceHandler , new SerializationData(GameData));
 
-		LoadSettingValues();
+		Settings.LoadSettingValues();
 
 		GlobalReferenceHandler.ExitAllowEventualReferenceMode();
 
@@ -127,26 +127,6 @@ public sealed class MainGame
 		Settings.RegisterToSettingValue<SliderSettingValue>("Max FPS", (value) => GraphicsWorld.FrametimeLowerLimit = 1 / value.SliderValue);
 
 		Settings.RegisterToSettingValue<SwitchSettingValue>("Limit FPS", (value) => GraphicsWorld.ShouldLimitFramerate = value.SwitchValue);
-	}
-
-	public static readonly string settingsPath = Path.Combine(Environment.CurrentDirectory, "UserData", "Settings.srh.c.xml");
-
-	private void LoadSettingValues()
-	{
-		if (File.Exists(settingsPath))
-		{
-			using var settingsFileReader = XmlReader.Create(settingsPath, new XmlReaderSettings() { ConformanceLevel = ConformanceLevel.Document });
-
-			GlobalReferenceHandler.DeserializeInto(settingsFileReader, new SerializationData(GameData));
-		}
-		else
-		{
-			Settings.SetDefault();
-		}
-
-		Settings.EndDeserialization();
-
-		Settings.AcceptAllSettings();
 	}
 
 	private void UI_PauseStateChanged(bool paused)
@@ -255,15 +235,10 @@ public sealed class MainGame
 			writer.WriteEndDocument();
 
 			writer.Flush();
-
 			writer.Close();
-
 			stream.Flush(true);
-
 			stream.Close();
-
 			writer.Dispose();
-
 			stream.Dispose();
 
 			stopwatch.Stop();

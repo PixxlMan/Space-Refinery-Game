@@ -39,7 +39,7 @@ namespace Space_Refinery_Game
 			SerializableReference = reader.ReadReference();
 			Name = reader.ReadString(nameof(Name));
 			DefaultValue = (ISettingValue)reader.DeserializeEntitySerializableWithEmbeddedType(serializationData, referenceHandler, nameof(DefaultValue));
-			SettingValue = DefaultValue; // Put this in SetUp?
+			SettingValue = DefaultValue;
 
 			serializationData.GameData.Settings.AddSetting(this);
 		}

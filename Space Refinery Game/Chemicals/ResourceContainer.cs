@@ -328,7 +328,7 @@ namespace Space_Refinery_Game
 					reactionType.Tick(tickInterval, this, reactionFactors, producedReactionFactors);
 				}
 #if DEBUG
-			Debug.Assert(DecimalNumber.Difference(initialMass, Mass) < permittedMaxPostReactionMassDiscrepancy);
+				Debug.Assert(DecimalNumber.Difference(initialMass, Mass) < permittedMaxPostReactionMassDiscrepancy);
 			}
 #endif
 

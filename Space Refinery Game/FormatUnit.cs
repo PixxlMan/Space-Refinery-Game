@@ -75,7 +75,9 @@ public static class FormatUnit
 	/// <returns>Formatted specific heat capacity</returns>
 	public static string FormatSpecificHeatCapacity(this DecimalNumber specificHeatCapacity)
 	{
-		return $"{specificHeatCapacity.ToString(decimals: 2)} J/kg";
+		specificHeatCapacity.FormatStandardPrefix(out var prefix, out var scaledSpecificHeatCapacity);
+
+		return $"{scaledSpecificHeatCapacity.ToString(decimals: 2)} {prefix}J/(kg*K)";
 	}
 	
 	/// <summary>
@@ -91,11 +93,20 @@ public static class FormatUnit
 	/// <summary>
 	/// Formats energy in joules according to player preferences.
 	/// </summary>
-	/// <param name="temperature">[J]</param>
+	/// <param name="energy">[J]</param>
 	/// <returns>Formatted energy</returns>
 	public static string FormatEnergy(this DecimalNumber energy)
 	{
-		return $"{energy.ToString(decimals: 2)} J";
+		energy.FormatStandardPrefix(out var prefix, out var scaledEnergy);
+
+		return $"{scaledEnergy.ToString(decimals: 2)} {prefix}J";
+	}
+
+	public static string FormatMolarEnergy(this DecimalNumber molarEnergy)
+	{
+		molarEnergy.FormatStandardPrefix(out var prefix, out var scaledMolarEnergy);
+
+		return $"{scaledMolarEnergy.ToString(decimals: 2)} {prefix}J/mol";
 	}
 
 	/// <summary>
@@ -107,5 +118,29 @@ public static class FormatUnit
 	public static string FormatPercentage(this DecimalNumber value)
 	{
 		return $"{Math.Round((value * 100).ToDecimal(), 1)} %%";
+	}
+
+	public static void FormatStandardPrefix(this DecimalNumber unscaledValue, out string prefix, out DecimalNumber scaledValue)
+	{
+		if (unscaledValue > DecimalNumber.Giga)
+		{
+			prefix = "G";
+			scaledValue = unscaledValue / DecimalNumber.Giga;
+		}
+		else if (unscaledValue > DecimalNumber.Mega)
+		{
+			prefix = "M";
+			scaledValue = unscaledValue / DecimalNumber.Mega;
+		}
+		else if (unscaledValue > DecimalNumber.Kilo)
+		{
+			prefix = "k";
+			scaledValue = unscaledValue / DecimalNumber.Kilo;
+		}
+		else
+		{
+			prefix = string.Empty;
+			scaledValue = unscaledValue;
+		}
 	}
 }

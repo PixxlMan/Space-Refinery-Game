@@ -71,6 +71,7 @@ namespace Space_Refinery_Game
 			}
 		}
 
+		public void SetEntitySelection(int selection)
 		public int ConnectorSelection;
 
 		public void ChangeConnectorSelection(int selectionDelta)
@@ -222,7 +223,49 @@ namespace Space_Refinery_Game
 				ChangeEntitySelection(-(int)InputTracker.ScrollWheelDelta);
 			}
 
-			if (InMenu && InputTracker.CaptureKeyDown(Key.F))
+				if (InputTracker.GetKeyDown(Key.Number1))
+				{
+					SetEntitySelection(0);
+				}
+				else if(InputTracker.GetKeyDown(Key.Number2))
+				{
+					SetEntitySelection(1);
+				}
+				else if(InputTracker.GetKeyDown(Key.Number3))
+				{
+					SetEntitySelection(2);
+				}
+				else if(InputTracker.GetKeyDown(Key.Number4))
+				{
+					SetEntitySelection(3);
+				}
+				else if(InputTracker.GetKeyDown(Key.Number5))
+				{
+					SetEntitySelection(4);
+				}
+				else if(InputTracker.GetKeyDown(Key.Number6))
+				{
+					SetEntitySelection(5);
+				}
+				else if(InputTracker.GetKeyDown(Key.Number7))
+				{
+					SetEntitySelection(6);
+				}
+				else if(InputTracker.GetKeyDown(Key.Number8))
+				{
+					SetEntitySelection(7);
+				}
+				else if(InputTracker.GetKeyDown(Key.Number9))
+				{
+					SetEntitySelection(8);
+				}
+				else if(InputTracker.GetKeyDown(Key.Number0))
+				{
+					SetEntitySelection(9);
+				}
+			}
+
+			if (InMenu && InputTracker.CaptureKeyDown(Key.F) && !Paused)
 			{
 				InMenu = false;
 			}

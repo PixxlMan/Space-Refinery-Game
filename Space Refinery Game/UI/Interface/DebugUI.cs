@@ -105,6 +105,7 @@ partial class UI
 			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"({gameData.PerformanceStatisticsCollector.UpdatesPerSecond} UPS) {gameData.MainGame.ResponseSpinner}");
 			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"({gameData.PerformanceStatisticsCollector.PhysicsUpdatesPerSecond} PUPS) {gameData.PhysicsWorld.ResponseSpinner}");
 		}
+		ImGui.NextColumn();
 	}
 
 	private static void DoUIOfDisparateDebuggingMenus()

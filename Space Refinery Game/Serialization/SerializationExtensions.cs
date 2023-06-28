@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Globalization;
 
 namespace Space_Refinery_Game
 {
@@ -165,7 +166,8 @@ namespace Space_Refinery_Game
 		{
 			reader.ReadStartElement(name ?? nameof(DecimalNumber));
 			{
-				DecimalNumber result = DecimalNumber.FromDecimal(reader.ReadContentAsDecimal());
+				DecimalNumber result = DecimalNumber.FromDecimal(decimal.Parse(reader.ReadString(),
+					new NumberFormatInfo() { NumberDecimalSeparator = ".", NumberGroupSeparator = " " }));
 
 				reader.ReadEndElement();
 

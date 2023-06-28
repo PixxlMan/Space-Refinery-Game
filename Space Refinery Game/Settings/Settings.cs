@@ -154,8 +154,8 @@ namespace Space_Refinery_Game // Is this really thread safe? It's accessed stati
 			settingsReferenceHandler.ExitAllowEventualReferenceMode();
 		}
 
-		public static readonly string settingValuesPath = Path.Combine(Environment.CurrentDirectory, "UserData", "Settings.srh.c.xml");
-		public static readonly string settingValuesDirectoryPath = Path.Combine(Environment.CurrentDirectory, "UserData");
+		private static readonly string settingValuesPath = Path.Combine(Environment.CurrentDirectory, "UserData", "Settings.srh.c.xml");
+		private static readonly string settingValuesDirectoryPath = Path.Combine(Environment.CurrentDirectory, "UserData");
 
 		public void SaveSettingValues()
 		{

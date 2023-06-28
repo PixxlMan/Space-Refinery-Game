@@ -124,21 +124,42 @@ namespace Space_Refinery_Game
 				{
 					if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Modify heat with buttons") && construction is OrdinaryPipe pipe)
 					{
-						DecimalNumber energy = MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Internal energy to modify per unit", new(1_000_000, 0, 10 * DecimalNumber.Mega));
+						ChemicalType chemicalType = MainGame.DebugSettings.AccessSetting<ComboDebugSetting<ChemicalType>>("Chemical type to insert with button", new(ChemicalType.ChemicalTypes.ToArray(), ChemicalType.Water));
+						ChemicalPhase chemicalPhase = MainGame.DebugSettings.AccessSetting<EnumDebugSetting<ChemicalPhase>>("Chemical phase to insert with button", ChemicalPhase.Liquid);
+						DecimalNumber mass = MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Mass to insert with button", new(10, 0, 1_000));
+						ResourceType resourceType = chemicalType.GetResourceTypeForPhase(chemicalPhase);
 
-						if (InputTracker.GetKeyDown(Key.H))
+						DecimalNumber energy = MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Internal energy to modify per unit", new(1_000, 0, 10_000_000));
+						DecimalNumber timeAdjustedEnergy = energy * (DecimalNumber)deltaTime;
+
+						/*if (InputTracker.GetKeyDown(Key.H))
 						{
 							foreach (var unitData in pipe.ResourceContainer.EnumerateResources())
 							{
 								pipe.ResourceContainer.AddResource(new(unitData.ResourceType, 0, energy));
 							}
 						}
-
-						if (InputTracker.GetKeyDown(Key.J))
+						else */if (InputTracker.GetKey(Key.H))
+						{
+							var unitData = pipe.ResourceContainer.GetResourceUnitData(resourceType);
+							//foreach (var unitData in pipe.ResourceContainer.EnumerateResources()) // todo: distribute added energy evenly among resources according to mass, right now more types means greater total energy added and instant vaporization of small amounts etc. Maybe the adding should be based on mass? like add x j per kg or even per mol.
+							{
+								pipe.ResourceContainer.AddResource(new(unitData.ResourceType, 0, timeAdjustedEnergy));
+							}
+						}
+						/*else if (InputTracker.GetKeyDown(Key.J))
 						{
 							foreach (var unitData in pipe.ResourceContainer.EnumerateResources())
 							{
-								pipe.ResourceContainer.AddResource(new(unitData.ResourceType, 0, -energy));
+								pipe.ResourceContainer.AddResource(ResourceUnitData.CreateNegativeResourceUnit(unitData.ResourceType, 0, -energy));
+							}
+						}*/
+						else if (InputTracker.GetKey(Key.J))
+						{
+							var unitData = pipe.ResourceContainer.GetResourceUnitData(resourceType);
+							//foreach (var unitData in pipe.ResourceContainer.EnumerateResources())
+							{
+								pipe.ResourceContainer.AddResource(ResourceUnitData.CreateNegativeResourceUnit(unitData.ResourceType, 0, /*Make sure to not remove more energy than there is available.*/DecimalNumber.Max(-timeAdjustedEnergy, -unitData.InternalEnergy)));
 							}
 						}
 					}

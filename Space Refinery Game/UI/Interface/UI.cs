@@ -220,28 +220,28 @@ namespace Space_Refinery_Game
 		{
 			if (!InMenu && !Paused)
 			{
-			if (InputTracker.GetKeyDown(Key.C) && InputTracker.GetKey(Key.ShiftLeft))
-			{
-				ChangeConnectorSelection(-1);
-			}
-			else if (InputTracker.GetKeyDown(Key.C))
-			{
-				ChangeConnectorSelection(1);
-			}
+				if (InputTracker.GetKeyDown(Key.C) && InputTracker.GetKey(Key.ShiftLeft))
+				{
+					ChangeConnectorSelection(-1);
+				}
+				else if (InputTracker.GetKeyDown(Key.C))
+				{
+					ChangeConnectorSelection(1);
+				}
 
-			if (InputTracker.GetKeyDown(Key.R) && InputTracker.GetKey(Key.ShiftLeft))
-			{
-				Interlocked.Decrement(ref RotationIndex);
-			}
-			else if (InputTracker.GetKeyDown(Key.R))
-			{
-				Interlocked.Increment(ref RotationIndex);
-			}
+				if (InputTracker.GetKeyDown(Key.R) && InputTracker.GetKey(Key.ShiftLeft))
+				{
+					Interlocked.Decrement(ref RotationIndex);
+				}
+				else if (InputTracker.GetKeyDown(Key.R))
+				{
+					Interlocked.Increment(ref RotationIndex);
+				}
 
-			if (InputTracker.ScrollWheelDelta != 0)
-			{
-				ChangeEntitySelection(-(int)InputTracker.ScrollWheelDelta);
-			}
+				if (InputTracker.ScrollWheelDelta != 0)
+				{
+					ChangeEntitySelection(-(int)InputTracker.ScrollWheelDelta);
+				}
 
 				if (InputTracker.GetKeyDown(Key.Number1))
 				{

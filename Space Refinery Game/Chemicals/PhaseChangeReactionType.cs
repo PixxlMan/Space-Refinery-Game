@@ -8,161 +8,176 @@ public sealed class PhaseChangeReactionType : ReactionType
 {
 	public override string Reaction => "(s) -> (l), (l) -> (g), (g) -> (l), (l) -> (s)";
 
+	// resourceUnitsToAdd is declared as a field in order to avoid having to recreate it each tick. It is always cleared after use.
+	private List<ResourceUnitData> resourceUnitsToAdd = new();
+
 	public override void Tick(DecimalNumber _, ResourceContainer resourceContainer, ILookup<Type, ReactionFactor> _2, ICollection<ReactionFactor> producedReactionFactors)
 	{
 		lock (resourceContainer.SyncRoot)
 		{
 			foreach (var unit in resourceContainer.EnumerateResources())
 			{
-				ResourceType type = unit.ResourceType;
-				ChemicalType chemicalType = type.ChemicalType;
+				ResourceType resourceType = unit.ResourceType;
+				ChemicalType chemicalType = resourceType.ChemicalType;
+
+				ResourceUnitData newUnit, changeFactorUnit;
 
 				switch (unit.ResourceType.ChemicalPhase)
 				{
 					case ChemicalPhase.Solid:
 						// Solid can go to:
 						// - Liquid (if temp > tempOfFusion)
-						if (unit.Temperature > type.ChemicalType.TemperatureOfFusion)
+						if (unit.Temperature > resourceType.ChemicalType.TemperatureOfFusion)
 						{
-							TransitionPhase(resourceContainer, unit, ChemicalPhase.Liquid, chemicalType.TemperatureOfFusion, chemicalType.EnthalpyOfFusion);
+							TransitionPhase(unit, ChemicalPhase.Liquid, chemicalType.EnthalpyOfFusion,
+								unit.InternalEnergy - ChemicalType.TemperatureToInternalEnergy(resourceType, chemicalType.TemperatureOfFusion, unit.Mass),
+								out newUnit, out changeFactorUnit);
 							producedReactionFactors.Add(new Melting());
 							Logging.Log("Melting");
+						}
+						else
+						{
+							continue;
 						}
 						break;
 					case ChemicalPhase.Liquid:
 						// Liquid can go to:
 						// - Gas (if temp > temperatureOfVaporization)
 						// - Solid (if temp < temperatureOfFusion)
-						if (unit.Temperature > type.ChemicalType.TemperatureOfVaporization)
+						if (unit.Temperature > resourceType.ChemicalType.TemperatureOfVaporization)
 						{
-							TransitionPhase(resourceContainer, unit, ChemicalPhase.Gas, chemicalType.TemperatureOfVaporization, chemicalType.EnthalpyOfVaporization);
+							TransitionPhase(unit, ChemicalPhase.Gas, chemicalType.EnthalpyOfVaporization,
+								unit.InternalEnergy - ChemicalType.TemperatureToInternalEnergy(resourceType, chemicalType.TemperatureOfVaporization, unit.Mass),
+								out newUnit, out changeFactorUnit);
 							producedReactionFactors.Add(new Vaporizing());
 							Logging.Log("Vaporizing");
 						}
-						else if (unit.Temperature < type.ChemicalType.TemperatureOfFusion)
+						else if (unit.Temperature < resourceType.ChemicalType.TemperatureOfFusion)
 						{
-							TransitionPhase(resourceContainer, unit, ChemicalPhase.Solid, chemicalType.TemperatureOfFusion, chemicalType.EnthalpyOfFusion);
+							TransitionPhase(unit, ChemicalPhase.Solid, chemicalType.EnthalpyOfFusion,
+								ChemicalType.TemperatureToInternalEnergy(resourceType, chemicalType.TemperatureOfVaporization, unit.Mass) - unit.InternalEnergy,
+								out newUnit, out changeFactorUnit);
 							producedReactionFactors.Add(new Solidifying());
 							Logging.Log("Solidifying");
+						}
+						else
+						{
+							continue;
 						}
 						break;
 					case ChemicalPhase.Gas:
 						// Gas can go to:
 						// - Liquid (if temp < temperatureOfVaporization)
 						// - Plasma (unsupported)
-						if (unit.Temperature < type.ChemicalType.TemperatureOfVaporization)
+						if (unit.Temperature < resourceType.ChemicalType.TemperatureOfVaporization)
 						{
-							TransitionPhase(resourceContainer, unit, ChemicalPhase.Liquid, chemicalType.TemperatureOfVaporization, chemicalType.EnthalpyOfVaporization);
+							TransitionPhase(unit, ChemicalPhase.Liquid, chemicalType.EnthalpyOfVaporization,
+								unit.InternalEnergy - ChemicalType.TemperatureToInternalEnergy(resourceType, chemicalType.TemperatureOfVaporization, unit.Mass),
+								out newUnit, out changeFactorUnit);
 							producedReactionFactors.Add(new Condensating());
 							Logging.Log("Condensating");
+						}
+						else
+						{
+							continue;
 						}
 						break;
 					default:
 						throw new GlitchInTheMatrixException();
 				}
+
+				resourceUnitsToAdd.Add(newUnit);
+				resourceUnitsToAdd.Add(changeFactorUnit);
 			}
+
+			// Resources should be added outside of the loop to avoid problems where the loop never terminates or does the same process multiple times or uses updated values, doing too many operations at once etc.
+			resourceContainer.AddResources(resourceUnitsToAdd);
 		}
+
+		resourceUnitsToAdd.Clear();
 	}
 
 	/// <summary>
 	/// 
 	/// </summary>
-	/// <param name="resourceContainer"></param>
-	/// <param name="unit"></param>
-	/// <param name="targetPhase"></param>
-	/// <param name="temperatureOfPhaseTransition"></param>
-	/// <param name="phaseTransitionEnthalpy">[J/mol]</param>
-	private static void TransitionPhase(ResourceContainer resourceContainer, ResourceUnitData unit, ChemicalPhase targetPhase, DecimalNumber temperatureOfPhaseTransition, DecimalNumber phaseTransitionEnthalpy)
+	/// <param name="previousUnit"></param>
+	/// <param name="newPhase"></param>
+	/// <param name="phaseTransitionEnthalpy">[J/kg]</param>
+	/// <param name="energyDelta">[J]</param>
+	/// <param name="newUnit"></param>
+	/// <param name="changeFactorUnit"></param>
+	private static void TransitionPhase(ResourceUnitData previousUnit, ChemicalPhase newPhase, DecimalNumber phaseTransitionEnthalpy, DecimalNumber energyDelta, out ResourceUnitData newUnit, out ResourceUnitData changeFactorUnit)
 	{
-		ResourceType type = unit.ResourceType;
-		ChemicalType chemicalType = type.ChemicalType;
-		ResourceType targetType = chemicalType.GetResourceTypeForPhase(targetPhase);
+		ResourceType previousResourceType = previousUnit.ResourceType;
+		ChemicalType chemicalType = previousResourceType.ChemicalType;
+		ResourceType newResourceType = chemicalType.GetResourceTypeForPhase(newPhase);
 
-		if (targetPhase > type.ChemicalPhase) // todo: start calculating temperature based on energy past the previous phase. The current implementation is incorrect.
+		Debug.Assert(phaseTransitionEnthalpy > 0);
+		Debug.Assert(energyDelta > 0);
+
+		// Upstep.
+		//if (newPhase > previousResourceType.ChemicalPhase) // todo: start calculating temperature based on energy past the previous phase. The current implementation is incorrect.
 		{
-			// The internal energy level that would be requited to start the transition. Calculated by taking the internal energy level of the phase transition start.
-			DecimalNumber energyLevelAtStartOfPhaseTransition = ChemicalType.TemperatureToInternalEnergy(type, temperatureOfPhaseTransition, unit.Mass);
-			// The internal energy level that would be required for a complete phase transition. Calculated by taking the internal energy level of the start of the transition and then adding the energy required for the entire transition.
-			DecimalNumber energyLevelAtCompletePhaseTransition = ChemicalType.TemperatureToInternalEnergy(type, temperatureOfPhaseTransition, unit.Mass) + phaseTransitionEnthalpy * unit.Moles;
+			// E = energy delta, internal energy added that exceeds the maximum energy to stay in phase
+			// C = enthalpy of fusion or vaporization
+			// m = mass
+			// E = C * m
+			//
+			// In units:
+			// [J] = [J/kg] * [kg]
+			//
+			// Solve for m, in order to get mass in new phase
+			// m = E / C
+			//
+			// In units:
+			// [kg] = [J] / [J/kg]
 
-			// The amount of energy that is used for the phase transition. If there is more internal energy than is needed for a full phase transition, then this will be limited to the max energy usable by the phase transition.
-			DecimalNumber phaseTransitioningInternalEnergy = DecimalNumber.Min(unit.InternalEnergy - energyLevelAtStartOfPhaseTransition, energyLevelAtCompletePhaseTransition);
-			// If there was more internal energy than necessary for just phase transitioning, this will contain that excess energy. Otherwise it will be 0.
-			DecimalNumber internalEnergyBeyondThatWhichCouldPossiblyBeUsed = DecimalNumber.Max(unit.InternalEnergy - energyLevelAtCompletePhaseTransition, 0); //DecimalNumber.Max((unit.InternalEnergy - energyLevelAtCompletePhaseTransition) - phaseTransitioningInternalEnergy, 0);
+			var E = energyDelta; // [J]
+			var C = phaseTransitionEnthalpy; // [J/kg]
 
-			// Calculates the substance amount that will undergo phase transition, preventing transitioning too much by limiting it to the available substance amount.
-			DecimalNumber substanceAmountThatIsPhaseTransitioned = DecimalNumber.Min(phaseTransitioningInternalEnergy / phaseTransitionEnthalpy, unit.Moles);
-			// todo: can energy be lost because of the min()?
+			var m = E / C; // [kg] = [J] / [J/kg]
 
-			Debug.Assert(substanceAmountThatIsPhaseTransitioned >= 0);
+			if (m > previousUnit.Mass)
+			{
+				m = previousUnit.Mass;
 
-			ResourceUnitData phaseTransitionedUnit = new(targetType, substanceAmountThatIsPhaseTransitioned, 0);
+				E = C * m; // [J] = [J/kg] * [kg]
+			}
 
-			// The internal energy of the phase transitioned material is .......
-			phaseTransitionedUnit.InternalEnergy = ((energyLevelAtStartOfPhaseTransition / unit.Moles) * phaseTransitionedUnit.Moles) + phaseTransitioningInternalEnergy + internalEnergyBeyondThatWhichCouldPossiblyBeUsed;
+			newUnit = new(
+				resourceType: newResourceType,
+				moles: ChemicalType.MassToMoles(chemicalType, m),
+				internalEnergy: E);
+			changeFactorUnit = ResourceUnitData.CreateNegativeResourceUnit(previousResourceType, -newUnit.Moles, -newUnit.InternalEnergy);
 
-			resourceContainer.AddResource(phaseTransitionedUnit);
-
-			resourceContainer.AddResource(ResourceUnitData.CreateNegativeResourceUnit(unit.ResourceType, -phaseTransitionedUnit.Moles, -phaseTransitionedUnit.InternalEnergy));
-
-			Debug.Assert(resourceContainer.GetResourceUnitData(unit.ResourceType).InternalEnergy >= 0);
-			Debug.Assert(resourceContainer.GetResourceUnitData(phaseTransitionedUnit.ResourceType).InternalEnergy >= 0);
+			return;
 		}
-		else
-		{
-			// The internal energy level that would be requited to start the transition. Calculated by taking the internal energy level of the phase transition start.
-			DecimalNumber energyLevelAtStartOfPhaseTransition = ChemicalType.TemperatureToInternalEnergy(type, temperatureOfPhaseTransition, unit.Mass);
-			// The internal energy level that would be required for a complete phase transition. Calculated by taking the internal energy level of the start of the transition and then adding the energy required for the entire transition.
-			DecimalNumber energyLevelAtCompletePhaseTransition = ChemicalType.TemperatureToInternalEnergy(type, temperatureOfPhaseTransition, unit.Mass) - phaseTransitionEnthalpy * unit.Moles;
+		// Downstep.
+		/*else
+		{ // todo: complete if necessary
+			// E = energy delta, internal energy removed that is below the minumum energy to stay in phase
+			// C = enthalpy of fusion or vaporization
+			// m = mass
+			// E = C * m
+			//
+			// In units:
+			// [J] = [J/kg] * [kg]
+			//
+			// Solve for m, in order to get mass in new phase
+			// m = E / C
+			//
+			// In units:
+			// [kg] = [J] / [J/kg]
 
-			// The amount of energy that is used for the phase transition. If there is more internal energy than is needed for a full phase transition, then this will be limited to the max energy usable by the phase transition.
-			DecimalNumber phaseTransitioningInternalEnergy;
+			var E = energyDelta; // [J]
+			var C = phaseTransitionEnthalpy; // [J/kg]
 
-			if (unit.InternalEnergy < energyLevelAtStartOfPhaseTransition)
-			{
-				if (unit.InternalEnergy > energyLevelAtCompletePhaseTransition)
-				{
-					phaseTransitioningInternalEnergy = energyLevelAtStartOfPhaseTransition - unit.InternalEnergy;
-				}
-				else
-				{
-					phaseTransitioningInternalEnergy = energyLevelAtCompletePhaseTransition - unit.InternalEnergy;
-				}
-			}
-			else
-			{
-				throw new GlitchInTheMatrixException("Should never have entered a phase transition!");
-			}
+			var m = E / C; // [kg] = [J] / [J/kg]
 
-			// If there was more internal energy than necessary for just phase transitioning, this will contain that excess energy. Otherwise it will be 0.
-			DecimalNumber internalEnergyBelowThatWhichCouldPossiblyBeUsed;
+			newUnit = new(newResourceType, ChemicalType.MassToMoles(chemicalType, m), E);
+			changeFactorUnit = ResourceUnitData.CreateNegativeResourceUnit(previousResourceType, -newUnit.Moles, -newUnit.InternalEnergy);
 
-			if (unit.InternalEnergy < energyLevelAtCompletePhaseTransition)
-			{
-				internalEnergyBelowThatWhichCouldPossiblyBeUsed = energyLevelAtCompletePhaseTransition - unit.InternalEnergy;
-			}
-			else
-			{
-				internalEnergyBelowThatWhichCouldPossiblyBeUsed = 0;
-			}
-
-			// Calculates the substance amount that will undergo phase transition, preventing transitioning too much by limiting it to the available substance amount.
-			DecimalNumber substanceAmountThatIsPhaseTransitioned = DecimalNumber.Min(phaseTransitioningInternalEnergy / phaseTransitionEnthalpy, unit.Moles);
-			// todo: can energy be lost because of the min()?
-
-			Debug.Assert(substanceAmountThatIsPhaseTransitioned >= 0);
-
-			ResourceUnitData phaseTransitionedUnit = new(targetType, substanceAmountThatIsPhaseTransitioned, 0);
-
-			// The internal energy of the phase transitioned material is .......
-			phaseTransitionedUnit.InternalEnergy = ((energyLevelAtStartOfPhaseTransition / unit.Moles) * phaseTransitionedUnit.Moles) + phaseTransitioningInternalEnergy - internalEnergyBelowThatWhichCouldPossiblyBeUsed;
-
-			resourceContainer.AddResource(phaseTransitionedUnit);
-
-			resourceContainer.AddResource(ResourceUnitData.CreateNegativeResourceUnit(unit.ResourceType, -phaseTransitionedUnit.Moles, -phaseTransitionedUnit.InternalEnergy));
-
-			Debug.Assert(resourceContainer.GetResourceUnitData(unit.ResourceType).InternalEnergy >= 0);
-			Debug.Assert(resourceContainer.GetResourceUnitData(phaseTransitionedUnit.ResourceType).InternalEnergy >= 0);
-		}
+			return;
+		}*/
 	}
 }

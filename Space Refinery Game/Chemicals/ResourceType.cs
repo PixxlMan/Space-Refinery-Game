@@ -17,11 +17,6 @@ public abstract class ResourceType : IUIInspectable, IEntitySerializable
 	/// </summary>
 	public DecimalNumber Density;
 
-	/// <summary>
-	/// [J/K]
-	/// </summary>
-	public DecimalNumber SpecificHeatCapacity;
-
 	public abstract ChemicalPhase ChemicalPhase { get; }
 
 	protected ResourceType()
@@ -29,12 +24,11 @@ public abstract class ResourceType : IUIInspectable, IEntitySerializable
 
 	}
 
-	protected ResourceType(ChemicalType chemicalType, string resourceName, DecimalNumber density, DecimalNumber specificHeatCapacity)
+	protected ResourceType(ChemicalType chemicalType, string resourceName, DecimalNumber density)
 	{
 		ChemicalType = chemicalType;
 		ResourceName = resourceName;
 		Density = density;
-		SpecificHeatCapacity = specificHeatCapacity;
 	}
 
 	public virtual void DoUIInspectorReadonly()
@@ -47,7 +41,6 @@ public abstract class ResourceType : IUIInspectable, IEntitySerializable
 				ChemicalType.DoUIInspectorReadonly();
 			}
 			ImGui.Text($"Density: {Density.FormatDensity()}");
-			ImGui.Text($"Specific Heat Capacity: {SpecificHeatCapacity.FormatSpecificHeatCapacity()}");
 		}
 		UIFunctions.EndSub();
 	}
@@ -63,7 +56,6 @@ public abstract class ResourceType : IUIInspectable, IEntitySerializable
 		{
 			writer.Serialize(ResourceName, nameof(ResourceName));
 			writer.Serialize(Density, nameof(Density));
-			writer.Serialize(SpecificHeatCapacity, nameof(SpecificHeatCapacity));
 		}
 		writer.WriteEndElement();
 	}
@@ -74,7 +66,6 @@ public abstract class ResourceType : IUIInspectable, IEntitySerializable
 		{
 			ResourceName = reader.ReadString(nameof(ResourceName));
 			Density = reader.DeserializeDecimalNumber(nameof(Density));
-			SpecificHeatCapacity = reader.DeserializeDecimalNumber(nameof(SpecificHeatCapacity));
 		}
 		reader.ReadEndElement();
 	}

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<SerializationReferenceHandler>
+<SerializationReferenceHandler> <!--Good table: https://ch301.cm.utexas.edu/data/section2.php?target=heat-transition.php-->
 	<Count>1</Count>
 	<Elements>
 		<IEntitySerializable>
@@ -8,30 +8,28 @@
 				<Reference>Water</Reference>
 				<ChemicalName>Water</ChemicalName>
 				<MolarMass>18.0153<!--[g/mol]--></MolarMass>
-				<EnthalpyOfVaporization>2257</EnthalpyOfVaporization>
+				<EnthalpyOfVaporization>2 260 000<!--[J/kg]--></EnthalpyOfVaporization><!--use [J/mol] in future?-->
 				<TemperatureOfVaporization>373.15</TemperatureOfVaporization>
-				<EnthalpyOfFusion>334</EnthalpyOfFusion>
-				<TemperatureOfFusion>273.15</TemperatureOfFusion>
-				<CommonPhase>Liquid</CommonPhase>
+				<EnthalpyOfFusion>334 000<!--[J/kg]--></EnthalpyOfFusion>
+				<TemperatureOfFusion>273.15</TemperatureOfFusion> <!--Start representing this as internal energy per mol? [J/mol] rather than [K] which is more complex.-->
+				<SpecificHeatCapacity>4 180<!--[J/(K*kg)]--></SpecificHeatCapacity> <!--Start using molar heat capacity...?-->
+				<CommonPhase>Liquid</CommonPhase><!--Are the right units being used for storing and calculating density? Is it certain that these don't store, for instance g/m3 and calculate as kg/m3?-->
 				<GasPhaseType>
 					<ResourceType>
 						<ResourceName>Water Vapor</ResourceName>
-						<Density>0.013</Density>
-						<SpecificHeatCapacity>3770</SpecificHeatCapacity>
+						<Density>0.013<!--[kg/m³]--></Density>					
 					</ResourceType>
 				</GasPhaseType>
 				<LiquidPhaseType>
 					<ResourceType>
 						<ResourceName>Water</ResourceName>
 						<Density>997.77</Density>
-						<SpecificHeatCapacity>4160</SpecificHeatCapacity>
 					</ResourceType>
 				</LiquidPhaseType>
 				<SolidPhaseType>
 					<ResourceType>
 						<ResourceName>Ice</ResourceName>
 						<Density>917</Density>
-						<SpecificHeatCapacity>3110</SpecificHeatCapacity>
 					</ResourceType>
 				</SolidPhaseType>
 			</ChemicalType>				

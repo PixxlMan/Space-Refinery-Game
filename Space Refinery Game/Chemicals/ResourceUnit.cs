@@ -22,7 +22,7 @@ namespace Space_Refinery_Game
 		private DecimalNumber moles;
 
 		/// <summary>
-		/// [mol]
+		/// Substance amount in [mol].
 		/// </summary>
 		public DecimalNumber Moles
 		{
@@ -36,19 +36,21 @@ namespace Space_Refinery_Game
 			{
 				Debug.Assert(value >= 0, "The number of moles cannot be less than zero.");
 
-				ResourceUnitChanged?.Invoke(this);
-
 				lock (syncRoot)
 				{
 					moles = value;
 				}
+
+				ResourceUnitChanged?.Invoke(this);
 			}
 		}
+
+		// TODO: add property or method in ChemicalType that gives absolute internal energy. maybe internal energy should be renamed to phase energy?
 
 		private DecimalNumber internalEnergy;
 
 		/// <summary>
-		/// Internal energy in [J].
+		/// [J] Internal energy in the current phase.
 		/// </summary>
 		public DecimalNumber InternalEnergy
 		{
@@ -62,26 +64,44 @@ namespace Space_Refinery_Game
 			{
 				//Debug.Assert(value >= 0, "Internal energy cannot be less than zero.");
 				// Disable this assert since being able to create resources with negative internalEnergy might be useful for removing energy. Will have to see if this should be reimplemented in some other way.
-				ResourceUnitChanged?.Invoke(this);
 
 				lock (syncRoot)
 				{
 					internalEnergy = value;
 				}
+
+				ResourceUnitChanged?.Invoke(this);
 			}
 		}
 
-		public DecimalNumber Temperature => Moles != 0 ? ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass) : 0;
+		/// <summary>
+		/// [K]
+		/// </summary>
+		/// <remarks>
+		/// If the substance amount or the mass is zero, the temperature will be considered to be zero.
+		/// </remarks>
+		public DecimalNumber Temperature => (Moles != 0 && Mass != 0) ? ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass) : 0;
 
 		private object syncRoot = new();
 
-		public DecimalNumber Mass => ChemicalType.MolesToMass(ChemicalType, Moles); // [kg]
+		/// <summary>
+		/// Mass in [kg].
+		/// </summary>
+		public DecimalNumber Mass => ChemicalType.MolesToMass(ChemicalType, Moles);
 
-		public DecimalNumber Volume => Mass / ResourceType.Density; // [m³]
+		/// <summary>
+		/// Volume in [m³].
+		/// </summary>
+		public DecimalNumber Volume => Mass / ResourceType.Density;
+
+		/// <summary>
+		/// The amount of energy [J] per unit of substance [mol] [J/mol]
+		/// </summary>
+		public DecimalNumber MolarEnergy => InternalEnergy / Moles;
 
 		public event Action<ResourceUnit> ResourceUnitChanged;
 
-		public ResourceUnitData ResourceUnitData => new(ResourceType, Moles, InternalEnergy);
+		public ResourceUnitData ResourceUnitData => new(ResourceType, Moles, InternalEnergy); // Not using CreateNegativeResourceUnit here is fine because while ResourceUnitData can be allowed to be negative, a ResourceUnit should always represent a real resource amount.
 
 		public ResourceUnit(ResourceType resourceType, ResourceContainer resourceContainer, ResourceUnitData resourceUnitData)
 		{
@@ -140,6 +160,7 @@ namespace Space_Refinery_Game
 				ImGui.Text($"{nameof(Mass)}: {Mass.FormatMass()}");
 				ImGui.Text($"{nameof(Volume)}: {Volume.FormatVolume()}");
 				ImGui.Text($"{nameof(InternalEnergy)}: {InternalEnergy.FormatEnergy()}");
+				ImGui.Text($"{nameof(MolarEnergy)}: {MolarEnergy.FormatMolarEnergy()}");
 				ImGui.Text($"{nameof(Temperature)}: {Temperature.FormatTemperature()}");
 			}
 			UIFunctions.EndSub();

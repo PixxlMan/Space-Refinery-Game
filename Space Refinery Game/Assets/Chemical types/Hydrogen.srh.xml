@@ -2,6 +2,7 @@
 <SerializationReferenceHandler>
 	<Count>1</Count>
 	<Elements>
+		<!--Yabbabbabba-->
 		<IEntitySerializable>
 			<Type>Space_Refinery_Game.ChemicalType</Type>
 			<ChemicalType>
@@ -12,26 +13,24 @@
 				<TemperatureOfVaporization>20.271</TemperatureOfVaporization>
 				<EnthalpyOfFusion>58</EnthalpyOfFusion>
 				<TemperatureOfFusion>13.99</TemperatureOfFusion>
+				<SpecificHeatCapacity>13120</SpecificHeatCapacity>
 				<CommonPhase>Gas</CommonPhase>
 				<GasPhaseType>
 					<ResourceType>
 						<ResourceName>Hydrogen Gas</ResourceName>
 						<Density>0.08988</Density>
-						<SpecificHeatCapacity>14380</SpecificHeatCapacity>
 					</ResourceType>
 				</GasPhaseType>
 				<LiquidPhaseType>
 					<ResourceType>
 						<ResourceName>Liquid Hydrogen</ResourceName>
 						<Density>700</Density>
-						<SpecificHeatCapacity>13120</SpecificHeatCapacity>
 					</ResourceType>
 				</LiquidPhaseType>
 				<SolidPhaseType>
 					<ResourceType>
 						<ResourceName>Solid Hydrogen</ResourceName>
 						<Density>860</Density>
-						<SpecificHeatCapacity>13120</SpecificHeatCapacity>
 					</ResourceType>
 				</SolidPhaseType>
 			</ChemicalType>				

@@ -10,7 +10,7 @@ namespace Space_Refinery_Game
 
 		}
 
-		public LiquidType(ChemicalType chemicalType, string gasName, DecimalNumber density, DecimalNumber specificHeatCapacity) : base(chemicalType, gasName, density, specificHeatCapacity)
+		public LiquidType(ChemicalType chemicalType, string gasName, DecimalNumber density) : base(chemicalType, gasName, density)
 		{
 		}
 

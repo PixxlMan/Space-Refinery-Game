@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -26,7 +28,7 @@ namespace Space_Refinery_Game
 		public DecimalNumber Moles;
 
 		/// <summary>
-		/// [J]
+		/// [J] Internal energy in the current phase.
 		/// </summary>
 		public DecimalNumber InternalEnergy;
 
@@ -45,7 +47,15 @@ namespace Space_Refinery_Game
 		/// <summary>
 		/// [K]
 		/// </summary>
-		public DecimalNumber Temperature => Moles != 0 ? ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass) : 0;
+		/// <remarks>
+		/// If the substance amount or the mass is zero, the temperature will be considered to be zero.
+		/// </remarks>
+		public DecimalNumber Temperature => (Moles != 0 && Mass != 0) ? ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass) : 0;
+
+		/// <summary>
+		/// [J/mol]
+		/// </summary>
+		public DecimalNumber MolarEnergy => InternalEnergy / Moles;
 
 		// Methods
 
@@ -72,7 +82,7 @@ namespace Space_Refinery_Game
 
 			Debug.Assert(moles >= 0, "The number of moles cannot be lower than zero.");
 
-			//Debug.Assert(internalEnergy >= 0, "Internal energy cannot be lower than zero.");
+			Debug.Assert(internalEnergy >= 0 || resourceType.ChemicalPhase != ChemicalPhase.Solid, "Internal energy when the chemical phase is solid cannot be lower than zero.");
 
 			ResourceType = resourceType;
 
@@ -81,8 +91,26 @@ namespace Space_Refinery_Game
 			InternalEnergy = internalEnergy;
 		}
 
-		public void DoUIInspectorReadonly()
+		/// <summary>
+		/// Works like the regular constructor, however it doesn't contain checks therefore allowing a negative amount of moles or internal energy.
+		/// This can be useful for using <c>ResourceUnit</c>s for subtracting resources.
+		/// </summary>
+		public static ResourceUnitData CreateNegativeResourceUnit(ResourceType resourceType, DecimalNumber moles, DecimalNumber internalEnergy)
 		{
+			Debug.Assert(resourceType is not null, $"Argument {nameof(resourceType)} should never be null.");
+
+			return new()
+			{
+				ResourceType = resourceType,
+				Moles = moles,
+				InternalEnergy = internalEnergy,
+			};
+		}
+
+		public void DoUIInspectorReadonly() // Why is this different from ResourceUnit.DoUIInspectorReadonly? Should ResourceUnit.DoUIInspectorReadonly() refer to this instead, updating this as well?
+		{
+			throw new NotImplementedException();
+
 			UIFunctions.BeginSub();
 			{
 				if (ImGui.CollapsingHeader($"Resource type"))

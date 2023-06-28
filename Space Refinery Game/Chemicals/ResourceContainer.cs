@@ -5,13 +5,14 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
 namespace Space_Refinery_Game
 {
-	public sealed class ResourceContainer : IUIInspectable
+	public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems like changes to resources can occur while reactions are taking place... Is that okay?
 	{
 		private DecimalNumber volume;
 		/// <summary>
@@ -225,7 +226,7 @@ namespace Space_Refinery_Game
 
 		public object SyncRoot = new();
 
-		//public event Action CompositionChanged
+		//public event Action ChemicalCompositionChanged
 
 		public DecimalNumber Fullness
 		{
@@ -318,19 +319,19 @@ namespace Space_Refinery_Game
 
 			producedReactionFactors.Clear();
 
-#if DEBUG
-			var initialMass = Mass;
+/*#if DEBUG
 			lock (SyncRoot) // lock because otherwise the assert to check the mass discrepency could Assert incorrectly because of external parallell modifications to the mass.
 			{
-#endif
+				var initialMass = Mass;
+#endif*/
 				foreach (var reactionType in possibleReactionTypes) // Tick all reactionTypes *before* recalculating possible reaction types - in order to ensure reactions can be stopped by noticing lack of resources. A reactionType should always be ticked normally before being removed from further ticks.
 				{
 					reactionType.Tick(tickInterval, this, reactionFactors, producedReactionFactors);
 				}
-#if DEBUG
+/*#if DEBUG
 				Debug.Assert(DecimalNumber.Difference(initialMass, Mass) < permittedMaxPostReactionMassDiscrepancy);
 			}
-#endif
+#endif*/
 
 			bool needsToRecalculatePossibleReactionTypes;
 			lock (SyncRoot)
@@ -371,11 +372,20 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		public void AddResource(ResourceUnitData resourceUnitData)
+		public void AddResources(params ResourceUnitData[] resourceUnitDatas)
 		{
-			resources.AddOrUpdate(resourceUnitData.ResourceType, (_) =>
+			foreach (var resourceUnit in resourceUnitDatas)
 			{
-				ResourceUnit resourceUnit = new(resourceUnitData.ResourceType, this, resourceUnitData);
+				AddResource(resourceUnit);
+			}
+		}
+
+		public void AddResource(ResourceUnitData addedResourceUnitData)
+		{
+			var resourceUnit = resources.GetOrAdd(addedResourceUnitData.ResourceType, (_) =>
+			{
+				// Keep in mind: Whatever is in here may be called several times. Consider using Lazy to only perform actions once. https://medium.com/gft-engineering/correctly-using-concurrentdictionarys-addorupdate-method-94b7b41719d6
+				ResourceUnit resourceUnit = new(addedResourceUnitData.ResourceType, this, new(addedResourceUnitData.ResourceType, 0, 0));
 
 				resourceUnit.ResourceUnitChanged += ResourceUnit_Changed;
 
@@ -384,14 +394,9 @@ namespace Space_Refinery_Game
 				ResourceCountChanged();
 
 				return resourceUnit;
-			},
-			(_, ru) =>
-			{
-				lock (SyncRoot)
-					ru.Add(resourceUnitData);
-
-				return ru;
 			});
+
+			resourceUnit.Add(addedResourceUnitData);
 		}
 
 		private void ResourceCountChanged()

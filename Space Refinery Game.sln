@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Space Refinery Game", "Spac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Space Refinery Game Renderer", "Space Refinery Game Renderer\Space Refinery Game Renderer.csproj", "{FD35CD9A-AF07-46B2-BC18-FD56D5C80445}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Space Refinery Utilities", "Space Refinery Utilities\Space Refinery Utilities.csproj", "{148EFCD8-07A8-4D75-BAE7-979FACDFC938}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Space Refinery Utilities", "Space Refinery Utilities\Space Refinery Utilities.csproj", "{148EFCD8-07A8-4D75-BAE7-979FACDFC938}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

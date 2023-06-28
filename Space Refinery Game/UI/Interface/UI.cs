@@ -72,6 +72,24 @@ namespace Space_Refinery_Game
 		}
 
 		public void SetEntitySelection(int selection)
+		{
+			lock (syncRoot)
+			{
+				if (EntitySelection > hotbarItems.Count || EntitySelection < 0)
+				{
+					return;
+				}
+
+				EntitySelection = selection;
+
+				hotbarFading = 1;
+
+				ChangeConnectorSelection(0);
+
+				SelectedEntityTypeChanged?.Invoke(SelectedPipeType);
+			}
+		}
+
 		public int ConnectorSelection;
 
 		public void ChangeConnectorSelection(int selectionDelta)
@@ -200,6 +218,8 @@ namespace Space_Refinery_Game
 
 		public void Update()
 		{
+			if (!InMenu && !Paused)
+			{
 			if (InputTracker.GetKeyDown(Key.C) && InputTracker.GetKey(Key.ShiftLeft))
 			{
 				ChangeConnectorSelection(-1);

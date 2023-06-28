@@ -129,6 +129,7 @@ public sealed class MainGame
 
 		Settings.RegisterToSettingValue<SwitchSettingValue>("Limit FPS", (value) => GraphicsWorld.ShouldLimitFramerate = value.SwitchValue);
 
+		FormatUnit.RegisterToSettings(Settings);
 	}
 
 	private void UI_PauseStateChanged(bool paused)

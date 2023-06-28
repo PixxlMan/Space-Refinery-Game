@@ -8,6 +8,13 @@ namespace Space_Refinery_Game;
 
 public static class FormatUnit
 {
+	public static void RegisterToSettings(Settings settings)
+	{
+		settings.RegisterToSettingValue<SwitchSettingValue>("Use Celcius", (v) => useCelcius = v);
+	}
+
+	static bool useCelcius = false;
+
 	/// <summary>
 	/// Formats a mass in kilograms according to player preferences.
 	/// </summary>
@@ -69,9 +76,9 @@ public static class FormatUnit
 	}
 
 	/// <summary>
-	/// Formats specific heat capacity in joules per kilogram according to player preferences.
+	/// Formats specific heat capacity in joules per kilogram kelvin according to player preferences.
 	/// </summary>
-	/// <param name="specificHeatCapacity">[J/kg]</param>
+	/// <param name="specificHeatCapacity">[J/kg*K]</param>
 	/// <returns>Formatted specific heat capacity</returns>
 	public static string FormatSpecificHeatCapacity(this DecimalNumber specificHeatCapacity)
 	{
@@ -79,7 +86,9 @@ public static class FormatUnit
 
 		return $"{scaledSpecificHeatCapacity.ToString(decimals: 2)} {prefix}J/(kg*K)";
 	}
-	
+
+	public static readonly DecimalNumber AbsoluteZeroInCelcius = -273.15;
+
 	/// <summary>
 	/// Formats temperature in kelvin according to player preferences.
 	/// </summary>
@@ -87,7 +96,14 @@ public static class FormatUnit
 	/// <returns>Formatted temperature</returns>
 	public static string FormatTemperature(this DecimalNumber temperature)
 	{
-		return $"{temperature.ToString(decimals: 2)} K";
+		if (useCelcius)
+		{
+			return $"{(temperature + AbsoluteZeroInCelcius).ToString(decimals: 2)} °C";
+		}
+		else
+		{
+			return $"{temperature.ToString(decimals: 2)} K";
+		}
 	}
 
 	/// <summary>

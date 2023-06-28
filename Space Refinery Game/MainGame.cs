@@ -128,6 +128,7 @@ public sealed class MainGame
 		Settings.RegisterToSettingValue<SliderSettingValue>("Max FPS", (value) => GraphicsWorld.FrametimeLowerLimit = 1 / value.SliderValue);
 
 		Settings.RegisterToSettingValue<SwitchSettingValue>("Limit FPS", (value) => GraphicsWorld.ShouldLimitFramerate = value.SwitchValue);
+
 	}
 
 	private void UI_PauseStateChanged(bool paused)

@@ -1,7 +1,6 @@
 ﻿using BepuPhysics;
 using BepuPhysics.Collidables;
 using BepuPhysics.CollisionDetection;
-using BepuPhysics.Trees;
 using BepuUtilities;
 using BepuUtilities.Memory;
 using FixedPrecision;
@@ -9,7 +8,6 @@ using FXRenderer;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Numerics;
 using System.Text;
 using Veldrid.Utilities;
 
@@ -111,16 +109,13 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		public void ChangeShape(PhysicsObject physicsObject, ConvexHull shape)
-		{ // OPTIMIZE: remove old shapes and don't always add the new ones if identical ones are already used (pass TypedIndex instead of TShape to the AddPhysicsObject method to accomodate more easily sharing the same shape between pipes of the same type)
+		public void DestroyPhysicsObject(PhysicsObject physicsObject)
+		{
 			lock (SyncRoot)
 			{
-				// Something here causes bepu physics to get unstable.
-				var oldShape = simulation.Bodies[physicsObject.BodyHandle].Collidable.Shape;
-				simulation.Bodies[physicsObject.BodyHandle].SetShape(simulation.Shapes.Add(shape));
-				//simulation.Shapes.RecursivelyRemoveAndDispose(oldShape, bufferPool);
-				//simulation.Shapes.RemoveAndDispose(oldShape, bufferPool);
-				//simulation.Shapes.Remove(oldShape); // Least broken option
+				PhysicsObjectLookup.Remove(physicsObject.BodyHandle);
+
+				simulation.Bodies.Remove(physicsObject.BodyHandle);
 			}
 		}
 
@@ -151,77 +146,16 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		public void DestroyPhysicsObject(PhysicsObject physicsObject)
-		{
+		public void ChangeShape(PhysicsObject physicsObject, ConvexHull shape)
+		{ // OPTIMIZE: remove old shapes and don't always add the new ones if identical ones are already used (pass TypedIndex instead of TShape to the AddPhysicsObject method to accomodate more easily sharing the same shape between pipes of the same type)
 			lock (SyncRoot)
 			{
-				PhysicsObjectLookup.Remove(physicsObject.BodyHandle);
-
-				simulation.Bodies.Remove(physicsObject.BodyHandle);
-			}
-		}
-
-		struct RaycastHitHandler<T> : IRayHitHandler
-			where T : Entity
-		{
-			public PhysicsObject? PhysicsObject;
-
-			private PhysicsWorld physicsWorld;
-
-			public RaycastHitHandler(PhysicsWorld physicsWorld) : this()
-			{
-				this.physicsWorld = physicsWorld;
-			}
-
-			public bool AllowTest(CollidableReference collidable)
-			{
-				return true;
-			}
-
-			public bool AllowTest(CollidableReference collidable, int childIndex)
-			{
-				return true;
-			}
-
-			public void OnRayHit(in RayData ray, ref float maximumT, float t, in Vector3 normal, CollidableReference collidable, int childIndex)
-			{
-				if (PhysicsObject is not null)
-				{
-					return;
-				}
-
-				var physicsObject = physicsWorld.PhysicsObjectLookup[collidable.BodyHandle];
-
-				if (physicsObject.Entity is T && physicsObject.Enabled)
-				{
-					PhysicsObject = physicsWorld.PhysicsObjectLookup[collidable.BodyHandle];
-				}
-			}
-		}
-
-		public PhysicsObject? Raycast(Vector3FixedDecimalInt4 start, Vector3FixedDecimalInt4 direction, FixedDecimalInt4 maxDistance)
-		{
-			lock (SyncRoot)
-			{
-				return Raycast<Entity>(start, direction, maxDistance);
-			}
-		}
-
-		public PhysicsObject? Raycast<T>(Vector3FixedDecimalInt4 start, Vector3FixedDecimalInt4 direction, FixedDecimalInt4 maxDistance)
-			where T : Entity
-		{
-			lock (SyncRoot)
-			{
-				var raycastHitHandler = new RaycastHitHandler<T>(this);
-
-				simulation.RayCast(start.ToVector3(), direction.ToVector3(), maxDistance.ToFloat(), ref raycastHitHandler);
-
-				if (raycastHitHandler.PhysicsObject is null)
-				{
-					return null;
-				}
-
-				return raycastHitHandler.PhysicsObject;
+				// Something here causes bepu physics to get unstable.
+				var oldShape = simulation.Bodies[physicsObject.BodyHandle].Collidable.Shape;
+				simulation.Bodies[physicsObject.BodyHandle].SetShape(simulation.Shapes.Add(shape));
+				//simulation.Shapes.RecursivelyRemoveAndDispose(oldShape, bufferPool);
+				//simulation.Shapes.RemoveAndDispose(oldShape, bufferPool);
+				//simulation.Shapes.Remove(oldShape); // Least broken option
 			}
 		}
 

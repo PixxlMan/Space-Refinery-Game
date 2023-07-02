@@ -178,18 +178,23 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		public static UI Create(GameData gameData)
+		public void AddToGraphicsWorld()
+		{
+			gameData.GraphicsWorld.AddRenderable(this, 1);
+		}
+
+		public static UI CreateAndAdd(GameData gameData)
 		{
 			ImGui.CreateContext();
 
 			UI ui = new(gameData);
 
-			gameData.GraphicsWorld.AddRenderable(ui, 1);
-
 			ui.hotbarItems.Add(null); // Add empty slot
 			ui.hotbarItems.AddRange(PipeType.PipeTypes.Values);
 
 			ui.Style();
+
+			ui.AddToGraphicsWorld();
 
 			return ui;
 		}

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.PortableExecutable;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,6 +13,26 @@ namespace Space_Refinery_Game.Audio
 	public class AudioWorld
 	{
 		private FixedDecimalLong8 masterVolume;
+
+		/// <summary>
+		/// Setting the value below zero or above one will result in the value being clamped to whichever is closest.
+		/// </summary>
+		public FixedDecimalLong8 MasterVolume
+		{
+			get => masterVolume;
+			set
+			{
+				masterVolume = FixedDecimalLong8.Clamp(value, 0, 1);
+
+				VolumeChanged?.Invoke(masterVolume);
+			}
+		}
+
+		public event Action<FixedDecimalLong8> VolumeChanged;
+
+		public MusicSystem MusicSystem { get; private set; }
+
+		public AudioEngine AudioEngine { get; private set; }
 
 		private AudioWorld()
 		{ }
@@ -34,24 +55,9 @@ namespace Space_Refinery_Game.Audio
 			return audioWorld;
 		}
 
-		/// <summary>
-		/// Setting the value below zero or above one will result in the value being clamped to whichever is closest.
-		/// </summary>
-		public FixedDecimalLong8 MasterVolume
+		public void Reset()
 		{
-			get => masterVolume;
-			set
-			{
-				masterVolume = FixedDecimalLong8.Clamp(value, 0, 1);
-
-				VolumeChanged?.Invoke(masterVolume);
-			}
+			MusicSystem.Clear();
 		}
-
-		public event Action<FixedDecimalLong8> VolumeChanged;
-
-		public MusicSystem MusicSystem { get; private set; }
-
-		public AudioEngine AudioEngine { get; private set; }
 	}
 }

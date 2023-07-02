@@ -45,7 +45,7 @@ namespace Space_Refinery_Game
 					InternalBlockerModel = GraphicsWorld.MeshLoader.LoadCached(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe", "Special", "PipeSpecialValveInternalBlocker.obj"));
 				}
 
-				InternalBlockerRenderable = EntityRenderable.Create(GraphicsWorld, Transform, InternalBlockerModel, Utils.GetSolidColoredTexture(RgbaByte.LightGrey, GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory), GraphicsWorld.CameraProjViewBuffer, GraphicsWorld.LightInfoBuffer);
+				InternalBlockerRenderable = EntityRenderable.CreateAndAdd(GraphicsWorld, Transform, InternalBlockerModel, Utils.GetSolidColoredTexture(RgbaByte.LightGrey, GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory), GraphicsWorld.CameraProjViewBuffer, GraphicsWorld.LightInfoBuffer);
 
 				foreach (var connector in Connectors)
 				{

@@ -12,7 +12,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Veldrid;
@@ -53,7 +52,7 @@ public sealed class GraphicsWorld
 	private string responseSpinner = "_";
 	public string ResponseSpinner { get { lock(responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
 
-	public readonly object SynchronizationObject = new();
+	public readonly object SyncRoot = new();
 
 	public Camera Camera;
 
@@ -246,7 +245,7 @@ public sealed class GraphicsWorld
 
 			// We want to render directly to the output window.
 			commandList.SetFramebuffer(Swapchain.Framebuffer);
-			commandList.ClearColorTarget(0, RgbaFloat.White);
+			commandList.ClearColorTarget(0, RgbaFloat.Pink);
 			commandList.ClearDepthStencil(1f);
 
 			commandList.PushDebugGroup("Draw renderables");
@@ -313,20 +312,16 @@ public sealed class GraphicsWorld
 		GraphicsDevice.SwapBuffers(Swapchain);
 	}
 
-	[StructLayout(LayoutKind.Sequential)]
-	public struct LightInfo
+	/// <summary>
+	/// Works the same as calling <c>RemoveRenderable</c> on each renderable, just much faster.
+	/// </summary>
+	public void Reset()
 	{
-		public BlittableVector3 LightDirection;
-		private float padding0;
-		public BlittableVector3 CameraPosition;
-		private float padding1;
-
-		public LightInfo(Vector3 lightDirection, Vector3 cameraPosition)
+		lock (SyncRoot) lock (commandList) lock (unorderedRenderables) lock (specificOrderRenderables)
 		{
-			LightDirection = new BlittableVector3(lightDirection);
-			CameraPosition = new BlittableVector3(cameraPosition);
-			padding0 = 0;
-			padding1 = 0;
+			unorderedRenderables.Clear();
+			specificOrderRenderables.Clear();
+			renderableToOrder.Clear();
 		}
 	}
 }

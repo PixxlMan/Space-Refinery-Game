@@ -11,174 +11,186 @@ using System.Diagnostics;
 using System.Text;
 using Veldrid.Utilities;
 
-namespace Space_Refinery_Game
+namespace Space_Refinery_Game;
+
+public sealed partial class PhysicsWorld
 {
-	public sealed partial class PhysicsWorld
+	public Dictionary<BodyHandle, PhysicsObject> PhysicsObjectLookup = new();
+
+	public object SyncRoot = new();
+
+	private Dictionary<FXRenderer.Mesh, ConvexHull> convexHulls = new();
+
+	private BufferPool bufferPool;
+
+	private Simulation simulation;
+
+	private IThreadDispatcher threadDispatcher;
+
+	public event Action<FixedDecimalLong8> CollectPhysicsPerformanceData;
+
+	private string responseSpinner = "_";
+	public string ResponseSpinner { get { lock (responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
+
+	public void SetUp()
 	{
-		public Dictionary<BodyHandle, PhysicsObject> PhysicsObjectLookup = new();
-
-		public object SyncRoot = new();
-
-		private Dictionary<FXRenderer.Mesh, ConvexHull> convexHulls = new();
-
-		private BufferPool bufferPool;
-
-		private Simulation simulation;
-
-		private IThreadDispatcher threadDispatcher;
-
-		public event Action<FixedDecimalLong8> CollectPhysicsPerformanceData;
-
-		private string responseSpinner = "_";
-		public string ResponseSpinner { get { lock (responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
-
-		public void SetUp()
+		lock (SyncRoot)
 		{
-			lock (SyncRoot)
-			{
-				//The buffer pool is a source of raw memory blobs for the engine to use.
-				bufferPool = new BufferPool();
+			//The buffer pool is a source of raw memory blobs for the engine to use.
+			bufferPool = new BufferPool();
 
-				//The following sets up a simulation with the callbacks defined above, and tells it to use 8 velocity iterations per substep and only one substep per solve.
-				//It uses the default SubsteppingTimestepper. You could use a custom ITimestepper implementation to customize when stages run relative to each other, or to insert more callbacks.         
-				simulation = Simulation.Create(bufferPool, new NarrowPhaseCallbacks(), new PoseIntegratorCallbacks(), new SolveDescription(8, 1));
+			//The following sets up a simulation with the callbacks defined above, and tells it to use 8 velocity iterations per substep and only one substep per solve.
+			//It uses the default SubsteppingTimestepper. You could use a custom ITimestepper implementation to customize when stages run relative to each other, or to insert more callbacks.         
+			simulation = Simulation.Create(bufferPool, new NarrowPhaseCallbacks(), new PoseIntegratorCallbacks(), new SolveDescription(8, 1));
 
-				//Any IThreadDispatcher implementation can be used for multithreading. Here, we use the BepuUtilities.ThreadDispatcher implementation.
-				threadDispatcher = new ThreadDispatcher(Environment.ProcessorCount);
-			}
+			//Any IThreadDispatcher implementation can be used for multithreading. Here, we use the BepuUtilities.ThreadDispatcher implementation.
+			threadDispatcher = new ThreadDispatcher(Environment.ProcessorCount);
 		}
+	}
 
-		public void Run()
+	public void Run()
+	{
+		Thread thread = new Thread(new ThreadStart(() =>
 		{
-			Thread thread = new Thread(new ThreadStart(() =>
+			Stopwatch stopwatch = new();
+			stopwatch.Start();
+
+			FixedDecimalLong8 timeLastUpdate = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
+			FixedDecimalLong8 time;
+			FixedDecimalLong8 deltaTime;
+			while (true)
 			{
-				Stopwatch stopwatch = new();
-				stopwatch.Start();
+				time = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
 
-				FixedDecimalLong8 timeLastUpdate = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
-				FixedDecimalLong8 time;
-				FixedDecimalLong8 deltaTime;
-				while (true)
+				deltaTime = time - timeLastUpdate;
+
+				CollectPhysicsPerformanceData?.Invoke(deltaTime);				
+
+				lock (SyncRoot)
 				{
-					time = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
-
-					deltaTime = time - timeLastUpdate;
-
-					CollectPhysicsPerformanceData?.Invoke(deltaTime);				
-
-					lock (SyncRoot)
-					{
-						simulation.Timestep(Time.PhysicsInterval.ToFloat(), threadDispatcher);
-					}
-
-					lock (responseSpinner)
-						responseSpinner = Time.ResponseSpinner(time);
-
-					Time.WaitIntervalLimit(Time.PhysicsInterval, time, stopwatch, out var timeOfContinuation);
-
-					timeLastUpdate = timeOfContinuation;
-				}
-			}))
-			{ Name = "Physics Update Thread" };
-
-			thread.Start();
-		}
-
-		public PhysicsObject AddPhysicsObject<TShape>(PhysicsObjectDescription<TShape> physicsObjectDescription, Entity entity) where TShape : unmanaged, IConvexShape
-		{
-			lock (SyncRoot)
-			{
-				var inertia = physicsObjectDescription.Shape.ComputeInertia(physicsObjectDescription.Mass.ToFloat());
-
-				BodyHandle bodyHandle;
-
-				if (!physicsObjectDescription.Kinematic)
-				{
-					bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(new RigidPose(physicsObjectDescription.InitialTransform.Position.ToVector3(), physicsObjectDescription.InitialTransform.Rotation.ToQuaternion()), inertia, simulation.Shapes.Add(physicsObjectDescription.Shape), 0.01f));
-				}
-				else
-				{
-					bodyHandle = simulation.Bodies.Add(BodyDescription.CreateKinematic(new RigidPose(physicsObjectDescription.InitialTransform.Position.ToVector3(), physicsObjectDescription.InitialTransform.Rotation.ToQuaternion()), simulation.Shapes.Add(physicsObjectDescription.Shape), 0.01f));
+					simulation.Timestep(Time.PhysicsInterval.ToFloat(), threadDispatcher);
 				}
 
-				PhysicsObject physicsObject = new PhysicsObject(this, bodyHandle, entity);
+				lock (responseSpinner)
+					responseSpinner = Time.ResponseSpinner(time);
 
-				PhysicsObjectLookup.Add(bodyHandle, physicsObject);
+				Time.WaitIntervalLimit(Time.PhysicsInterval, time, stopwatch, out var timeOfContinuation);
 
-				return physicsObject;
+				timeLastUpdate = timeOfContinuation;
 			}
-		}
+		}))
+		{ Name = "Physics Update Thread" };
 
-		public void DestroyPhysicsObject(PhysicsObject physicsObject)
+		thread.Start();
+	}
+
+	public PhysicsObject AddPhysicsObject<TShape>(PhysicsObjectDescription<TShape> physicsObjectDescription, Entity entity) where TShape : unmanaged, IConvexShape
+	{
+		lock (SyncRoot)
 		{
-			lock (SyncRoot)
+			var inertia = physicsObjectDescription.Shape.ComputeInertia(physicsObjectDescription.Mass.ToFloat());
+
+			BodyHandle bodyHandle;
+
+			if (!physicsObjectDescription.Kinematic)
 			{
-				PhysicsObjectLookup.Remove(physicsObject.BodyHandle);
-
-				simulation.Bodies.Remove(physicsObject.BodyHandle);
+				bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(new RigidPose(physicsObjectDescription.InitialTransform.Position.ToVector3(), physicsObjectDescription.InitialTransform.Rotation.ToQuaternion()), inertia, simulation.Shapes.Add(physicsObjectDescription.Shape), 0.01f));
 			}
-		}
+			else
+			{
+				bodyHandle = simulation.Bodies.Add(BodyDescription.CreateKinematic(new RigidPose(physicsObjectDescription.InitialTransform.Position.ToVector3(), physicsObjectDescription.InitialTransform.Rotation.ToQuaternion()), simulation.Shapes.Add(physicsObjectDescription.Shape), 0.01f));
+			}
 
-		private ConvexHull AddConvexHullForMesh(FXRenderer.Mesh mesh)
+			PhysicsObject physicsObject = new PhysicsObject(this, bodyHandle, entity);
+
+			PhysicsObjectLookup.Add(bodyHandle, physicsObject);
+
+			return physicsObject;
+		}
+	}
+
+	public void DestroyPhysicsObject(PhysicsObject physicsObject)
+	{
+		lock (SyncRoot)
 		{
-			lock (SyncRoot)
-			{
-				ConvexHull convexHull = new(mesh.Points.AsSpan(), bufferPool, out _);
+			PhysicsObjectLookup.Remove(physicsObject.BodyHandle);
 
-				convexHulls.Add(mesh, convexHull);
-
-				return convexHull;
-			}
+			simulation.Bodies.Remove(physicsObject.BodyHandle);
 		}
+	}
 
-		public ConvexHull GetConvexHullForMesh(FXRenderer.Mesh mesh)
+	/// <summary>
+	/// Equivalent to calling DestroyPhysicsObject for all objects, but much faster.
+	/// </summary>
+	public void Reset()
+	{
+		lock (SyncRoot)
 		{
-			lock (SyncRoot)
-			{
-				if (convexHulls.ContainsKey(mesh))
-				{
-					return convexHulls[mesh];				
-				}
-				else
-				{
-					return AddConvexHullForMesh(mesh);
-				}
-			}
+			PhysicsObjectLookup.Clear();
+			convexHulls.Clear(); // When the simulation is cleared, this will be outdated, so it must too be cleared.
+			simulation.Clear();
 		}
+	}
 
-		public void ChangeShape(PhysicsObject physicsObject, ConvexHull shape)
-		{ // OPTIMIZE: remove old shapes and don't always add the new ones if identical ones are already used (pass TypedIndex instead of TShape to the AddPhysicsObject method to accomodate more easily sharing the same shape between pipes of the same type)
-			lock (SyncRoot)
-			{
-				// Something here causes bepu physics to get unstable.
-				var oldShape = simulation.Bodies[physicsObject.BodyHandle].Collidable.Shape;
-				simulation.Bodies[physicsObject.BodyHandle].SetShape(simulation.Shapes.Add(shape));
-				//simulation.Shapes.RecursivelyRemoveAndDispose(oldShape, bufferPool);
-				//simulation.Shapes.RemoveAndDispose(oldShape, bufferPool);
-				//simulation.Shapes.Remove(oldShape); // Least broken option
-			}
-		}
-
-		public Transform GetTransform(BodyHandle bodyHandle)
+	private ConvexHull AddConvexHullForMesh(FXRenderer.Mesh mesh)
+	{
+		lock (SyncRoot)
 		{
-			lock (SyncRoot)
-			{
-				RigidPose pose = simulation.Bodies[bodyHandle].Pose;
+			ConvexHull convexHull = new(mesh.Points.AsSpan(), bufferPool, out _);
 
-				return new(pose.Position.ToFixed<Vector3FixedDecimalInt4>(), pose.Orientation.ToFixed<QuaternionFixedDecimalInt4>());
+			convexHulls.Add(mesh, convexHull);
+
+			return convexHull;
+		}
+	}
+
+	public ConvexHull GetConvexHullForMesh(FXRenderer.Mesh mesh)
+	{
+		lock (SyncRoot)
+		{
+			if (convexHulls.ContainsKey(mesh))
+			{
+				return convexHulls[mesh];				
+			}
+			else
+			{
+				return AddConvexHullForMesh(mesh);
 			}
 		}
+	}
 
-		public void SetTransform(BodyHandle bodyHandle, Transform transform)
+	public void ChangeShape(PhysicsObject physicsObject, ConvexHull shape)
+	{ // OPTIMIZE: remove old shapes and don't always add the new ones if identical ones are already used (pass TypedIndex instead of TShape to the AddPhysicsObject method to accomodate more easily sharing the same shape between pipes of the same type)
+		lock (SyncRoot)
 		{
-			lock (SyncRoot)
-			{
-				RigidPose pose = simulation.Bodies[bodyHandle].Pose;
+			// Something here causes bepu physics to get unstable.
+			var oldShape = simulation.Bodies[physicsObject.BodyHandle].Collidable.Shape;
+			simulation.Bodies[physicsObject.BodyHandle].SetShape(simulation.Shapes.Add(shape));
+			//simulation.Shapes.RecursivelyRemoveAndDispose(oldShape, bufferPool);
+			//simulation.Shapes.RemoveAndDispose(oldShape, bufferPool);
+			//simulation.Shapes.Remove(oldShape); // Least broken option
+		}
+	}
 
-				pose.Position = transform.Position.ToVector3();
+	public Transform GetTransform(BodyHandle bodyHandle)
+	{
+		lock (SyncRoot)
+		{
+			RigidPose pose = simulation.Bodies[bodyHandle].Pose;
 
-				pose.Orientation = transform.Rotation.ToQuaternion();
-			}
+			return new(pose.Position.ToFixed<Vector3FixedDecimalInt4>(), pose.Orientation.ToFixed<QuaternionFixedDecimalInt4>());
+		}
+	}
+
+	public void SetTransform(BodyHandle bodyHandle, Transform transform)
+	{
+		lock (SyncRoot)
+		{
+			RigidPose pose = simulation.Bodies[bodyHandle].Pose;
+
+			pose.Position = transform.Position.ToVector3();
+
+			pose.Orientation = transform.Rotation.ToQuaternion();
 		}
 	}
 }

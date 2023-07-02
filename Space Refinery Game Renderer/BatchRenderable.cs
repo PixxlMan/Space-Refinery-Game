@@ -148,7 +148,12 @@ public sealed partial class BatchRenderable : IRenderable
 		}
 	}
 
-	public static BatchRenderable Create(string name, GraphicsWorld graphicsWorld, PBRData pBRData, Mesh mesh, Texture texture, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
+	public void AddToGraphicsWorld()
+	{
+		graphicsWorld.AddRenderable(this);
+	}
+
+	public static BatchRenderable CreateAndAdd(string name, GraphicsWorld graphicsWorld, PBRData pBRData, Mesh mesh, Texture texture, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
 	{
 		BatchRenderable batchRenderable = new()
 		{
@@ -172,9 +177,9 @@ public sealed partial class BatchRenderable : IRenderable
 
 		batchRenderable.ManageTransformsBuffer();
 
-		graphicsWorld.AddRenderable(batchRenderable);
-
 		RegisterBatchRenderable(batchRenderable);
+
+		batchRenderable.AddToGraphicsWorld();
 
 		return batchRenderable;
 	}

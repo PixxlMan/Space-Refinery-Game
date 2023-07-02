@@ -44,6 +44,8 @@ public sealed class MainGame
 		Logging.Log($"Deserialized all ({globalReferenceHandler.ReferenceCount}!) global references in {stopwatch.ElapsedMilliseconds} ms");
 	}
 
+	public Starfield Starfield { get; private set; }
+
 	public static DebugRender DebugRender;
 
 	public static DebugSettings DebugSettings = new();
@@ -101,7 +103,7 @@ public sealed class MainGame
 
 		PhysicsWorld.Run();
 
-		UI = UI.Create(GameData);
+		UI = UI.CreateAndAdd(GameData);
 
 		UI.PauseStateChanged += UI_PauseStateChanged;
 
@@ -111,7 +113,7 @@ public sealed class MainGame
 
 		Player = Player.Create(GameData);
 
-		Starfield.Create(GraphicsWorld);
+		Starfield = Starfield.CreateAndAdd(GraphicsWorld);
 
 		Pipe.Create(PipeType.PipeTypes["Straight Pipe"], new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), GameData, ReferenceHandler);
 
@@ -178,7 +180,7 @@ public sealed class MainGame
 
 	private void Update(FixedDecimalLong8 deltaTime)
 	{
-		lock (SynchronizationObject) lock (GraphicsWorld.SynchronizationObject)
+		lock (SynchronizationObject) lock (GraphicsWorld.SyncRoot)
 		{
 			//InputTracker.DeferFurtherInputToNextFrame();
 
@@ -277,13 +279,47 @@ public sealed class MainGame
 
 				SaveGuid = newSaveGuid;
 
+				bool ignoreCleanupTimeFromPerformanceProfiling = DebugSettings.AccessSetting<BooleanDebugSetting>("Ignore cleanup time from performance timing of save loading");
+
+				if (ignoreCleanupTimeFromPerformanceProfiling)
+				{
+					stopwatch.Stop();
+				}
+
 				Player.Destroy();
+
+#if NAÏVE_Reset
+				NaïveClear();
+#else
+				Reset();
+#endif
+				if (ignoreCleanupTimeFromPerformanceProfiling)
+				{
+					stopwatch.Start();
+				}
 
 				Player = Player.Deserialize(reader, serializationData);
 
-				stopwatch.Stop(); // Ignore time taken to clear gameworld from performance profiling.
-				GameWorld.ClearAll();
-				stopwatch.Start();
+				if (ignoreCleanupTimeFromPerformanceProfiling)
+				{
+					stopwatch.Stop();
+				}
+
+#if !NAÏVE_Reset
+
+				UI.AddToGraphicsWorld();
+
+				Starfield.AddToGraphicsWorld();
+
+				foreach (var pipeType in PipeType.PipeTypes.Values)
+				{
+					pipeType.BatchRenderable.AddToGraphicsWorld();
+				}
+#endif
+				if (ignoreCleanupTimeFromPerformanceProfiling)
+				{
+					stopwatch.Start();
+				}
 
 				ReferenceHandler = SerializationReferenceHandler.Deserialize(reader, serializationData);
 			}
@@ -304,5 +340,25 @@ public sealed class MainGame
 			
 			Logging.Log($"Deserialized all state in {stopwatch.Elapsed.TotalMilliseconds} ms. Deserialized {ReferenceHandler.ReferenceCount} references.");
 		}
+	}
+
+	/// <summary>
+	/// A fast way to reset all systems when loading a save.
+	/// </summary>
+	private void Reset() // TODO: to allow mods or third party extensions to also clear their stuff, also call an event? Otherwise they would be unable to clear their data when Destroy is not called.
+	{ // uh also what about all the subscriptions...? hmmm.. gonna need a lite-destroy method. aw man. (or weak events, HINT HINT MICROSOFT). or maybe just nulling, now that I think abiout it... Hmmmm....
+		GameWorld.ResetUnsafe();
+		GraphicsWorld.Reset();
+		// clear the batch renderables instead? well then again this deals with extras so until scene management like stuff ig....
+		AudioWorld.Reset();
+		PhysicsWorld.Reset();
+	}
+
+	/// <summary>
+	/// This method is simply here for comparision and contrast.
+	/// </summary>
+	private void NaïveClear()
+	{
+		GameWorld.ClearAll();
 	}
 }

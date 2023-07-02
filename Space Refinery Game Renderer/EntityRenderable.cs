@@ -51,7 +51,7 @@ public sealed class EntityRenderable : IRenderable
 
 	public Transform Transform;
 
-	public static EntityRenderable Create(GraphicsWorld graphicsWorld, Transform transform, Mesh mesh, Texture texture, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
+	public static EntityRenderable CreateAndAdd(GraphicsWorld graphicsWorld, Transform transform, Mesh mesh, Texture texture, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
 	{
 		EntityRenderable entityRenderable = new(transform);
 

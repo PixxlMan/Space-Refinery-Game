@@ -15,6 +15,46 @@ namespace Space_Refinery_Game.Audio
 {
 	public class MusicSystem
 	{
+		private FixedDecimalLong8 musicVolume;
+
+		private object SyncRoot = new();
+
+		private AudioWorld audioWorld;
+
+		private HashSet<MusicResource> musicSet = new();
+
+		private Dictionary<MusicTag, HashSet<MusicResource>> musicByTag = new();
+
+		private Dictionary<string, MusicResource> musicByName = new();
+
+		private Queue<MusicResource> musicQueue = new();
+
+		private HashSet<MusicTag> musicTags = new();
+
+		private SequencialPlayback sequencialPlayback;
+
+		private MusicResource currentMusic;
+
+		private int loops;
+
+		private int playedLoops;
+
+		private MusicPart nextMusicPart;
+
+		/// <summary>
+		/// Setting the value below zero or above one will result in the value being clamped to whichever is closest.
+		/// </summary>
+		public FixedDecimalLong8 MusicVolume
+		{
+			get => musicVolume;
+			set
+			{
+				musicVolume = FixedDecimalLong8.Clamp(value, 0, 1);
+
+				VolumeChanged();
+			}
+		}
+
 		public MusicSystem(GameData gameData, AudioWorld audioWorld /*gameData.AudioWorld can't be accessed because it hasn't been filled yet.*/)
 		{
 			this.audioWorld = audioWorld;
@@ -108,46 +148,6 @@ namespace Space_Refinery_Game.Audio
 			}
 		}
 
-		private FixedDecimalLong8 musicVolume;
-
-		private object SyncRoot = new();
-
-		private AudioWorld audioWorld;
-
-		private HashSet<MusicResource> musicSet = new();
-
-		private Dictionary<MusicTag, HashSet<MusicResource>> musicByTag = new();
-
-		private Dictionary<string, MusicResource> musicByName = new();
-
-		private Queue<MusicResource> musicQueue = new();
-
-		private HashSet<MusicTag> musicTags = new();
-
-		private SequencialPlayback sequencialPlayback;
-
-		private MusicResource currentMusic;
-
-		private int loops;
-
-		private int playedLoops;
-
-		private MusicPart nextMusicPart;
-
-		/// <summary>
-		/// Setting the value below zero or above one will result in the value being clamped to whichever is closest.
-		/// </summary>
-		public FixedDecimalLong8 MusicVolume
-		{
-			get => musicVolume;
-			set
-			{
-				musicVolume = FixedDecimalLong8.Clamp(value, 0, 1);
-
-				VolumeChanged();
-			}
-		}
-
 		public void RegisterMusic(MusicResource musicResource)
 		{
 			lock (SyncRoot)
@@ -223,6 +223,11 @@ namespace Space_Refinery_Game.Audio
 			{
 				musicTags = new() { musicTag };
 			}
+		}
+
+		public void Clear()
+		{
+			// TODO: implement this once requirements are clearer
 		}
 	}
 

@@ -13,9 +13,9 @@ namespace Space_Refinery_Game
 {
 	public sealed class Starfield
 	{
-		public GraphicsWorld GraphicsWorld;
+		public GraphicsWorld GraphicsWorld { get; }
 
-		public StarfieldRenderable Renderable;
+		public StarfieldRenderable Renderable { get; }
 
 		private Starfield(GraphicsWorld graphicsWorld, StarfieldRenderable renderable)
 		{
@@ -23,13 +23,20 @@ namespace Space_Refinery_Game
 			Renderable = renderable;
 		}
 
-		public static Starfield Create(GraphicsWorld graphWorld)
+		public static Starfield CreateAndAdd(GraphicsWorld graphWorld)
 		{
 			StarfieldRenderable renderable = StarfieldRenderable.Create(graphWorld.ViewInfoBuffer, graphWorld.GraphicsDevice, graphWorld.Factory);
 
-			graphWorld.AddRenderable(renderable, -1);
+			var starfield = new Starfield(graphWorld, renderable);
 
-			return new(graphWorld, renderable);
+			starfield.AddToGraphicsWorld();
+
+			return starfield;
+		}
+
+		public void AddToGraphicsWorld()
+		{
+			GraphicsWorld.AddRenderable(Renderable, -1);
 		}
 	}
 }

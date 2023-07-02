@@ -16,7 +16,9 @@ public static class Program
 {
 	public static void Main()
 	{
-		System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+		System.Globalization.CultureInfo.CurrentCulture = (System.Globalization.CultureInfo)System.Globalization.CultureInfo.InvariantCulture.Clone();
+		//System.Globalization.CultureInfo.CurrentCulture.NumberFormat = DecimalNumber.NumberFormat;
+		// The previous line cannot be uncommented because the number format is not complete.
 
 		Window window = new("Space Refinery");
 

@@ -147,13 +147,13 @@ namespace Space_Refinery_Game
 		{
 			reader.ReadStartElement(name ?? nameof(QuaternionFixedDecimalInt4));
 			{
-				QuaternionFixedDecimalInt4 QuaternionFixedDecimalInt4;
+				QuaternionFixedDecimalInt4 quaternionFixedDecimalInt4;
 
-				QuaternionFixedDecimalInt4 = new(reader.DeserializeDecimalNumber("X"), reader.DeserializeDecimalNumber("Y"), reader.DeserializeDecimalNumber("Z"), reader.DeserializeDecimalNumber("W"));
+				quaternionFixedDecimalInt4 = new(reader.DeserializeDecimalNumber("X"), reader.DeserializeDecimalNumber("Y"), reader.DeserializeDecimalNumber("Z"), reader.DeserializeDecimalNumber("W"));
 
 				reader.ReadEndElement();
 
-				return QuaternionFixedDecimalInt4;
+				return quaternionFixedDecimalInt4;
 			}
 		}
 
@@ -166,14 +166,18 @@ namespace Space_Refinery_Game
 		{
 			reader.ReadStartElement(name ?? nameof(DecimalNumber));
 			{
-				DecimalNumber result = DecimalNumber.FromDecimal(decimal.Parse(reader.ReadString(),
-					new NumberFormatInfo() { NumberDecimalSeparator = ".", NumberGroupSeparator = " " }));
+				string text = reader.ReadString();
+
+				decimal value = decimal.Parse(text, DecimalNumber.NumberFormat);
+
+				DecimalNumber result = DecimalNumber.FromDecimal(value);
 
 				reader.ReadEndElement();
 
 				return result;
 			}
 		}
+
 		public static void Serialize(this XmlWriter writer, FixedDecimalInt4 fixedDecimalInt4, string? name = null)
 		{
 			writer.WriteElementString(name ?? nameof(FixedDecimalInt4), fixedDecimalInt4.ToDecimal().ToString());

@@ -1,4 +1,5 @@
 ﻿using FixedPrecision;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -8,6 +9,13 @@ namespace Space_Refinery_Game;
 [JsonConverter(typeof(DecimalNumberJsonConverter))]
 public struct DecimalNumber : IFixedPrecisionNumeral<DecimalNumber>
 {
+	public static NumberFormatInfo NumberFormat { get; } =
+		new NumberFormatInfo()
+		{
+			NumberDecimalSeparator = ".",
+			NumberGroupSeparator = " ",
+		};
+
 	public DecimalNumber(FixedDecimalLong8 value)
 	{
 		Value = value;

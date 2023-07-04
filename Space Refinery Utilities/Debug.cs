@@ -13,11 +13,11 @@ namespace Space_Refinery_Utilities;
 /// </summary>
 public static class DebugStopPoints
 {
-	static object objectToStop;
+	static object? objectToStop;
 
 	static object syncRoot = new();
 
-#if DEBUG
+	[Conditional("DEBUG")]
 	public static void RegisterStopPoint(object objectToStop)
 	{
 		lock (syncRoot)
@@ -25,12 +25,11 @@ public static class DebugStopPoints
 			DebugStopPoints.objectToStop = objectToStop;
 		}
 	}
-#endif
 
 	[DebuggerHidden]
+	[Conditional("DEBUG")]
 	public static void TickStopPoint(object obj)
 	{
-#if DEBUG
 		lock (syncRoot)
 		{
 			if (ReferenceEquals(objectToStop, obj))
@@ -39,6 +38,5 @@ public static class DebugStopPoints
 				Debugger.Break();
 			}
 		}
-#endif
 	}
 }

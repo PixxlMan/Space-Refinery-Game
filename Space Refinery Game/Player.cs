@@ -94,12 +94,11 @@ namespace Space_Refinery_Game
 			}
 			else if (lookedAtPhysicsObject is not null && lookedAtPhysicsObject.Entity is IConstruction construction)
 			{
-#if DEBUG
 				if (InputTracker.GetKeyDown(Key.F10))
 				{
 					DebugStopPoints.RegisterStopPoint(construction.SerializableReference);
 				}
-#endif
+
 				{
 					if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Insert resource with button") && construction is OrdinaryPipe pipe)
 					{

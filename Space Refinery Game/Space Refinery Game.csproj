@@ -13,6 +13,11 @@
 	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+	<ItemGroup> <!--https://ingebrigtsen.blog/2021/08/13/c-10-reuse-global-usings-in-multiple-projects/-->
+		<!--Make sure to include the global usage definitions for units.-->
+		<Compile Include="../Space Refinery Utilities/Units/UnitsUsage.cs" />
+	</ItemGroup>
+
   <ItemGroup>
 	<None Remove="Assets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Intro.ogg" />
 	<None Remove="Assets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Loop - Export 1.mp3" />

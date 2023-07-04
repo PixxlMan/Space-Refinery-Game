@@ -49,7 +49,6 @@ namespace Space_Refinery_Game_Renderer
 			ResourceLayoutDescription resourceLayoutDescription = new ResourceLayoutDescription(resourceLayoutElementDescriptions);
 			sharedLayout = factory.CreateResourceLayout(resourceLayoutDescription);
 
-
 			VertexLayoutDescription transformationVertexShaderParameterLayout = new VertexLayoutDescription(
 				new VertexElementDescription("InstancePosition", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3),
 				new VertexElementDescription("InstanceRotationM11", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float1),
@@ -64,11 +63,6 @@ namespace Space_Refinery_Game_Renderer
 				new VertexElementDescription("InstanceScale", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3)
 				);
 			transformationVertexShaderParameterLayout.InstanceStepRate = 1;
-
-			VertexLayoutDescription vertexLayout = new VertexLayoutDescription(
-				new VertexElementDescription("Position", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3),
-				new VertexElementDescription("Normal", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3),
-				new VertexElementDescription("TexCoord", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float2));
 
 			VertexLayoutDescription colorVertexLayout = new VertexLayoutDescription(
 				new VertexElementDescription("Color", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float4));
@@ -91,7 +85,7 @@ namespace Space_Refinery_Game_Renderer
 				PrimitiveTopology = PrimitiveTopology.TriangleList,
 				ResourceLayouts = new ResourceLayout[] { sharedLayout },
 				ShaderSet = new ShaderSetDescription(
-					vertexLayouts: new VertexLayoutDescription[] { vertexLayout, colorVertexLayout, transformationVertexShaderParameterLayout },
+					vertexLayouts: new VertexLayoutDescription[] { RenderingResources.VertexLayout, colorVertexLayout, transformationVertexShaderParameterLayout },
 					shaders: Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), "DebugRenderable", factory)
 				),
 				Outputs = gd.MainSwapchain.Framebuffer.OutputDescription

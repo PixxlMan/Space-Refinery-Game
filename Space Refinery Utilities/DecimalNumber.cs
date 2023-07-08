@@ -4,10 +4,11 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 // Move to Space_Refinery_Utlities?
+// Do the same as UnitsUsage to ensure no performance penalty in release?
 namespace Space_Refinery_Game;
 
 [JsonConverter(typeof(DecimalNumberJsonConverter))]
-public struct DecimalNumber : IFixedPrecisionNumeral<DecimalNumber>
+/*//*/public struct DecimalNumber : IFixedPrecisionNumeral<DecimalNumber>
 {
 	public static NumberFormatInfo NumberFormat { get; } =
 		new NumberFormatInfo()

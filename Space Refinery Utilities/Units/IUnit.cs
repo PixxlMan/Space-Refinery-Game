@@ -10,4 +10,6 @@ internal interface IUnit<TSelf> where TSelf : IUnit<TSelf>
 	public static abstract explicit operator DecimalNumber(TSelf unit);
 
 	public static abstract explicit operator TSelf(DecimalNumber value);
+
+	public static abstract implicit operator TSelf(int value);
 }

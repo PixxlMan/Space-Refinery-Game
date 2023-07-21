@@ -15,7 +15,7 @@ public abstract class ResourceType : IUIInspectable, IEntitySerializable
 	/// <summary>
 	/// [kg/m³]
 	/// </summary>
-	public DecimalNumber Density;
+	public DensityUnit Density;
 
 	public abstract ChemicalPhase ChemicalPhase { get; }
 
@@ -55,7 +55,7 @@ public abstract class ResourceType : IUIInspectable, IEntitySerializable
 		writer.WriteStartElement(nameof(ResourceType));
 		{
 			writer.Serialize(ResourceName, nameof(ResourceName));
-			writer.Serialize(Density, nameof(Density));
+			writer.Serialize((DecimalNumber)Density, nameof(Density));
 		}
 		writer.WriteEndElement();
 	}

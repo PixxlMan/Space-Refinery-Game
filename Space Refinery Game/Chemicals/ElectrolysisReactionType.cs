@@ -12,7 +12,7 @@ public sealed class ElectrolysisReactionType : ReactionType // https://sv.wikipe
 
 	public override void Tick(DecimalNumber interval, ResourceContainer resourceContainer, ILookup<Type, ReactionFactor> reactionFactors, ICollection<ReactionFactor> producedReactionFactors)
 	{
-		DecimalNumber electricalEnergy = DecimalNumber.Zero;
+		EnergyUnit electricalEnergy = (EnergyUnit)DecimalNumber.Zero;
 
 		foreach (ElectricalCurrent electricalCurrent in reactionFactors[typeof(ElectricalCurrent)])
 		{
@@ -21,11 +21,11 @@ public sealed class ElectrolysisReactionType : ReactionType // https://sv.wikipe
 
 		var electrolysisProcess = (Electricity.ElectricalEnergyToCoulomb(electricalEnergy) / coulombForReaction) * interval;
 
-		var water = resourceContainer.TakeResourceByMoles(ChemicalType.Water.LiquidPhaseType, DecimalNumber.Min(resourceContainer.GetResourceUnitData(ChemicalType.Water.LiquidPhaseType).Moles, molesOfWater * electrolysisProcess));
+		var water = resourceContainer.TakeResourceByMoles(ChemicalType.Water.LiquidPhaseType, DecimalNumber.Min((DecimalNumber)resourceContainer.GetResourceUnitData(ChemicalType.Water.LiquidPhaseType).Moles, molesOfWater * electrolysisProcess));
 
 		water.BreakInto(2, out IReadOnlyDictionary<ResourceType, ResourceUnitData> resourceUnitDatas, (ChemicalType.Hydrogen.GasPhaseType, 2), (ChemicalType.Oxygen.GasPhaseType, 1));
 
-		DecimalNumber totalVolume = 0;
+		VolumeUnit totalVolume = (VolumeUnit)DecimalNumber.Zero;
 
 		foreach (ResourceUnitData resourceUnit in resourceUnitDatas.Values)
 		{

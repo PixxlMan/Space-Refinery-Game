@@ -106,11 +106,11 @@ namespace Space_Refinery_Game
 
 						ChemicalPhase chemicalPhase = MainGame.DebugSettings.AccessSetting<EnumDebugSetting<ChemicalPhase>>("Chemical phase to insert with button", ChemicalPhase.Liquid);
 
-						DecimalNumber mass = MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Mass to insert with button", new(10, 0, 1_000));
+						MassUnit mass = (MassUnit)(DecimalNumber)MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Mass to insert with button", new(10, 0, 1_000));
 
 						ResourceType resourceType = chemicalType.GetResourceTypeForPhase(chemicalPhase);
 
-						DecimalNumber internalEnergy = ChemicalType.TemperatureToInternalEnergy(resourceType, MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Temperature of resource to insert with button", new(10, 0, 1_000)), mass);
+						EnergyUnit internalEnergy = ChemicalType.TemperatureToInternalEnergy(resourceType, (TemperatureUnit)(DecimalNumber)MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Temperature of resource to insert with button", new(10, 0, 1_000)), mass);
 
 						ResourceUnitData resource = new(resourceType, ChemicalType.MassToMoles(chemicalType, mass), internalEnergy);
 
@@ -125,11 +125,11 @@ namespace Space_Refinery_Game
 					{
 						ChemicalType chemicalType = MainGame.DebugSettings.AccessSetting<ComboDebugSetting<ChemicalType>>("Chemical type to insert with button", new(ChemicalType.ChemicalTypes.ToArray(), ChemicalType.Water));
 						ChemicalPhase chemicalPhase = MainGame.DebugSettings.AccessSetting<EnumDebugSetting<ChemicalPhase>>("Chemical phase to insert with button", ChemicalPhase.Liquid);
-						DecimalNumber mass = MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Mass to insert with button", new(10, 0, 1_000));
+						MassUnit mass = (MassUnit)(DecimalNumber)MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Mass to insert with button", new(10, 0, 1_000));
 						ResourceType resourceType = chemicalType.GetResourceTypeForPhase(chemicalPhase);
 
-						DecimalNumber energy = MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Internal energy to modify per unit", new(1_000, 0, 10_000_000));
-						DecimalNumber timeAdjustedEnergy = energy * (DecimalNumber)deltaTime;
+						EnergyUnit energy = (MassUnit)(DecimalNumber)MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Internal energy to modify per unit", new(1_000, 0, 10_000_000));
+						EnergyUnit timeAdjustedEnergy = (DecimalNumber)energy * (DecimalNumber)deltaTime;
 
 						/*if (InputTracker.GetKeyDown(Key.H))
 						{

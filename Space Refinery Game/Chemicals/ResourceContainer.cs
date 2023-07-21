@@ -1,5 +1,6 @@
 ﻿using FixedPrecision;
 using ImGuiNET;
+using Space_Refinery_Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -14,11 +15,11 @@ namespace Space_Refinery_Game
 {
 	public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems like changes to resources can occur while reactions are taking place... Is that okay?
 	{
-		private DecimalNumber volume;
+		private VolumeUnit volume;
 		/// <summary>
 		/// Volume in cubic meters [m³]
 		/// </summary>
-		public DecimalNumber Volume
+		public VolumeUnit Volume
 		{
 			get
 			{
@@ -34,13 +35,13 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		private DecimalNumber RecalculateVolume()
+		private VolumeUnit RecalculateVolume()
 		{
 			lock (SyncRoot)
 			{
 				recalculateVolume = false;
-			
-				DecimalNumber volume = 0;
+
+				VolumeUnit volume = 0;
 
 				foreach (var resourceUnit in resources.Values)
 				{
@@ -51,11 +52,11 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		private DecimalNumber mass;
+		private MassUnit mass;
 		/// <summary>
 		/// Mass in kilograms [kg]
 		/// </summary>
-		public DecimalNumber Mass
+		public MassUnit Mass
 		{
 			get
 			{
@@ -71,13 +72,13 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		private DecimalNumber RecalculateMass()
+		private MassUnit RecalculateMass()
 		{
 			lock (SyncRoot)
 			{
 				recalculateMass = false;
 
-				DecimalNumber mass = 0;
+				MassUnit mass = 0;
 
 				foreach (var resourceUnit in resources.Values)
 				{
@@ -88,16 +89,16 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		private DecimalNumber maxVolume;
-		public DecimalNumber MaxVolume => maxVolume;
+		private VolumeUnit maxVolume;
+		public VolumeUnit MaxVolume => maxVolume;
 
-		public DecimalNumber FreeVolume => DecimalNumber.Max(MaxVolume - Volume, 0);
+		public VolumeUnit FreeVolume => DecimalNumber.Max(MaxVolume - Volume, 0);
 
-		private DecimalNumber pressure;
+		private PressureUnit pressure;
 		/// <summary>
 		/// Pressure in pascal [kg/m³]
 		/// </summary>
-		public DecimalNumber Pressure
+		public PressureUnit Pressure
 		{
 			get
 			{
@@ -113,11 +114,11 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		private DecimalNumber averageTemperature;
+		private TemperatureUnit averageTemperature;
 		/// <summary>
 		/// The average temperature of all resources in this container in kelvin [K]
 		/// </summary>
-		public DecimalNumber AverageTemperature
+		public TemperatureUnit AverageTemperature
 		{
 			get
 			{
@@ -133,11 +134,11 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		private DecimalNumber gasSubstanceAmount;
+		private MolesUnit gasSubstanceAmount;
 		/// <summary>
 		/// The substance amount of all gas resources in this container in mols [mol]
 		/// </summary>
-		private DecimalNumber GasSubstanceAmount
+		private MolesUnit GasSubstanceAmount
 		{
 			get
 			{
@@ -153,13 +154,13 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		private DecimalNumber RecalculateGasSubstanceAmount()
+		private MolesUnit RecalculateGasSubstanceAmount()
 		{
 			lock (SyncRoot)
 			{
 				recalculateGasSubstanceAmount = false;
 
-				DecimalNumber totalSubstanceAmount = 0;
+				MolesUnit totalSubstanceAmount = 0;
 
 				foreach (var resourceUnit in resources.Values)
 				{
@@ -169,48 +170,32 @@ namespace Space_Refinery_Game
 					}
 				}
 
-				return totalSubstanceAmount / resources.Count;
+				return (MolesUnit)((DecimalNumber)totalSubstanceAmount / resources.Count);
 			}
 		}
 
-		public static readonly DecimalNumber GasConstant = (DecimalNumber)8.314;
-
-		private DecimalNumber RecalculatePressure()
+		private PressureUnit RecalculatePressure()
 		{
 			lock (SyncRoot)
 			{
-				recalculatePressure = false;
-
-				// P * V = n * k * T
-				// P = pressure [kg/m³]
-				// V = volume [m³]
-				// n = substance amount [mol]
-				// k = gas constant (8.314 J K-1) [J/K⁻¹]
-				// T = temperature [K]
-				//
-				// Solve for P:
-				// P = (n * k * T) / V
-
-				var pressure = (GasSubstanceAmount * GasConstant * AverageTemperature) / (MaxVolume/* - VolumeOfUncompressables*/);
-
-				return pressure;
+				return Calculations.CalculatePressureUsingIdealGasLaw(GasSubstanceAmount, AverageTemperature, Volume /*- VolumeOfUncompressables*/);
 			}
 		}
 
-		private DecimalNumber RecalculateAverageTemperature()
+		private TemperatureUnit RecalculateAverageTemperature()
 		{
 			lock (SyncRoot)
 			{
 				recalculateAverageTemperature = false;
 
-				DecimalNumber totalTemperature = 0;
+				TemperatureUnit totalTemperature = 0;
 
 				foreach (var resourceUnit in resources.Values)
 				{
 					totalTemperature += resourceUnit.Temperature;
 				}
 
-				return totalTemperature / resources.Count;
+				return (TemperatureUnit)((DecimalNumber)totalTemperature / resources.Count);
 			}
 		}
 
@@ -234,23 +219,23 @@ namespace Space_Refinery_Game
 			{
 				lock (SyncRoot)
 				{
-					if (MaxVolume == 0)
+					if ((DecimalNumber)MaxVolume == 0)
 					{
 						return 1;
 					}
 
-					return Volume / MaxVolume;
+					return (DecimalNumber)Volume / (DecimalNumber)MaxVolume;
 				}
 			}
 		}
 
 		private ConcurrentDictionary<ResourceType, ResourceUnit> resources = new();
 
-		private static readonly DecimalNumber acceptableVolumeTransferError = 0.1;
+		private static readonly VolumeUnit acceptableVolumeTransferError = 0.1;
 
 		private static readonly DecimalNumber permittedMaxPostReactionMassDiscrepancy = 0.001;
 
-		public ResourceContainer(DecimalNumber maxVolume) : this()
+		public ResourceContainer(VolumeUnit maxVolume) : this()
 		{
 			this.maxVolume = maxVolume;
 		}
@@ -260,11 +245,11 @@ namespace Space_Refinery_Game
 			RecalculatePossibleReactionTypes();
 		}
 
-		public ResourceUnitData TakeResourceByMoles(ResourceType resourceType, DecimalNumber moles)
+		public ResourceUnitData TakeResourceByMoles(ResourceType resourceType, MolesUnit moles)
 		{
-			if (moles == DecimalNumber.Zero)
+			if (moles == (MolesUnit)DecimalNumber.Zero)
 			{
-				return new ResourceUnitData(resourceType, DecimalNumber.Zero, DecimalNumber.Zero);
+				return new ResourceUnitData(resourceType, (MolesUnit)DecimalNumber.Zero, (EnergyUnit)DecimalNumber.Zero);
 			}
 
 			ResourceUnit unit = resources[resourceType];
@@ -404,7 +389,7 @@ namespace Space_Refinery_Game
 			InvalidatePossibleReactionTypes();
 		}
 
-		public DecimalNumber VolumeOf(ResourceType resourceType)
+		public VolumeUnit VolumeOf(ResourceType resourceType)
 		{
 			if (resources.TryGetValue(resourceType, out var resourceUnit))
 			{
@@ -412,11 +397,11 @@ namespace Space_Refinery_Game
 			}
 			else
 			{
-				return DecimalNumber.Zero;
+				return (VolumeUnit)DecimalNumber.Zero;
 			}
 		}
 
-		public DecimalNumber MassOf(ResourceType resourceType)
+		public MassUnit MassOf(ResourceType resourceType)
 		{
 			if (resources.TryGetValue(resourceType, out var resourceUnit))
 			{
@@ -424,11 +409,11 @@ namespace Space_Refinery_Game
 			}
 			else
 			{
-				return DecimalNumber.Zero;
+				return (MassUnit)DecimalNumber.Zero;
 			}
 		}
 
-		public DecimalNumber MolesOf(ResourceType resourceType)
+		public MolesUnit MolesOf(ResourceType resourceType)
 		{
 			if (resources.TryGetValue(resourceType, out var resourceUnit))
 			{
@@ -436,7 +421,7 @@ namespace Space_Refinery_Game
 			}
 			else
 			{
-				return DecimalNumber.Zero;
+				return (MolesUnit)DecimalNumber.Zero;
 			}
 		}
 
@@ -446,7 +431,7 @@ namespace Space_Refinery_Game
 			{
 				InvalidateRecalcuables();
 
-				if (resources[changed.ResourceType].Moles == DecimalNumber.Zero)
+				if (resources[changed.ResourceType].Moles == (MolesUnit)DecimalNumber.Zero)
 				{
 					ResourceCountChanged();
 					changed.ResourceUnitChanged -= ResourceUnit_Changed;
@@ -467,25 +452,25 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		public void TransferResourceByVolume(ResourceContainer targetContainer, DecimalNumber volume)
+		public void TransferResourceByVolume(ResourceContainer targetContainer, VolumeUnit volumeToTransfer)
 		{
-			if (Volume - volume < 0)
+			if (Volume - volumeToTransfer < 0)
 			{
 				throw new InvalidOperationException("Cannot transfer more resource volume than there is volume available.");
 			}
-			else if (volume < 0)
+			else if (volumeToTransfer < 0)
 			{
-				throw new ArgumentException("The volume to transfer must be larger than or equal to zero.", nameof(volume));
+				throw new ArgumentException("The volume to transfer must be larger than or equal to zero.", nameof(volumeToTransfer));
 			}
 
-			if (volume == DecimalNumber.Zero)
+			if (volumeToTransfer == DecimalNumber.Zero)
 			{
 				return;
 			}
 
-			DecimalNumber intialVolume = Volume;
+			VolumeUnit intialVolume = Volume;
 
-			DecimalNumber desiredPartOfVolume = (volume / intialVolume);
+			DecimalNumber desiredPartOfVolume = (DecimalNumber)volumeToTransfer / (DecimalNumber)intialVolume;
 
 			foreach (var resourceUnit in resources.Values)
 			{
@@ -502,7 +487,7 @@ namespace Space_Refinery_Game
 				resourceUnit.Remove(takenUnitData);
 			}
 
-			Debug.Assert(DecimalNumber.Difference(intialVolume - Volume, volume) < acceptableVolumeTransferError, "Volume error too large!");
+			Debug.Assert(DecimalNumber.Difference(intialVolume - Volume, volumeToTransfer) < acceptableVolumeTransferError, "Volume error too large!");
 		}
 
 		public void TransferResourceByVolume(ResourceContainer targetContainer, ResourceType resourceType, DecimalNumber volumeToTransfer)

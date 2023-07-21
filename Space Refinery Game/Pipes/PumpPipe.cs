@@ -17,7 +17,10 @@ namespace Space_Refinery_Game
 
 		public PipeConnector ConnectorA, ConnectorB;
 
-		public static readonly DecimalNumber MaxFlowRate = 1; // m3/s
+		/// <summary>
+		/// [m³/s]
+		/// </summary>
+		public static readonly Rate<VolumeUnit> MaxFlowRate = 1;
 
 		public PumpPipe()
 		{
@@ -38,7 +41,7 @@ namespace Space_Refinery_Game
 			throw new ArgumentException("Connector is not connected to this pipe.", nameof(pipeConnector));
 		}
 
-		public override void TransferResourceFromConnector(ResourceContainer source, DecimalNumber volume, PipeConnector transferingConnector)
+		public override void TransferResourceFromConnector(ResourceContainer source, VolumeUnit volume, PipeConnector transferingConnector)
 		{
 			lock (this)
 			{
@@ -70,7 +73,7 @@ namespace Space_Refinery_Game
 					Recipient,
 					Min(
 						Min(
-							MaxFlowRate * (DecimalNumber)Time.TickInterval
+							MaxFlowRate * (TimeUnit)(DecimalNumber)Time.TickInterval
 							, Transferer.Volume * 0.5)
 						, Recipient.FreeVolume * 0.5)
 					);

@@ -25,24 +25,24 @@ namespace Space_Refinery_Game
 		/// <summary>
 		/// [mol]
 		/// </summary>
-		public DecimalNumber Moles;
+		public MolesUnit Moles;
 
 		/// <summary>
 		/// [J] Internal energy in the current phase.
 		/// </summary>
-		public DecimalNumber InternalEnergy;
+		public EnergyUnit InternalEnergy;
 
 		// Driven properties
 
 		/// <summary>
 		/// [kg]
 		/// </summary>
-		public DecimalNumber Mass => ChemicalType.MolesToMass(ChemicalType, Moles);
+		public MassUnit Mass => ChemicalType.MolesToMass(ChemicalType, Moles);
 
 		/// <summary>
 		/// [m³]
 		/// </summary>
-		public DecimalNumber Volume => Mass / ResourceType.Density;
+		public VolumeUnit Volume => Mass / ResourceType.Density;
 
 		/// <summary>
 		/// [K]
@@ -50,12 +50,12 @@ namespace Space_Refinery_Game
 		/// <remarks>
 		/// If the substance amount or the mass is zero, the temperature will be considered to be zero.
 		/// </remarks>
-		public DecimalNumber Temperature => (Moles != 0 && Mass != 0) ? ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass) : 0;
+		public TemperatureUnit Temperature => ((DecimalNumber)Moles != 0 && (DecimalNumber)Mass != 0) ? ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass) : 0;
 
 		/// <summary>
 		/// [J/mol]
 		/// </summary>
-		public DecimalNumber MolarEnergy => InternalEnergy / Moles;
+		public MolarEnergyUnit MolarEnergy => InternalEnergy / Moles;
 
 		// Methods
 
@@ -69,14 +69,14 @@ namespace Space_Refinery_Game
 					resourceType,
 						new(
 							resourceType,
-							(Moles * SMR) / currentSubstanceAmountRatio, // Distribute moles according to SMR and substance amount ratio (Sorry, I don't know what that actually means either - it was like this when I came! Promise.).
-							InternalEnergy / resourceAndSMRs.Length)); // Evenly distribute energy.
+							(MolesUnit)((DecimalNumber)(Moles * SMR) / currentSubstanceAmountRatio), // Distribute moles according to SMR and substance amount ratio (Sorry, I don't know what that actually means either - it was like this when I came! Promise.).
+							(EnergyUnit)((DecimalNumber)InternalEnergy / resourceAndSMRs.Length))); // Evenly distribute energy.
 			}
 
 			resourceUnitDatas = resourceUnitDataDictionary;
 		}
 
-		public ResourceUnitData(ResourceType resourceType, DecimalNumber moles, DecimalNumber internalEnergy)
+		public ResourceUnitData(ResourceType resourceType, MolesUnit moles, EnergyUnit internalEnergy)
 		{
 			Debug.Assert(resourceType is not null, $"Argument {nameof(resourceType)} should never be null.");
 
@@ -95,7 +95,7 @@ namespace Space_Refinery_Game
 		/// Works like the regular constructor, however it doesn't contain checks therefore allowing a negative amount of moles or internal energy.
 		/// This can be useful for using <c>ResourceUnit</c>s for subtracting resources.
 		/// </summary>
-		public static ResourceUnitData CreateNegativeResourceUnit(ResourceType resourceType, DecimalNumber moles, DecimalNumber internalEnergy)
+		public static ResourceUnitData CreateNegativeResourceUnit(ResourceType resourceType, MolesUnit moles, EnergyUnit internalEnergy)
 		{
 			Debug.Assert(resourceType is not null, $"Argument {nameof(resourceType)} should never be null.");
 
@@ -166,8 +166,8 @@ namespace Space_Refinery_Game
 		{
 			ChemicalType chemicalType;
 			ResourceType resourceType;
-			DecimalNumber moles;
-			DecimalNumber internalEnergy;
+			MolesUnit moles;
+			EnergyUnit internalEnergy;
 
 			chemicalType = ChemicalType.GetChemicalType(reader.ReadString(nameof(Space_Refinery_Game.ChemicalType.ChemicalName)));
 			resourceType = chemicalType.GetResourceTypeForPhase(reader.DeserializeEnum<ChemicalPhase>(nameof(ChemicalPhase)));

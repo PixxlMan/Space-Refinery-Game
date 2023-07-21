@@ -46,25 +46,25 @@ namespace Space_Refinery_Game
 
 			var hydrogen = resourceContainer.TakeAllResource(ChemicalType.Hydrogen.GasPhaseType);
 
-			DecimalNumber totalInternalEnergy = oxygen.InternalEnergy + hydrogen.InternalEnergy;
+			EnergyUnit totalInternalEnergy = oxygen.InternalEnergy + hydrogen.InternalEnergy;
 
 			// there is no need to check whether the output product will fit volume wise since we know that the volume of produced water is always smaller.
 
 			// todo: adding internal energy released by reaction.
 
 			DecimalNumber part;
-
-			if (hydrogen.Moles * 2 > oxygen.Moles)
+			
+			if ((DecimalNumber)hydrogen.Moles * (DecimalNumber)2 > (DecimalNumber)oxygen.Moles)
 			{ // oxygen limited
-				part = hydrogen.Moles / oxygen.Moles;
+				part = (DecimalNumber)hydrogen.Moles / (DecimalNumber)oxygen.Moles;
 
-				resourceContainer.AddResource(new ResourceUnitData(ChemicalType.Water.LiquidPhaseType, oxygen.Moles, totalInternalEnergy * part));
+				resourceContainer.AddResource(new ResourceUnitData(ChemicalType.Water.LiquidPhaseType, oxygen.Moles, (EnergyUnit)((DecimalNumber)totalInternalEnergy * part)));
 
 				resourceContainer.AddResource(new ResourceUnitData(ChemicalType.Hydrogen.GasPhaseType, hydrogen.Moles - oxygen.Moles * 2, totalInternalEnergy * (1 - part))); // Add back the hydrogen that didn't get used up.
 			}
 			else
 			{ // hydrogen limited
-				part = oxygen.Moles / hydrogen.Moles;
+				part = (DecimalNumber)oxygen.Moles / (DecimalNumber)hydrogen.Moles;
 
 				resourceContainer.AddResource(new ResourceUnitData(ChemicalType.Water.LiquidPhaseType, hydrogen.Moles * 2, totalInternalEnergy * part));
 

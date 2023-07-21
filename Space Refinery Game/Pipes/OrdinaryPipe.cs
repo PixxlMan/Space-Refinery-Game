@@ -32,7 +32,7 @@ namespace Space_Refinery_Game
 			ResourceContainer.Tick(Time.TickInterval);
 		}
 
-		public override void TransferResourceFromConnector(ResourceContainer source, DecimalNumber volume, PipeConnector _)
+		public override void TransferResourceFromConnector(ResourceContainer source, VolumeUnit volume, PipeConnector _)
 		{
 			lock (this)
 			{
@@ -56,7 +56,7 @@ namespace Space_Refinery_Game
 					return;
 				}
 
-				var volumePerConnector = ResourceContainer.Volume / connectedConnectors.Count;
+				var volumePerConnector = (VolumeUnit)((DecimalNumber)ResourceContainer.Volume / connectedConnectors.Count);
 
 				foreach (var connectedConnector in connectedConnectors)
 				{

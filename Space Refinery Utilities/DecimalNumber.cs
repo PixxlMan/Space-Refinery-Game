@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 namespace Space_Refinery_Game;
 
 [JsonConverter(typeof(DecimalNumberJsonConverter))]
-/*//*/public struct DecimalNumber : IFixedPrecisionNumeral<DecimalNumber>
+public struct DecimalNumber : IFixedPrecisionNumeral<DecimalNumber>
 {
 	public static NumberFormatInfo NumberFormat { get; } =
 		new NumberFormatInfo()
@@ -46,11 +46,11 @@ namespace Space_Refinery_Game;
 	public static DecimalNumber Mega => 1_000_000;
 	public static DecimalNumber Giga => 1_000_000_000;
 	public static DecimalNumber Tera => 1_000_000_000_000;
-	
-	public static DecimalNumber Deci => 1/ (DecimalNumber)10;
-	public static DecimalNumber Centi => 1/ (DecimalNumber)100;
-	public static DecimalNumber Milli => 1/ (DecimalNumber)1000;
-	public static DecimalNumber Micro => 1/ (DecimalNumber)1_000_000;
+
+	public static DecimalNumber Deci => 1 / (DecimalNumber)10;
+	public static DecimalNumber Centi => 1 / (DecimalNumber)100;
+	public static DecimalNumber Milli => 1 / (DecimalNumber)1000;
+	public static DecimalNumber Micro => 1 / (DecimalNumber)1_000_000;
 
 	public static DecimalNumber Abs(DecimalNumber a)
 	{
@@ -379,7 +379,7 @@ namespace Space_Refinery_Game;
 	{
 		return Value.ToString(null, null);
 	}
-	
+
 	public string ToString(int decimals) // OPTIMIZE: use proper solution when proper ToString is implemented.
 	{
 		return ToDecimal().ToString($"F{decimals}");
@@ -474,7 +474,7 @@ namespace Space_Refinery_Game;
 	{
 		return FromTimeSpan(value);
 	}
-	
+
 	public static implicit operator FixedDecimalInt4(DecimalNumber value) => ToFixedDecimalInt4(value);
 
 	public static implicit operator DecimalNumber(FixedDecimalInt4 value) => FromFixedDecimalInt4(value);

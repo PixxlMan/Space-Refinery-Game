@@ -36,7 +36,7 @@ namespace Space_Refinery_Game
 
 		public override IInformationProvider InformationProvider => informationProvider;
 
-		public void TransferResource(Pipe sourcePipe, ResourceContainer sourceContainer, DecimalNumber volume)
+		public void TransferResource(Pipe sourcePipe, ResourceContainer sourceContainer, VolumeUnit volume)
 		{
 			lock (this)
 			{

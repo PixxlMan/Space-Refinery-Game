@@ -106,7 +106,7 @@ public sealed class PhaseChangeReactionType : ReactionType
 	/// <param name="energyDelta">[J]</param>
 	/// <param name="newUnit"></param>
 	/// <param name="changeFactorUnit"></param>
-	private static void TransitionPhase(ResourceUnitData previousUnit, ChemicalPhase newPhase, DecimalNumber phaseTransitionEnthalpy, DecimalNumber energyDelta, out ResourceUnitData newUnit, out ResourceUnitData changeFactorUnit)
+	private static void TransitionPhase(ResourceUnitData previousUnit, ChemicalPhase newPhase, MolarEnergyUnit phaseTransitionEnthalpy, EnergyUnit energyDelta, out ResourceUnitData newUnit, out ResourceUnitData changeFactorUnit)
 	{
 		ResourceType previousResourceType = previousUnit.ResourceType;
 		ChemicalType chemicalType = previousResourceType.ChemicalType;
@@ -136,6 +136,8 @@ public sealed class PhaseChangeReactionType : ReactionType
 			var C = phaseTransitionEnthalpy; // [J/kg]
 
 			var m = E / C; // [kg] = [J] / [J/kg]
+
+			// THIS IS WRONG - IT IS [mol], not [kg]! Check code!
 
 			if (m > previousUnit.Mass)
 			{

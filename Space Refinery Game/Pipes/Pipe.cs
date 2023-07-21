@@ -57,7 +57,7 @@ namespace Space_Refinery_Game
 
 		protected readonly object SyncRoot = new();
 
-		public abstract void TransferResourceFromConnector(ResourceContainer source, DecimalNumber volume, PipeConnector transferingConnector);
+		public abstract void TransferResourceFromConnector(ResourceContainer source, VolumeUnit volume, PipeConnector transferingConnector);
 
 		public virtual void AddDebugObjects()
 		{

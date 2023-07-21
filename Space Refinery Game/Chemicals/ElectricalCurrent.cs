@@ -2,9 +2,9 @@
 {
 	public struct ElectricalCurrent : ReactionFactor
 	{
-		public DecimalNumber ElectricalEnergy;
+		public EnergyUnit ElectricalEnergy;
 
-		public ElectricalCurrent(DecimalNumber electricalEnergy)
+		public ElectricalCurrent(EnergyUnit electricalEnergy)
 		{
 			ElectricalEnergy = electricalEnergy;
 		}

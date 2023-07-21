@@ -2,26 +2,55 @@
 #define IncludeUnits
 #endif
 
+
 using Space_Refinery_Game;
+using System.Numerics;
 
 namespace Space_Refinery_Utilities.Units;
 
 // Always include this, that way conversions to gram can be done outside of debug as well!
+/// <summary>
+/// Multiply [kg] by this to get [g].
+/// </summary>
+/// <remarks>
+/// This type stores no data and has no state.
+/// It exists merely to provide a type safe way of performing conversions between kilograms and grams.
+/// </remarks>
 public struct ToGramUnit
 {
-	public static DecimalNumber KilogramToGram => DecimalNumber.Milli;
+	public static ToGramUnit Unit = default;
+
+	internal static DecimalNumber KilogramToGram => DecimalNumber.Milli;
+
+	public static implicit operator DecimalNumber(ToGramUnit unit) => KilogramToGram;
 }
 
+/// <summary>
+/// Multiply [g] by this to get [kg].
+/// </summary>
+/// <remarks>
+/// This type stores no data and has no state.
+/// It exists merely to provide a type safe way of performing conversions between kilograms and grams.
+/// </remarks>
 public struct ToKilogramUnit
 {
-	public static DecimalNumber GramToKilogram => DecimalNumber.Kilo;
+	public static ToKilogramUnit Unit = default;
+
+	internal static DecimalNumber GramToKilogram => DecimalNumber.Kilo;
+
+	public static implicit operator DecimalNumber(ToKilogramUnit unit) => GramToKilogram;
 }
 
 #if IncludeUnits
 /// <summary>
 /// [kg]
 /// </summary>
-public struct MassUnit : IUnit<MassUnit>
+/// <remarks>
+/// TODO add which conversions are possible here?
+/// </remarks>
+public struct MassUnit : IUnit<MassUnit>,
+	IAdditionOperators<MassUnit, MassUnit, MassUnit>, // Include addition and subtraction because these are common operations with mass.
+	ISubtractionOperators<MassUnit, MassUnit, MassUnit>
 {
 	internal DecimalNumber value;
 
@@ -30,19 +59,50 @@ public struct MassUnit : IUnit<MassUnit>
 		this.value = value;
 	}
 
+	/// <summary>
+	/// [kg] / [m³] => [kg/m³]
+	/// </summary>
+	/// <param name="mass">[kg]</param>
+	/// <param name="volume">[m³]</param>
+	/// <returns>[kg/m³]</returns>
 	public static DensityUnit operator /(MassUnit mass, VolumeUnit volume)
 	{
 		return new(mass.value / volume.value);
 	}
 
+	/// <summary>
+	/// [kg] / [kg/m³] => [m³]
+	/// </summary>
+	/// <param name="mass">[kg]</param>
+	/// <param name="density">[kg/m³]</param>
+	/// <returns>[m³]</returns>
+	public static VolumeUnit operator /(MassUnit mass, DensityUnit density)
+	{
+		return new(mass.value / density.value);
+	}
+
 	public static GramUnit operator *(MassUnit mass, ToGramUnit unit)
 	{
-		return new (mass.value * ToGramUnit.KilogramToGram); // [kg] * (1 / [k]) => [g]
+		return new(mass.value * ToGramUnit.KilogramToGram); // [kg] * (1 / [k]) => [g]
+	}
+
+	public static MassUnit operator +(MassUnit left, MassUnit right)
+	{
+		return new(left.value + right.value);
+	}
+
+	public static MassUnit operator -(MassUnit left, MassUnit right)
+	{
+		return new(left.value - right.value);
 	}
 
 	public static explicit operator DecimalNumber(MassUnit unit) => unit.value;
 
 	public static explicit operator MassUnit(DecimalNumber value) => new(value);
+
+	public static implicit operator MassUnit(int value) => new(value);
+
+	public static implicit operator MassUnit(double value) => new(value);
 }
 
 /// <summary>
@@ -65,5 +125,9 @@ public struct GramUnit : IUnit<GramUnit>
 	public static explicit operator DecimalNumber(GramUnit unit) => unit.value;
 
 	public static explicit operator GramUnit(DecimalNumber value) => new(value);
+
+	public static implicit operator GramUnit(int value) => new(value);
+
+	public static implicit operator GramUnit(double value) => new(value);
 }
 #endif

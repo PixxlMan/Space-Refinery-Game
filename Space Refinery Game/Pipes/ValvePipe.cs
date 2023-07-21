@@ -24,7 +24,7 @@ namespace Space_Refinery_Game
 
 		public DecimalNumber Limiter = (DecimalNumber)0.5;
 
-		public override void TransferResourceFromConnector(ResourceContainer source, DecimalNumber volume, PipeConnector sourceConnector)
+		public override void TransferResourceFromConnector(ResourceContainer source, VolumeUnit volume, PipeConnector sourceConnector)
 		{
 			lock (this)
 			{
@@ -79,7 +79,7 @@ namespace Space_Refinery_Game
 						continue;
 					}
 
-					resourceContainer.TransferResourceByVolume(lowestFullnessContainer, resourceContainer.Volume * Limiter * (DecimalNumber)Time.TickInterval);
+					resourceContainer.TransferResourceByVolume(lowestFullnessContainer, resourceContainer.Volume * Limiter * (TimeUnit)(DecimalNumber)Time.TickInterval);
 				}
 			}
 		}

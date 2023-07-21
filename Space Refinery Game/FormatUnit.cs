@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,31 +19,36 @@ public static class FormatUnit
 	/// <summary>
 	/// Formats a mass in kilograms according to player preferences.
 	/// </summary>
-	/// <param name="mass">[kg]</param>
+	/// <param name="massUnit">[kg]</param>
 	/// <returns>Formatted weight</returns>
-	public static string FormatMass(this DecimalNumber mass)
+	public static string FormatMass(this MassUnit massUnit)
 	{
+		var mass = (DecimalNumber)massUnit;
 		return $"{mass.ToString(decimals: 2)} kg";
 	}
-	
+
 	/// <summary>
 	/// Formats a volume in cubic meters according to player preferences.
 	/// </summary>
-	/// <param name="volume">[m³]</param>
+	/// <param name="volumeUnit">[m³]</param>
 	/// <returns>Formatted volume</returns>
-	public static string FormatVolume(this DecimalNumber volume)
+	public static string FormatVolume(this VolumeUnit volumeUnit)
 	{
+		var volume = (DecimalNumber)volumeUnit;
 		return $"{volume.ToString(decimals: 2)} m³";
 	}
+
+	//public static readonly string PressureUnit;
 
 	/// <summary>
 	/// Formats a pressure in pascal according to player preferences.
 	/// </summary>
-	/// <param name="pessure">[kg/m³]</param>
+	/// <param name="pressureUnit">[N/m²]</param>
 	/// <returns>Formatted pressure</returns>
-	public static string FormatPressure(this DecimalNumber pressure)
+	public static string FormatPressure(this PressureUnit pressureUnit)
 	{
-		return $"{pressure.ToString(decimals: 2)} kg/m³";
+		var pressure = (DecimalNumber)pressureUnit;
+		return $"{pressure.ToString(decimals: 2)} N/m²"; // PressureUnit
 	}
 
 	/// <summary>
@@ -50,8 +56,9 @@ public static class FormatUnit
 	/// </summary>
 	/// <param name="distance">[m]</param>
 	/// <returns>Formatted distance</returns>
-	public static string FormatDistance(this DecimalNumber distance)
+	public static string FormatDistance(this DistanceUnit distanceUnit)
 	{
+		var distance = (DecimalNumber)distanceUnit;
 		return $"{distance.ToString(decimals: 2)} m";
 	}
 
@@ -60,8 +67,9 @@ public static class FormatUnit
 	/// </summary>
 	/// <param name="substanceAmount">[mol]</param>
 	/// <returns>Formatted substance amount</returns>
-	public static string FormatSubstanceAmount(this DecimalNumber substanceAmount)
+	public static string FormatSubstanceAmount(this MolesUnit molesUnit)
 	{
+		var substanceAmount = (DecimalNumber)molesUnit;
 		return $"{substanceAmount.ToString(decimals: 2)} mol";
 	}
 
@@ -70,8 +78,9 @@ public static class FormatUnit
 	/// </summary>
 	/// <param name="density">[kg/m³]</param>
 	/// <returns>Formatted density</returns>
-	public static string FormatDensity(this DecimalNumber density)
+	public static string FormatDensity(this DensityUnit densityUnit)
 	{
+		var density = (DecimalNumber)densityUnit;
 		return $"{density.ToString(decimals: 2)} kg/m³";
 	}
 
@@ -80,13 +89,18 @@ public static class FormatUnit
 	/// </summary>
 	/// <param name="specificHeatCapacity">[J/kg*K]</param>
 	/// <returns>Formatted specific heat capacity</returns>
-	public static string FormatSpecificHeatCapacity(this DecimalNumber specificHeatCapacity)
+	public static string FormatSpecificHeatCapacity(this SpecificHeatCapacityUnit specificHeatCapacityUnit)
 	{
+		var specificHeatCapacity = (DecimalNumber)specificHeatCapacityUnit;
+
 		specificHeatCapacity.FormatStandardPrefix(out var prefix, out var scaledSpecificHeatCapacity);
 
 		return $"{scaledSpecificHeatCapacity.ToString(decimals: 2)} {prefix}J/(kg*K)";
 	}
 
+	/// <summary>
+	/// -273.15 ⁰C = absolute zero = 0 K
+	/// </summary>
 	public static readonly DecimalNumber AbsoluteZeroInCelcius = -273.15;
 
 	/// <summary>
@@ -94,8 +108,10 @@ public static class FormatUnit
 	/// </summary>
 	/// <param name="temperature">[K]</param>
 	/// <returns>Formatted temperature</returns>
-	public static string FormatTemperature(this DecimalNumber temperature)
+	public static string FormatTemperature(this TemperatureUnit temperatureUnit)
 	{
+		var temperature = (DecimalNumber)temperatureUnit;
+
 		if (useCelcius)
 		{
 			return $"{(temperature + AbsoluteZeroInCelcius).ToString(decimals: 2)} °C";
@@ -111,15 +127,19 @@ public static class FormatUnit
 	/// </summary>
 	/// <param name="energy">[J]</param>
 	/// <returns>Formatted energy</returns>
-	public static string FormatEnergy(this DecimalNumber energy)
+	public static string FormatEnergy(this EnergyUnit energyUnit)
 	{
+		var energy = (DecimalNumber)energyUnit;
+
 		energy.FormatStandardPrefix(out var prefix, out var scaledEnergy);
 
 		return $"{scaledEnergy.ToString(decimals: 2)} {prefix}J";
 	}
 
-	public static string FormatMolarEnergy(this DecimalNumber molarEnergy)
+	public static string FormatMolarEnergy(this MolarEnergyUnit molarEnergyUnit)
 	{
+		var molarEnergy = (DecimalNumber)molarEnergyUnit;
+
 		molarEnergy.FormatStandardPrefix(out var prefix, out var scaledMolarEnergy);
 
 		return $"{scaledMolarEnergy.ToString(decimals: 2)} {prefix}J/mol";

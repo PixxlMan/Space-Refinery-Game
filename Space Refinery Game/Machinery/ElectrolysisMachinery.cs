@@ -21,13 +21,13 @@ namespace Space_Refinery_Game
 
 		public ResourceContainer OxygenOutput;
 
-		public static readonly DecimalNumber ReactionContainerVolume = 1;
+		public static readonly VolumeUnit ReactionContainerVolume = 1;
 
 		public ResourceContainer ReactionContainer = new(ReactionContainerVolume);
 
-		public static readonly DecimalNumber InOutPipeVolume = (DecimalNumber).4;
+		public static readonly VolumeUnit InOutPipeVolume = (VolumeUnit)(DecimalNumber).4;
 
-		public static DecimalNumber AmperageDrawMax => 100;
+		public static AmperageUnit AmperageDrawMax => 100;
 
 		public static DecimalNumber MaxElectricalEnergyPerSecond => AmperageDrawMax * Electricity.Voltage;
 

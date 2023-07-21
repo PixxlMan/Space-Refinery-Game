@@ -157,9 +157,9 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		public static void Serialize(this XmlWriter writer, DecimalNumber DecimalNumber, string? name = null)
+		public static void Serialize(this XmlWriter writer, DecimalNumber decimalNumber, string? name = null)
 		{
-			writer.WriteElementString(name ?? nameof(DecimalNumber), DecimalNumber.ToDecimal().ToString());
+			writer.WriteElementString(name ?? nameof(decimalNumber), decimalNumber.ToDecimal().ToString());
 		}
 		
 		public static DecimalNumber DeserializeDecimalNumber(this XmlReader reader, string? name = null)

@@ -21,11 +21,11 @@ namespace Space_Refinery_Game
 
 		public ResourceContainer ProductOutput;
 
-		public static readonly DecimalNumber ReactionContainerVolume = 1;
+		public static readonly VolumeUnit ReactionContainerVolume = 1;
 
 		public ResourceContainer ReactionContainer = new(ReactionContainerVolume);
 
-		public static readonly DecimalNumber InOutPipeVolume = (DecimalNumber).4;
+		public static readonly VolumeUnit InOutPipeVolume = (VolumeUnit)(DecimalNumber).4;
 
 		protected override void SetUp()
 		{

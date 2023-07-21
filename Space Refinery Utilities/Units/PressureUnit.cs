@@ -45,6 +45,8 @@ public struct DistanceUnit : IUnit<DistanceUnit>
 		this.value = value;
 	}
 
+	#region Operators and boilerplate
+
 	public static explicit operator DecimalNumber(DistanceUnit unit) => unit.value;
 
 	public static explicit operator DistanceUnit(DecimalNumber value) => new(value);
@@ -52,6 +54,35 @@ public struct DistanceUnit : IUnit<DistanceUnit>
 	public static implicit operator DistanceUnit(int value) => new(value);
 
 	public static implicit operator DistanceUnit(double value) => new(value);
+
+	public static bool operator >(DistanceUnit a, DistanceUnit b) => a.value > b.value;
+
+	public static bool operator <(DistanceUnit a, DistanceUnit b) => a.value < b.value;
+
+	public static bool operator >=(DistanceUnit a, DistanceUnit b) => a.value >= b.value;
+
+	public static bool operator <=(DistanceUnit a, DistanceUnit b) => a.value <= b.value;
+
+	public static bool operator ==(DistanceUnit a, DistanceUnit b) => a.Equals(b);
+
+	public static bool operator !=(DistanceUnit a, DistanceUnit b) => !a.Equals(b);
+
+	public override bool Equals(object? obj)
+	{
+		return obj is DistanceUnit unit && Equals(unit);
+	}
+
+	public bool Equals(DistanceUnit other)
+	{
+		return value.Equals(other.value);
+	}
+
+	public override int GetHashCode()
+	{
+		return value.GetHashCode();
+	}
+
+	#endregion
 }
 
 /// <summary>
@@ -66,6 +97,8 @@ public struct AreaUnit : IUnit<AreaUnit>
 		this.value = value;
 	}
 
+	#region Operators and boilerplate
+
 	public static explicit operator DecimalNumber(AreaUnit unit) => unit.value;
 
 	public static explicit operator AreaUnit(DecimalNumber value) => new(value);
@@ -73,6 +106,35 @@ public struct AreaUnit : IUnit<AreaUnit>
 	public static implicit operator AreaUnit(int value) => new(value);
 
 	public static implicit operator AreaUnit(double value) => new(value);
+
+	public static bool operator >(AreaUnit a, AreaUnit b) => a.value > b.value;
+
+	public static bool operator <(AreaUnit a, AreaUnit b) => a.value < b.value;
+
+	public static bool operator >=(AreaUnit a, AreaUnit b) => a.value >= b.value;
+
+	public static bool operator <=(AreaUnit a, AreaUnit b) => a.value <= b.value;
+
+	public static bool operator ==(AreaUnit a, AreaUnit b) => a.Equals(b);
+
+	public static bool operator !=(AreaUnit a, AreaUnit b) => !a.Equals(b);
+
+	public override bool Equals(object? obj)
+	{
+		return obj is AreaUnit unit && Equals(unit);
+	}
+
+	public bool Equals(AreaUnit other)
+	{
+		return value.Equals(other.value);
+	}
+
+	public override int GetHashCode()
+	{
+		return value.GetHashCode();
+	}
+
+	#endregion
 }
 
 /// <summary>
@@ -101,6 +163,8 @@ public struct ForceUnit : IUnit<ForceUnit>
 		return new(forceUnit.value * GravitationalAccelerationUnit.Unit);
 	}
 
+	#region Operators and boilerplate
+
 	public static explicit operator DecimalNumber(ForceUnit unit) => unit.value;
 
 	public static explicit operator ForceUnit(DecimalNumber value) => new(value);
@@ -108,6 +172,35 @@ public struct ForceUnit : IUnit<ForceUnit>
 	public static implicit operator ForceUnit(int value) => new(value);
 
 	public static implicit operator ForceUnit(double value) => new(value);
+
+	public static bool operator >(ForceUnit a, ForceUnit b) => a.value > b.value;
+
+	public static bool operator <(ForceUnit a, ForceUnit b) => a.value < b.value;
+
+	public static bool operator >=(ForceUnit a, ForceUnit b) => a.value >= b.value;
+
+	public static bool operator <=(ForceUnit a, ForceUnit b) => a.value <= b.value;
+
+	public static bool operator ==(ForceUnit a, ForceUnit b) => a.Equals(b);
+
+	public static bool operator !=(ForceUnit a, ForceUnit b) => !a.Equals(b);
+
+	public override bool Equals(object? obj)
+	{
+		return obj is ForceUnit unit && Equals(unit);
+	}
+
+	public bool Equals(ForceUnit other)
+	{
+		return value.Equals(other.value);
+	}
+
+	public override int GetHashCode()
+	{
+		return value.GetHashCode();
+	}
+
+	#endregion
 }
 
 /// <summary>
@@ -136,6 +229,8 @@ public struct PressureUnit : IUnit<PressureUnit>
 		return new(pressureUnit.value * areaUnit.value);
 	}
 
+	#region Operators and boilerplate
+
 	public static explicit operator DecimalNumber(PressureUnit unit) => unit.value;
 
 	public static explicit operator PressureUnit(DecimalNumber value) => new(value);
@@ -143,5 +238,34 @@ public struct PressureUnit : IUnit<PressureUnit>
 	public static implicit operator PressureUnit(int value) => new(value);
 
 	public static implicit operator PressureUnit(double value) => new(value);
+
+	public static bool operator >(PressureUnit a, PressureUnit b) => a.value > b.value;
+
+	public static bool operator <(PressureUnit a, PressureUnit b) => a.value < b.value;
+
+	public static bool operator >=(PressureUnit a, PressureUnit b) => a.value >= b.value;
+
+	public static bool operator <=(PressureUnit a, PressureUnit b) => a.value <= b.value;
+
+	public static bool operator ==(PressureUnit a, PressureUnit b) => a.Equals(b);
+
+	public static bool operator !=(PressureUnit a, PressureUnit b) => !a.Equals(b);
+
+	public override bool Equals(object? obj)
+	{
+		return obj is PressureUnit unit && Equals(unit);
+	}
+
+	public bool Equals(PressureUnit other)
+	{
+		return value.Equals(other.value);
+	}
+
+	public override int GetHashCode()
+	{
+		return value.GetHashCode();
+	}
+
+	#endregion
 }
 #endif

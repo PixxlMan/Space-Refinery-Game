@@ -96,6 +96,8 @@ public struct MassUnit : IUnit<MassUnit>,
 		return new(left.value - right.value);
 	}
 
+	#region Operators and boilerplate
+
 	public static explicit operator DecimalNumber(MassUnit unit) => unit.value;
 
 	public static explicit operator MassUnit(DecimalNumber value) => new(value);
@@ -103,6 +105,35 @@ public struct MassUnit : IUnit<MassUnit>,
 	public static implicit operator MassUnit(int value) => new(value);
 
 	public static implicit operator MassUnit(double value) => new(value);
+
+	public static bool operator >(MassUnit a, MassUnit b) => a.value > b.value;
+
+	public static bool operator <(MassUnit a, MassUnit b) => a.value < b.value;
+
+	public static bool operator >=(MassUnit a, MassUnit b) => a.value >= b.value;
+
+	public static bool operator <=(MassUnit a, MassUnit b) => a.value <= b.value;
+
+	public static bool operator ==(MassUnit a, MassUnit b) => a.Equals(b);
+
+	public static bool operator !=(MassUnit a, MassUnit b) => !a.Equals(b);
+
+	public override bool Equals(object? obj)
+	{
+		return obj is MassUnit unit && Equals(unit);
+	}
+
+	public bool Equals(MassUnit other)
+	{
+		return value.Equals(other.value);
+	}
+
+	public override int GetHashCode()
+	{
+		return value.GetHashCode();
+	}
+
+	#endregion
 }
 
 /// <summary>
@@ -122,6 +153,8 @@ public struct GramUnit : IUnit<GramUnit>
 		return new(grams.value * ToGramUnit.KilogramToGram); // [g] * [k] => [kg]
 	}
 
+	#region Operators and boilerplate
+
 	public static explicit operator DecimalNumber(GramUnit unit) => unit.value;
 
 	public static explicit operator GramUnit(DecimalNumber value) => new(value);
@@ -129,5 +162,34 @@ public struct GramUnit : IUnit<GramUnit>
 	public static implicit operator GramUnit(int value) => new(value);
 
 	public static implicit operator GramUnit(double value) => new(value);
+
+	public static bool operator >(GramUnit a, GramUnit b) => a.value > b.value;
+
+	public static bool operator <(GramUnit a, GramUnit b) => a.value < b.value;
+
+	public static bool operator >=(GramUnit a, GramUnit b) => a.value >= b.value;
+
+	public static bool operator <=(GramUnit a, GramUnit b) => a.value <= b.value;
+
+	public static bool operator ==(GramUnit a, GramUnit b) => a.Equals(b);
+
+	public static bool operator !=(GramUnit a, GramUnit b) => !a.Equals(b);
+
+	public override bool Equals(object? obj)
+	{
+		return obj is GramUnit unit && Equals(unit);
+	}
+
+	public bool Equals(GramUnit other)
+	{
+		return value.Equals(other.value);
+	}
+
+	public override int GetHashCode()
+	{
+		return value.GetHashCode();
+	}
+
+	#endregion
 }
 #endif

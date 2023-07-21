@@ -1,5 +1,4 @@
 ﻿using Space_Refinery_Game;
-using System.Diagnostics;
 using System.Numerics;
 
 namespace Space_Refinery_Utilities.Units;
@@ -7,8 +6,8 @@ namespace Space_Refinery_Utilities.Units;
 /// <summary>
 /// The purpose of Units is to achieve static type safety in physical and chemical calculations, with no runtime performance loss because units are removed and replaced by simple DecimalNumbers at runtime.
 /// </summary>
-public interface IUnit<TSelf> where TSelf : IUnit<TSelf>
-	//, IEquatable<TSelf>, IComparisonOperators<TSelf, TSelf, bool>
+public interface IUnit<TSelf> : IEquatable<TSelf>, IComparisonOperators<TSelf, TSelf, bool>
+	where TSelf : IUnit<TSelf>
 {
 	public static abstract explicit operator DecimalNumber(TSelf unit);
 
@@ -18,25 +17,9 @@ public interface IUnit<TSelf> where TSelf : IUnit<TSelf>
 
 	public static abstract implicit operator TSelf(double value);
 
-	//public static abstract bool operator >(TSelf a, TSelf b);
+	public static abstract bool operator ==(TSelf a, TSelf b);
 
-	//public static abstract bool operator <(TSelf a, TSelf b);
-
-	//public static abstract bool operator >=(TSelf a, TSelf b);
-
-	//public static abstract bool operator <=(TSelf a, TSelf b);
-
-	//public static abstract TSelf operator +(TSelf a, TSelf b);
-
-	//public static abstract TSelf operator -(TSelf a, TSelf b);
-
-	//public static abstract TSelf operator *(TSelf a, TSelf b);
-
-	//public static abstract TSelf operator /(TSelf a, TSelf b);
-
-	//public static abstract bool operator ==(TSelf a, TSelf b);
-
-	//public static abstract bool operator !=(TSelf a, TSelf b);
+	public static abstract bool operator !=(TSelf a, TSelf b);
 }
 
 

@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 namespace Space_Refinery_Game;
 
 [JsonConverter(typeof(DecimalNumberJsonConverter))]
-public struct DecimalNumber : IFixedPrecisionNumeral<DecimalNumber>
+public struct DecimalNumber : IFixedPrecisionNumeral<DecimalNumber>, IEquatable<DecimalNumber>
 {
 	public static NumberFormatInfo NumberFormat { get; } =
 		new NumberFormatInfo()
@@ -508,6 +508,11 @@ public struct DecimalNumber : IFixedPrecisionNumeral<DecimalNumber>
 	public static explicit operator decimal(DecimalNumber value) => ToDecimal(value);
 	public static explicit operator double(DecimalNumber value) => ToDouble(value);
 	public static explicit operator float(DecimalNumber value) => ToFloat(value);
+
+	public override int GetHashCode()
+	{
+		return HashCode.Combine(Value);
+	}
 }
 
 public class DecimalNumberJsonConverter : JsonConverter<DecimalNumber>

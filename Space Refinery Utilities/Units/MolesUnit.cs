@@ -23,6 +23,8 @@ public struct MolesUnit : IUnit<MolesUnit>, IMultiplyOperators<MolesUnit, MolesU
 		this.value = value;
 	}
 
+	#region Operators and boilerplate
+
 	public static explicit operator DecimalNumber(MolesUnit unit) => unit.value;
 
 	public static explicit operator MolesUnit(DecimalNumber value) => new(value);
@@ -30,6 +32,35 @@ public struct MolesUnit : IUnit<MolesUnit>, IMultiplyOperators<MolesUnit, MolesU
 	public static implicit operator MolesUnit(int value) => new(value);
 
 	public static implicit operator MolesUnit(double value) => new(value);
+
+	public static bool operator >(MolesUnit a, MolesUnit b) => a.value > b.value;
+
+	public static bool operator <(MolesUnit a, MolesUnit b) => a.value < b.value;
+
+	public static bool operator >=(MolesUnit a, MolesUnit b) => a.value >= b.value;
+
+	public static bool operator <=(MolesUnit a, MolesUnit b) => a.value <= b.value;
+
+	public static bool operator ==(MolesUnit a, MolesUnit b) => a.Equals(b);
+
+	public static bool operator !=(MolesUnit a, MolesUnit b) => !a.Equals(b);
+
+	public override bool Equals(object? obj)
+	{
+		return obj is MolesUnit unit && Equals(unit);
+	}
+
+	public bool Equals(MolesUnit other)
+	{
+		return value.Equals(other.value);
+	}
+
+	public override int GetHashCode()
+	{
+		return value.GetHashCode();
+	}
+
+	#endregion
 
 	public static MolarUnit operator /(GramUnit grams, MolesUnit moles)
 	{
@@ -85,6 +116,8 @@ public struct MolarUnit : IUnit<MolarUnit>
 		return new(gramMass.value / molar.value);
 	}
 
+	#region Operators and boilerplate
+
 	public static explicit operator DecimalNumber(MolarUnit unit) => unit.value;
 
 	public static explicit operator MolarUnit(DecimalNumber value) => new(value);
@@ -92,5 +125,34 @@ public struct MolarUnit : IUnit<MolarUnit>
 	public static implicit operator MolarUnit(int value) => new(value);
 
 	public static implicit operator MolarUnit(double value) => new(value);
+
+	public static bool operator >(MolarUnit a, MolarUnit b) => a.value > b.value;
+
+	public static bool operator <(MolarUnit a, MolarUnit b) => a.value < b.value;
+
+	public static bool operator >=(MolarUnit a, MolarUnit b) => a.value >= b.value;
+
+	public static bool operator <=(MolarUnit a, MolarUnit b) => a.value <= b.value;
+
+	public static bool operator ==(MolarUnit a, MolarUnit b) => a.Equals(b);
+
+	public static bool operator !=(MolarUnit a, MolarUnit b) => !a.Equals(b);
+
+	public override bool Equals(object? obj)
+	{
+		return obj is MolarUnit unit && Equals(unit);
+	}
+
+	public bool Equals(MolarUnit other)
+	{
+		return value.Equals(other.value);
+	}
+
+	public override int GetHashCode()
+	{
+		return value.GetHashCode();
+	}
+
+	#endregion
 }
 #endif

@@ -21,6 +21,8 @@ public struct VolumeUnit : IUnit<VolumeUnit>, ISubtractionOperators<VolumeUnit, 
 		this.value = value;
 	}
 
+	#region Operators and boilerplate
+
 	public static explicit operator DecimalNumber(VolumeUnit unit) => unit.value;
 
 	public static explicit operator VolumeUnit(DecimalNumber value) => new(value);
@@ -28,6 +30,35 @@ public struct VolumeUnit : IUnit<VolumeUnit>, ISubtractionOperators<VolumeUnit, 
 	public static implicit operator VolumeUnit(int value) => new(value);
 
 	public static implicit operator VolumeUnit(double value) => new(value);
+
+	public static bool operator >(VolumeUnit a, VolumeUnit b) => a.value > b.value;
+
+	public static bool operator <(VolumeUnit a, VolumeUnit b) => a.value < b.value;
+
+	public static bool operator >=(VolumeUnit a, VolumeUnit b) => a.value >= b.value;
+
+	public static bool operator <=(VolumeUnit a, VolumeUnit b) => a.value <= b.value;
+
+	public static bool operator ==(VolumeUnit a, VolumeUnit b) => a.Equals(b);
+
+	public static bool operator !=(VolumeUnit a, VolumeUnit b) => !a.Equals(b);
+
+	public override bool Equals(object? obj)
+	{
+		return obj is VolumeUnit unit && Equals(unit);
+	}
+
+	public bool Equals(VolumeUnit other)
+	{
+		return value.Equals(other.value);
+	}
+
+	public override int GetHashCode()
+	{
+		return value.GetHashCode();
+	}
+
+	#endregion
 
 	public static VolumeUnit operator +(VolumeUnit left, VolumeUnit right)
 		=> new(left.value + right.value);

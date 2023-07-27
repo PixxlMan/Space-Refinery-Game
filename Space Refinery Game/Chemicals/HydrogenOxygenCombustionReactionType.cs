@@ -9,7 +9,7 @@ namespace Space_Refinery_Game
 
 		public override void Tick(DecimalNumber interval, ResourceContainer resourceContainer, ILookup<Type, ReactionFactor> reactionFactors, ICollection<ReactionFactor> producedReactionFactors)
 		{
-			if (resourceContainer.MolesOf(ChemicalType.Hydrogen.GasPhaseType) == DecimalNumber.Zero || resourceContainer.MolesOf(ChemicalType.Oxygen.GasPhaseType) == DecimalNumber.Zero)
+			if (resourceContainer.MolesOf(ChemicalType.Hydrogen.GasPhaseType) == 0 || resourceContainer.MolesOf(ChemicalType.Oxygen.GasPhaseType) == 0)
 			{
 				return;
 			}
@@ -60,15 +60,15 @@ namespace Space_Refinery_Game
 
 				resourceContainer.AddResource(new ResourceUnitData(ChemicalType.Water.LiquidPhaseType, oxygen.Moles, (EnergyUnit)((DecimalNumber)totalInternalEnergy * part)));
 
-				resourceContainer.AddResource(new ResourceUnitData(ChemicalType.Hydrogen.GasPhaseType, hydrogen.Moles - oxygen.Moles * 2, totalInternalEnergy * (1 - part))); // Add back the hydrogen that didn't get used up.
+				resourceContainer.AddResource(new ResourceUnitData(ChemicalType.Hydrogen.GasPhaseType, hydrogen.Moles - oxygen.Moles * 2, (EnergyUnit)((DecimalNumber)totalInternalEnergy * (1 - part)))); // Add back the hydrogen that didn't get used up.
 			}
 			else
 			{ // hydrogen limited
 				part = (DecimalNumber)oxygen.Moles / (DecimalNumber)hydrogen.Moles;
 
-				resourceContainer.AddResource(new ResourceUnitData(ChemicalType.Water.LiquidPhaseType, hydrogen.Moles * 2, totalInternalEnergy * part));
+				resourceContainer.AddResource(new ResourceUnitData(ChemicalType.Water.LiquidPhaseType, hydrogen.Moles * 2, (EnergyUnit)((DecimalNumber)totalInternalEnergy * part)));
 
-				resourceContainer.AddResource(new ResourceUnitData(ChemicalType.Oxygen.GasPhaseType, oxygen.Moles - hydrogen.Moles / 2, totalInternalEnergy * (1 - part))); // Add back the oxygen that didn't get used up.
+				resourceContainer.AddResource(new ResourceUnitData(ChemicalType.Oxygen.GasPhaseType, oxygen.Moles - (hydrogen.Moles / 2), (EnergyUnit)((DecimalNumber)totalInternalEnergy * (1 - part)))); // Add back the oxygen that didn't get used up.
 			}
 		}
 	}

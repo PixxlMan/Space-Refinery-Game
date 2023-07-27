@@ -69,57 +69,75 @@ public struct Kilo<TUnit> : IUnit<Kilo<TUnit>>
 
 // add Milli
 
+public interface IPortionable<TSelf>
+	where TSelf : IUnit<TSelf>, IPortionable<TSelf>
+{
+	public static virtual Portion<TSelf> operator /(TSelf left, TSelf right)
+	{
+		return new((TSelf)((DecimalNumber)left / (DecimalNumber)right));
+	}
+}
+
 /// <summary>
-/// [<typeparamref name="TUnit"/>/s]
+/// [<typeparamref name="TUnit"/>/<typeparamref name="TUnit"/>]
 /// </summary>
-public struct Rate<TUnit> : IUnit<Rate<TUnit>>
+public struct Portion<TUnit> : IUnit<Portion<TUnit>>
 	where TUnit : IUnit<TUnit>
 {
 	internal DecimalNumber value;
 
-	public Rate(DecimalNumber value)
+	public Portion(DecimalNumber value)
 	{
 		this.value = value;
 	}
-
-	public static TUnit operator *(Rate<TUnit> rate, TimeUnit time)
+	
+	public Portion(TUnit value)
 	{
-		return (TUnit)(rate.value * time.value);
+		this.value = (DecimalNumber)value;
 	}
 
-	public static TUnit operator /(TUnit unit, Rate<TUnit> rate)
+	// Copy this into any units that neeed support for portions, or use the interface.
+	//public static Portion<TUnit> operator /(TUnit left, TUnit right)
+	//{
+	//	return new((TUnit)((DecimalNumber)left / (DecimalNumber)right));
+	//}
+
+	public static TUnit operator *(Portion<TUnit> portion, TUnit portioned)
 	{
-		return (TUnit)((DecimalNumber)unit / rate.value);
+		return (TUnit)(portion.value * (DecimalNumber)portioned);
 	}
+
+	// Here we include both directions, should this be universally done?
+	public static TUnit operator *(TUnit portioned, Portion<TUnit> portion) => portion * portioned;
 
 	#region Operators and boilerplate
 
-	public static explicit operator DecimalNumber(Rate<TUnit> unit) => unit.value;
+	public static explicit operator DecimalNumber(Portion<TUnit> unit) => unit.value;
 
-	public static explicit operator Rate<TUnit>(DecimalNumber value) => new(value);
+	public static explicit operator Portion<TUnit>(DecimalNumber value) => new(value);
 
-	public static implicit operator Rate<TUnit>(int value) => new(value);
+	public static implicit operator Portion<TUnit>(int value) => new(value);
 
-	public static implicit operator Rate<TUnit>(double value) => new(value);
+	public static implicit operator Portion<TUnit>(double value) => new(value);
 
-	public static bool operator >(Rate<TUnit> a, Rate<TUnit> b) => a.value > b.value;
+	public static bool operator >(Portion<TUnit> a, Portion<TUnit> b) => a.value > b.value;
 
-	public static bool operator <(Rate<TUnit> a, Rate<TUnit> b) => a.value < b.value;
+	public static bool operator <(Portion<TUnit> a, Portion<TUnit> b) => a.value < b.value;
 
-	public static bool operator >=(Rate<TUnit> a, Rate<TUnit> b) => a.value >= b.value;
+	public static bool operator >=(Portion<TUnit> a, Portion<TUnit> b) => a.value >= b.value;
 
-	public static bool operator <=(Rate<TUnit> a, Rate<TUnit> b) => a.value <= b.value;
+	public static bool operator <=(Portion<TUnit> a, Portion<TUnit> b) => a.value <= b.value;
 
-	public static bool operator ==(Rate<TUnit> a, Rate<TUnit> b) => a.Equals(b);
+	public static bool operator ==(Portion<TUnit> a, Portion<TUnit> b) => a.Equals(b);
 
-	public static bool operator !=(Rate<TUnit> a, Rate<TUnit> b) => !a.Equals(b);
+	public static bool operator !=(Portion<TUnit> a, Portion<TUnit> b) => !a.Equals(b);
 
 	public override bool Equals(object? obj)
 	{
-		return obj is Rate<TUnit> unit && Equals(unit);
+		return obj is Portion<TUnit> unit && Equals(unit);
 	}
 
-	public bool Equals(Rate<TUnit> other)
+	public bool Equals(Portion<TUnit> other)
 	{
 		return value.Equals(other.value);
 	}

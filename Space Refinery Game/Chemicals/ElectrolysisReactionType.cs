@@ -4,11 +4,11 @@ public sealed class ElectrolysisReactionType : ReactionType // https://sv.wikipe
 {
 	public override string Reaction => "2 H₂O -> 2 H₂ + O₂"; // Wikipedia electrolysis of water @ Equations @ Overall reaction
 
-	static DecimalNumber coulombForReaction => molesOfWater * 2 * Electricity.FaradayConstant; // [J/Reaction] (wikipedia states that 2 electrons are required per mole of water)
+	static CoulombUnit coulombForReaction => (molesOfWater * 2) * Electricity.FaradayConstant; // [J/Reaction] (wikipedia states that 2 electrons are required per mole of water)
 
 	static DecimalNumber reactionScale => 1000; // Operate on a reaction model that is 1000x bigger.
 
-	static DecimalNumber molesOfWater => 2 * reactionScale; // [mol]
+	static MolesUnit molesOfWater => (MolesUnit)(2 * reactionScale); // [mol]
 
 	public override void Tick(DecimalNumber interval, ResourceContainer resourceContainer, ILookup<Type, ReactionFactor> reactionFactors, ICollection<ReactionFactor> producedReactionFactors)
 	{
@@ -19,7 +19,7 @@ public sealed class ElectrolysisReactionType : ReactionType // https://sv.wikipe
 			electricalEnergy += electricalCurrent.ElectricalEnergy;
 		}
 
-		var electrolysisProcess = (Electricity.ElectricalEnergyToCoulomb(electricalEnergy) / coulombForReaction) * interval;
+		var electrolysisProcess = (CoulombUnit)(((DecimalNumber)Electricity.ElectricalEnergyToCoulomb(electricalEnergy) / (DecimalNumber)coulombForReaction) * interval);
 
 		var water = resourceContainer.TakeResourceByMoles(ChemicalType.Water.LiquidPhaseType, DecimalNumber.Min((DecimalNumber)resourceContainer.GetResourceUnitData(ChemicalType.Water.LiquidPhaseType).Moles, molesOfWater * electrolysisProcess));
 

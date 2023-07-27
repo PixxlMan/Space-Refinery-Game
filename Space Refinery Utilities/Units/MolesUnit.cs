@@ -14,7 +14,11 @@ namespace Space_Refinery_Utilities.Units;
 /// [mol] or n
 /// </summary>
 // Should this be called SubstanceAmountUnit?
-public struct MolesUnit : IUnit<MolesUnit>, IMultiplyOperators<MolesUnit, MolesUnit, MolesUnit>, IMultiplyOperators<MolesUnit, int, MolesUnit>, IAdditionOperators<MolesUnit, MolesUnit, MolesUnit>, ISubtractionOperators<MolesUnit, MolesUnit, MolesUnit>
+public struct MolesUnit : IUnit<MolesUnit>,
+	IMultiplyOperators<MolesUnit, MolesUnit, MolesUnit>,
+	IMultiplyOperators<MolesUnit, int, MolesUnit>,
+	IAdditionOperators<MolesUnit, MolesUnit, MolesUnit>,
+	ISubtractionOperators<MolesUnit, MolesUnit, MolesUnit>
 {
 	internal DecimalNumber value;
 
@@ -67,6 +71,11 @@ public struct MolesUnit : IUnit<MolesUnit>, IMultiplyOperators<MolesUnit, MolesU
 		return new(grams.value / moles.value);
 	}
 
+	public static GramUnit operator *(MolesUnit molesUnit, MolarUnit molarUnit)
+	{
+		return new(molesUnit.value * molarUnit.value);
+	}
+
 	public static MolesUnit operator *(MolesUnit left, MolesUnit right)
 	{
 		return new(left.value * right.value);
@@ -82,6 +91,11 @@ public struct MolesUnit : IUnit<MolesUnit>, IMultiplyOperators<MolesUnit, MolesU
 		return new(left.value * right);
 	}
 
+	public static MolesUnit operator /(MolesUnit left, int right)
+	{
+		return new(left.value / right);
+	}
+
 	public static MolesUnit operator +(MolesUnit left, MolesUnit right)
 	{
 		return new(left.value + right.value);
@@ -94,7 +108,7 @@ public struct MolesUnit : IUnit<MolesUnit>, IMultiplyOperators<MolesUnit, MolesU
 }
 
 /// <summary>
-/// [g/mol] <!--or M-->
+/// [g/mol]<!-- or M-->
 /// </summary>
 public struct MolarUnit : IUnit<MolarUnit>
 {

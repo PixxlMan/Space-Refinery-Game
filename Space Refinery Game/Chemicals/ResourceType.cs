@@ -65,7 +65,7 @@ public abstract class ResourceType : IUIInspectable, IEntitySerializable
 		reader.ReadStartElement(nameof(ResourceType));
 		{
 			ResourceName = reader.ReadString(nameof(ResourceName));
-			Density = reader.DeserializeDecimalNumber(nameof(Density));
+			Density = (DensityUnit)reader.DeserializeDecimalNumber(nameof(Density));
 		}
 		reader.ReadEndElement();
 	}

@@ -96,7 +96,7 @@ namespace Space_Refinery_Game
 
 		private PressureUnit pressure;
 		/// <summary>
-		/// Pressure in pascal [kg/m³]
+		/// [N/m²]
 		/// </summary>
 		public PressureUnit Pressure
 		{
@@ -116,7 +116,7 @@ namespace Space_Refinery_Game
 
 		private TemperatureUnit averageTemperature;
 		/// <summary>
-		/// The average temperature of all resources in this container in kelvin [K]
+		/// [K] The average temperature of all resources in this container in kelvin
 		/// </summary>
 		public TemperatureUnit AverageTemperature
 		{
@@ -254,7 +254,7 @@ namespace Space_Refinery_Game
 
 			ResourceUnit unit = resources[resourceType];
 
-			DecimalNumber partTaken = moles / unit.Moles;
+			Portion<MolesUnit> partTaken = moles / unit.Moles;
 			DecimalNumber internalEnergyToTake = unit.InternalEnergy * partTaken;
 
 			ResourceUnitData unitDataToTake = new(resourceType, moles, internalEnergyToTake);

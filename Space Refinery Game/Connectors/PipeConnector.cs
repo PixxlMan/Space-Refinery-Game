@@ -65,7 +65,7 @@ namespace Space_Refinery_Game
 
 					var otherContainer = flowDirection == ConnectorSide.A ? pipeBResourceContainer : pipeAResourceContainer;
 
-					var fullnessDifference = DecimalNumber.Abs(recipientContainer.Fullness - otherContainer.Fullness);
+					var fullnessDifference = (Portion<VolumeUnit>)DecimalNumber.Abs(recipientContainer.Fullness - otherContainer.Fullness);
 
 					otherContainer.TransferResourceByVolume(recipientContainer, otherContainer.Volume * fullnessDifference * (DecimalNumber)Time.TickInterval);
 				}

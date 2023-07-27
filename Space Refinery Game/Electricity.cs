@@ -11,19 +11,19 @@ public static class Electricity
 	/// <summary>
 	/// [C/mol]
 	/// </summary>
-	public static DecimalNumber FaradayConstant => 96485; // [C/mol]
+	public static FaradayConstantUnit FaradayConstant => FaradayConstantUnit.Unit;
 
 	/// <summary>
-	/// [V], [J/C]
+	/// [V] or [J/C]
 	/// </summary>
-	public static VoltageUnit Voltage => 1000; // [V] or [J/C]
+	public static VoltageUnit Voltage => 1000;
 
 	/// <summary>
 	/// [J] of electrical energy to [C]
 	/// </summary>
 	/// <param name="electricalEnergy">[J]</param>
 	/// <returns>[C]</returns>
-	public static CoulombUnit ElectricalEnergyToCoulomb(EnergyUnit electricalEnergy /* [J] */)
+	public static CoulombUnit ElectricalEnergyToCoulomb(EnergyUnit electricalEnergy)
 	{
 		return electricalEnergy * Voltage; // [J] * [J/C] => [C]
 	}

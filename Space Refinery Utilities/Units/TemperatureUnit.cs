@@ -6,7 +6,6 @@
 #if IncludeUnits
 using Space_Refinery_Game;
 using System.Numerics;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Space_Refinery_Utilities.Units;
 

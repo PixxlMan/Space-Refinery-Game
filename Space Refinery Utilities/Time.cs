@@ -1,29 +1,35 @@
 ﻿using FixedPrecision;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Space_Refinery_Game;
 
 public static class Time // https://fpstoms.com/
 {
-	public static readonly FixedDecimalLong8 TickInterval = 1 / (FixedDecimalLong8)50; // 50 tps
+	/// <summary>
+	/// [TPS] or [Tick/s]
+	/// <para/>
+	/// Equals 50 tps.
+	/// </summary>
+	public static readonly RateUnit TickRate = 50; // 50 tps (Ticks per second.)
 
-	public static readonly FixedDecimalLong8 UpdateInterval = 1 / (FixedDecimalLong8)200; // 200 ups
+	public static readonly IntervalUnit TickInterval = IntervalRateConversionUnit.Unit / TickRate; // 50 tps (Ticks per second.)
 
-	public static readonly FixedDecimalLong8 PhysicsInterval = 1 / (FixedDecimalLong8)60; // 60 pups
+	public static readonly RateUnit UpdateRate = 200; // 200 ups
+
+	public static readonly IntervalUnit UpdateInterval = IntervalRateConversionUnit.Unit / UpdateRate;
+
+	public static readonly RateUnit PhysicsRate = 60; // 60 pups
+
+	public static readonly IntervalUnit PhysicsInterval = IntervalRateConversionUnit.Unit / PhysicsRate;
 
 	public static long TicksElapsed = 0;
 
-	public static DecimalNumber CurrentTickTime => TicksElapsed * TickInterval;
+	public static DecimalNumber CurrentTickTime => TicksElapsed * (DecimalNumber)TickInterval;
 
-	public static void WaitIntervalLimit(FixedDecimalLong8 intervalTime, FixedDecimalLong8 intervalStartTime, Stopwatch stopwatch, out FixedDecimalLong8 timeOfContinuation)
+	public static void WaitIntervalLimit(TimeUnit intervalTime, TimeUnit intervalStartTime, Stopwatch stopwatch, out TimeUnit timeOfContinuation)
 	{
-		FixedDecimalLong8 timeToStopWaiting = intervalStartTime + intervalTime;
-		while (stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>() < timeToStopWaiting)
+		TimeUnit timeToStopWaiting = intervalStartTime + intervalTime;
+		while (stopwatch.Elapsed.TotalSeconds < timeToStopWaiting)
 		{
 			Thread.SpinWait(4);
 		}
@@ -31,8 +37,8 @@ public static class Time // https://fpstoms.com/
 		timeOfContinuation = timeToStopWaiting;
 	}
 
-	public static string ResponseSpinner(DecimalNumber time)
+	public static string ResponseSpinner(TimeUnit time)
 	{
-		return "|/-\\"[(int)(time / 0.05) & 3].ToString(); // https://github.com/ocornut/imgui/issues/1901#issuecomment-400563921
+		return "|/-\\"[(int)((DecimalNumber)time / 0.05) & 3].ToString(); // https://github.com/ocornut/imgui/issues/1901#issuecomment-400563921
 	}
 }

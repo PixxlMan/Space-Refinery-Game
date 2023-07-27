@@ -2,17 +2,49 @@
 #define IncludeUnits
 #endif
 
-
-#if IncludeUnits
 using Space_Refinery_Game;
 
-
 namespace Space_Refinery_Utilities.Units;
+
+/// <summary>
+/// [C/mol]
+/// </summary>
+/// <remarks>
+/// This type stores no data and has no state.
+/// It exists merely to provide a type safe way of performing calculations with the faraday constant.
+/// </remarks>
+public struct FaradayConstantUnit
+{
+	/// <summary>
+	/// [C/mol]
+	/// </summary>
+	public static FaradayConstantUnit Unit = default;
+
+	/// <summary>
+	/// [C/mol]
+	/// </summary>
+	internal static DecimalNumber FaradayConstantValue => 96485;
+
+	public static implicit operator DecimalNumber(FaradayConstantUnit unit) => Unit;
+
+	/// <summary>
+	/// [mol] * [C/mol] => [C]
+	/// </summary>
+	/// <param name="molesUnit">[mol]</param>
+	/// <param name="faradayConstantUnit">[C/mol]</param>
+	/// <returns>[C]</returns>
+	public static CoulombUnit operator *(MolesUnit molesUnit, FaradayConstantUnit faradayConstantUnit)
+	{
+		return new(molesUnit.value * FaradayConstantValue);
+	}
+}
+
+#if IncludeUnits
 
 // add more of these and finish them
 
 /// <summary>
-/// 
+/// [A] or [C/s]
 /// </summary>
 public struct AmperageUnit : IUnit<AmperageUnit>
 {
@@ -21,6 +53,16 @@ public struct AmperageUnit : IUnit<AmperageUnit>
 	public AmperageUnit(DecimalNumber value)
 	{
 		this.value = value;
+	}
+
+	public static implicit operator Rate<CoulombUnit>(AmperageUnit amperageUnit)
+	{
+		return new(amperageUnit.value);
+	}
+
+	public static implicit operator AmperageUnit(Rate<CoulombUnit> coulombRateUnit)
+	{
+		return new(coulombRateUnit.value);
 	}
 
 	#region Operators and boilerplate
@@ -63,6 +105,9 @@ public struct AmperageUnit : IUnit<AmperageUnit>
 	#endregion
 }
 
+/// <summary>
+/// [V] or [J/C]
+/// </summary>
 public struct VoltageUnit : IUnit<VoltageUnit>
 {
 	internal DecimalNumber value;
@@ -112,6 +157,9 @@ public struct VoltageUnit : IUnit<VoltageUnit>
 	#endregion
 }
 
+/// <summary>
+/// [C]
+/// </summary>
 public struct CoulombUnit : IUnit<CoulombUnit>
 {
 	internal DecimalNumber value;

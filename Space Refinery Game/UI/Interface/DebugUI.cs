@@ -40,6 +40,8 @@ partial class UI
 		ImGui.End();
 	}
 
+	private static readonly Portion<TimeUnit> budgetUseYellowThreshold = 0.75;
+
 	private void DoPerformanceInfo()
 	{
 		ImGui.Columns(3);
@@ -53,7 +55,7 @@ partial class UI
 			{
 				tickColor = RgbaFloat.Red;
 			}
-			else if (gameData.PerformanceStatisticsCollector.TickBudgetUse > (DecimalNumber)0.75)
+			else if (gameData.PerformanceStatisticsCollector.TickBudgetUse > budgetUseYellowThreshold)
 			{
 				tickColor = RgbaFloat.Yellow;
 			}
@@ -67,7 +69,7 @@ partial class UI
 			{
 				updateColor = RgbaFloat.Red;
 			}
-			else if (gameData.PerformanceStatisticsCollector.UpdateBudgetUse > (DecimalNumber)0.75)
+			else if (gameData.PerformanceStatisticsCollector.UpdateBudgetUse > budgetUseYellowThreshold)
 			{
 				updateColor = RgbaFloat.Yellow;
 			}
@@ -81,7 +83,7 @@ partial class UI
 			{
 				physicsUpdateColor = RgbaFloat.Red;
 			}
-			else if (gameData.PerformanceStatisticsCollector.PhysicsBudgetUse > (DecimalNumber)0.75)
+			else if (gameData.PerformanceStatisticsCollector.PhysicsBudgetUse > budgetUseYellowThreshold)
 			{
 				physicsUpdateColor = RgbaFloat.Yellow;
 			}
@@ -93,10 +95,10 @@ partial class UI
 		}
 		ImGui.NextColumn();
 		{
-			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"{gameData.PerformanceStatisticsCollector.RendererFrameTime * 1000} ms");
-			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"{gameData.PerformanceStatisticsCollector.TickTime * 1000} ms");
-			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"{gameData.PerformanceStatisticsCollector.UpdateTime * 1000} ms");
-			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"{gameData.PerformanceStatisticsCollector.PhysicsTime * 1000} ms");
+			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"{(DN)gameData.PerformanceStatisticsCollector.RendererFrameTime * 1000} ms");
+			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"{(DN)gameData.PerformanceStatisticsCollector.TickTime * 1000} ms");
+			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"{(DN)gameData.PerformanceStatisticsCollector.UpdateTime * 1000} ms");
+			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"{(DN)gameData.PerformanceStatisticsCollector.PhysicsTime * 1000} ms");
 		}
 		ImGui.NextColumn();
 		{

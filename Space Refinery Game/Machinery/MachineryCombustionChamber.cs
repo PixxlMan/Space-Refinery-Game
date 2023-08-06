@@ -75,16 +75,16 @@ namespace Space_Refinery_Game
 				if (Activated)
 				{
 					OxygenInput.TransferResourceByVolume(ReactionContainer, ChemicalType.Oxygen.GasPhaseType,
-						DecimalNumber.Clamp(
-							OxygenInput.Volume * OxygenInput.Fullness * (DecimalNumber)Time.TickInterval,
+						UnitsMath.Clamp(
+							OxygenInput.Volume * OxygenInput.Fullness * Time.TickInterval,
 							0,
-							DecimalNumber.Min(ReactionContainer.FreeVolume, OxygenInput.VolumeOf(ChemicalType.Oxygen.GasPhaseType))));
+							UnitsMath.Min(ReactionContainer.FreeVolume, OxygenInput.VolumeOf(ChemicalType.Oxygen.GasPhaseType))));
 					
 					FuelInput.TransferResourceByVolume(ReactionContainer,
-						DecimalNumber.Clamp(
-							FuelInput.Volume * FuelInput.Fullness * (DecimalNumber)Time.TickInterval,
+						UnitsMath.Clamp(
+							FuelInput.Volume * FuelInput.Fullness * Time.TickInterval,
 							0,
-							DecimalNumber.Min(ReactionContainer.FreeVolume, FuelInput.Volume)));
+							UnitsMath.Min(ReactionContainer.FreeVolume, FuelInput.Volume)));
 
 					ReactionContainer.AddReactionFactor(new Spark(20 * DecimalNumber.Micro /*20 µJ, minimum to start an oxyhydrogen combustion*/));
 
@@ -96,7 +96,16 @@ namespace Space_Refinery_Game
 
 					ProductOutput.Tick(Time.TickInterval);
 
-					ReactionContainer.TransferResourceByVolume(ProductOutput, DecimalNumber.Min(ReactionContainer.VolumeOf(ChemicalType.Water.LiquidPhaseType), DecimalNumber.Max(ReactionContainer.Fullness - ProductOutput.Fullness, 0) * (DecimalNumber)Time.TickInterval));
+					ReactionContainer.TransferResourceByVolume(
+						ProductOutput,
+						UnitsMath.Min(
+							ReactionContainer.VolumeOf(
+								ChemicalType.Water.LiquidPhaseType
+							),
+							UnitsMath.Max(
+								ReactionContainer.Fullness - ProductOutput.Fullness, 0)
+							* Time.TickInterval)
+						);
 
 					//ElectricityInput.ConsumeElectricity();
 				}

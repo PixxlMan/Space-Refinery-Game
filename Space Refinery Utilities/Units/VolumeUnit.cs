@@ -12,7 +12,12 @@ namespace Space_Refinery_Utilities.Units;
 /// <summary>
 /// [m³]
 /// </summary>
-public struct VolumeUnit : IUnit<VolumeUnit>, ISubtractionOperators<VolumeUnit, VolumeUnit, VolumeUnit>, IAdditionOperators<VolumeUnit, VolumeUnit, VolumeUnit>
+public struct VolumeUnit :
+	IUnit<VolumeUnit>,
+	ISubtractionOperators<VolumeUnit, VolumeUnit, VolumeUnit>,
+	IAdditionOperators<VolumeUnit, VolumeUnit, VolumeUnit>,
+	IPortionable<VolumeUnit>,
+	IIntervalSupport<VolumeUnit>
 {
 	internal DecimalNumber value;
 
@@ -20,6 +25,30 @@ public struct VolumeUnit : IUnit<VolumeUnit>, ISubtractionOperators<VolumeUnit, 
 	{
 		this.value = value;
 	}
+
+	/// <summary>
+	/// [m³] * [kg/m³] => [kg]
+	/// </summary>
+	/// <param name="volumeUnit">[m³]</param>
+	/// <param name="densityUnit">[kg/m³]</param>
+	/// <returns>[kg]</returns>
+	public static MassUnit operator *(VolumeUnit volumeUnit, DensityUnit densityUnit)
+		=> new(volumeUnit.value * densityUnit.value);
+
+	/// <summary>
+	/// [kg/m³] * [m³] => [kg]
+	/// </summary>
+	/// <param name="densityUnit">[kg/m³]</param>
+	/// <param name="volumeUnit">[m³]</param>
+	/// <returns>[kg]</returns>
+	public static MassUnit operator *(DensityUnit densityUnit, VolumeUnit volumeUnit)
+		=> volumeUnit * densityUnit;
+
+	public static VolumeUnit operator +(VolumeUnit left, VolumeUnit right)
+		=> new(left.value + right.value);
+
+	public static VolumeUnit operator -(VolumeUnit left, VolumeUnit right)
+		=> new(left.value - right.value);
 
 	#region Operators and boilerplate
 
@@ -43,6 +72,24 @@ public struct VolumeUnit : IUnit<VolumeUnit>, ISubtractionOperators<VolumeUnit, 
 
 	public static bool operator !=(VolumeUnit a, VolumeUnit b) => !a.Equals(b);
 
+	public static VolumeUnit operator -(VolumeUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<VolumeUnit> operator /(VolumeUnit left, VolumeUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static VolumeUnit operator *(IntervalUnit interval, VolumeUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static VolumeUnit operator *(VolumeUnit unit, IntervalUnit interval)
+		=> interval * unit;
+
 	public override bool Equals(object? obj)
 	{
 		return obj is VolumeUnit unit && Equals(unit);
@@ -59,11 +106,5 @@ public struct VolumeUnit : IUnit<VolumeUnit>, ISubtractionOperators<VolumeUnit, 
 	}
 
 	#endregion
-
-	public static VolumeUnit operator +(VolumeUnit left, VolumeUnit right)
-		=> new(left.value + right.value);
-
-	public static VolumeUnit operator -(VolumeUnit left, VolumeUnit right)
-		=> new(left.value - right.value);
 }
 #endif

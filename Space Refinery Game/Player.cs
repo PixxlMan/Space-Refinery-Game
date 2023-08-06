@@ -45,7 +45,7 @@ namespace Space_Refinery_Game
 
 		public FixedDecimalInt4 LookPitch;
 
-		public void Update(FixedDecimalInt4 deltaTime)
+		public void Update(IntervalUnit deltaTime)
 		{
 			var lookedAtPhysicsObject = gameData.PhysicsWorld.Raycast(CameraTransform.Position, -CameraTransform.LocalUnitZ, 1000);
 
@@ -128,8 +128,8 @@ namespace Space_Refinery_Game
 						MassUnit mass = (MassUnit)(DecimalNumber)MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Mass to insert with button", new(10, 0, 1_000));
 						ResourceType resourceType = chemicalType.GetResourceTypeForPhase(chemicalPhase);
 
-						EnergyUnit energy = (MassUnit)(DecimalNumber)MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Internal energy to modify per unit", new(1_000, 0, 10_000_000));
-						EnergyUnit timeAdjustedEnergy = (DecimalNumber)energy * (DecimalNumber)deltaTime;
+						EnergyUnit energy = (EnergyUnit)(DN)MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Internal energy to modify per unit", new(1_000, 0, 10_000_000));
+						EnergyUnit timeAdjustedEnergy = energy * deltaTime;
 
 						/*if (InputTracker.GetKeyDown(Key.H))
 						{
@@ -158,7 +158,7 @@ namespace Space_Refinery_Game
 							var unitData = pipe.ResourceContainer.GetResourceUnitData(resourceType);
 							//foreach (var unitData in pipe.ResourceContainer.EnumerateResources())
 							{
-								pipe.ResourceContainer.AddResource(ResourceUnitData.CreateNegativeResourceUnit(unitData.ResourceType, 0, /*Make sure to not remove more energy than there is available.*/DecimalNumber.Max(-timeAdjustedEnergy, -unitData.InternalEnergy)));
+								pipe.ResourceContainer.AddResource(ResourceUnitData.CreateNegativeResourceUnit(unitData.ResourceType, 0, /*Make sure to not remove more energy than there is available.*/UnitsMath.Max(-timeAdjustedEnergy, -unitData.InternalEnergy)));
 							}
 						}
 					}
@@ -206,7 +206,7 @@ namespace Space_Refinery_Game
 			if (motionDir != Vector3FixedDecimalInt4.Zero)
 			{
 				motionDir = Vector3FixedDecimalInt4.Transform(motionDir, Transform.Rotation);
-				Transform.Position += motionDir * sprintFactor * deltaTime;
+				Transform.Position += motionDir * sprintFactor * (FixedDecimalInt4)(DN)deltaTime;
 			}
 
 			FixedDecimalInt4 yawDelta = -InputTracker.MouseDelta.X / 300;

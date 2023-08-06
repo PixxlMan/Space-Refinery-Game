@@ -55,8 +55,8 @@ namespace Space_Refinery_Game
 
 			lock (this)
 			{
-				ContainerA = new(PipeType.PipeProperties.FlowableVolume / 2);
-				ContainerB = new(PipeType.PipeProperties.FlowableVolume / 2);
+				ContainerA = new(PipeType.PipeProperties.FlowableVolume * (Portion<VolumeUnit>)0.5);
+				ContainerB = new(PipeType.PipeProperties.FlowableVolume * (Portion<VolumeUnit>)0.5);
 
 				ConnectorA = NamedConnectors["A"];
 				ConnectorB = NamedConnectors["B"];
@@ -71,11 +71,11 @@ namespace Space_Refinery_Game
 			{
 				Transferer.TransferResourceByVolume(
 					Recipient,
-					Min(
+					(VolumeUnit)Min(
 						Min(
-							MaxFlowRate * (TimeUnit)(DecimalNumber)Time.TickInterval
-							, Transferer.Volume * 0.5)
-						, Recipient.FreeVolume * 0.5)
+							(DecimalNumber)(MaxFlowRate * Time.TickInterval)
+							, (DecimalNumber)(Transferer.Volume * (Portion<VolumeUnit>)0.5))
+						, (DecimalNumber)(Recipient.FreeVolume * (Portion<VolumeUnit>)0.5))
 					);
 			}
 		}

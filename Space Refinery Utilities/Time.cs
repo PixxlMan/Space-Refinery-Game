@@ -26,7 +26,7 @@ public static class Time // https://fpstoms.com/
 
 	public static DecimalNumber CurrentTickTime => TicksElapsed * (DecimalNumber)TickInterval;
 
-	public static void WaitIntervalLimit(TimeUnit intervalTime, TimeUnit intervalStartTime, Stopwatch stopwatch, out TimeUnit timeOfContinuation)
+	public static void WaitIntervalLimit(IntervalUnit intervalTime, TimeUnit intervalStartTime, Stopwatch stopwatch, out TimeUnit timeOfContinuation)
 	{
 		TimeUnit timeToStopWaiting = intervalStartTime + intervalTime;
 		while (stopwatch.Elapsed.TotalSeconds < timeToStopWaiting)
@@ -40,5 +40,12 @@ public static class Time // https://fpstoms.com/
 	public static string ResponseSpinner(TimeUnit time)
 	{
 		return "|/-\\"[(int)((DecimalNumber)time / 0.05) & 3].ToString(); // https://github.com/ocornut/imgui/issues/1901#issuecomment-400563921
+	}
+
+	[Conditional("DEBUG")]
+	public static void ResponseSpinner(TimeUnit time, ref string spinnerString)
+	{
+		//lock (spinnerString) // C# seems to complain about locking it. I'm suuure it's fiiine.
+			spinnerString = ResponseSpinner(time);
 	}
 }

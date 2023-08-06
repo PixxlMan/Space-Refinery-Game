@@ -10,7 +10,7 @@ public sealed class ElectrolysisReactionType : ReactionType // https://sv.wikipe
 
 	static MolesUnit molesOfWater => (MolesUnit)(2 * reactionScale); // [mol]
 
-	public override void Tick(DecimalNumber interval, ResourceContainer resourceContainer, ILookup<Type, ReactionFactor> reactionFactors, ICollection<ReactionFactor> producedReactionFactors)
+	public override void Tick(IntervalUnit interval, ResourceContainer resourceContainer, ILookup<Type, ReactionFactor> reactionFactors, ICollection<ReactionFactor> producedReactionFactors)
 	{
 		EnergyUnit electricalEnergy = (EnergyUnit)DecimalNumber.Zero;
 
@@ -19,9 +19,9 @@ public sealed class ElectrolysisReactionType : ReactionType // https://sv.wikipe
 			electricalEnergy += electricalCurrent.ElectricalEnergy;
 		}
 
-		var electrolysisProcess = (CoulombUnit)(((DecimalNumber)Electricity.ElectricalEnergyToCoulomb(electricalEnergy) / (DecimalNumber)coulombForReaction) * interval);
+		Portion<CoulombUnit> electrolysisProcess = ((Electricity.ElectricalEnergyToCoulomb(electricalEnergy) * interval) / coulombForReaction);
 
-		var water = resourceContainer.TakeResourceByMoles(ChemicalType.Water.LiquidPhaseType, DecimalNumber.Min((DecimalNumber)resourceContainer.GetResourceUnitData(ChemicalType.Water.LiquidPhaseType).Moles, molesOfWater * electrolysisProcess));
+		var water = resourceContainer.TakeResourceByMoles(ChemicalType.Water.LiquidPhaseType, UnitsMath.Min(resourceContainer.GetResourceUnitData(ChemicalType.Water.LiquidPhaseType).Moles, molesOfWater * (Portion<MolesUnit>)(DN)electrolysisProcess));
 
 		water.BreakInto(2, out IReadOnlyDictionary<ResourceType, ResourceUnitData> resourceUnitDatas, (ChemicalType.Hydrogen.GasPhaseType, 2), (ChemicalType.Oxygen.GasPhaseType, 1));
 

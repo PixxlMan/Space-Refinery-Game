@@ -5,6 +5,7 @@
 
 
 using Space_Refinery_Game;
+using System.Numerics;
 
 namespace Space_Refinery_Utilities.Units;
 
@@ -12,8 +13,12 @@ namespace Space_Refinery_Utilities.Units;
 /// <summary>
 /// [k<typeparamref name="TUnit"/>]
 /// </summary>
-public struct Kilo<TUnit> : IUnit<Kilo<TUnit>>
-	where TUnit : IUnit<TUnit>
+public struct Kilo<TUnit> :
+	IUnit<Kilo<TUnit>>,
+	IPortionable<Kilo<TUnit>>,
+	IIntervalSupport<Kilo<TUnit>>
+	where TUnit :
+		IUnit<TUnit>
 {
 	internal DecimalNumber value;
 
@@ -21,11 +26,6 @@ public struct Kilo<TUnit> : IUnit<Kilo<TUnit>>
 	{
 		this.value = value;
 	}
-
-	//public static MolarUnit operator *(_ExampleUnit grams, MolesUnit moles)
-	//{
-	//	return new(grams.value / moles.value);
-	//}
 
 	#region Operators and boilerplate
 
@@ -49,6 +49,24 @@ public struct Kilo<TUnit> : IUnit<Kilo<TUnit>>
 
 	public static bool operator !=(Kilo<TUnit> a, Kilo<TUnit> b) => !a.Equals(b);
 
+	public static Kilo<TUnit> operator -(Kilo<TUnit> value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<Kilo<TUnit>> operator /(Kilo<TUnit> left, Kilo<TUnit> right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static Kilo<TUnit> operator *(IntervalUnit interval, Kilo<TUnit> unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static Kilo<TUnit> operator *(Kilo<TUnit> unit, IntervalUnit interval)
+		=> interval * unit;
+
 	public override bool Equals(object? obj)
 	{
 		return obj is Kilo<TUnit> unit && Equals(unit);
@@ -70,19 +88,27 @@ public struct Kilo<TUnit> : IUnit<Kilo<TUnit>>
 // add Milli
 
 public interface IPortionable<TSelf>
-	where TSelf : IUnit<TSelf>, IPortionable<TSelf>
+	where TSelf :
+		IUnit<TSelf>,
+		IPortionable<TSelf>//,
+		//IIntervalSupport<TSelf>
 {
-	public static virtual Portion<TSelf> operator /(TSelf left, TSelf right)
-	{
-		return new((TSelf)((DecimalNumber)left / (DecimalNumber)right));
-	}
+	public static abstract Portion<TSelf> operator /(TSelf left, TSelf right);
 }
+
+// Create non-generic PortionUnit?
 
 /// <summary>
 /// [<typeparamref name="TUnit"/>/<typeparamref name="TUnit"/>]
 /// </summary>
-public struct Portion<TUnit> : IUnit<Portion<TUnit>>
-	where TUnit : IUnit<TUnit>
+public struct Portion<TUnit> :
+	IUnit<Portion<TUnit>>,
+	IAdditionOperators<Portion<TUnit>, Portion<TUnit>, Portion<TUnit>>,
+	ISubtractionOperators<Portion<TUnit>, Portion<TUnit>, Portion<TUnit>>,
+	IPortionable<Portion<TUnit>>,
+	IIntervalSupport<Portion<TUnit>>
+	where TUnit :
+		IUnit<TUnit>
 {
 	internal DecimalNumber value;
 
@@ -96,11 +122,15 @@ public struct Portion<TUnit> : IUnit<Portion<TUnit>>
 		this.value = (DecimalNumber)value;
 	}
 
-	// Copy this into any units that neeed support for portions, or use the interface.
-	//public static Portion<TUnit> operator /(TUnit left, TUnit right)
-	//{
-	//	return new((TUnit)((DecimalNumber)left / (DecimalNumber)right));
-	//}
+	public static Portion<TUnit> operator +(Portion<TUnit> left, Portion<TUnit> right)
+	{
+		return new(left.value + right.value);
+	}
+
+	public static Portion<TUnit> operator -(Portion<TUnit> left, Portion<TUnit> right)
+	{
+		return new(left.value - right.value);
+	}
 
 	public static TUnit operator *(Portion<TUnit> portion, TUnit portioned)
 	{
@@ -116,9 +146,9 @@ public struct Portion<TUnit> : IUnit<Portion<TUnit>>
 
 	public static explicit operator Portion<TUnit>(DecimalNumber value) => new(value);
 
-	public static implicit operator Portion<TUnit>(int value) => new(value);
+	public static implicit operator Portion<TUnit>(int value) => new((DecimalNumber)value);
 
-	public static implicit operator Portion<TUnit>(double value) => new(value);
+	public static implicit operator Portion<TUnit>(double value) => new((DecimalNumber)value);
 
 	public static bool operator >(Portion<TUnit> a, Portion<TUnit> b) => a.value > b.value;
 
@@ -131,6 +161,24 @@ public struct Portion<TUnit> : IUnit<Portion<TUnit>>
 	public static bool operator ==(Portion<TUnit> a, Portion<TUnit> b) => a.Equals(b);
 
 	public static bool operator !=(Portion<TUnit> a, Portion<TUnit> b) => !a.Equals(b);
+
+	public static Portion<TUnit> operator -(Portion<TUnit> value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<Portion<TUnit>> operator /(Portion<TUnit> left, Portion<TUnit> right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static Portion<TUnit> operator *(IntervalUnit interval, Portion<TUnit> unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static Portion<TUnit> operator *(Portion<TUnit> unit, IntervalUnit interval)
+		=> interval * unit;
 
 	public override bool Equals(object? obj)
 	{

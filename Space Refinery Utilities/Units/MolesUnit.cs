@@ -14,17 +14,60 @@ namespace Space_Refinery_Utilities.Units;
 /// [mol] or n
 /// </summary>
 // Should this be called SubstanceAmountUnit?
-public struct MolesUnit : IUnit<MolesUnit>,
+public struct MolesUnit :
+	IUnit<MolesUnit>,
 	IMultiplyOperators<MolesUnit, MolesUnit, MolesUnit>,
 	IMultiplyOperators<MolesUnit, int, MolesUnit>,
 	IAdditionOperators<MolesUnit, MolesUnit, MolesUnit>,
-	ISubtractionOperators<MolesUnit, MolesUnit, MolesUnit>
+	ISubtractionOperators<MolesUnit, MolesUnit, MolesUnit>,
+	IPortionable<MolesUnit>,
+	IIntervalSupport<MolesUnit>
 {
 	internal DecimalNumber value;
 
 	public MolesUnit(DecimalNumber value)
 	{
 		this.value = value;
+	}
+
+	public static MolarUnit operator /(GramUnit grams, MolesUnit moles)
+	{
+		return new(grams.value / moles.value);
+	}
+
+	public static GramUnit operator *(MolesUnit molesUnit, MolarUnit molarUnit)
+	{
+		return new(molesUnit.value * molarUnit.value);
+	}
+
+	public static MolesUnit operator *(MolesUnit left, MolesUnit right)
+	{
+		return new(left.value * right.value);
+	}
+
+	public static MolesUnit operator *(MolesUnit left, DecimalNumber right)
+	{
+		return new(left.value * right);
+	}
+
+	public static MolesUnit operator *(MolesUnit left, int right)
+	{
+		return new(left.value * right);
+	}
+
+	public static MolesUnit operator /(MolesUnit left, int right)
+	{
+		return new(left.value / right);
+	}
+
+	public static MolesUnit operator +(MolesUnit left, MolesUnit right)
+	{
+		return new(left.value + right.value);
+	}
+
+	public static MolesUnit operator -(MolesUnit left, MolesUnit right)
+	{
+		return new(left.value - right.value);
 	}
 
 	#region Operators and boilerplate
@@ -49,6 +92,24 @@ public struct MolesUnit : IUnit<MolesUnit>,
 
 	public static bool operator !=(MolesUnit a, MolesUnit b) => !a.Equals(b);
 
+	public static MolesUnit operator -(MolesUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<MolesUnit> operator /(MolesUnit left, MolesUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static MolesUnit operator *(IntervalUnit interval, MolesUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static MolesUnit operator *(MolesUnit unit, IntervalUnit interval)
+		=> interval * unit;
+
 	public override bool Equals(object? obj)
 	{
 		return obj is MolesUnit unit && Equals(unit);
@@ -65,52 +126,15 @@ public struct MolesUnit : IUnit<MolesUnit>,
 	}
 
 	#endregion
-
-	public static MolarUnit operator /(GramUnit grams, MolesUnit moles)
-	{
-		return new(grams.value / moles.value);
-	}
-
-	public static GramUnit operator *(MolesUnit molesUnit, MolarUnit molarUnit)
-	{
-		return new(molesUnit.value * molarUnit.value);
-	}
-
-	public static MolesUnit operator *(MolesUnit left, MolesUnit right)
-	{
-		return new(left.value * right.value);
-	}
-
-	public static MolesUnit operator *(MolesUnit left, DecimalNumber right)
-	{
-		return new(left.value * right);
-	}
-	
-	public static MolesUnit operator *(MolesUnit left, int right)
-	{
-		return new(left.value * right);
-	}
-
-	public static MolesUnit operator /(MolesUnit left, int right)
-	{
-		return new(left.value / right);
-	}
-
-	public static MolesUnit operator +(MolesUnit left, MolesUnit right)
-	{
-		return new(left.value + right.value);
-	}
-
-	public static MolesUnit operator -(MolesUnit left, MolesUnit right)
-	{
-		return new(left.value - right.value);
-	}
 }
 
 /// <summary>
 /// [g/mol]<!-- or M-->
 /// </summary>
-public struct MolarUnit : IUnit<MolarUnit>
+public struct MolarUnit :
+	IUnit<MolarUnit>,
+	IPortionable<MolarUnit>,
+	IIntervalSupport<MolarUnit>
 {
 	internal DecimalNumber value;
 
@@ -151,6 +175,24 @@ public struct MolarUnit : IUnit<MolarUnit>
 	public static bool operator ==(MolarUnit a, MolarUnit b) => a.Equals(b);
 
 	public static bool operator !=(MolarUnit a, MolarUnit b) => !a.Equals(b);
+
+	public static MolarUnit operator -(MolarUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<MolarUnit> operator /(MolarUnit left, MolarUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static MolarUnit operator *(IntervalUnit interval, MolarUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static MolarUnit operator *(MolarUnit unit, IntervalUnit interval)
+		=> interval * unit;
 
 	public override bool Equals(object? obj)
 	{

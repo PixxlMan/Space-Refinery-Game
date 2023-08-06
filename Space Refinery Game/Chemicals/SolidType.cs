@@ -10,7 +10,7 @@ public sealed class SolidType : ResourceType
 
 	}
 
-	public SolidType(ChemicalType chemicalType, string gasName, DecimalNumber density) : base(chemicalType, gasName, density)
+	public SolidType(ChemicalType chemicalType, string gasName, DensityUnit density) : base(chemicalType, gasName, density)
 	{
 	}
 

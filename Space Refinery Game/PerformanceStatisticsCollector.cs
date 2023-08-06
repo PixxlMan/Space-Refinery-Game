@@ -84,7 +84,9 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		private void PhysicsWorld_CollectPerformanceData(FixedDecimalLong8 deltaTime)
+		private static Portion<TimeUnit> smoothing = (Portion<TimeUnit>)0.1;
+
+		private void PhysicsWorld_CollectPerformanceData(IntervalUnit deltaTime)
 		{
 			switch (Mode)
 			{
@@ -92,12 +94,12 @@ namespace Space_Refinery_Game
 					PhysicsTime = deltaTime;
 					break;
 				case PerformanceStatisticsCollectorMode.Averaged:
-					PhysicsTime += ((DecimalNumber)deltaTime - PhysicsTime) * (DecimalNumber)0.1;
+					PhysicsTime += (deltaTime - PhysicsTime) * smoothing;
 					break;
 			}
 		}
 
-		private void MainGame_CollectPerformanceData(FixedDecimalLong8 deltaTime)
+		private void MainGame_CollectPerformanceData(IntervalUnit deltaTime)
 		{
 			switch (Mode)
 			{
@@ -105,12 +107,12 @@ namespace Space_Refinery_Game
 					UpdateTime = deltaTime;
 					break;
 				case PerformanceStatisticsCollectorMode.Averaged:
-					UpdateTime += ((DecimalNumber)deltaTime - UpdateTime) * (DecimalNumber)0.1;
+					UpdateTime += (deltaTime - UpdateTime) * smoothing;
 					break;
 			}
 		}
 
-		private void GameWorld_CollectPerformanceData(FixedDecimalLong8 deltaTime)
+		private void GameWorld_CollectPerformanceData(IntervalUnit deltaTime)
 		{
 			switch (Mode)
 			{
@@ -118,12 +120,12 @@ namespace Space_Refinery_Game
 					TickTime = deltaTime;
 					break;
 				case PerformanceStatisticsCollectorMode.Averaged:
-					TickTime += ((DecimalNumber)deltaTime - TickTime) * (DecimalNumber)0.1;
+					TickTime += (deltaTime - TickTime) * smoothing;
 					break;
 			}
 		}
 
-		private void GraphicsWorld_CollectPerformanceData(FixedDecimalLong8 deltaTime)
+		private void GraphicsWorld_CollectPerformanceData(IntervalUnit deltaTime)
 		{
 			switch (Mode)
 			{
@@ -131,46 +133,46 @@ namespace Space_Refinery_Game
 					RendererFrameTime = deltaTime;
 					break;
 				case PerformanceStatisticsCollectorMode.Averaged:
-					RendererFrameTime += ((DecimalNumber)deltaTime - RendererFrameTime) * (DecimalNumber)0.1;
+					RendererFrameTime += (deltaTime - RendererFrameTime) * smoothing;
 					break;
 			}
 		}
 
-		public DecimalNumber RendererFrameTime { get; private set; }
+		public TimeUnit RendererFrameTime { get; private set; }
 
-		public DecimalNumber RendererFramerate => 1 / (gameData.GraphicsWorld.ShouldLimitFramerate ? DecimalNumber.Max(RendererFrameTime, gameData.GraphicsWorld.FrametimeLowerLimit) : RendererFrameTime);
-
-
-		public DecimalNumber UpdateTime { get; private set; }
-
-		public DecimalNumber UpdateTimeTotal => DecimalNumber.Max(UpdateTime, UpdateTimeBudget);
-
-		public DecimalNumber UpdatesPerSecond => DecimalNumber.One / UpdateTimeTotal;
-
-		public DecimalNumber UpdateTimeBudget => Time.UpdateInterval;
-
-		public DecimalNumber UpdateBudgetUse => UpdateTime / UpdateTimeBudget;
+		public RateUnit RendererFramerate => IntervalRateConversionUnit.Unit / (gameData.GraphicsWorld.ShouldLimitFramerate ? (IntervalUnit)DecimalNumber.Max((DN)RendererFrameTime, (DN)gameData.GraphicsWorld.FrametimeLowerLimit) : (IntervalUnit)RendererFrameTime);
 
 
-		public DecimalNumber TickTime { get; private set; }
+		public TimeUnit UpdateTime { get; private set; }
 
-		public DecimalNumber TickTimeTotal => DecimalNumber.Max(TickTime, TickTimeBudget);
+		public IntervalUnit UpdateTimeTotal => (IntervalUnit)DecimalNumber.Max((DN)UpdateTime, (DN)UpdateTimeBudget);
 
-		public DecimalNumber TicksPerSecond => DecimalNumber.One / TickTimeTotal;
+		public RateUnit UpdatesPerSecond => IntervalRateConversionUnit.Unit / UpdateTimeTotal;
 
-		public DecimalNumber TickTimeBudget => Time.TickInterval;
+		public TimeUnit UpdateTimeBudget => Time.UpdateInterval;
 
-		public DecimalNumber TickBudgetUse => TickTime / TickTimeBudget;
+		public Portion<TimeUnit> UpdateBudgetUse => UpdateTime / UpdateTimeBudget;
 
 
-		public DecimalNumber PhysicsTime { get; private set; }
+		public TimeUnit TickTime { get; private set; }
 
-		public DecimalNumber PhysicsTimeTotal => DecimalNumber.Max(PhysicsTime, PhysicsTimeBudget);
+		public IntervalUnit TickTimeTotal => (IntervalUnit)DecimalNumber.Max((DN)TickTime, (DN)TickTimeBudget);
 
-		public DecimalNumber PhysicsUpdatesPerSecond => DecimalNumber.One / PhysicsTimeTotal;
+		public RateUnit TicksPerSecond => IntervalRateConversionUnit.Unit / TickTimeTotal;
 
-		public DecimalNumber PhysicsTimeBudget => Time.PhysicsInterval;
+		public TimeUnit TickTimeBudget => Time.TickInterval;
 
-		public DecimalNumber PhysicsBudgetUse => PhysicsTime / PhysicsTimeBudget;
+		public Portion<TimeUnit> TickBudgetUse => TickTime / TickTimeBudget;
+
+
+		public TimeUnit PhysicsTime { get; private set; }
+
+		public IntervalUnit PhysicsTimeTotal => (IntervalUnit)DecimalNumber.Max((DN)PhysicsTime, (DN)PhysicsTimeBudget);
+
+		public RateUnit PhysicsUpdatesPerSecond => IntervalRateConversionUnit.Unit / PhysicsTimeTotal;
+
+		public TimeUnit PhysicsTimeBudget => Time.PhysicsInterval;
+
+		public Portion<TimeUnit> PhysicsBudgetUse => PhysicsTime / PhysicsTimeBudget;
 	}
 }

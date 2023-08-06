@@ -153,7 +153,22 @@ public static class FormatUnit
 	/// <returns>Formatted percentage</returns>
 	public static string FormatPercentage(this DecimalNumber value)
 	{
-		return $"{Math.Round((value * 100).ToDecimal(), 1)} %%";
+		return $"{Math.Round((value * 100).ToDecimal(), 1)} %";
+	}
+
+	/// <summary>
+	/// Formats a value between zero and one as a percentage according to player preferences.
+	/// Values greater than one or smaller than zero produce a percentage larger than 100 % or smaller than 0 %.
+	/// </summary>
+	/// <param name="value">0 <= value <= 1</param>
+	/// <returns>Formatted percentage</returns>
+	public static string FormatPercentage<T>(this Portion<T> value)
+		where T :
+			IUnit<T>,
+			IPortionable<T>,
+			IIntervalSupport<T>
+	{
+		return $"{Math.Round(((DecimalNumber)value * 100).ToDecimal(), 1)} %";
 	}
 
 	public static void FormatStandardPrefix(this DecimalNumber unscaledValue, out string prefix, out DecimalNumber scaledValue)

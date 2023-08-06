@@ -12,9 +12,12 @@ namespace Space_Refinery_Utilities.Units;
 /// <summary>
 /// [J]
 /// </summary>
-public struct EnergyUnit : IUnit<EnergyUnit>,
+public struct EnergyUnit :
+	IUnit<EnergyUnit>,
 	ISubtractionOperators<EnergyUnit, EnergyUnit, EnergyUnit>,
-	IAdditionOperators<EnergyUnit, EnergyUnit, EnergyUnit>
+	IAdditionOperators<EnergyUnit, EnergyUnit, EnergyUnit>,
+	IPortionable<EnergyUnit>,
+	IIntervalSupport<EnergyUnit>
 {
 	internal DecimalNumber value;
 
@@ -23,20 +26,26 @@ public struct EnergyUnit : IUnit<EnergyUnit>,
 		this.value = value;
 	}
 
+	/// <summary>
+	/// [J] / [mol] => [J/mol]
+	/// </summary>
+	/// <param name="energyUnit">[J]</param>
+	/// <param name="molesUnit">[mol]</param>
+	/// <returns>[J/mol]</returns>
 	public static MolarEnergyUnit operator /(EnergyUnit energyUnit, MolesUnit molesUnit)
 	{
 		return new(energyUnit.value / molesUnit.value);
 	}
-
+	
 	/// <summary>
-	/// [J] / [J/kg] => [kg]
+	/// [J] / [J/K] => [K]
 	/// </summary>
 	/// <param name="energyUnit">[J]</param>
-	/// <param name="molarEnergyUnit">[J/mol]</param>
-	/// <returns></returns>
-	public static MolarEnergyUnit operator /(EnergyUnit energyUnit, MolarEnergyUnit molarEnergyUnit)
+	/// <param name="heatCapacityUnit">[J/K]</param>
+	/// <returns>[K]</returns>
+	public static TemperatureUnit operator /(EnergyUnit energyUnit, HeatCapacityUnit heatCapacityUnit)
 	{
-		return new(energyUnit.value / molarEnergyUnit.value);
+		return new(energyUnit.value / heatCapacityUnit.value);
 	}
 
 	public static EnergyUnit operator +(EnergyUnit left, EnergyUnit right)
@@ -71,6 +80,24 @@ public struct EnergyUnit : IUnit<EnergyUnit>,
 
 	public static bool operator !=(EnergyUnit a, EnergyUnit b) => !a.Equals(b);
 
+	public static EnergyUnit operator -(EnergyUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<EnergyUnit> operator /(EnergyUnit left, EnergyUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static EnergyUnit operator *(IntervalUnit interval, EnergyUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static EnergyUnit operator *(EnergyUnit unit, IntervalUnit interval)
+		=> interval * unit;
+
 	public override bool Equals(object? obj)
 	{
 		return obj is EnergyUnit unit && Equals(unit);
@@ -93,7 +120,10 @@ public struct EnergyUnit : IUnit<EnergyUnit>,
 /// <summary>
 /// [J/mol]
 /// </summary>
-public struct MolarEnergyUnit : IUnit<MolarEnergyUnit>
+public struct MolarEnergyUnit :
+	IUnit<MolarEnergyUnit>,
+	IPortionable<MolarEnergyUnit>,
+	IIntervalSupport<MolarEnergyUnit>
 {
 	internal DecimalNumber value;
 
@@ -134,6 +164,24 @@ public struct MolarEnergyUnit : IUnit<MolarEnergyUnit>
 	public static bool operator ==(MolarEnergyUnit a, MolarEnergyUnit b) => a.Equals(b);
 
 	public static bool operator !=(MolarEnergyUnit a, MolarEnergyUnit b) => !a.Equals(b);
+
+	public static MolarEnergyUnit operator -(MolarEnergyUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<MolarEnergyUnit> operator /(MolarEnergyUnit left, MolarEnergyUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static MolarEnergyUnit operator *(IntervalUnit interval, MolarEnergyUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static MolarEnergyUnit operator *(MolarEnergyUnit unit, IntervalUnit interval)
+		=> interval * unit;
 
 	public override bool Equals(object? obj)
 	{

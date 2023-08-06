@@ -27,7 +27,7 @@ public sealed partial class PhysicsWorld
 
 	private IThreadDispatcher threadDispatcher;
 
-	public event Action<FixedDecimalLong8> CollectPhysicsPerformanceData;
+	public event Action<IntervalUnit> CollectPhysicsPerformanceData;
 
 	private string responseSpinner = "_";
 	public string ResponseSpinner { get { lock (responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
@@ -55,12 +55,12 @@ public sealed partial class PhysicsWorld
 			Stopwatch stopwatch = new();
 			stopwatch.Start();
 
-			FixedDecimalLong8 timeLastUpdate = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
-			FixedDecimalLong8 time;
-			FixedDecimalLong8 deltaTime;
+			TimeUnit timeLastUpdate = stopwatch.Elapsed.TotalSeconds;
+			TimeUnit time;
+			IntervalUnit deltaTime;
 			while (true)
 			{
-				time = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
+				time = stopwatch.Elapsed.TotalSeconds;
 
 				deltaTime = time - timeLastUpdate;
 
@@ -68,11 +68,10 @@ public sealed partial class PhysicsWorld
 
 				lock (SyncRoot)
 				{
-					simulation.Timestep(Time.PhysicsInterval.ToFloat(), threadDispatcher);
+					simulation.Timestep((float)(DecimalNumber)Time.PhysicsInterval, threadDispatcher);
 				}
 
-				lock (responseSpinner)
-					responseSpinner = Time.ResponseSpinner(time);
+				Time.ResponseSpinner(time, ref responseSpinner);
 
 				Time.WaitIntervalLimit(Time.PhysicsInterval, time, stopwatch, out var timeOfContinuation);
 

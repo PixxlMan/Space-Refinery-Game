@@ -57,17 +57,17 @@ namespace Space_Refinery_Game
 				var pipeAResourceContainer = Pipes.pipeA.GetResourceContainerForConnector(this);
 				var pipeBResourceContainer = Pipes.pipeB.GetResourceContainerForConnector(this);
 
-				if (DecimalNumber.Difference(pipeAResourceContainer.Fullness, pipeBResourceContainer.Fullness) != 0)
+				if (DecimalNumber.Difference((DecimalNumber)pipeAResourceContainer.Fullness, (DecimalNumber)pipeBResourceContainer.Fullness) != 0)
 				{
-					ConnectorSide flowDirection = pipeAResourceContainer.Fullness - pipeBResourceContainer.Fullness > 0 ? ConnectorSide.B : ConnectorSide.A;
+					ConnectorSide flowDirection = (DecimalNumber)pipeAResourceContainer.Fullness - (DecimalNumber)pipeBResourceContainer.Fullness > 0 ? ConnectorSide.B : ConnectorSide.A;
 
 					var recipientContainer = flowDirection == ConnectorSide.A ? pipeAResourceContainer : pipeBResourceContainer;
 
 					var otherContainer = flowDirection == ConnectorSide.A ? pipeBResourceContainer : pipeAResourceContainer;
 
-					var fullnessDifference = (Portion<VolumeUnit>)DecimalNumber.Abs(recipientContainer.Fullness - otherContainer.Fullness);
+					var fullnessDifference = (Portion<VolumeUnit>)DecimalNumber.Abs((DecimalNumber)recipientContainer.Fullness - (DecimalNumber)otherContainer.Fullness);
 
-					otherContainer.TransferResourceByVolume(recipientContainer, otherContainer.Volume * fullnessDifference * (DecimalNumber)Time.TickInterval);
+					otherContainer.TransferResourceByVolume(recipientContainer, (VolumeUnit)((DecimalNumber)(otherContainer.Volume * fullnessDifference) * (DecimalNumber)Time.TickInterval));
 				}
 			}
 		}

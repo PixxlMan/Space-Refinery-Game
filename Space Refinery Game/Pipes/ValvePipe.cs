@@ -22,7 +22,7 @@ namespace Space_Refinery_Game
 
 		private static Mesh InternalBlockerModel;
 
-		public DecimalNumber Limiter = (DecimalNumber)0.5;
+		public Portion<VolumeUnit> Limiter = 0.5;
 
 		public override void TransferResourceFromConnector(ResourceContainer source, VolumeUnit volume, PipeConnector sourceConnector)
 		{
@@ -49,7 +49,7 @@ namespace Space_Refinery_Game
 
 				foreach (var connector in Connectors)
 				{
-					ResourceContainers.Add(connector, new(PipeType.PipeProperties.FlowableVolume / Connectors.Length));
+					ResourceContainers.Add(connector, new((VolumeUnit)((DN)PipeType.PipeProperties.FlowableVolume / (DN)Connectors.Length)));
 				}
 			}
 		}
@@ -79,7 +79,7 @@ namespace Space_Refinery_Game
 						continue;
 					}
 
-					resourceContainer.TransferResourceByVolume(lowestFullnessContainer, resourceContainer.Volume * Limiter * (TimeUnit)(DecimalNumber)Time.TickInterval);
+					resourceContainer.TransferResourceByVolume(lowestFullnessContainer, (resourceContainer.Volume * Limiter) * Time.TickInterval);
 				}
 			}
 		}
@@ -124,11 +124,11 @@ namespace Space_Refinery_Game
 		private float menuLimit = 0;
 		private void DoMenu()
 		{
-			menuLimit = Limiter.ToFloat();
+			menuLimit = (float)(DN)Limiter;
 
 			ImGui.SliderFloat("Limit", ref menuLimit, 0, 1);
 
-			Limiter = DecimalNumber.FromDouble(menuLimit);
+			Limiter = menuLimit;
 		}
 
 
@@ -145,8 +145,8 @@ namespace Space_Refinery_Game
 		{
 			base.DeserializeState(reader, serializationData, referenceHandler);
 
-			Limiter = reader.DeserializeDecimalNumber(nameof(Limiter));
-			var resourceContainers = (ResourceContainer[])reader.DeserializeCollection((r) => ResourceContainer.Deserialize(r));
+			Limiter = reader.DeserializeUnit<Portion<VolumeUnit>>(nameof(Limiter));
+			var resourceContainers = (ResourceContainer[])reader.DeserializeCollection(ResourceContainer.Deserialize);
 
 			serializationData.DeserializationCompleteEvent += () =>
 			{

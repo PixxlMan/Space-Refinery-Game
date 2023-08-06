@@ -3,6 +3,7 @@
 #endif
 
 using Space_Refinery_Game;
+using System.Reflection;
 
 namespace Space_Refinery_Utilities.Units;
 
@@ -46,7 +47,10 @@ public struct FaradayConstantUnit
 /// <summary>
 /// [A] or [C/s]
 /// </summary>
-public struct AmperageUnit : IUnit<AmperageUnit>
+public struct AmperageUnit :
+	IUnit<AmperageUnit>,
+	IPortionable<AmperageUnit>,
+	IIntervalSupport<AmperageUnit>
 {
 	internal DecimalNumber value;
 
@@ -63,6 +67,11 @@ public struct AmperageUnit : IUnit<AmperageUnit>
 	public static implicit operator AmperageUnit(Rate<CoulombUnit> coulombRateUnit)
 	{
 		return new(coulombRateUnit.value);
+	}
+
+	public static Rate<EnergyUnit> operator *(AmperageUnit amperageUnit, VoltageUnit voltageUnit)
+	{
+		return new(amperageUnit.value * voltageUnit.value);
 	}
 
 	#region Operators and boilerplate
@@ -87,6 +96,24 @@ public struct AmperageUnit : IUnit<AmperageUnit>
 
 	public static bool operator !=(AmperageUnit a, AmperageUnit b) => !a.Equals(b);
 
+	public static AmperageUnit operator -(AmperageUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<AmperageUnit> operator /(AmperageUnit left, AmperageUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static AmperageUnit operator *(IntervalUnit interval, AmperageUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static AmperageUnit operator *(AmperageUnit unit, IntervalUnit interval)
+		=> interval * unit;
+
 	public override bool Equals(object? obj)
 	{
 		return obj is AmperageUnit unit && Equals(unit);
@@ -108,13 +135,27 @@ public struct AmperageUnit : IUnit<AmperageUnit>
 /// <summary>
 /// [V] or [J/C]
 /// </summary>
-public struct VoltageUnit : IUnit<VoltageUnit>
+public struct VoltageUnit :
+	IUnit<VoltageUnit>,
+	IPortionable<VoltageUnit>,
+	IIntervalSupport<VoltageUnit>
 {
 	internal DecimalNumber value;
 
 	public VoltageUnit(DecimalNumber value)
 	{
 		this.value = value;
+	}
+
+	/// <summary>
+	/// [J] / [J/C] => [C]
+	/// </summary>
+	/// <param name="energyUnit">[J]</param>
+	/// <param name="voltageUnit">[J/C]</param>
+	/// <returns>[C]</returns>
+	public static CoulombUnit operator /(EnergyUnit energyUnit, VoltageUnit voltageUnit)
+	{
+		return new(energyUnit.value / voltageUnit.value);
 	}
 
 	#region Operators and boilerplate
@@ -139,6 +180,24 @@ public struct VoltageUnit : IUnit<VoltageUnit>
 
 	public static bool operator !=(VoltageUnit a, VoltageUnit b) => !a.Equals(b);
 
+	public static VoltageUnit operator -(VoltageUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<VoltageUnit> operator /(VoltageUnit left, VoltageUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static VoltageUnit operator *(IntervalUnit interval, VoltageUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static VoltageUnit operator *(VoltageUnit unit, IntervalUnit interval)
+		=> interval * unit;
+
 	public override bool Equals(object? obj)
 	{
 		return obj is VoltageUnit unit && Equals(unit);
@@ -160,7 +219,10 @@ public struct VoltageUnit : IUnit<VoltageUnit>
 /// <summary>
 /// [C]
 /// </summary>
-public struct CoulombUnit : IUnit<CoulombUnit>
+public struct CoulombUnit :
+	IUnit<CoulombUnit>,
+	IPortionable<CoulombUnit>,
+	IIntervalSupport<CoulombUnit>
 {
 	internal DecimalNumber value;
 
@@ -190,6 +252,24 @@ public struct CoulombUnit : IUnit<CoulombUnit>
 	public static bool operator ==(CoulombUnit a, CoulombUnit b) => a.Equals(b);
 
 	public static bool operator !=(CoulombUnit a, CoulombUnit b) => !a.Equals(b);
+
+	public static CoulombUnit operator -(CoulombUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<CoulombUnit> operator /(CoulombUnit left, CoulombUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static CoulombUnit operator *(IntervalUnit interval, CoulombUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static CoulombUnit operator *(CoulombUnit unit, IntervalUnit interval)
+		=> interval * unit;
 
 	public override bool Equals(object? obj)
 	{

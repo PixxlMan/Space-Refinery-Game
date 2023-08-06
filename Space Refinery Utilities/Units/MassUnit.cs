@@ -48,9 +48,12 @@ public struct ToKilogramUnit
 /// <remarks>
 /// TODO add which conversions are possible here?
 /// </remarks>
-public struct MassUnit : IUnit<MassUnit>,
-	IAdditionOperators<MassUnit, MassUnit, MassUnit>, // Include addition and subtraction because these are common operations with mass.
-	ISubtractionOperators<MassUnit, MassUnit, MassUnit>
+public struct MassUnit :
+	IUnit<MassUnit>,
+	IAdditionOperators<MassUnit, MassUnit, MassUnit>,
+	ISubtractionOperators<MassUnit, MassUnit, MassUnit>,
+	IPortionable<MassUnit>,
+	IIntervalSupport<MassUnit>
 {
 	internal DecimalNumber value;
 
@@ -118,6 +121,24 @@ public struct MassUnit : IUnit<MassUnit>,
 
 	public static bool operator !=(MassUnit a, MassUnit b) => !a.Equals(b);
 
+	public static MassUnit operator -(MassUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<MassUnit> operator /(MassUnit left, MassUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static MassUnit operator *(IntervalUnit interval, MassUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static MassUnit operator *(MassUnit unit, IntervalUnit interval)
+		=> interval * unit;
+
 	public override bool Equals(object? obj)
 	{
 		return obj is MassUnit unit && Equals(unit);
@@ -139,7 +160,10 @@ public struct MassUnit : IUnit<MassUnit>,
 /// <summary>
 /// [g]
 /// </summary>
-public struct GramUnit : IUnit<GramUnit>
+public struct GramUnit :
+	IUnit<GramUnit>,
+	IPortionable<GramUnit>,
+	IIntervalSupport<GramUnit>
 {
 	internal DecimalNumber value;
 
@@ -174,6 +198,24 @@ public struct GramUnit : IUnit<GramUnit>
 	public static bool operator ==(GramUnit a, GramUnit b) => a.Equals(b);
 
 	public static bool operator !=(GramUnit a, GramUnit b) => !a.Equals(b);
+
+	public static GramUnit operator -(GramUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<GramUnit> operator /(GramUnit left, GramUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static GramUnit operator *(IntervalUnit interval, GramUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static GramUnit operator *(GramUnit unit, IntervalUnit interval)
+		=> interval * unit;
 
 	public override bool Equals(object? obj)
 	{

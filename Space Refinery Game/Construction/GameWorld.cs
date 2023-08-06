@@ -30,7 +30,7 @@ public sealed class GameWorld
 
 	public ConcurrentDictionary<Entity, EmptyType> Entities = new();
 
-	public event Action<FixedDecimalLong8> CollectTickPerformanceData;
+	public event Action<IntervalUnit> CollectTickPerformanceData;
 
 	private string responseSpinner = "_";
 	public string ResponseSpinner { get { lock (responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
@@ -93,14 +93,14 @@ public sealed class GameWorld
 			Stopwatch stopwatch = new();
 			stopwatch.Start();
 
-			FixedDecimalLong8 timeLastUpdate = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
-			FixedDecimalLong8 time;
-			FixedDecimalLong8 deltaTime;
+			TimeUnit timeLastUpdate = stopwatch.Elapsed;
+			TimeUnit time;
+			IntervalUnit deltaTime;
 			while (/*GameData.MainGame.Running*/true)
 			{
 				if (!GameData.MainGame.Paused)
 				{
-					time = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
+					time = stopwatch.Elapsed;
 
 					deltaTime = time - timeLastUpdate;
 
@@ -110,8 +110,7 @@ public sealed class GameWorld
 
 					Tick();
 
-					lock (responseSpinner)
-						responseSpinner = Time.ResponseSpinner(time);
+					Time.ResponseSpinner(time, ref responseSpinner);
 
 					Time.WaitIntervalLimit(Time.TickInterval, time, stopwatch, out var timeOfContinuation);
 

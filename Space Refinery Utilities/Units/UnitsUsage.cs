@@ -8,4 +8,5 @@
 global using Space_Refinery_Utilities.Units;
 #else
 global using MassUnit = Space_Refinery_Game.DecimalNumber;
+global using UnitsMath = Space_Refinery_Game.DecimalNumber;
 #endif

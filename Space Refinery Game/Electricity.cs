@@ -25,6 +25,6 @@ public static class Electricity
 	/// <returns>[C]</returns>
 	public static CoulombUnit ElectricalEnergyToCoulomb(EnergyUnit electricalEnergy)
 	{
-		return electricalEnergy * Voltage; // [J] * [J/C] => [C]
+		return electricalEnergy / Voltage; // [J] / [J/C] => [C]
 	}
 }

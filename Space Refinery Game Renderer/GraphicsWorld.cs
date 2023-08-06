@@ -5,6 +5,7 @@ using FXRenderer;
 using Space_Refinery_Game;
 using Space_Refinery_Game_Renderer;
 using Space_Refinery_Utilities;
+using Space_Refinery_Utilities.Units;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -56,7 +57,7 @@ public sealed class GraphicsWorld
 
 	public Camera Camera;
 
-	public FixedDecimalLong8 FrametimeLowerLimit = (FixedDecimalLong8)0.001;
+	public IntervalUnit FrametimeLowerLimit = 0.001;
 
 	public bool ShouldLimitFramerate = true;
 
@@ -64,7 +65,7 @@ public sealed class GraphicsWorld
 
 	public event Action FrameRendered;
 
-	public event Action<FixedDecimalLong8> CollectRenderingPerformanceData;
+	public event Action<IntervalUnit> CollectRenderingPerformanceData;
 
 	public event Action<int, int> WindowResized;
 
@@ -114,12 +115,12 @@ public sealed class GraphicsWorld
 			Stopwatch stopwatch = new();
 			stopwatch.Start();
 
-			FixedDecimalLong8 timeLastUpdate = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
-			FixedDecimalLong8 time;
-			FixedDecimalLong8 deltaTime;
+			TimeUnit timeLastUpdate = stopwatch.Elapsed.TotalSeconds;
+			TimeUnit time;
+			IntervalUnit deltaTime;
 			while (window.Exists)
 			{
-				time = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
+				time = stopwatch.Elapsed.TotalSeconds;
 
 				deltaTime = time - timeLastUpdate;
 
@@ -134,11 +135,11 @@ public sealed class GraphicsWorld
 				}
 				catch (Exception ex)
 				{
-					Logging.LogError($"An exception occured (and was swiftly silenced) while pumping window events. Weird. Here it is: {ex}");
+					Logging.LogError($"An exception occured (and was swiftly silenced) while pumping window events. Weird, innit? Here it is: {ex}");
 				}
 #endif
 
-				RenderScene(FixedDecimalLong8.Max(deltaTime, FrametimeLowerLimit));
+				RenderScene(FixedDecimalLong8.Max((DecimalNumber)deltaTime, (DecimalNumber)FrametimeLowerLimit));
 
 				lock (responseSpinner)
 					responseSpinner = Time.ResponseSpinner(time);
@@ -222,7 +223,7 @@ public sealed class GraphicsWorld
 		}
 	}
 
-	private void RenderScene(FixedDecimalLong8 deltaTime)
+	private void RenderScene(FixedDecimalLong8 deltaTime) // Use FixedDecimalLong8 to make code simpler and faster, otherwise Debug would be too much slower.
 	{
 		lock (commandList)
 		{

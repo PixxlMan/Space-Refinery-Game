@@ -36,7 +36,10 @@ public struct GravitationalAccelerationUnit
 /// <summary>
 /// [m]
 /// </summary>
-public struct DistanceUnit : IUnit<DistanceUnit>
+public struct DistanceUnit :
+	IUnit<DistanceUnit>,
+	IPortionable<DistanceUnit>,
+	IIntervalSupport<DistanceUnit>
 {
 	internal DecimalNumber value;
 
@@ -67,6 +70,24 @@ public struct DistanceUnit : IUnit<DistanceUnit>
 
 	public static bool operator !=(DistanceUnit a, DistanceUnit b) => !a.Equals(b);
 
+	public static DistanceUnit operator -(DistanceUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<DistanceUnit> operator /(DistanceUnit left, DistanceUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static DistanceUnit operator *(IntervalUnit interval, DistanceUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static DistanceUnit operator *(DistanceUnit unit, IntervalUnit interval)
+		=> interval * unit;
+
 	public override bool Equals(object? obj)
 	{
 		return obj is DistanceUnit unit && Equals(unit);
@@ -88,7 +109,10 @@ public struct DistanceUnit : IUnit<DistanceUnit>
 /// <summary>
 /// [m²]
 /// </summary>
-public struct AreaUnit : IUnit<AreaUnit>
+public struct AreaUnit :
+	IUnit<AreaUnit>,
+	IPortionable<AreaUnit>,
+	IIntervalSupport<AreaUnit>
 {
 	internal DecimalNumber value;
 
@@ -119,6 +143,24 @@ public struct AreaUnit : IUnit<AreaUnit>
 
 	public static bool operator !=(AreaUnit a, AreaUnit b) => !a.Equals(b);
 
+	public static AreaUnit operator -(AreaUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<AreaUnit> operator /(AreaUnit left, AreaUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static AreaUnit operator *(IntervalUnit interval, AreaUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static AreaUnit operator *(AreaUnit unit, IntervalUnit interval)
+		=> interval * unit;
+
 	public override bool Equals(object? obj)
 	{
 		return obj is AreaUnit unit && Equals(unit);
@@ -143,7 +185,10 @@ public struct AreaUnit : IUnit<AreaUnit>
 /// <remarks>
 /// Force, in Newtons.
 /// </remarks>
-public struct ForceUnit : IUnit<ForceUnit>
+public struct ForceUnit :
+	IUnit<ForceUnit>,
+	IPortionable<ForceUnit>,
+	IIntervalSupport<ForceUnit>
 {
 	internal DecimalNumber value;
 
@@ -185,6 +230,24 @@ public struct ForceUnit : IUnit<ForceUnit>
 
 	public static bool operator !=(ForceUnit a, ForceUnit b) => !a.Equals(b);
 
+	public static ForceUnit operator -(ForceUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<ForceUnit> operator /(ForceUnit left, ForceUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static ForceUnit operator *(IntervalUnit interval, ForceUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static ForceUnit operator *(ForceUnit unit, IntervalUnit interval)
+		=> interval * unit;
+
 	public override bool Equals(object? obj)
 	{
 		return obj is ForceUnit unit && Equals(unit);
@@ -209,7 +272,10 @@ public struct ForceUnit : IUnit<ForceUnit>
 /// <remarks>
 /// Pressure, in Pascals [Pa], or Newtons per meter squared [N/m²].
 /// </remarks>
-public struct PressureUnit : IUnit<PressureUnit>
+public struct PressureUnit :
+	IUnit<PressureUnit>,
+	IPortionable<PressureUnit>,
+	IIntervalSupport<PressureUnit>
 {
 	internal DecimalNumber value;
 
@@ -250,6 +316,24 @@ public struct PressureUnit : IUnit<PressureUnit>
 	public static bool operator ==(PressureUnit a, PressureUnit b) => a.Equals(b);
 
 	public static bool operator !=(PressureUnit a, PressureUnit b) => !a.Equals(b);
+
+	public static PressureUnit operator -(PressureUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<PressureUnit> operator /(PressureUnit left, PressureUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static PressureUnit operator *(IntervalUnit interval, PressureUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static PressureUnit operator *(PressureUnit unit, IntervalUnit interval)
+		=> interval * unit;
 
 	public override bool Equals(object? obj)
 	{

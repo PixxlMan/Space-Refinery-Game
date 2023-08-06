@@ -1,4 +1,8 @@
-﻿using FixedPrecision;
+﻿#if DEBUG
+#define IncludeUnits
+#endif
+
+using FixedPrecision;
 using FXRenderer;
 using System;
 using System.Collections.Concurrent;
@@ -9,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Globalization;
+using Space_Refinery_Utilities.Units;
 
 namespace Space_Refinery_Game
 {
@@ -171,6 +176,39 @@ namespace Space_Refinery_Game
 				decimal value = decimal.Parse(text, DecimalNumber.NumberFormat);
 
 				DecimalNumber result = DecimalNumber.FromDecimal(value);
+
+				reader.ReadEndElement();
+
+				return result;
+			}
+		}
+
+		public static void Serialize<TUnit>(this XmlWriter writer, TUnit unit, string? name = null)
+#if IncludeUnits
+			where TUnit :
+				IUnit<TUnit>,
+				IPortionable<TUnit>,
+				IIntervalSupport<TUnit>
+#endif
+		{
+			writer.WriteElementString(name ?? nameof(TUnit), ((DecimalNumber)unit).ToDecimal().ToString());
+		}
+		
+		public static TUnit DeserializeUnit<TUnit>(this XmlReader reader, string? name = null)
+#if IncludeUnits
+			where TUnit :
+				IUnit<TUnit>,
+				IPortionable<TUnit>,
+				IIntervalSupport<TUnit>
+#endif
+		{
+			reader.ReadStartElement(name ?? nameof(TUnit));
+			{
+				string text = reader.ReadString();
+
+				decimal value = decimal.Parse(text, DecimalNumber.NumberFormat);
+
+				TUnit result = (TUnit)DecimalNumber.FromDecimal(value);
 
 				reader.ReadEndElement();
 

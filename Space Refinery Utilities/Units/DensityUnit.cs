@@ -11,7 +11,10 @@ namespace Space_Refinery_Utilities.Units;
 /// <summary>
 /// [kg/m³]
 /// </summary>
-public struct DensityUnit : IUnit<DensityUnit>
+public struct DensityUnit :
+	IUnit<DensityUnit>,
+	IPortionable<DensityUnit>,
+	IIntervalSupport<DensityUnit>
 {
 	internal DecimalNumber value;
 
@@ -41,6 +44,24 @@ public struct DensityUnit : IUnit<DensityUnit>
 	public static bool operator ==(DensityUnit a, DensityUnit b) => a.Equals(b);
 
 	public static bool operator !=(DensityUnit a, DensityUnit b) => !a.Equals(b);
+
+	public static DensityUnit operator -(DensityUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<DensityUnit> operator /(DensityUnit left, DensityUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static DensityUnit operator *(IntervalUnit interval, DensityUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static DensityUnit operator *(DensityUnit unit, IntervalUnit interval)
+		=> interval * unit;
 
 	public override bool Equals(object? obj)
 	{

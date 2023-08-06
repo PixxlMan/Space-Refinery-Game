@@ -16,6 +16,7 @@
 	<ItemGroup> <!--https://ingebrigtsen.blog/2021/08/13/c-10-reuse-global-usings-in-multiple-projects/-->
 		<!--Make sure to include the global usage definitions for units.-->
 		<Compile Include="../Space Refinery Utilities/Units/UnitsUsage.cs" />
+		<Compile Include="../Space Refinery Utilities/GlobalUsings.cs" />
 	</ItemGroup>
 
   <ItemGroup>

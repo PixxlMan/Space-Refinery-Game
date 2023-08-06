@@ -13,11 +13,11 @@ namespace Space_Refinery_Game
 
 		//public DecimalNumber FlowableLength;
 
-		public DecimalNumber FlowableVolume;
+		public VolumeUnit FlowableVolume;
 
 		public DecimalNumber Friction;
 
-		public PipeProperties(PipeShape shape, /*DecimalNumber wallInsulation, DecimalNumber flowableRadius, DecimalNumber flowableLength,*/ DecimalNumber flowableVolume, DecimalNumber friction)
+		public PipeProperties(PipeShape shape, /*DecimalNumber wallInsulation, DecimalNumber flowableRadius, DecimalNumber flowableLength,*/ VolumeUnit flowableVolume, DecimalNumber friction)
 		{
 			Shape = shape;
 			/*WallInsulation = wallInsulation;
@@ -45,7 +45,7 @@ namespace Space_Refinery_Game
 			/*WallInsulation = reader.DeserializeDecimalNumber(nameof(WallInsulation));
 			FlowableRadius = reader.DeserializeDecimalNumber(nameof(FlowableRadius));
 			FlowableLength = reader.DeserializeDecimalNumber(nameof(FlowableLength));*/
-			FlowableVolume = reader.DeserializeDecimalNumber(nameof(FlowableVolume));
+			FlowableVolume = reader.DeserializeUnit<VolumeUnit>(nameof(FlowableVolume));
 			Friction = reader.DeserializeDecimalNumber(nameof(Friction));
 		}
 	}

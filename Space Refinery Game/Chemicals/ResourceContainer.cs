@@ -92,7 +92,7 @@ namespace Space_Refinery_Game
 		private VolumeUnit maxVolume;
 		public VolumeUnit MaxVolume => maxVolume;
 
-		public VolumeUnit FreeVolume => DecimalNumber.Max(MaxVolume - Volume, 0);
+		public VolumeUnit FreeVolume => UnitsMath.Max(MaxVolume - Volume, 0);
 
 		private PressureUnit pressure;
 		/// <summary>
@@ -213,7 +213,7 @@ namespace Space_Refinery_Game
 
 		//public event Action ChemicalCompositionChanged
 
-		public DecimalNumber Fullness
+		public Portion<VolumeUnit> Fullness
 		{
 			get
 			{
@@ -224,7 +224,7 @@ namespace Space_Refinery_Game
 						return 1;
 					}
 
-					return (DecimalNumber)Volume / (DecimalNumber)MaxVolume;
+					return Volume / MaxVolume;
 				}
 			}
 		}
@@ -255,7 +255,7 @@ namespace Space_Refinery_Game
 			ResourceUnit unit = resources[resourceType];
 
 			Portion<MolesUnit> partTaken = moles / unit.Moles;
-			DecimalNumber internalEnergyToTake = unit.InternalEnergy * partTaken;
+			EnergyUnit internalEnergyToTake = unit.InternalEnergy * (Portion<EnergyUnit>)(DN)partTaken;
 
 			ResourceUnitData unitDataToTake = new(resourceType, moles, internalEnergyToTake);
 
@@ -298,7 +298,7 @@ namespace Space_Refinery_Game
 		private ILookup<Type, ReactionFactor> reactionFactors;
 		private readonly List<ReactionFactor> producedReactionFactors = new();
 
-		public void Tick(DecimalNumber tickInterval)
+		public void Tick(IntervalUnit tickInterval)
 		{
 			reactionFactors = producedReactionFactors.ToLookup((rF) => rF.GetType());
 
@@ -463,7 +463,7 @@ namespace Space_Refinery_Game
 				throw new ArgumentException("The volume to transfer must be larger than or equal to zero.", nameof(volumeToTransfer));
 			}
 
-			if (volumeToTransfer == DecimalNumber.Zero)
+			if (volumeToTransfer == 0)
 			{
 				return;
 			}
@@ -476,21 +476,23 @@ namespace Space_Refinery_Game
 			{
 				var moles = ChemicalType.MassToMoles(
 							resourceUnit.ChemicalType,
-							(resourceUnit.Volume / intialVolume)
-								* desiredPartOfVolume
-									* resourceUnit.ResourceType.Density); // portion of current resource to transfer
+							(MassUnit)(
+								((DecimalNumber)resourceUnit.Volume / (DecimalNumber)intialVolume)
+									* (DecimalNumber)desiredPartOfVolume
+										* (DecimalNumber)resourceUnit.ResourceType.Density)
+									); // portion of current resource to transfer
 
-				ResourceUnitData takenUnitData = new(resourceUnit.ResourceType, moles, resourceUnit.InternalEnergy * desiredPartOfVolume);
+				ResourceUnitData takenUnitData = new(resourceUnit.ResourceType, moles, (EnergyUnit)((DecimalNumber)resourceUnit.InternalEnergy * desiredPartOfVolume));
 
 				targetContainer.AddResource(takenUnitData);
 
 				resourceUnit.Remove(takenUnitData);
 			}
 
-			Debug.Assert(DecimalNumber.Difference(intialVolume - Volume, volumeToTransfer) < acceptableVolumeTransferError, "Volume error too large!");
+			Debug.Assert(DecimalNumber.Difference((DecimalNumber)intialVolume - (DecimalNumber)Volume, (DecimalNumber)volumeToTransfer) < (DecimalNumber)acceptableVolumeTransferError, "Volume error too large!");
 		}
 
-		public void TransferResourceByVolume(ResourceContainer targetContainer, ResourceType resourceType, DecimalNumber volumeToTransfer)
+		public void TransferResourceByVolume(ResourceContainer targetContainer, ResourceType resourceType, VolumeUnit volumeToTransfer)
 		{
 			if (Volume - volumeToTransfer < 0)
 			{
@@ -501,29 +503,29 @@ namespace Space_Refinery_Game
 				throw new ArgumentException("The volume to transfer must be larger than or equal to zero.", nameof(volumeToTransfer));
 			}
 
-			if (volumeToTransfer == DecimalNumber.Zero)
+			if (volumeToTransfer == 0)
 			{
 				return;
 			}
 
 #if DEBUG
-			DecimalNumber intialVolume = Volume;
+			VolumeUnit intialVolume = Volume;
 #endif
 
 			var unit = resources[resourceType];
 
-			var portion = unit.Volume / volumeToTransfer;
+			var portion = (DecimalNumber)unit.Volume / (DecimalNumber)volumeToTransfer;
 
 			var moles = ChemicalType.MassToMoles(unit.ChemicalType, volumeToTransfer * resourceType.Density);
 
-			ResourceUnitData takenUnitData = new(resourceType, moles, unit.InternalEnergy * portion);
+			ResourceUnitData takenUnitData = new(resourceType, moles, (EnergyUnit)((DecimalNumber)unit.InternalEnergy * portion));
 
 			targetContainer.AddResource(takenUnitData);
 
 			unit.Remove(takenUnitData);
 
 #if DEBUG
-			Debug.Assert(DecimalNumber.Difference(intialVolume - Volume, volumeToTransfer) < acceptableVolumeTransferError, "Volume error too large!");
+			Debug.Assert(DecimalNumber.Difference((DecimalNumber)intialVolume - (DecimalNumber)Volume, (DecimalNumber)volumeToTransfer) < (DecimalNumber)acceptableVolumeTransferError, "Volume error too large!");
 #endif
 		}
 
@@ -570,7 +572,7 @@ namespace Space_Refinery_Game
 
 			reader.ReadStartElement(nameof(ResourceContainer));
 			{
-				resourceContainer.maxVolume = reader.DeserializeDecimalNumber(nameof(MaxVolume));
+				resourceContainer.maxVolume = reader.DeserializeUnit<VolumeUnit>(nameof(MaxVolume));
 
 				reader.DeserializeCollection((r) => resourceContainer.AddResource(ResourceUnitData.Deserialize(r)), nameof(resources));
 			}
@@ -583,7 +585,7 @@ namespace Space_Refinery_Game
 		{
 			UIFunctions.BeginSub();
 			{
-				if (Mass == DecimalNumber.Zero)
+				if (Mass == 0)
 				{
 					UIFunctions.PushDisabled();
 

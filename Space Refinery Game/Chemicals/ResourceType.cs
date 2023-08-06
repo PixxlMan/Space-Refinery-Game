@@ -24,7 +24,7 @@ public abstract class ResourceType : IUIInspectable, IEntitySerializable
 
 	}
 
-	protected ResourceType(ChemicalType chemicalType, string resourceName, DecimalNumber density)
+	protected ResourceType(ChemicalType chemicalType, string resourceName, DensityUnit density)
 	{
 		ChemicalType = chemicalType;
 		ResourceName = resourceName;
@@ -55,7 +55,7 @@ public abstract class ResourceType : IUIInspectable, IEntitySerializable
 		writer.WriteStartElement(nameof(ResourceType));
 		{
 			writer.Serialize(ResourceName, nameof(ResourceName));
-			writer.Serialize((DecimalNumber)Density, nameof(Density));
+			writer.Serialize(Density, nameof(Density));
 		}
 		writer.WriteEndElement();
 	}
@@ -65,7 +65,7 @@ public abstract class ResourceType : IUIInspectable, IEntitySerializable
 		reader.ReadStartElement(nameof(ResourceType));
 		{
 			ResourceName = reader.ReadString(nameof(ResourceName));
-			Density = (DensityUnit)reader.DeserializeDecimalNumber(nameof(Density));
+			Density = reader.DeserializeUnit<DensityUnit>(nameof(Density));
 		}
 		reader.ReadEndElement();
 	}

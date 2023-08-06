@@ -7,7 +7,7 @@ namespace Space_Refinery_Game
 	{
 		public override string Reaction => "2 H₂ + O₂ -> 2 H₂O";
 
-		public override void Tick(DecimalNumber interval, ResourceContainer resourceContainer, ILookup<Type, ReactionFactor> reactionFactors, ICollection<ReactionFactor> producedReactionFactors)
+		public override void Tick(IntervalUnit interval, ResourceContainer resourceContainer, ILookup<Type, ReactionFactor> reactionFactors, ICollection<ReactionFactor> producedReactionFactors)
 		{
 			if (resourceContainer.MolesOf(ChemicalType.Hydrogen.GasPhaseType) == 0 || resourceContainer.MolesOf(ChemicalType.Oxygen.GasPhaseType) == 0)
 			{

@@ -43,7 +43,7 @@ namespace Space_Refinery_Game
 					return;
 				}
 
-				var volumePerConnector = ResourceContainer.Volume / connectedConnectors.Count;
+				var volumePerConnector = (VolumeUnit)((DecimalNumber)ResourceContainer.Volume / (DecimalNumber)connectedConnectors.Count);
 
 				foreach (var connectedConnector in connectedConnectors)
 				{

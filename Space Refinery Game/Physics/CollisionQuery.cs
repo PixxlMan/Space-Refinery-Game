@@ -215,7 +215,7 @@ public partial class PhysicsWorld // https://github.com/bepu/bepuphysics2/blob/m
 
 		//simulation.Shapes.Add(box);
 
-		CollisionBatcher<BatcherCallbacks<T>> collisionBatcher = new(bufferPool, simulation.Shapes, simulation.NarrowPhase.CollisionTaskRegistry, (float)Time.PhysicsInterval, new BatcherCallbacks<T>(this));
+		CollisionBatcher<BatcherCallbacks<T>> collisionBatcher = new(bufferPool, simulation.Shapes, simulation.NarrowPhase.CollisionTaskRegistry, (float)(DN)Time.PhysicsInterval, new BatcherCallbacks<T>(this));
 
 		RigidPose rigidPose = new(transform.Position.ToVector3(), transform.Rotation.ToQuaternion());
 

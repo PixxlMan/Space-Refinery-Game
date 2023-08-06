@@ -29,7 +29,10 @@ namespace Space_Refinery_Game
 
 		public static AmperageUnit AmperageDrawMax => 100;
 
-		public static DecimalNumber MaxElectricalEnergyPerSecond => AmperageDrawMax * Electricity.Voltage;
+		/// <summary>
+		/// [J/s]
+		/// </summary>
+		public static Rate<EnergyUnit> MaxElectricalEnergyPerSecond => AmperageDrawMax * Electricity.Voltage;
 
 		protected override void SetUp()
 		{
@@ -81,16 +84,16 @@ namespace Space_Refinery_Game
 				if (Activated)
 				{
 					WaterInput.TransferResourceByVolume(ReactionContainer, ChemicalType.Water.LiquidPhaseType,
-						DecimalNumber.Clamp(
-							WaterInput.Volume * WaterInput.Fullness * (DecimalNumber)Time.TickInterval,
+						(VolumeUnit)DecimalNumber.Clamp(
+							(DecimalNumber)(WaterInput.Volume * WaterInput.Fullness) * (DecimalNumber)Time.TickInterval,
 							0,
-							ReactionContainer.FreeVolume));
+							(DecimalNumber)ReactionContainer.FreeVolume));
 
-					electrolysisReaction.Tick(Time.TickInterval, ReactionContainer, new ReactionFactor[1] { new ElectricalCurrent(MaxElectricalEnergyPerSecond * (DecimalNumber)Time.TickInterval) }.ToLookup((rF) => rF.GetType()), null);
+					electrolysisReaction.Tick(Time.TickInterval, ReactionContainer, new ReactionFactor[1] { new ElectricalCurrent(MaxElectricalEnergyPerSecond * Time.TickInterval) }.ToLookup((rF) => rF.GetType()), null);
 					// cache and don't regenerate reaction factors every time?
-					ReactionContainer.TransferResourceByVolume(OxygenOutput, ChemicalType.Oxygen.GasPhaseType, DecimalNumber.Min(ReactionContainer.VolumeOf(ChemicalType.Oxygen.GasPhaseType), OxygenOutput.FreeVolume * 0.8));
+					ReactionContainer.TransferResourceByVolume(OxygenOutput, ChemicalType.Oxygen.GasPhaseType, (VolumeUnit)DecimalNumber.Min((DecimalNumber)ReactionContainer.VolumeOf(ChemicalType.Oxygen.GasPhaseType), (DecimalNumber)(OxygenOutput.FreeVolume * (Portion<VolumeUnit>)0.8)));
 
-					ReactionContainer.TransferResourceByVolume(HydrogenOutput, ChemicalType.Hydrogen.GasPhaseType, DecimalNumber.Min(ReactionContainer.VolumeOf(ChemicalType.Hydrogen.GasPhaseType), HydrogenOutput.FreeVolume * 0.8));
+					ReactionContainer.TransferResourceByVolume(HydrogenOutput, ChemicalType.Hydrogen.GasPhaseType, (VolumeUnit)DecimalNumber.Min((DecimalNumber)ReactionContainer.VolumeOf(ChemicalType.Hydrogen.GasPhaseType), (DecimalNumber)(HydrogenOutput.FreeVolume * (Portion<VolumeUnit>)0.8)));
 
 					//ElectricityInput.ConsumeElectricity();
 				}

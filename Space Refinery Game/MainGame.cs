@@ -58,7 +58,7 @@ public sealed class MainGame
 
 	public Guid SaveGuid { get; private set; } = Guid.NewGuid();
 
-	public event Action<FixedDecimalLong8> CollectUpdatePerformanceData;
+	public event Action<IntervalUnit> CollectUpdatePerformanceData;
 
 	private string responseSpinner = "_";
 	public string ResponseSpinner { get { lock (responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
@@ -127,7 +127,7 @@ public sealed class MainGame
 
 		Settings.RegisterToSettingValue<SliderSettingValue>("FoV", (value) => GraphicsWorld.Camera.FieldOfView = value * DecimalNumber.DegreesToRadians);
 
-		Settings.RegisterToSettingValue<SliderSettingValue>("Max FPS", (value) => GraphicsWorld.FrametimeLowerLimit = 1 / value.SliderValue);
+		Settings.RegisterToSettingValue<SliderSettingValue>("Max FPS", (value) => GraphicsWorld.FrametimeLowerLimit = IntervalRateConversionUnit.Unit / (RateUnit)value.SliderValue);
 
 		Settings.RegisterToSettingValue<SwitchSettingValue>("Limit FPS", (value) => GraphicsWorld.ShouldLimitFramerate = value.SwitchValue);
 
@@ -152,18 +152,18 @@ public sealed class MainGame
 			GraphicsWorld.Run();
 			stopwatch.Start();
 
-			FixedDecimalLong8 timeLastUpdate = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
-			FixedDecimalLong8 time;
-			FixedDecimalLong8 deltaTime;
+			TimeUnit timeLastUpdate = stopwatch.Elapsed.TotalSeconds;
+			TimeUnit time;
+			IntervalUnit deltaTime;
 			while (window.Exists)
 			{
-				time = stopwatch.Elapsed.TotalSeconds.ToFixed<FixedDecimalLong8>();
+				time = stopwatch.Elapsed.TotalSeconds;
 
 				deltaTime = time - timeLastUpdate;
 
 				CollectUpdatePerformanceData?.Invoke(deltaTime);
 
-				Update(FixedDecimalLong8.Max(deltaTime, Time.UpdateInterval));
+				Update((IntervalUnit)DecimalNumber.Max((DN)deltaTime, (DN)Time.UpdateInterval));
 
 				lock (responseSpinner)
 					responseSpinner = Time.ResponseSpinner(time);
@@ -178,7 +178,7 @@ public sealed class MainGame
 		thread.Start();
 	}
 
-	private void Update(FixedDecimalLong8 deltaTime)
+	private void Update(IntervalUnit deltaTime)
 	{
 		lock (SynchronizationObject) lock (GraphicsWorld.SyncRoot)
 		{
@@ -204,7 +204,7 @@ public sealed class MainGame
 
 			if (!Paused && !UI.InMenu)
 			{
-				Player.Update((FixedDecimalInt4)deltaTime);
+				Player.Update(deltaTime);
 			}
 
 			InputTracker.UpdateInputFrame();

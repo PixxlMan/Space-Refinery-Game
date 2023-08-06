@@ -136,9 +136,9 @@ namespace Space_Refinery_Game
 			{
 				newResourceUnit.ResourceType = selected.GetResourceTypeForPhase(selected.CommonPhase);
 
-				float mass = newResourceUnit.Mass.ToFloat();
-				ImGui.SliderFloat("Mass (kg)", ref mass, 0, 100);
-				newResourceUnit.Moles = ChemicalType.MassToMoles(selected, DecimalNumber.FromFloat(mass));
+				float massFloat = ((DecimalNumber)newResourceUnit.Mass).ToFloat();
+				ImGui.SliderFloat("Mass (kg)", ref massFloat, 0, 100);
+				newResourceUnit.Moles = ChemicalType.MassToMoles(selected, (MassUnit)(DN)massFloat);
 
 				ImGui.Text($"Moles: {newResourceUnit.Moles.FormatSubstanceAmount()}");
 
@@ -171,8 +171,8 @@ namespace Space_Refinery_Game
 
 			chemicalType = ChemicalType.GetChemicalType(reader.ReadString(nameof(Space_Refinery_Game.ChemicalType.ChemicalName)));
 			resourceType = chemicalType.GetResourceTypeForPhase(reader.DeserializeEnum<ChemicalPhase>(nameof(ChemicalPhase)));
-			moles = reader.DeserializeDecimalNumber(nameof(Moles));
-			internalEnergy = reader.DeserializeDecimalNumber(nameof(InternalEnergy));
+			moles = reader.DeserializeUnit<MolesUnit>(nameof(Moles));
+			internalEnergy = reader.DeserializeUnit<EnergyUnit>(nameof(InternalEnergy));
 
 			return new(resourceType, moles, internalEnergy);
 		}

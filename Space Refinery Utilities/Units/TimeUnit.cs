@@ -35,7 +35,9 @@ public struct TimeUnit :
 	IUnit<TimeUnit>,
 	IInterchangeable<TimeUnit, IntervalUnit>,
 	IAdditionOperators<TimeUnit, TimeUnit, TimeUnit>,
-	ISubtractionOperators<TimeUnit, TimeUnit, TimeUnit>
+	ISubtractionOperators<TimeUnit, TimeUnit, TimeUnit>,
+	IPortionable<TimeUnit>,
+	IIntervalSupport<TimeUnit>
 {
 	internal DecimalNumber value;
 
@@ -47,6 +49,11 @@ public struct TimeUnit :
 	public static implicit operator IntervalUnit(TimeUnit self)
 	{
 		return new(self.value);
+	}
+
+	public static implicit operator TimeUnit(TimeSpan self)
+	{
+		return new(self.TotalSeconds);
 	}
 
 	public static TimeUnit operator +(TimeUnit a, TimeUnit b)
@@ -81,6 +88,24 @@ public struct TimeUnit :
 
 	public static bool operator !=(TimeUnit a, TimeUnit b) => !a.Equals(b);
 
+	public static TimeUnit operator -(TimeUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<TimeUnit> operator /(TimeUnit left, TimeUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static TimeUnit operator *(IntervalUnit interval, TimeUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static TimeUnit operator *(TimeUnit unit, IntervalUnit interval)
+		=> interval * unit;
+
 	public override bool Equals(object? obj)
 	{
 		return obj is TimeUnit unit && Equals(unit);
@@ -99,15 +124,30 @@ public struct TimeUnit :
 	#endregion
 }
 
+public interface IIntervalSupport<TSelf>
+	where TSelf :
+		IUnit<TSelf>,
+		//IPortionable<TSelf>,
+		IIntervalSupport<TSelf>
+{
+	public static abstract TSelf operator *(IntervalUnit interval, TSelf unit);
+
+	public static abstract TSelf operator *(TSelf unit, IntervalUnit interval);
+}
+
 /// <summary>
-/// [s]
+/// [s/<c>X</c>]
 /// </summary>
 /// <remarks>
 /// A time interval, in seconds.
 /// <para/>
 /// This type is interchangeable with <c>TimeUnit</c>.
 /// </remarks>
-public struct IntervalUnit : IUnit<IntervalUnit>, IInterchangeable<IntervalUnit, TimeUnit>
+public struct IntervalUnit :
+	IUnit<IntervalUnit>,
+	IInterchangeable<IntervalUnit, TimeUnit>,
+	IPortionable<IntervalUnit>,
+	IIntervalSupport<IntervalUnit>
 {
 	internal DecimalNumber value;
 
@@ -148,6 +188,21 @@ public struct IntervalUnit : IUnit<IntervalUnit>, IInterchangeable<IntervalUnit,
 
 	public static bool operator !=(IntervalUnit a, IntervalUnit b) => !a.Equals(b);
 
+	public static IntervalUnit operator -(IntervalUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<IntervalUnit> operator /(IntervalUnit left, IntervalUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static IntervalUnit operator *(IntervalUnit interval, IntervalUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
 	public override bool Equals(object? obj)
 	{
 		return obj is IntervalUnit unit && Equals(unit);
@@ -166,7 +221,10 @@ public struct IntervalUnit : IUnit<IntervalUnit>, IInterchangeable<IntervalUnit,
 	#endregion
 }
 
-public struct RateUnit : IUnit<RateUnit>
+public struct RateUnit :
+	IUnit<RateUnit>,
+	IPortionable<RateUnit>,
+	IIntervalSupport<RateUnit>
 {
 	internal DecimalNumber value;
 
@@ -202,6 +260,24 @@ public struct RateUnit : IUnit<RateUnit>
 
 	public static bool operator !=(RateUnit a, RateUnit b) => !a.Equals(b);
 
+	public static RateUnit operator -(RateUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<RateUnit> operator /(RateUnit left, RateUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static RateUnit operator *(IntervalUnit interval, RateUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static RateUnit operator *(RateUnit unit, IntervalUnit interval)
+		=> interval * unit;
+
 	public override bool Equals(object? obj)
 	{
 		return obj is RateUnit unit && Equals(unit);
@@ -228,8 +304,12 @@ public struct RateUnit : IUnit<RateUnit>
 /// <para/>
 /// This type is interchangeable with <c>Rate<TUnit></c>.
 /// </remarks>
-public struct Interval<TUnit> : IUnit<Interval<TUnit>>/*, IInterchangeable<IntervalUnit<TUnit>, Rate<TUnit>>*/ // Making it interchangeable would be cool, but would require it to still be present when not in Debug. Maybe that should be allowed for some types?
-	where TUnit : IUnit<TUnit>
+public struct Interval<TUnit> :
+	IUnit<Interval<TUnit>>,
+	IPortionable<Interval<TUnit>>,
+	IIntervalSupport<Interval<TUnit>>
+	where TUnit :
+		IUnit<TUnit>
 {
 	internal DecimalNumber value;
 
@@ -242,6 +322,23 @@ public struct Interval<TUnit> : IUnit<Interval<TUnit>>/*, IInterchangeable<Inter
 	{
 		return new(IntervalRateConversionUnit.IntervalRateConversion / self.value);
 	}
+
+	public static implicit operator Interval<TUnit>(IntervalUnit interval)
+	{
+		return new(interval.value);
+	}
+
+	public static implicit operator IntervalUnit(Interval<TUnit> interval)
+	{
+		return new(interval.value);
+	}
+
+	public static TUnit operator *(Interval<TUnit> interval, TUnit unit)
+	{
+		return (TUnit)(interval.value * (DecimalNumber)unit);
+	}
+
+	public static TUnit operator *(TUnit unit, Interval<TUnit> interval) => interval * unit;
 
 	#region Operators and boilerplate
 
@@ -265,6 +362,24 @@ public struct Interval<TUnit> : IUnit<Interval<TUnit>>/*, IInterchangeable<Inter
 
 	public static bool operator !=(Interval<TUnit> a, Interval<TUnit> b) => !a.Equals(b);
 
+	public static Interval<TUnit> operator -(Interval<TUnit> value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<Interval<TUnit>> operator /(Interval<TUnit> left, Interval<TUnit> right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static Interval<TUnit> operator *(IntervalUnit interval, Interval<TUnit> unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static Interval<TUnit> operator *(Interval<TUnit> unit, IntervalUnit interval)
+		=> interval * unit;
+
 	public override bool Equals(object? obj)
 	{
 		return obj is Interval<TUnit> unit && Equals(unit);
@@ -286,8 +401,11 @@ public struct Interval<TUnit> : IUnit<Interval<TUnit>>/*, IInterchangeable<Inter
 /// <summary>
 /// [<typeparamref name="TUnit"/>/s]
 /// </summary>
-public struct Rate<TUnit> : IUnit<Rate<TUnit>>
-	where TUnit : IUnit<TUnit>
+public struct Rate<TUnit> :
+	IUnit<Rate<TUnit>>,
+	IPortionable<Rate<TUnit>>
+	where TUnit :
+		IUnit<TUnit>
 {
 	internal DecimalNumber value;
 
@@ -297,6 +415,11 @@ public struct Rate<TUnit> : IUnit<Rate<TUnit>>
 	}
 
 	public static TUnit operator *(Rate<TUnit> rate, TimeUnit time)
+	{
+		return (TUnit)(rate.value * time.value);
+	}
+
+	public static TUnit operator *(Rate<TUnit> rate, IntervalUnit time)
 	{
 		return (TUnit)(rate.value * time.value);
 	}
@@ -332,6 +455,16 @@ public struct Rate<TUnit> : IUnit<Rate<TUnit>>
 	public static bool operator ==(Rate<TUnit> a, Rate<TUnit> b) => a.Equals(b);
 
 	public static bool operator !=(Rate<TUnit> a, Rate<TUnit> b) => !a.Equals(b);
+
+	public static Rate<TUnit> operator -(Rate<TUnit> value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<Rate<TUnit>> operator /(Rate<TUnit> left, Rate<TUnit> right)
+	{
+		return new(left.value / right.value);
+	}
 
 	public override bool Equals(object? obj)
 	{

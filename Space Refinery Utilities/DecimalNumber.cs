@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 // Move to Space_Refinery_Utlities?
-// Do the same as UnitsUsage to ensure no performance penalty in release?
+// Do the same as UnitsUsage to ensure no performance penalty in release? AKA alias it with FixedDecimalLong8? Partial even?! Hmmm! partial with all static functions!
 namespace Space_Refinery_Game;
 
 [JsonConverter(typeof(DecimalNumberJsonConverter))]

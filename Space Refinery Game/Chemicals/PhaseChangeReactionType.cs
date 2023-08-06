@@ -11,7 +11,7 @@ public sealed class PhaseChangeReactionType : ReactionType
 	// resourceUnitsToAdd is declared as a field in order to avoid having to recreate it each tick. It is always cleared after use.
 	private List<ResourceUnitData> resourceUnitsToAdd = new();
 
-	public override void Tick(DecimalNumber _, ResourceContainer resourceContainer, ILookup<Type, ReactionFactor> _2, ICollection<ReactionFactor> producedReactionFactors)
+	public override void Tick(IntervalUnit _, ResourceContainer resourceContainer, ILookup<Type, ReactionFactor> _2, ICollection<ReactionFactor> producedReactionFactors)
 	{
 		lock (resourceContainer.SyncRoot)
 		{

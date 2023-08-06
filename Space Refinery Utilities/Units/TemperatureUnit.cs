@@ -15,7 +15,11 @@ namespace Space_Refinery_Utilities.Units;
 /// <remarks>
 /// Temperature, in kelvin.
 /// </remarks>
-public struct TemperatureUnit : IUnit<TemperatureUnit>, IAdditionOperators<TemperatureUnit, TemperatureUnit, TemperatureUnit>
+public struct TemperatureUnit :
+	IUnit<TemperatureUnit>,
+	IAdditionOperators<TemperatureUnit, TemperatureUnit, TemperatureUnit>,
+	IPortionable<TemperatureUnit>,
+	IIntervalSupport<TemperatureUnit>
 {
 	internal DecimalNumber value;
 
@@ -56,6 +60,24 @@ public struct TemperatureUnit : IUnit<TemperatureUnit>, IAdditionOperators<Tempe
 
 	public static bool operator !=(TemperatureUnit a, TemperatureUnit b) => !a.Equals(b);
 
+	public static TemperatureUnit operator -(TemperatureUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<TemperatureUnit> operator /(TemperatureUnit left, TemperatureUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static TemperatureUnit operator *(IntervalUnit interval, TemperatureUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static TemperatureUnit operator *(TemperatureUnit unit, IntervalUnit interval)
+		=> interval * unit;
+
 	public override bool Equals(object? obj)
 	{
 		return obj is TemperatureUnit unit && Equals(unit);
@@ -80,7 +102,10 @@ public struct TemperatureUnit : IUnit<TemperatureUnit>, IAdditionOperators<Tempe
 /// <remarks>
 /// Specific heat capacity, the energy necessary to heat one kilogram of a given substance by 1 K.
 /// </remarks>
-public struct SpecificHeatCapacityUnit : IUnit<SpecificHeatCapacityUnit>
+public struct SpecificHeatCapacityUnit :
+	IUnit<SpecificHeatCapacityUnit>,
+	IPortionable<SpecificHeatCapacityUnit>,
+	IIntervalSupport<SpecificHeatCapacityUnit>
 {
 	internal DecimalNumber value;
 
@@ -89,6 +114,12 @@ public struct SpecificHeatCapacityUnit : IUnit<SpecificHeatCapacityUnit>
 		this.value = value;
 	}
 
+	/// <summary>
+	/// [J/(K*kg)] * [kg] => [J/K]
+	/// </summary>
+	/// <param name="specificHeatCapacityUnit">[J/(K*kg)]</param>
+	/// <param name="massUnit">[kg]</param>
+	/// <returns>[J/K]</returns>
 	public static HeatCapacityUnit operator *(SpecificHeatCapacityUnit specificHeatCapacityUnit, MassUnit massUnit)
 		=> new(specificHeatCapacityUnit.value * massUnit.value);
 
@@ -114,6 +145,24 @@ public struct SpecificHeatCapacityUnit : IUnit<SpecificHeatCapacityUnit>
 
 	public static bool operator !=(SpecificHeatCapacityUnit a, SpecificHeatCapacityUnit b) => !a.Equals(b);
 
+	public static SpecificHeatCapacityUnit operator -(SpecificHeatCapacityUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<SpecificHeatCapacityUnit> operator /(SpecificHeatCapacityUnit left, SpecificHeatCapacityUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static SpecificHeatCapacityUnit operator *(IntervalUnit interval, SpecificHeatCapacityUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static SpecificHeatCapacityUnit operator *(SpecificHeatCapacityUnit unit, IntervalUnit interval)
+		=> interval * unit;
+
 	public override bool Equals(object? obj)
 	{
 		return obj is SpecificHeatCapacityUnit unit && Equals(unit);
@@ -138,7 +187,10 @@ public struct SpecificHeatCapacityUnit : IUnit<SpecificHeatCapacityUnit>
 /// <remarks>
 /// Heat capacity, energy requited to heat a given mass of a substance.
 /// </remarks>
-public struct HeatCapacityUnit : IUnit<HeatCapacityUnit>
+public struct HeatCapacityUnit :
+	IUnit<HeatCapacityUnit>,
+	IPortionable<HeatCapacityUnit>,
+	IIntervalSupport<HeatCapacityUnit>
 {
 	internal DecimalNumber value;
 
@@ -146,6 +198,15 @@ public struct HeatCapacityUnit : IUnit<HeatCapacityUnit>
 	{
 		this.value = value;
 	}
+
+	/// <summary>
+	/// [J/K] * [K] => [J]
+	/// </summary>
+	/// <param name="heatCapacityUnit">[J/K]</param>
+	/// <param name="temperatureUnit">[K]</param>
+	/// <returns>[J]</returns>
+	public static EnergyUnit operator *(HeatCapacityUnit heatCapacityUnit, TemperatureUnit temperatureUnit)
+		=> new(heatCapacityUnit.value * temperatureUnit.value);
 
 	#region Operators and boilerplate
 
@@ -168,6 +229,24 @@ public struct HeatCapacityUnit : IUnit<HeatCapacityUnit>
 	public static bool operator ==(HeatCapacityUnit a, HeatCapacityUnit b) => a.Equals(b);
 
 	public static bool operator !=(HeatCapacityUnit a, HeatCapacityUnit b) => !a.Equals(b);
+
+	public static HeatCapacityUnit operator -(HeatCapacityUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<HeatCapacityUnit> operator /(HeatCapacityUnit left, HeatCapacityUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static HeatCapacityUnit operator *(IntervalUnit interval, HeatCapacityUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static HeatCapacityUnit operator *(HeatCapacityUnit unit, IntervalUnit interval)
+		=> interval * unit;
 
 	public override bool Equals(object? obj)
 	{

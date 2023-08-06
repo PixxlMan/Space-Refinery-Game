@@ -78,7 +78,7 @@ namespace Space_Refinery_Game
 							0,
 							UnitsMath.Min(ReactionContainer.FreeVolume, FuelInput.Volume)));
 
-					ReactionContainer.AddReactionFactor(new Spark(20 * DecimalNumber.Micro /*20 µJ, minimum to start an oxyhydrogen combustion*/));
+					ReactionContainer.AddReactionFactor(new Spark(20 * DecimalNumber.Micro /*A 20 µJ spark is the minimum spark required to start an oxyhydrogen combustion*/));
 
 					ReactionContainer.Tick(Time.TickInterval);
 
@@ -91,12 +91,10 @@ namespace Space_Refinery_Game
 					ReactionContainer.TransferResourceByVolume(
 						ProductOutput,
 						UnitsMath.Min(
-							ReactionContainer.VolumeOf(
-								ChemicalType.Water.LiquidPhaseType
-							),
+							ReactionContainer.VolumeOf(ChemicalType.Water.LiquidPhaseType),
 							UnitsMath.Max(
 								ReactionContainer.Fullness - ProductOutput.Fullness, 0)
-							* Time.TickInterval)
+							* Time.TickInterval * ReactionContainer.Volume)
 						);
 
 					//ElectricityInput.ConsumeElectricity();

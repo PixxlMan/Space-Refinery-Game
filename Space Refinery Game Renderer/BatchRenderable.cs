@@ -66,6 +66,7 @@ public sealed partial class BatchRenderable : IRenderable
 	/// </summary>
 	/// <remarks>Used for debugging purposes only, do not rely on this method's behaviour or results.</remarks>
 	/// <returns>The internal renderer index associated with the object, or -1 if there is no index associated with the object.</returns>
+	[Obsolete("This method is intended for debugging purposes only!")]
 	public int DebugGetRenderableIndex(object associatedObject)
 	{
 		lock (SyncRoot)

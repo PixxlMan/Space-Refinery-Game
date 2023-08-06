@@ -1,15 +1,6 @@
-﻿using FixedPrecision;
-using ImGuiNET;
+﻿using ImGuiNET;
 using Space_Refinery_Utilities;
-using Space_Refinery_Utilities.Units;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Space_Refinery_Game

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Numerics;
-using Veldrid;
+﻿using Veldrid;
 using FixedPrecision;
 using static FixedPrecision.Convenience;
 using FXRenderer;

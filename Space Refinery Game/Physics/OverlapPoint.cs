@@ -3,7 +3,6 @@ using BepuUtilities;
 using BepuUtilities.Collections;
 using BepuUtilities.Memory;
 using FixedPrecision;
-using System.Numerics;
 
 namespace Space_Refinery_Game;
 

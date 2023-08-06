@@ -1,5 +1,4 @@
 ﻿using ImGuiNET;
-using System.Globalization;
 
 namespace Space_Refinery_Game
 {

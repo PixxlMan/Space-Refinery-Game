@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Veldrid;
+﻿using Veldrid;
 using ImGuiNET;
 using FixedPrecision;
-using System.Numerics;
 using FXRenderer;
-using Space_Refinery_Game_Renderer;
-using static Space_Refinery_Utilities.InterlockedExtensions;
 using Space_Refinery_Utilities;
 
 namespace Space_Refinery_Game

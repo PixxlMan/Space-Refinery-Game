@@ -1,5 +1,4 @@
-﻿using FixedPrecision;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace Space_Refinery_Game;
 

@@ -1,11 +1,6 @@
 ﻿using NVorbis;
 using SharpAudio;
-using SharpAudio.Codec;
 using Space_Refinery_Utilities;
-using System;
-using Vortice;
-using Vortice.DXGI;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Space_Refinery_Game.Audio
 {

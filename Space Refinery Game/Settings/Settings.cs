@@ -1,15 +1,7 @@
 ﻿using ImGuiNET;
 using Space_Refinery_Utilities;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
-using Veldrid;
 
 namespace Space_Refinery_Game // Is this really thread safe? It's accessed statically, so it ought to be.
 {

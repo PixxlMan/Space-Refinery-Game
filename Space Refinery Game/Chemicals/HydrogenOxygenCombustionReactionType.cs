@@ -1,7 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
-
-namespace Space_Refinery_Game
+﻿namespace Space_Refinery_Game
 {
 	public sealed class HydrogenOxygenCombustionReactionType : ReactionType // https://en.wikipedia.org/wiki/Oxyhydrogen
 	{

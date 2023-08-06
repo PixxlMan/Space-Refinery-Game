@@ -1,7 +1,4 @@
-﻿using FixedPrecision;
-using System.Text.Json.Serialization;
-
-namespace Space_Refinery_Game
+﻿namespace Space_Refinery_Game
 {
 	public sealed class LiquidType : ResourceType
 	{

@@ -1,5 +1,4 @@
-﻿using FixedPrecision;
-using System.Xml;
+﻿using System.Xml;
 
 namespace Space_Refinery_Game
 {

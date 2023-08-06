@@ -1,15 +1,10 @@
 ﻿using BepuPhysics;
 using BepuPhysics.Collidables;
-using BepuPhysics.CollisionDetection;
 using BepuUtilities;
 using BepuUtilities.Memory;
 using FixedPrecision;
 using FXRenderer;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
-using Veldrid.Utilities;
 
 namespace Space_Refinery_Game;
 

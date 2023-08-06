@@ -1,6 +1,4 @@
-﻿using ImGuiNET;
-
-namespace Space_Refinery_Game
+﻿namespace Space_Refinery_Game
 {
 	public sealed class PumpPipeInformationProvider : PipeInformationProvider
 	{

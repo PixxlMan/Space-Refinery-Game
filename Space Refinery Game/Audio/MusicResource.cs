@@ -1,8 +1,5 @@
-﻿using SharpAudio.Codec;
-using Space_Refinery_Utilities;
-using System.Collections.Generic;
+﻿using Space_Refinery_Utilities;
 using System.Xml;
-using Vortice.Direct3D11;
 
 namespace Space_Refinery_Game.Audio
 {

@@ -4,16 +4,9 @@
 
 using FixedPrecision;
 using FXRenderer;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
-using System.Globalization;
-using Space_Refinery_Utilities.Units;
 
 namespace Space_Refinery_Game
 {

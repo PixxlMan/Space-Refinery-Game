@@ -1,14 +1,7 @@
-﻿using FixedPrecision;
-using ImGuiNET;
+﻿using ImGuiNET;
 using Space_Refinery_Utilities;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Space_Refinery_Game

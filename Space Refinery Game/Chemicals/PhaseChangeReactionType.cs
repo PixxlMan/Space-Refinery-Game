@@ -1,6 +1,5 @@
 ﻿using Space_Refinery_Utilities;
 using System.Diagnostics;
-using Vortice.MediaFoundation;
 
 namespace Space_Refinery_Game;
 

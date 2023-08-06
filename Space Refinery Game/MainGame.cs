@@ -4,10 +4,8 @@ using Space_Refinery_Game.Audio;
 using Space_Refinery_Game_Renderer;
 using Space_Refinery_Utilities;
 using System.Diagnostics;
-using System.IO;
 using System.Xml;
 using Veldrid;
-using static FixedPrecision.Convenience;
 
 namespace Space_Refinery_Game;
 

@@ -3,20 +3,12 @@
 using FixedPrecision;
 using FXRenderer;
 using Space_Refinery_Game;
-using Space_Refinery_Game_Renderer;
-using Space_Refinery_Utilities;
 using Space_Refinery_Utilities.Units;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using Veldrid;
-using static FixedPrecision.Convenience;
 
 namespace Space_Refinery_Game_Renderer;
 

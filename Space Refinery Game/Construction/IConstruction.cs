@@ -1,9 +1,4 @@
-﻿using FixedPrecision;
-using Space_Refinery_Game_Renderer;
-using System.Reflection;
-using System.Xml;
-
-namespace Space_Refinery_Game
+﻿namespace Space_Refinery_Game
 {
 	public interface IConstruction : ISerializableReference, Entity
 	{

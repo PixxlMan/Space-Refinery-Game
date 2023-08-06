@@ -1,7 +1,4 @@
-﻿using FixedPrecision;
-using ImGuiNET;
-using System.Diagnostics;
-using System.Text.Json.Serialization;
+﻿using ImGuiNET;
 using System.Xml;
 
 namespace Space_Refinery_Game;

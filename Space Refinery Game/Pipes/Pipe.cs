@@ -3,13 +3,6 @@ using FixedPrecision;
 using FXRenderer;
 using Singulink.Reflection;
 using Space_Refinery_Game_Renderer;
-using Space_Refinery_Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using Veldrid;
 

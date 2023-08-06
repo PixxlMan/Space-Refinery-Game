@@ -1,11 +1,4 @@
 ﻿using ImGuiNET;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Vulkan;
 
 namespace Space_Refinery_Game_Renderer
 {

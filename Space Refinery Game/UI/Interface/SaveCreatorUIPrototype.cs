@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ImGuiNET;
-using Space_Refinery_Game;
+﻿using ImGuiNET;
 using Space_Refinery_Utilities;
 
 namespace Space_Refinery_Game

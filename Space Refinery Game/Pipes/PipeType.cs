@@ -1,16 +1,7 @@
-﻿using FixedPrecision;
-using FXRenderer;
+﻿using FXRenderer;
 using Space_Refinery_Game_Renderer;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Serialization;
-using Veldrid;
 
 namespace Space_Refinery_Game
 {

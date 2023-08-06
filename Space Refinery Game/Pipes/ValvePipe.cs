@@ -20,7 +20,7 @@ namespace Space_Refinery_Game
 
 		public override void TransferResourceFromConnector(ResourceContainer source, VolumeUnit volume, PipeConnector sourceConnector)
 		{
-			lock (this)
+			lock (SyncRoot)
 			{
 				source.TransferResourceByVolume(ResourceContainers[sourceConnector], volume);
 			}
@@ -32,7 +32,7 @@ namespace Space_Refinery_Game
 
 		protected override void SetUp()
 		{
-			lock (this)
+			lock (SyncRoot)
 			{
 				if (InternalBlockerModel is null)
 				{
@@ -50,7 +50,7 @@ namespace Space_Refinery_Game
 
 		public override void Tick()
 		{
-			lock (this)
+			lock (SyncRoot)
 			{
 				base.Tick();
 
@@ -80,7 +80,7 @@ namespace Space_Refinery_Game
 
 		public override ResourceContainer GetResourceContainerForConnector(PipeConnector pipeConnector)
 		{
-			lock (this)
+			lock (SyncRoot)
 			{
 				return ResourceContainers[pipeConnector];
 			}
@@ -93,7 +93,7 @@ namespace Space_Refinery_Game
 
 		protected override void DisplaceContents()
 		{
-			lock (this)
+			lock (SyncRoot)
 			{
 				foreach (var connectorResourceContainerPair in ResourceContainers)
 				{
@@ -107,7 +107,7 @@ namespace Space_Refinery_Game
 
 		public override void Deconstruct()
 		{
-			lock (this)
+			lock (SyncRoot)
 			{
 				base.Deconstruct();
 

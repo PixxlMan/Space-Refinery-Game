@@ -21,7 +21,7 @@ namespace Space_Refinery_Game
 
 		public override void TransferResourceFromConnector(ResourceContainer source, VolumeUnit volume, PipeConnector transferringConnector)
 		{
-			lock (this)
+			lock (SyncRoot)
 			{
 				ResourceContainer.TransferResourceByVolume(source, volume);
 			}
@@ -29,7 +29,7 @@ namespace Space_Refinery_Game
 
 		protected override void DisplaceContents()
 		{
-			lock (this)
+			lock (SyncRoot)
 			{
 				List<PipeConnector> connectedConnectors = new();
 				foreach (var connector in Connectors)
@@ -54,7 +54,7 @@ namespace Space_Refinery_Game
 
 		protected override void SetUp()
 		{
-			lock (this)
+			lock (SyncRoot)
 			{
 				ResourceContainer = new(PipeType.PipeProperties.FlowableVolume);
 			}
@@ -75,7 +75,7 @@ namespace Space_Refinery_Game
 		private Guid guid = Guid.NewGuid();
 		private void DoMenu()
 		{
-			lock (this)
+			lock (SyncRoot)
 			{
 				if (ImGui.CollapsingHeader("Resource selection"))
 				{

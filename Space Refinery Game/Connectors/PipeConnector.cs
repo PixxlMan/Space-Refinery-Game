@@ -36,7 +36,7 @@ namespace Space_Refinery_Game
 
 		public void TransferResource(Pipe sourcePipe, ResourceContainer sourceContainer, VolumeUnit volume)
 		{
-			lock (this)
+			lock (SyncRoot)
 			{
 				sourceContainer.TransferAllResource(((Pipe)GetOther(sourcePipe)).GetResourceContainerForConnector(this));
 			}
@@ -45,7 +45,7 @@ namespace Space_Refinery_Game
 		/*Entity.SetTickPriority/Frequency(Low)*/
 		public override void Tick()
 		{
-			lock (this)
+			lock (SyncRoot)
 			{
 				if (Vacant)
 				{

@@ -71,7 +71,7 @@ namespace Space_Refinery_Game
 		{
 			base.Tick();
 
-			lock (this)
+			lock (SyncRoot)
 			{
 				if (Activated)
 				{

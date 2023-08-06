@@ -248,12 +248,12 @@ namespace Space_Refinery_Game
 			{
 				writer.SerializeReference(this);
 				writer.Serialize(ChemicalName, nameof(ChemicalName));
-				writer.Serialize((DecimalNumber)MolarMass, nameof(MolarMass));
-				writer.Serialize((DecimalNumber)EnthalpyOfVaporization, nameof(EnthalpyOfVaporization));
-				writer.Serialize((DecimalNumber)TemperatureOfVaporization, nameof(TemperatureOfVaporization));
-				writer.Serialize((DecimalNumber)EnthalpyOfFusion, nameof(EnthalpyOfFusion));
-				writer.Serialize((DecimalNumber)TemperatureOfFusion, nameof(TemperatureOfFusion));
-				writer.Serialize((DecimalNumber)SpecificHeatCapacity, nameof(SpecificHeatCapacity));
+				writer.Serialize(MolarMass, nameof(MolarMass));
+				writer.Serialize(EnthalpyOfVaporization, nameof(EnthalpyOfVaporization));
+				writer.Serialize(TemperatureOfVaporization, nameof(TemperatureOfVaporization));
+				writer.Serialize(EnthalpyOfFusion, nameof(EnthalpyOfFusion));
+				writer.Serialize(TemperatureOfFusion, nameof(TemperatureOfFusion));
+				writer.Serialize(SpecificHeatCapacity, nameof(SpecificHeatCapacity));
 				writer.Serialize(CommonPhase, nameof(CommonPhase));
 				IEntitySerializable.SerializeWithoutEmbeddedType(writer, GasPhaseType, nameof(GasPhaseType));
 				IEntitySerializable.SerializeWithoutEmbeddedType(writer, LiquidPhaseType, nameof(LiquidPhaseType));
@@ -268,12 +268,12 @@ namespace Space_Refinery_Game
 			{
 				SerializableReference = reader.ReadReference();
 				ChemicalName = reader.ReadString(nameof(ChemicalName));
-				MolarMass = (MolarUnit)reader.DeserializeDecimalNumber(nameof(MolarMass));
-				EnthalpyOfVaporization = (MolarEnergyUnit)reader.DeserializeDecimalNumber(nameof(EnthalpyOfVaporization));
-				TemperatureOfVaporization = (TemperatureUnit)reader.DeserializeDecimalNumber(nameof(TemperatureOfVaporization));
-				EnthalpyOfFusion = (MolarEnergyUnit)reader.DeserializeDecimalNumber(nameof(EnthalpyOfFusion));
-				TemperatureOfFusion = (TemperatureUnit)reader.DeserializeDecimalNumber(nameof(TemperatureOfFusion));
-				SpecificHeatCapacity = (SpecificHeatCapacityUnit)reader.DeserializeDecimalNumber(nameof(SpecificHeatCapacity));
+				MolarMass = reader.DeserializeUnit<MolarUnit>(nameof(MolarMass));
+				EnthalpyOfVaporization = reader.DeserializeUnit<MolarEnergyUnit>(nameof(EnthalpyOfVaporization));
+				TemperatureOfVaporization = reader.DeserializeUnit<TemperatureUnit>(nameof(TemperatureOfVaporization));
+				EnthalpyOfFusion = reader.DeserializeUnit<MolarEnergyUnit>(nameof(EnthalpyOfFusion));
+				TemperatureOfFusion = reader.DeserializeUnit<TemperatureUnit>(nameof(TemperatureOfFusion));
+				SpecificHeatCapacity = reader.DeserializeUnit<SpecificHeatCapacityUnit>(nameof(SpecificHeatCapacity));
 				CommonPhase = reader.DeserializeEnum<ChemicalPhase>(nameof(CommonPhase));
 				GasPhaseType = IEntitySerializable.DeserializeWithoutEmbeddedType<GasType>(reader, serializationData, referenceHandler, nameof(GasPhaseType));
 				LiquidPhaseType = IEntitySerializable.DeserializeWithoutEmbeddedType<LiquidType>(reader, serializationData, referenceHandler, nameof(LiquidPhaseType));

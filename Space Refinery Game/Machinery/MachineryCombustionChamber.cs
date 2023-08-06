@@ -19,6 +19,8 @@ namespace Space_Refinery_Game
 
 		public static readonly VolumeUnit InOutPipeVolume = (VolumeUnit)(DecimalNumber).4;
 
+		public static readonly DecimalNumber sparkEnergy = 20 * DecimalNumber.Micro; // A 20 µJ spark is the minimum spark required to start an oxyhydrogen combustion.
+
 		protected override void SetUp()
 		{
 			base.SetUp();
@@ -78,7 +80,7 @@ namespace Space_Refinery_Game
 							0,
 							UnitsMath.Min(ReactionContainer.FreeVolume, FuelInput.Volume)));
 
-					ReactionContainer.AddReactionFactor(new Spark(20 * DecimalNumber.Micro /*A 20 µJ spark is the minimum spark required to start an oxyhydrogen combustion*/));
+					ReactionContainer.AddReactionFactor(new Spark(sparkEnergy));
 
 					ReactionContainer.Tick(Time.TickInterval);
 

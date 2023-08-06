@@ -15,11 +15,10 @@ public interface IUnit<TSelf> : // TODO: add implicit conversions to and from De
 	// or atleast support equality with decimal number?
 	IEquatable<TSelf>, // It should always be possible to perform equality comparasions between Units of the same type.
 	IComparisonOperators<TSelf, TSelf, bool>, // It should always be possible to perform comparasions, such as greater than or smaller than or equal to between Units of the same type.
-	IUnaryNegationOperators<TSelf, TSelf>
+	IUnaryNegationOperators<TSelf, TSelf>,
+	IFormattable
 	where TSelf :
-		IUnit<TSelf>//,
-		//IPortionable<TSelf>,
-		//IIntervalSupport<TSelf>
+		IUnit<TSelf>
 {
 	public static abstract explicit operator DecimalNumber(TSelf unit);
 
@@ -32,5 +31,10 @@ public interface IUnit<TSelf> : // TODO: add implicit conversions to and from De
 	public static abstract bool operator ==(TSelf a, TSelf b);
 
 	public static abstract bool operator !=(TSelf a, TSelf b);
+
+	string IFormattable.ToString(string? format, IFormatProvider? formatProvider)
+	{
+		return ((DN)((TSelf)this)).ToString();
+	}
 }
 #endif

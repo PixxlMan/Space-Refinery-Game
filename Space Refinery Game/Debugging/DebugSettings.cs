@@ -1,8 +1,11 @@
-﻿namespace Space_Refinery_Game
+﻿using ImGuiNET;
+using System.Numerics;
+
+namespace Space_Refinery_Game
 {
 	public sealed class DebugSettings
 	{
-		public Dictionary<string, IDebugSetting> DebugSettingsDictionary = new();
+		private Dictionary<string, IDebugSetting> debugSettingsDictionary = new();
 
 		private object syncRoot = new();
 
@@ -11,9 +14,9 @@
 		{
 			lock (syncRoot)
 			{
-				if (DebugSettingsDictionary.ContainsKey(name))
+				if (debugSettingsDictionary.ContainsKey(name))
 				{
-					return (TSetting)DebugSettingsDictionary[name];
+					return (TSetting)debugSettingsDictionary[name];
 				}
 				else
 				{
@@ -21,7 +24,7 @@
 
 					setting.SettingText = name;
 
-					DebugSettingsDictionary.Add(name, setting);
+					debugSettingsDictionary.Add(name, setting);
 
 					return setting;
 				}
@@ -33,18 +36,32 @@
 		{
 			lock (syncRoot)
 			{
-				if (DebugSettingsDictionary.ContainsKey(name))
+				if (debugSettingsDictionary.ContainsKey(name))
 				{
-					return (TSetting)DebugSettingsDictionary[name];
+					return (TSetting)debugSettingsDictionary[name];
 				}
 				else
 				{
 					defaultSettingValue.SettingText = name;
 
-					DebugSettingsDictionary.Add(name, defaultSettingValue);
+					debugSettingsDictionary.Add(name, defaultSettingValue);
 
 					return defaultSettingValue;
 				}
+			}
+		}
+
+		public void DoDebugSettingsUI()
+		{
+			lock (syncRoot)
+			{
+				foreach (var debugSetting in debugSettingsDictionary.Values)
+				{
+					debugSetting.DrawUIElement();
+					ImGui.Separator();
+				}
+
+				ImGui.End();
 			}
 		}
 	}

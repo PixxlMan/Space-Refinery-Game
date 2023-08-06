@@ -16,11 +16,8 @@ partial class UI
 			{
 				ImGui.SetWindowSize(debugSettingsMenuSize, ImGuiCond.Always);
 				ImGui.SetWindowPos(new Vector2((width / 2 - pauseMenuSize.X / 2) + pauseMenuSize.X, height / 2 - debugSettingsMenuSize.Y / 2), ImGuiCond.Always);
-				foreach (var debugSetting in MainGame.DebugSettings.DebugSettingsDictionary.Values)
-				{
-					debugSetting.DrawUIElement();
-					ImGui.Separator();
-				}
+
+				MainGame.DebugSettings.DoDebugSettingsUI();
 
 				ImGui.End();
 

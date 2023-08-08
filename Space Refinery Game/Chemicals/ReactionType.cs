@@ -12,6 +12,13 @@ namespace Space_Refinery_Game
 
 		public static ICollection<ReactionType> GetAllPossibleReactionTypes(HashSet<ChemicalType> availableChemicals)
 		{
+			// If there are no chemicals available there is no point in trying to find possible reactions or adding the universal reactions.
+			// This is an optimization which avoids unnecessary work in the rest of the method, but also prevents unnecessary work ticking the universal reactions.
+			if (availableChemicals.Count == 0)
+			{
+				return Array.Empty<ReactionType>();
+			}
+
 			HashSet<ReactionType> initialPossibleReactions = new(); // Find all reaction types that share a necessary chemical with what is available.
 
 			foreach (var chemical in availableChemicals)

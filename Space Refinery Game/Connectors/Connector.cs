@@ -131,6 +131,9 @@ namespace Space_Refinery_Game
 			lock (SyncRoot)
 			{
 				Proxy = new(this);
+
+				// Make sure that Proxy gets updated to have the correct collider etc according to object state.
+				InvalidateAndUpdateProxy();
 			}
 		}
 

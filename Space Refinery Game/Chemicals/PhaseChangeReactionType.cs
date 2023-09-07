@@ -96,89 +96,15 @@ public sealed class PhaseChangeReactionType : ReactionType
 		resourceUnitsToAdd.Clear();
 	}
 
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="previousUnit"></param>
-	/// <param name="newPhase"></param>
-	/// <param name="phaseTransitionEnthalpy">[J/kg]</param>
-	/// <param name="energyDelta">[J]</param>
-	/// <param name="newUnit"></param>
-	/// <param name="changeFactorUnit"></param>
 	private static void TransitionPhase(ResourceUnitData previousUnit, ChemicalPhase newPhase, MolarEnergyUnit phaseTransitionEnthalpy, EnergyUnit energyDelta, out ResourceUnitData newUnit, out ResourceUnitData changeFactorUnit)
 	{
+		throw new NotImplementedException();
+
 		ResourceType previousResourceType = previousUnit.ResourceType;
 		ChemicalType chemicalType = previousResourceType.ChemicalType;
 		ResourceType newResourceType = chemicalType.GetResourceTypeForPhase(newPhase);
 
 		Debug.Assert(phaseTransitionEnthalpy > 0);
 		Debug.Assert(energyDelta > 0);
-
-		// Upstep.
-		//if (newPhase > previousResourceType.ChemicalPhase) // todo: start calculating temperature based on energy past the previous phase. The current implementation is incorrect.
-		{
-			// E = energy delta, internal energy added that exceeds the maximum energy to stay in phase
-			// C = enthalpy of fusion or vaporization
-			// m = mass
-			// E = C * m
-			//
-			// In units:
-			// [J] = [J/kg] * [kg]
-			//
-			// Solve for m, in order to get mass in new phase
-			// m = E / C
-			//
-			// In units:
-			// [kg] = [J] / [J/kg]
-
-			var E = energyDelta; // [J]
-			var C = phaseTransitionEnthalpy; // [J/kg]
-
-			var m = E / C; // [kg] = [J] / [J/kg]
-
-			// THIS IS WRONG - IT IS [mol], not [kg]! Check code!
-
-			if (m > previousUnit.Mass)
-			{
-				m = previousUnit.Mass;
-
-				E = C * m; // [J] = [J/kg] * [kg]
-			}
-
-			newUnit = new(
-				resourceType: newResourceType,
-				moles: ChemicalType.MassToMoles(chemicalType, m),
-				internalEnergy: E);
-			changeFactorUnit = ResourceUnitData.CreateNegativeResourceUnit(previousResourceType, -newUnit.Moles, -newUnit.InternalEnergy);
-
-			return;
-		}
-		// Downstep.
-		/*else
-		{ // todo: complete if necessary
-			// E = energy delta, internal energy removed that is below the minumum energy to stay in phase
-			// C = enthalpy of fusion or vaporization
-			// m = mass
-			// E = C * m
-			//
-			// In units:
-			// [J] = [J/kg] * [kg]
-			//
-			// Solve for m, in order to get mass in new phase
-			// m = E / C
-			//
-			// In units:
-			// [kg] = [J] / [J/kg]
-
-			var E = energyDelta; // [J]
-			var C = phaseTransitionEnthalpy; // [J/kg]
-
-			var m = E / C; // [kg] = [J] / [J/kg]
-
-			newUnit = new(newResourceType, ChemicalType.MassToMoles(chemicalType, m), E);
-			changeFactorUnit = ResourceUnitData.CreateNegativeResourceUnit(previousResourceType, -newUnit.Moles, -newUnit.InternalEnergy);
-
-			return;
-		}*/
 	}
 }

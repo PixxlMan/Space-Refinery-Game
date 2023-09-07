@@ -39,7 +39,11 @@ namespace Space_Refinery_Game
 		{
 			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
 
-			GameData.UI.SelectedEntityTypeChanged += UpdateProxyOnEntityTypeChanged;
+			GameData.UI.SelectedEntityTypeChanged += (_) => UpdateProxyOnSelectedEntityAffected();
+
+			GameData.UI.SelectedEntityRotated += (_) => UpdateProxyOnSelectedEntityAffected();
+
+			GameData.UI.SelectedEntityConnectorChanged += (_) => UpdateProxyOnSelectedEntityAffected();
 		}
 
 		public bool Destroyed { get; protected set; }
@@ -54,11 +58,14 @@ namespace Space_Refinery_Game
 
 		protected object SyncRoot = new();
 
-		private void UpdateProxyOnEntityTypeChanged(IEntityType _)
+		private void UpdateProxyOnSelectedEntityAffected()
 		{
 			InvalidateAndUpdateProxy();
 		}
 
+		/// <summary>
+		/// Updates the proxy object to match the transformation and physical shape of the currently selected entity.
+		/// </summary>
 		private void InvalidateAndUpdateProxy()
 		{
 			if (GameData.UI.SelectedPipeType is null)
@@ -73,7 +80,7 @@ namespace Space_Refinery_Game
 
 				var transform = GameWorld.GenerateTransformForConnector(
 							GameData.UI.SelectedPipeType.ConnectorPlacements[GameData.UI.ConnectorSelection],
-							this, GameData.UI.RotationIndex * 45 * FixedDecimalLong8.DegreesToRadians);
+							this, GameData.UI.RotationSnapped);
 
 				Proxy.SetPhysicsObjectState(transform, shape, GameData.PhysicsWorld);
 			}
@@ -196,7 +203,7 @@ namespace Space_Refinery_Game
 		{
 			get
 			{
-				lock(SyncRoot) return connectables;
+				lock (SyncRoot) return connectables;
 			}
 			protected set
 			{
@@ -455,7 +462,9 @@ namespace Space_Refinery_Game
 
 				Proxy.Destroy();
 
-				GameData.UI.SelectedEntityTypeChanged -= UpdateProxyOnEntityTypeChanged;
+				GameData.UI.SelectedEntityTypeChanged -= (_) => UpdateProxyOnSelectedEntityAffected();
+				GameData.UI.SelectedEntityRotated -= (_) => UpdateProxyOnSelectedEntityAffected();
+				GameData.UI.SelectedEntityConnectorChanged -= (_) => UpdateProxyOnSelectedEntityAffected();
 
 				MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
 

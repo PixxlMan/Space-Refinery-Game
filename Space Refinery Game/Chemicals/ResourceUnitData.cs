@@ -43,7 +43,10 @@ namespace Space_Refinery_Game
 		/// <remarks>
 		/// If the substance amount or the mass is zero, the temperature will be considered to be zero.
 		/// </remarks>
-		public TemperatureUnit Temperature => ((DecimalNumber)Moles != 0 && (DecimalNumber)Mass != 0) ? ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass) : 0;
+		public TemperatureUnit Temperature =>
+			(Moles != 0 && Mass != 0)
+				? ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass)
+				: 0; 
 
 		/// <summary>
 		/// [J/mol]

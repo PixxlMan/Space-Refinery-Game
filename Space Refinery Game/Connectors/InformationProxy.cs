@@ -38,18 +38,20 @@ namespace Space_Refinery_Game
 
 		public void SetPhysicsObjectState(Transform transform, ConvexHull shape, PhysicsWorld physicsWorld)
 		{
-			if (physicsObject is null)
-			{
+			physicsObject?.Destroy();
+			//if (physicsObject is null)
+			//{
 				var proxyPhysicsObject = new PhysicsObjectDescription<ConvexHull>(shape, transform, 0, true);
 
 				physicsObject = physicsWorld.AddPhysicsObject(proxyPhysicsObject, this);
 
 				physicsObject.Enabled = enabled;
-			}
-			else
-			{
-				physicsObject.World.ChangeShape(physicsObject, shape);
-			}
+			//}
+			//else
+			//{
+				// REMEMBER TO ALSO CHANGE THE TRANSFORM HERE!!
+			//	physicsObject.World.ChangeShape(physicsObject, shape);
+			//}
 		}
 
 		public void Tick() => throw new NotSupportedException();

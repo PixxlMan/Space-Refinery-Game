@@ -23,13 +23,23 @@ namespace Space_Refinery_Game
 
 		public int EntitySelection;
 
+		public event Action<IEntityType> SelectedEntityTypeChanged;
+
 		public bool Paused;
 
 		public int RotationIndex;
 
-		public event Action<bool> PauseStateChanged;
+		public FixedDecimalLong8 RotationSnapping => 45 * FixedDecimalLong8.DegreesToRadians;
+		
+		public FixedDecimalLong8 RotationSnapped => gameData.UI.RotationIndex * RotationSnapping;
 
-		public event Action<IEntityType> SelectedEntityTypeChanged;
+		public event Action<FixedDecimalLong8> SelectedEntityRotated;
+
+		public int ConnectorSelection;
+
+		public event Action<int> SelectedEntityConnectorChanged;
+
+		public event Action<bool> PauseStateChanged;
 
 		private object syncRoot = new();
 
@@ -83,8 +93,6 @@ namespace Space_Refinery_Game
 			}
 		}
 
-		public int ConnectorSelection;
-
 		public void ChangeConnectorSelection(int selectionDelta)
 		{
 			lock (syncRoot)
@@ -108,6 +116,8 @@ namespace Space_Refinery_Game
 					}
 				}
 			}
+
+			SelectedEntityConnectorChanged?.Invoke(ConnectorSelection);
 		}
 
 		private UI(GameData gameData)
@@ -230,10 +240,14 @@ namespace Space_Refinery_Game
 				if (InputTracker.GetKeyDown(Key.R) && InputTracker.GetKey(Key.ShiftLeft))
 				{
 					Interlocked.Decrement(ref RotationIndex);
+
+					SelectedEntityRotated?.Invoke(RotationSnapped);
 				}
 				else if (InputTracker.GetKeyDown(Key.R))
 				{
 					Interlocked.Increment(ref RotationIndex);
+
+					SelectedEntityRotated?.Invoke(RotationSnapped);
 				}
 
 				if (InputTracker.ScrollWheelDelta != 0)

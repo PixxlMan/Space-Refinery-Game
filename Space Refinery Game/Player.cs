@@ -33,10 +33,6 @@ namespace Space_Refinery_Game
 			return player;
 		}
 
-		public FixedDecimalLong8 RotationSnapping => 45 * FixedDecimalLong8.DegreesToRadians;
-
-		public FixedDecimalLong8 RotationSnapped => gameData.UI.RotationIndex * RotationSnapping;
-
 		public FixedDecimalInt4 LookPitch;
 
 		public void Update(IntervalUnit deltaTime)
@@ -66,17 +62,17 @@ namespace Space_Refinery_Game
 
 				constructionMarker.SetMesh(gameData.UI.SelectedPipeType.Mesh);
 
-				constructionMarker.SetTransform(GameWorld.GenerateTransformForConnector(gameData.UI.SelectedPipeType.ConnectorPlacements[gameData.UI.ConnectorSelection], pipeConnector, RotationSnapped));
+				constructionMarker.SetTransform(GameWorld.GenerateTransformForConnector(gameData.UI.SelectedPipeType.ConnectorPlacements[gameData.UI.ConnectorSelection], pipeConnector, gameData.UI.RotationSnapped));
 
 				constructionMarker.ShouldDraw = true;
 
-				if (Pipe.ValidateBuild(pipeConnector, gameData.UI.SelectedPipeType, gameData.UI.ConnectorSelection, RotationSnapped, gameData))
+				if (Pipe.ValidateBuild(pipeConnector, gameData.UI.SelectedPipeType, gameData.UI.ConnectorSelection, gameData.UI.RotationSnapped, gameData))
 				{
 					constructionMarker.State = ConstructionMarker.ConstructionMarkerState.LegalBuild;
 
 					if (InputTracker.GetMouseButton(MouseButton.Left))
 					{
-						Pipe.Build(pipeConnector, gameData.UI.SelectedPipeType, gameData.UI.ConnectorSelection, RotationSnapped, gameData, gameData.ReferenceHandler);
+						Pipe.Build(pipeConnector, gameData.UI.SelectedPipeType, gameData.UI.ConnectorSelection, gameData.UI.RotationSnapped, gameData, gameData.ReferenceHandler);
 
 						constructionMarker.ShouldDraw = false;
 					}

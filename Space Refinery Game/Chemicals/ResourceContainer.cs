@@ -240,9 +240,9 @@ namespace Space_Refinery_Game
 
 		public ResourceUnitData TakeResourceByMoles(ResourceType resourceType, MolesUnit moles)
 		{
-			if (moles == (MolesUnit)DecimalNumber.Zero)
+			if (moles == 0)
 			{
-				return new ResourceUnitData(resourceType, (MolesUnit)DecimalNumber.Zero, (EnergyUnit)DecimalNumber.Zero);
+				return new ResourceUnitData(resourceType, 0, 0);
 			}
 
 			ResourceUnit unit = resources[resourceType];

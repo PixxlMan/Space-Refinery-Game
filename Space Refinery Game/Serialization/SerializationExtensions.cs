@@ -177,7 +177,7 @@ namespace Space_Refinery_Game
 		}
 
 		public static void Serialize<TUnit>(this XmlWriter writer, TUnit unit, string? name = null)
-#if IncludeUnits
+#if IncludeUnits // When not including units, simply get rid of the type constraints and allow DecimalNumber as the type, because the types are now aliases for DecimalNumber.
 			where TUnit :
 				IUnit<TUnit>,
 				IPortionable<TUnit>,

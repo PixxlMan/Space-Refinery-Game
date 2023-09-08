@@ -1,4 +1,5 @@
 ﻿using FXRenderer;
+using Space_Refinery_Utilities;
 using Veldrid;
 using Veldrid.StartupUtilities;
 using Veldrid.Utilities;
@@ -9,6 +10,9 @@ public static class Program
 {
 	public static void Main()
 	{
+		Logging.LogDebug($"Logs from {nameof(Logging.LogDebug)} are included in this build.");
+		Logging.Log($"Build version: {"haven't started with this yet"}");
+
 		System.Globalization.CultureInfo.CurrentCulture = (System.Globalization.CultureInfo)System.Globalization.CultureInfo.InvariantCulture.Clone();
 		//System.Globalization.CultureInfo.CurrentCulture.NumberFormat = DecimalNumber.NumberFormat;
 		// The previous line cannot be uncommented because the number format is not complete.

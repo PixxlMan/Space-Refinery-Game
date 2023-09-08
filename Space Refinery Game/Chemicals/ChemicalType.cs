@@ -292,5 +292,23 @@ namespace Space_Refinery_Game
 		{
 			return ChemicalName;
 		}
+
+		public ChemicalPhase GetChemicalPhaseForTemperature(TemperatureUnit temperatureUnit)
+		{
+			if (temperatureUnit < TemperatureOfFusion)
+			{
+				return ChemicalPhase.Solid;
+			}
+			else if (temperatureUnit >= TemperatureOfFusion && temperatureUnit < TemperatureOfVaporization)
+			{
+				return ChemicalPhase.Liquid;
+			}
+			else if (temperatureUnit >= TemperatureOfVaporization)
+			{
+				return ChemicalPhase.Gas;
+			}
+
+			throw new GlitchInTheMatrixException();
+		}
 	}
 }

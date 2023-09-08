@@ -145,9 +145,9 @@ public sealed class GameWorld
 		}
 	}
 
-	/// <summary>
+	/// <remarks>
 	/// This method simply removes the references to all entites, it does not call Destroy methods. All entities must be responsibly Destroyed manually - don't litter!
-	/// </summary>
+	/// </remarks>
 	public void ResetUnsafe()
 	{
 		lock (TickSyncObject)

@@ -116,6 +116,7 @@ namespace Space_Refinery_Game
 					new((DecimalNumber).125, (DecimalNumber).125, (DecimalNumber).125)
 					);
 
+				// Connect with existing connector at this location - forgo creation of own connector.
 				if (gameData.PhysicsWorld.ApproxOverlapPoint<PipeConnector>(pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation), out PhysicsObject physicsObject))
 				{
 					PipeConnector pipeConnector = (PipeConnector)physicsObject.Entity;
@@ -131,6 +132,7 @@ namespace Space_Refinery_Game
 
 					continue;
 				}
+				// Create own connector if there is no connector to connect to.
 				else
 				{
 					QuaternionFixedDecimalInt4 rotation =

@@ -28,16 +28,22 @@ partial class UI
 
 		DoStatus();
 
-		ImGui.Begin("Center", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration);
-		ImGui.SetWindowPos(new Vector2(width / 2, height / 2), ImGuiCond.Always);
-		{
-			ImGui.Bullet();
-		}
-		ImGui.End();
+		DrawCrosshair();
 
 		DoInformationPanel(deltaTime);
 
 		DoHotbar(deltaTime);
+
+		if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show miscellaneous debugging menus") && MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show miscellaneous debugging menus in game"))
+		{
+			DoUIOfDisparateDebuggingMenus();
+		}
+	}
+
+	private void DrawCrosshair()
+	{
+		var draw = ImGui.GetBackgroundDrawList();
+		draw.AddCircle(new Vector2(width / 2, height / 2), 6, /*Hacky white*/uint.MaxValue);
 	}
 
 	private DecimalNumber informationPanelFading = 1;

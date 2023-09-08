@@ -1,5 +1,6 @@
 ﻿using FixedPrecision;
 using FXRenderer;
+using ImGuiNET;
 using Space_Refinery_Utilities;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -12,8 +13,6 @@ public sealed class GameWorld
 	{
 		GameData = gameData;
 	}
-
-	public object SynchronizationObject = new();
 
 	public object TickSyncObject = new();
 
@@ -43,7 +42,7 @@ public sealed class GameWorld
 
 	public void AddConstruction(IConstruction construction)
 	{
-		lock (SynchronizationObject)
+		lock (TickSyncObject)
 			Constructions.AddUnique(construction);
 	}
 

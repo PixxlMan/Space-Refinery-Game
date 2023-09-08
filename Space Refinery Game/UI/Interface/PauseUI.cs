@@ -49,7 +49,7 @@ partial class UI
 			{
 				Task.Run(() =>
 				{
-					lock (gameData.GameWorld.TickSyncObject) lock (gameData.GameWorld.SynchronizationObject)
+					lock (gameData.GameWorld.TickSyncObject)
 					{
 						gameData.MainGame.Serialize(@"R:\save.xml");
 					}

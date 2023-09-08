@@ -52,7 +52,7 @@ public sealed class MainGame
 
 	public bool Paused;
 
-	public readonly object SynchronizationObject = new();
+	public readonly object UpdateSyncObject = new();
 
 	public Guid SaveGuid { get; private set; } = Guid.NewGuid();
 
@@ -178,7 +178,7 @@ public sealed class MainGame
 
 	private void Update(IntervalUnit deltaTime)
 	{
-		lock (SynchronizationObject) lock (GraphicsWorld.SyncRoot)
+		lock (UpdateSyncObject)
 		{
 			//InputTracker.DeferFurtherInputToNextFrame();
 
@@ -211,7 +211,8 @@ public sealed class MainGame
 
 	public void Serialize(string path)
 	{
-		lock (GameWorld.TickSyncObject)	lock (SynchronizationObject)
+		lock (GameWorld.TickSyncObject)
+		lock (UpdateSyncObject)
 		{
 			Logging.Log($"Serialization started. Serializing {ReferenceHandler.ReferenceCount} references.");
 

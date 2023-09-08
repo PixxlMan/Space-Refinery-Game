@@ -1,4 +1,6 @@
 ﻿using Space_Refinery_Game_Renderer;
+using Space_Refinery_Utilities;
+using System.Diagnostics;
 
 namespace Space_Refinery_Game
 {
@@ -85,8 +87,21 @@ namespace Space_Refinery_Game
 
 		private static Portion<TimeUnit> smoothing = (Portion<TimeUnit>)0.1;
 
+		private static readonly IntervalUnit deltaTimeStutterWarningThreshold = (IntervalUnit)0.05;
+
+		[Conditional("DEBUG")]
+		private void DebugPerfWarn(IntervalUnit deltaTime, string system)
+		{
+			if (deltaTime > deltaTimeStutterWarningThreshold)
+			{
+				Logging.LogError($"Stutter that lasted {deltaTime}s was detected in {system}!");
+			}
+		}
+
 		private void PhysicsWorld_CollectPerformanceData(IntervalUnit deltaTime)
 		{
+			DebugPerfWarn(deltaTime, nameof(PhysicsWorld));
+
 			switch (Mode)
 			{
 				case PerformanceStatisticsCollectorMode.Direct:
@@ -100,6 +115,8 @@ namespace Space_Refinery_Game
 
 		private void MainGame_CollectPerformanceData(IntervalUnit deltaTime)
 		{
+			DebugPerfWarn(deltaTime, nameof(MainGame));
+
 			switch (Mode)
 			{
 				case PerformanceStatisticsCollectorMode.Direct:
@@ -113,6 +130,8 @@ namespace Space_Refinery_Game
 
 		private void GameWorld_CollectPerformanceData(IntervalUnit deltaTime)
 		{
+			DebugPerfWarn(deltaTime, nameof(GameWorld));
+
 			switch (Mode)
 			{
 				case PerformanceStatisticsCollectorMode.Direct:
@@ -126,6 +145,8 @@ namespace Space_Refinery_Game
 
 		private void GraphicsWorld_CollectPerformanceData(IntervalUnit deltaTime)
 		{
+			DebugPerfWarn(deltaTime, nameof(GraphicsWorld));
+
 			switch (Mode)
 			{
 				case PerformanceStatisticsCollectorMode.Direct:

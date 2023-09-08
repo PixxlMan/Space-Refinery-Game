@@ -157,4 +157,16 @@ public sealed class GameWorld
 			Constructions.Clear();
 		}
 	}
+
+	public void DoDebugUI()
+	{
+		if (ImGui.Begin("Game World Debug Info"))
+		{
+			ImGui.Text($"Total entities: {Entities.Count}");
+
+			ImGui.Text($"Total constructions: {Constructions.Count}");
+
+			ImGui.End();
+		}
+	}
 }

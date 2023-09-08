@@ -104,11 +104,13 @@ partial class UI
 		ImGui.NextColumn();
 	}
 
-	private static void DoUIOfDisparateDebuggingMenus()
+	private void DoUIOfDisparateDebuggingMenus()
 	{
 		if (!MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show miscellaneous debugging menus"))
 			return;
 
 		BatchRenderable.DoDebugUI();
+
+		gameData.GameWorld.DoDebugUI();
 	}
 }

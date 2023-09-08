@@ -11,7 +11,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>$(DefineConstants);IncludeAdditionalDebugLogging;SilenceWeirdErrors</DefineConstants>
+    <DefineConstants>$(DefineConstants);IncludeAdditionalDebugLogging</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>$(DefineConstants);SilenceWeirdErrors</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,8 +1,7 @@
-﻿//#define SilenceWeirdErrors
-
-using FixedPrecision;
+﻿using FixedPrecision;
 using FXRenderer;
 using Space_Refinery_Game;
+using Space_Refinery_Utilities;
 using Space_Refinery_Utilities.Units;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -44,8 +43,6 @@ public sealed class GraphicsWorld
 
 	private string responseSpinner = "_";
 	public string ResponseSpinner { get { lock(responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
-
-	public readonly object SyncRoot = new();
 
 	public Camera Camera;
 
@@ -133,8 +130,7 @@ public sealed class GraphicsWorld
 
 				RenderScene(FixedDecimalLong8.Max((DecimalNumber)deltaTime, (DecimalNumber)FrametimeLowerLimit));
 
-				lock (responseSpinner)
-					responseSpinner = Time.ResponseSpinner(time);
+				Time.ResponseSpinner(time, ref responseSpinner);
 
 				if (ShouldLimitFramerate)
 				{
@@ -313,11 +309,21 @@ public sealed class GraphicsWorld
 	/// </summary>
 	public void Reset()
 	{
-		lock (SyncRoot) lock (commandList) lock (unorderedRenderables) lock (specificOrderRenderables)
+		Logging.LogDebug($"Resetting the {nameof(GraphicsWorld)}.");
+
+		// Locks all objects which are lockable to ensure no activity is going on during the reset.
+		lock (commandList)
+		lock (unorderedRenderables)
+		lock (specificOrderRenderables)
 		{
 			unorderedRenderables.Clear();
 			specificOrderRenderables.Clear();
 			renderableToOrder.Clear();
+
+			foreach (var batchRenderable in BatchRenderable.BatchRenderables)
+			{
+				batchRenderable.Clear();
+			}
 		}
 	}
 }

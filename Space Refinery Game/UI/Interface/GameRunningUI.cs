@@ -42,8 +42,7 @@ partial class UI
 
 	private void DrawCrosshair()
 	{
-		var draw = ImGui.GetBackgroundDrawList();
-		draw.AddCircle(new Vector2(width / 2, height / 2), 6, /*Hacky white*/uint.MaxValue);
+		drawList.AddCircle(new Vector2(width / 2, height / 2), 6, /*Hacky white*/uint.MaxValue);
 	}
 
 	private DecimalNumber informationPanelFading = 1;

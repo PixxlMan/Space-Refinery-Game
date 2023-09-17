@@ -47,7 +47,7 @@ public static class FormatUnit
 	/// <summary>
 	/// Formats a distance in meters according to player preferences.
 	/// </summary>
-	/// <param name="distance">[m]</param>
+	/// <param name="distanceUnit">[m]</param>
 	/// <returns>Formatted distance</returns>
 	public static string FormatDistance(this DistanceUnit distanceUnit)
 	{
@@ -58,7 +58,7 @@ public static class FormatUnit
 	/// <summary>
 	/// Formats substance amount in moles according to player preferences.
 	/// </summary>
-	/// <param name="substanceAmount">[mol]</param>
+	/// <param name="molesUnit">[mol]</param>
 	/// <returns>Formatted substance amount</returns>
 	public static string FormatSubstanceAmount(this MolesUnit molesUnit)
 	{
@@ -69,7 +69,7 @@ public static class FormatUnit
 	/// <summary>
 	/// Formats density in kilograms per cubic meter according to player preferences.
 	/// </summary>
-	/// <param name="density">[kg/m³]</param>
+	/// <param name="densityUnit">[kg/m³]</param>
 	/// <returns>Formatted density</returns>
 	public static string FormatDensity(this DensityUnit densityUnit)
 	{
@@ -80,7 +80,7 @@ public static class FormatUnit
 	/// <summary>
 	/// Formats specific heat capacity in joules per kilogram kelvin according to player preferences.
 	/// </summary>
-	/// <param name="specificHeatCapacity">[J/kg*K]</param>
+	/// <param name="specificHeatCapacityUnit">[J/kg*K]</param>
 	/// <returns>Formatted specific heat capacity</returns>
 	public static string FormatSpecificHeatCapacity(this SpecificHeatCapacityUnit specificHeatCapacityUnit)
 	{
@@ -99,7 +99,7 @@ public static class FormatUnit
 	/// <summary>
 	/// Formats temperature in kelvin according to player preferences.
 	/// </summary>
-	/// <param name="temperature">[K]</param>
+	/// <param name="temperatureUnit">[K]</param>
 	/// <returns>Formatted temperature</returns>
 	public static string FormatTemperature(this TemperatureUnit temperatureUnit)
 	{
@@ -118,7 +118,7 @@ public static class FormatUnit
 	/// <summary>
 	/// Formats energy in joules according to player preferences.
 	/// </summary>
-	/// <param name="energy">[J]</param>
+	/// <param name="energyUnit">[J]</param>
 	/// <returns>Formatted energy</returns>
 	public static string FormatEnergy(this EnergyUnit energyUnit)
 	{

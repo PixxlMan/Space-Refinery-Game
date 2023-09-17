@@ -78,6 +78,22 @@ public static class FormatUnit
 	}
 
 	/// <summary>
+	/// Formats time in seconds according to player preferences.
+	/// </summary>
+	/// <param name="timeUnit">[s]</param>
+	/// <returns>Formatted time</returns>
+	public static string FormatTime(this TimeUnit timeUnit)
+	{
+		string prefix = string.Empty;
+		var time = (DecimalNumber)timeUnit;
+		if (time <= 1) /*Only produce prefix if below one, we do not want larger prefixes such as mega or kilo here - kiloseconds or megaseconds is weird.*/
+		{
+			time.FormatStandardPrefix(out prefix, out var scaledSpecificHeatCapacity);
+		}
+		return $"{time.ToString(decimals: 2)} {prefix}s";
+	}
+
+	/// <summary>
 	/// Formats specific heat capacity in joules per kilogram kelvin according to player preferences.
 	/// </summary>
 	/// <param name="specificHeatCapacityUnit">[J/kg*K]</param>

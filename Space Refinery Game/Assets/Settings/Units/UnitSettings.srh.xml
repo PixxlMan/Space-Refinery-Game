@@ -6,6 +6,10 @@
 			<Type>Space_Refinery_Game.SwitchSetting</Type>
 			<Reference>Use Celcius</Reference>
 			<Name>Use Celcius</Name>
+			<Description>
+				Enable to use celcius (°C) - disable to use kelvin (K).
+				(0 K = -273.15 °C, +1 K -> +1 °C )
+			</Description>
 			<DefaultValue>
 				<Type>Space_Refinery_Game.SwitchSettingValue</Type>
 				<SwitchValue>True</SwitchValue>

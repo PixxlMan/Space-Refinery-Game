@@ -79,7 +79,22 @@ namespace Space_Refinery_Game // Is this really thread safe? It's accessed stati
 				ImGui.SameLine();
 
 				ImGui.PushID(nameSettingPair.Value.SerializableReference.ToString());
+				{
 					nameSettingPair.Value.DoUI();
+
+					if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled | ImGuiHoveredFlags.AnyWindow | ImGuiHoveredFlags.AllowWhenBlockedByActiveItem | ImGuiHoveredFlags.AllowWhenOverlapped))
+					{
+						ImGui.BeginTooltip();
+						{
+							ImGui.Text($"{nameSettingPair.Value.Description}{Environment.NewLine}");
+							ImGui.Text($"Default:");
+							ImGui.SameLine();
+							nameSettingPair.Value.DefaultValue.ShowValueUI(nameSettingPair.Value);
+							ImGui.Text(nameSettingPair.Value.GetLimitsDescription());
+						}
+						ImGui.EndTooltip();
+					}
+				}
 				ImGui.PopID();
 
 				if (nameSettingPair.Value.Dirty)

@@ -26,6 +26,16 @@ namespace Space_Refinery_Game
 		{
 			SwitchValue = reader.DeserializeBoolean(nameof(SwitchValue));
 		}
+
+		public void ShowValueUI(Setting setting)
+		{
+			UIFunctions.PushDisabled();
+
+			bool switchValue = SwitchValue;
+			ImGui.Checkbox(string.Empty, ref switchValue);
+
+			UIFunctions.PopEnabledOrDisabledState();
+		}
 	}
 
 	public sealed class SwitchSetting : Setting
@@ -99,5 +109,7 @@ namespace Space_Refinery_Game
 		{
 			base.DeserializeState(reader, serializationData, referenceHandler);
 		}
+
+		public override string GetLimitsDescription() => string.Empty;
 	}
 }

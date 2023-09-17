@@ -26,6 +26,18 @@ namespace Space_Refinery_Game
 		{
 			SliderValue = reader.DeserializeDecimalNumber(nameof(SliderValue));
 		}
+
+		public void ShowValueUI(Setting setting)
+		{
+			var sliderSetting = (SliderSetting)setting;
+
+			UIFunctions.PushDisabled();
+
+			float sliderValue = SliderValue.ToFloat();
+			ImGui.SliderFloat(string.Empty, ref sliderValue, sliderSetting.Min.ToFloat(), sliderSetting.Max.ToFloat());
+
+			UIFunctions.PopEnabledOrDisabledState();
+		}
 	}
 
 	public sealed class SliderSetting : Setting
@@ -116,5 +128,7 @@ namespace Space_Refinery_Game
 			Max = reader.DeserializeDecimalNumber(nameof(Max));
 			SliderValueSuffix = reader.ReadString(nameof(SliderValueSuffix));
 		}
+
+		public override string GetLimitsDescription() => $"Max: {Max}{SliderValueSuffix}, Min: {Min}{SliderValueSuffix}";
 	}
 }

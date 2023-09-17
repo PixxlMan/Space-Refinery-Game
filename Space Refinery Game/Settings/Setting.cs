@@ -14,6 +14,8 @@ namespace Space_Refinery_Game
 
 		public string Name { get; private set; }
 
+		public string Description { get; private set; }
+
 		public abstract void DoUI();
 
 		public abstract void Accept();
@@ -26,6 +28,7 @@ namespace Space_Refinery_Game
 		{
 			writer.SerializeReference(this);
 			writer.Serialize(Name, nameof(Name));
+			writer.Serialize(Description, nameof(Description));
 			writer.SerializeWithEmbeddedType(DefaultValue, nameof(DefaultValue));
 		}
 
@@ -33,6 +36,7 @@ namespace Space_Refinery_Game
 		{
 			SerializableReference = reader.ReadReference();
 			Name = reader.ReadString(nameof(Name));
+			Description = reader.ReadString(nameof(Description));
 			DefaultValue = (ISettingValue)reader.DeserializeEntitySerializableWithEmbeddedType(serializationData, referenceHandler, nameof(DefaultValue));
 			SettingValue = DefaultValue;
 
@@ -45,6 +49,8 @@ namespace Space_Refinery_Game
 			ValueChanged();
 		}
 
+		public abstract string GetLimitsDescription();
+
 		public abstract event Action<ISettingValue> AcceptedSettingChange;
 
 		public abstract event Action<ISettingValue> SettingChanged;
@@ -52,6 +58,6 @@ namespace Space_Refinery_Game
 
 	public interface ISettingValue : IEntitySerializable
 	{
-
+		public abstract void ShowValueUI(Setting setting);
 	}
 }

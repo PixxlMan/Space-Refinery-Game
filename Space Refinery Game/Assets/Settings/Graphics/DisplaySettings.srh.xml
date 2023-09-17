@@ -6,18 +6,24 @@
 			<Type>Space_Refinery_Game.SliderSetting</Type>
 			<Reference>Field Of View</Reference>
 			<Name>FoV</Name>
+			<Description>
+				Set the width of the character's view in degrees (°).
+			</Description>
 			<DefaultValue>
 				<Type>Space_Refinery_Game.SliderSettingValue</Type>
 				<SliderValue>65</SliderValue>
 			</DefaultValue>
 			<Min>30</Min>
 			<Max>120</Max>
-			<SliderValueSuffix>degrees</SliderValueSuffix>
+			<SliderValueSuffix>°</SliderValueSuffix>
 		</IEntitySerializable>
 		<IEntitySerializable>
 			<Type>Space_Refinery_Game.SliderSetting</Type>
 			<Reference>Max Framerate</Reference>
 			<Name>Max FPS</Name>
+			<Description>
+				Set the maximum framerate for the game. Only used if Limit Framerate is enabled.
+			</Description>
 			<DefaultValue>
 				<Type>Space_Refinery_Game.SliderSettingValue</Type>
 				<SliderValue>500</SliderValue>
@@ -30,6 +36,9 @@
 			<Type>Space_Refinery_Game.SwitchSetting</Type>
 			<Reference>Limit Framerate</Reference>
 			<Name>Limit FPS</Name>
+			<Description>
+				Enable to limit the framerate to the framerate specified in Max FPS.
+			</Description>
 			<DefaultValue>
 				<Type>Space_Refinery_Game.SwitchSettingValue</Type>
 				<SwitchValue>True</SwitchValue>

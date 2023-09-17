@@ -1,5 +1,7 @@
-﻿using ImGuiNET;
+﻿using FixedPrecision;
+using ImGuiNET;
 using Space_Refinery_Game_Renderer;
+using Space_Refinery_Utilities;
 using System.Numerics;
 using Veldrid;
 
@@ -112,5 +114,17 @@ partial class UI
 		BatchRenderable.DoDebugUI();
 
 		gameData.GameWorld.DoDebugUI();
+
+		if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show dot at {0, 0, 0}"))
+		{
+			var pos = gameData.GraphicsWorld.Camera.WorldPointToScreenPoint(Vector3FixedDecimalInt4.UnitY, Size, out var visible).ToVector2();
+
+			if (visible)
+			{
+				drawList.AddCircleFilled(pos, 10, uint.MaxValue);
+			}
+
+			Logging.Log("Is dot visible: " + visible.ToString());
+		}
 	}
 }

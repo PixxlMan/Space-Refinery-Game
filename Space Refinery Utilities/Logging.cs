@@ -39,7 +39,7 @@ public static class Logging
 		lock (syncRoot) // It's okay to lock here, becuase Logging an error doesn't have to be very fast.
 		{
 			var originalColor = Console.ForegroundColor;
-			Console.ForegroundColor = ConsoleColor.Red;
+			Console.ForegroundColor = color;
 			Console.WriteLine(logText);
 			Console.ForegroundColor = originalColor;
 		}

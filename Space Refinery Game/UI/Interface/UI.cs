@@ -48,6 +48,7 @@ namespace Space_Refinery_Game
 		private int width;
 		private int height;
 
+		ImDrawListPtr drawList;
 		public void ChangeEntitySelection(int selectionDelta)
 		{
 			lock (syncRoot)
@@ -216,8 +217,21 @@ namespace Space_Refinery_Game
 					Logging.LogError("That weird argument out of range exception again... Oh well!");
 				}
 
+				BeforeUI();
+
 				DoUI(deltaTime);
 
+				PostUI(cl);
+			}
+		}
+
+		private void BeforeUI()
+		{
+			drawList = ImGui.GetBackgroundDrawList();
+		}
+
+		private void PostUI(CommandList cl)
+		{
 				imGuiRenderer.WindowResized((int)width, (int)height);
 
 				imGuiRenderer.Render(gd, cl);

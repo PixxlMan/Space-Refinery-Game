@@ -4,7 +4,8 @@ namespace Space_Refinery_Game_Renderer
 {
 	public partial class BatchRenderable
 	{
-		private static List<BatchRenderable> batchRenderables = new();
+		// TODO: what is the purpose of this static list? should it be kept in main game or similar? or by graphics system? or manager for batch renderables? is it just here for debug? if so, maybe change the debug menu to somehow work with a provided gamedata?
+		public static readonly List<BatchRenderable> BatchRenderables = new();
 
 		private static object syncRoot = new();
 
@@ -12,7 +13,7 @@ namespace Space_Refinery_Game_Renderer
 		{
 			lock (syncRoot)
 			{
-				batchRenderables.Add(batchRenderable);
+				BatchRenderables.Add(batchRenderable);
 			}
 		}
 
@@ -20,7 +21,7 @@ namespace Space_Refinery_Game_Renderer
 		{
 			lock (syncRoot)
 			{
-				batchRenderables.Remove(batchRenderable);
+				BatchRenderables.Remove(batchRenderable);
 			}
 		}
 
@@ -30,8 +31,8 @@ namespace Space_Refinery_Game_Renderer
 			ImGui.Begin("Renderable Debugging");
 			lock (syncRoot)
 			{
-				ImGui.Columns(batchRenderables.Count);
-				foreach (var batchRenderable in batchRenderables)
+				ImGui.Columns(BatchRenderables.Count);
+				foreach (var batchRenderable in BatchRenderables)
 				{
 					DoDebugUIForBatchRenderable(batchRenderable);
 					ImGui.NextColumn();
@@ -48,7 +49,7 @@ namespace Space_Refinery_Game_Renderer
 				ImGui.BulletText(batchRenderable.Name);
 				bool shouldDraw = batchRenderable.ShouldDraw;
 				ImGui.Checkbox("Should draw", ref shouldDraw);
-				ImGui.Text("Internal transforms count: " + batchRenderable.transforms.Count);
+				ImGui.Text("Internal transforms count: " + batchRenderable.TransformsCount);
 				ImGui.Text("Internal capacity: " + batchRenderable.currentCapacity);
 				ImGui.Text("Transforms: " + batchRenderable.transformsDictionary.Count);
 				ImGui.Text("Available indexes: " + batchRenderable.availableIndexesQueue.Count);

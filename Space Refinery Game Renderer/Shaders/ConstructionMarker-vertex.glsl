@@ -4,8 +4,8 @@
 
 layout(set = 0, binding = 1) uniform ProjView
 {
-    mat4 View;
     mat4 Proj;
+    mat4 View;
 };
 
 layout(location = 0) in vec3 Position;
@@ -31,7 +31,7 @@ void main()
 
     vec3 transformedPos = (instanceRotFull * Position) + InstancePosition;
     vec4 pos = vec4(transformedPos, 1); 
-    gl_Position = Proj * View * pos;
+    gl_Position = View * Proj * pos;
 
     color = Color;
 }

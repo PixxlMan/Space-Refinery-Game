@@ -4,8 +4,8 @@
 
 layout(set = 0, binding = 1) uniform ProjView
 {
-    mat4 View;
     mat4 Proj;
+    mat4 View;
 };
 
 layout(location = 0) in vec3 Position;
@@ -33,7 +33,7 @@ void main()
     vec3 transformedPos = (instanceRotFull * Position) + InstancePosition;
     vec4 pos = vec4(transformedPos, 1);
     fsin_Position_WorldSpace = transformedPos;
-    gl_Position = Proj * View * pos;
+    gl_Position = View * Proj * pos;
     fsin_Normal = normalize(instanceRotFull * Normal);
     fsin_TexCoord = vec2(TexCoord);//, 0/*InstanceTexArrayIndex*/);
 }

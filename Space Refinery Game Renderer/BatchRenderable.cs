@@ -1,5 +1,6 @@
 ﻿using FixedPrecision;
 using FXRenderer;
+using Space_Refinery_Utilities;
 using Veldrid;
 using static Space_Refinery_Game_Renderer.RenderingResources;
 
@@ -53,7 +54,7 @@ public sealed partial class BatchRenderable : IRenderable
 
 	private Dictionary<object, int> transformsDictionary = new((int)initialCapacity, ReferenceEqualityComparer.Instance);
 
-	private static Transform noEntryTransform = new Transform(new(FixedDecimalInt4.MaxValue, FixedDecimalInt4.MaxValue, FixedDecimalInt4.MaxValue), QuaternionFixedDecimalInt4.Zero)/*.GetBlittableTransform(Vector3FixedDecimalInt4.Zero)*/;
+	private static readonly Transform noEntryTransform = new Transform(new(FixedDecimalInt4.MaxValue, FixedDecimalInt4.MaxValue, FixedDecimalInt4.MaxValue), QuaternionFixedDecimalInt4.Zero)/*.GetBlittableTransform(Vector3FixedDecimalInt4.Zero)*/;
 
 
 	private uint currentCapacity;
@@ -132,6 +133,19 @@ public sealed partial class BatchRenderable : IRenderable
 		}
 	}
 
+	public void Clear()
+	{
+		Logging.LogDebug($"Clearing {nameof(BatchRenderable)} '{Name}'.");
+
+		transformsDictionary.Clear();
+
+		availableIndexesQueue.Clear();
+
+		transforms.Clear();
+
+		ManageTransformsBuffer();
+	}
+
 	public void UpdateTransform(object associatedObject, Transform transform)
 	{
 		lock (SyncRoot)
@@ -141,6 +155,8 @@ public sealed partial class BatchRenderable : IRenderable
 			int index = transformsDictionary[associatedObject];
 
 			transforms[index] = blittableTransform;
+
+			// TODO: perform bulk updates every frame when necessary instead of doing it on demand every time?
 
 			graphicsWorld.GraphicsDevice.UpdateBuffer(transformationsBuffer, (uint)index * BlittableTransform.SizeInBytes, ref blittableTransform, BlittableTransform.SizeInBytes);			
 		}
@@ -202,14 +218,29 @@ public sealed partial class BatchRenderable : IRenderable
 			// OPTIMIZE: It might be possible to improve performance in the rest of the method by copying data from old transformation buffer instead of reuploading it. It would need access to a CommandList though.
 
 			// Too large capacity, should recreate buffer, smaller.
-			if ((currentCapacity / 4) - 32 > transformsDictionary.Count)
+			// Precisely, if the capacity is four times greater than the number of actual transforms, and 32 additional transforms (to ensure there is room for the number of transforms to grow without needing to resize the buffer), then resize the buffer.
+			// The reason this check requires such a large difference between capacity and transform count is that resizing and/or reuploading the buffer is a relatively expensive process, preferably avoided.
+			if ((currentCapacity / 4) - 32 > TransformsCount)
 			{
+				Logging.LogDebug($"Shrinking the buffer of {nameof(BatchRenderable)} '{Name}'.");
+
 				var oldTransformationsBuffer = transformationsBuffer;
 
-				transformationsBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes * currentCapacity / 2, BufferUsage.VertexBuffer));
+				uint newCapacity = 0;
+
+				if (TransformsCount == 0)
+				{
+					newCapacity = initialCapacity;
+				}
+				else
+				{
+					newCapacity = currentCapacity / 2;
+				}
+
+				transformationsBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes * newCapacity, BufferUsage.VertexBuffer));
 				transformationsBuffer.Name = $"{Name} Transformation Buffer";
 
-				currentCapacity = currentCapacity / 2;
+				currentCapacity = newCapacity;
 
 				oldTransformationsBuffer.Dispose(); // TODO? Hmm why do this afterwards? Should check this out...
 
@@ -219,13 +250,17 @@ public sealed partial class BatchRenderable : IRenderable
 			}
 
 			// Number of transforms exceeds capacity, needs to recreate buffer, but bigger.
-			if (transformsDictionary.Count > currentCapacity)
+			else if (TransformsCount > currentCapacity)
 			{
+				Logging.LogDebug($"Growing the buffer of {nameof(BatchRenderable)} '{Name}'.");
+
 				var oldTransformationsBuffer = transformationsBuffer;
 
-				transformationsBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes * currentCapacity * 2, BufferUsage.VertexBuffer));
+				uint newCapacity = currentCapacity * 2;
 
-				currentCapacity = currentCapacity * 2;
+				transformationsBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes * newCapacity, BufferUsage.VertexBuffer));
+
+				currentCapacity = newCapacity;
 
 				oldTransformationsBuffer.Dispose();
 
@@ -234,6 +269,11 @@ public sealed partial class BatchRenderable : IRenderable
 				return;
 			}
 		}
+	}
+
+	private int TransformsCount
+	{
+		get => transformsDictionary.Count;
 	}
 
 	private void ReuploadTransformsBuffer()
@@ -248,7 +288,7 @@ public sealed partial class BatchRenderable : IRenderable
 	{
 		lock (SyncRoot)
 		{
-			if (transformsDictionary.Count == 0 || !shouldDraw)
+			if (TransformsCount == 0 || !shouldDraw)
 			{
 				return;
 			}

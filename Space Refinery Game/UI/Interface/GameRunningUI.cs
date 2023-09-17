@@ -28,11 +28,11 @@ partial class UI
 
 		DoStatus();
 
-		DrawCrosshair();
+		DoHotbar(deltaTime);
 
 		DoInformationPanel(deltaTime);
 
-		DoHotbar(deltaTime);
+		DrawCrosshair();
 
 		if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show miscellaneous debugging menus") && MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show miscellaneous debugging menus in game"))
 		{

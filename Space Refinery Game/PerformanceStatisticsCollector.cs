@@ -94,7 +94,7 @@ namespace Space_Refinery_Game
 		{
 			if (deltaTime > deltaTimeStutterWarningThreshold)
 			{
-				Logging.LogError($"Stutter that lasted {deltaTime}s was detected in {system}!");
+				Logging.LogWarning($"Stutter that lasted {FormatUnit.FormatTime(deltaTime)} was detected in {system}!");
 			}
 		}
 

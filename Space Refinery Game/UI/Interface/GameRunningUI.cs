@@ -51,9 +51,24 @@ partial class UI
 	{
 		informationPanelFading += 1 * /*informationPanelFading **/ deltaTime * (CurrentlySelectedInformationProvider is null ? -1 : 4);
 		informationPanelFading = DecimalNumber.Clamp(informationPanelFading, 0, 1);
+
+		Vector2FixedDecimalInt4 panelLocation;
+
+		if (currentlySelectedInformationProvider is null || Player.LookedAtPhysicsObject is null)
+		{
+			panelLocation = new Vector2FixedDecimalInt4((width / 4 * 3)/* - ImGui.GetWindowSize().X / 2*/, (height / 2) - ImGui.GetWindowSize().Y / 2);
+		}
+		else
+		{
+			panelLocation = gameData.GraphicsWorld.Camera.WorldPointToScreenPoint(Player.LookedAtPhysicsObject.Transform.Position, Size, out bool _ /*since the values will clamp to the edges of the screen, we don't need to do anything*/);
+		}
+
+		// add if
+		// (looking at but not visible, place at middle!, ensure visibility when inside object?)
+
 		ImGui.SetNextWindowBgAlpha((float)informationPanelFading);
 		ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoInputs);
-		ImGui.SetWindowPos(new Vector2((width / 4 * 3)/* - ImGui.GetWindowSize().X / 2*/, (height / 2) - ImGui.GetWindowSize().Y / 2), ImGuiCond.Always);
+		ImGui.SetWindowPos(panelLocation.ToVector2(), ImGuiCond.Always);
 		//ImGui.SetWindowSize();
 		{
 			if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show player info"))

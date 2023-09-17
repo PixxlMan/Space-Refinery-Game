@@ -48,7 +48,13 @@ namespace Space_Refinery_Game
 		private int width;
 		private int height;
 
+		private Vector2FixedDecimalInt4 Size => new(width, height);
+
+		// The UI system only ever needs to support one player. There's no reason it would ever need to support more.
+		public Player Player { get; }
+
 		ImDrawListPtr drawList;
+
 		public void ChangeEntitySelection(int selectionDelta)
 		{
 			lock (syncRoot)
@@ -121,11 +127,13 @@ namespace Space_Refinery_Game
 			SelectedEntityConnectorChanged?.Invoke(ConnectorSelection);
 		}
 
-		private UI(GameData gameData)
+		private UI(GameData gameData, Player player)
 		{
 			this.gameData = gameData;
 
 			gd = gameData.GraphicsWorld.GraphicsDevice;
+
+			Player = player;
 
 			imGuiRenderer = new(gd, gd.MainSwapchain.Framebuffer.OutputDescription, (int)width, (int)height);
 
@@ -187,11 +195,11 @@ namespace Space_Refinery_Game
 			gameData.GraphicsWorld.AddRenderable(this, 1);
 		}
 
-		public static UI CreateAndAdd(GameData gameData)
+		public static UI CreateAndAdd(GameData gameData, Player player)
 		{
 			ImGui.CreateContext();
 
-			UI ui = new(gameData);
+			UI ui = new(gameData, player);
 
 			ui.hotbarItems.Add(null); // Add empty slot
 			ui.hotbarItems.AddRange(PipeType.PipeTypes.Values);

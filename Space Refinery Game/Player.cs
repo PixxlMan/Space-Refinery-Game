@@ -16,7 +16,23 @@ namespace Space_Refinery_Game
 
 		private ConstructionMarker constructionMarker;
 
-		public Transform CameraTransform => new(Transform.Position, QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(FixedDecimalInt4.Zero, LookPitch, FixedDecimalInt4.Zero), Transform.Rotation).NormalizeQuaternion());
+		public FixedDecimalInt4 LookPitch;
+
+		public Transform CameraTransform => 
+			new(
+				Transform.Position,
+				QuaternionFixedDecimalInt4.Concatenate(
+					QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(
+						FixedDecimalInt4.Zero,
+						LookPitch,
+						FixedDecimalInt4.Zero),
+					Transform.Rotation
+					).NormalizeQuaternion()
+				);
+
+		private volatile PhysicsObject? lookedAtPhysicsObject;
+
+		public PhysicsObject? LookedAtPhysicsObject { get { return lookedAtPhysicsObject; } }
 
 		private Player(GameData gameData)
 		{
@@ -33,11 +49,9 @@ namespace Space_Refinery_Game
 			return player;
 		}
 
-		public FixedDecimalInt4 LookPitch;
-
 		public void Update(IntervalUnit deltaTime)
 		{
-			var lookedAtPhysicsObject = gameData.PhysicsWorld.Raycast(CameraTransform.Position, -CameraTransform.LocalUnitZ, 1000);
+			lookedAtPhysicsObject = gameData.PhysicsWorld.Raycast(CameraTransform.Position, -CameraTransform.LocalUnitZ, 1000);
 
 			if (lookedAtPhysicsObject is not null)
 			{

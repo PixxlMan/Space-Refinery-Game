@@ -101,15 +101,15 @@ public sealed class MainGame
 
 		PhysicsWorld.Run();
 
-		UI = UI.CreateAndAdd(GameData);
+		Player = Player.Create(GameData);
+
+		UI = UI.CreateAndAdd(GameData, Player);
 
 		UI.PauseStateChanged += UI_PauseStateChanged;
 
 		GameWorld = new(GameData);
 
 		ReferenceHandler = new();
-
-		Player = Player.Create(GameData);
 
 		Starfield = Starfield.CreateAndAdd(GraphicsWorld);
 

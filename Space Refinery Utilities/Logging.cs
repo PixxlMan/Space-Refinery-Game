@@ -26,6 +26,16 @@ public static class Logging
 
 	public static void LogError(string logText)
 	{
+		LogColor(logText, ConsoleColor.Red);
+	}
+
+	public static void LogWarning(string logText)
+	{
+		LogColor(logText, ConsoleColor.Yellow);
+	}
+
+	public static void LogColor(string logText, ConsoleColor color)
+	{
 		lock (syncRoot) // It's okay to lock here, becuase Logging an error doesn't have to be very fast.
 		{
 			var originalColor = Console.ForegroundColor;

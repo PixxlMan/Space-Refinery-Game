@@ -195,7 +195,7 @@ namespace Space_Refinery_Game
 		{
 			lock (gameData.GameWorld.TickSyncObject)
 			{
-				Transform transform = GameWorld.GenerateTransformForConnector(((PipeType)entityType).ConnectorPlacements[indexOfSelectedConnector], connector, rotation);
+				Transform transform = Connector.GenerateTransformForConnector(((PipeType)entityType).ConnectorPlacements[indexOfSelectedConnector], connector, rotation);
 
 				if (connector is not PipeConnector ||
 					entityType is not Space_Refinery_Game.PipeType ||
@@ -217,7 +217,7 @@ namespace Space_Refinery_Game
 
 				PipeType pipeType = (PipeType)entityType;
 
-				Transform transform = GameWorld.GenerateTransformForConnector(pipeType.ConnectorPlacements[indexOfSelectedConnector], pipeConnector, rotation);
+				Transform transform = Connector.GenerateTransformForConnector(pipeType.ConnectorPlacements[indexOfSelectedConnector], pipeConnector, rotation);
 
 				Pipe pipe = (Pipe)ObjectFactory.CreateInstance(pipeType.TypeOfPipe, true);
 

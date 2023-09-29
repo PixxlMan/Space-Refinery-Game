@@ -32,6 +32,9 @@ public struct GravitationalAccelerationUnit
 	public static implicit operator DecimalNumber(GravitationalAccelerationUnit unit) => GravitationalAcceleration;
 }
 
+// TODO: add rotation / euler angles unit for managing rotations?
+// also make systems use distance units and rotation units for stuff like storing position and transforms?
+
 #if IncludeUnits
 /// <summary>
 /// [m]

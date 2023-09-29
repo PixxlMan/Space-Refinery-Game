@@ -247,8 +247,4 @@
 	</Reference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Using Include="Space_Refinery_Utilities" />
-  </ItemGroup>
-
 </Project>

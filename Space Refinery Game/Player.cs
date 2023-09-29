@@ -76,7 +76,7 @@ namespace Space_Refinery_Game
 
 				constructionMarker.SetMesh(gameData.UI.SelectedPipeType.Mesh);
 
-				constructionMarker.SetTransform(Connector.GenerateTransformForConnector(gameData.UI.SelectedPipeType.ConnectorPlacements[gameData.UI.ConnectorSelection], pipeConnector, gameData.UI.RotationSnapped));
+				constructionMarker.SetTransform(GameWorld.GenerateTransformForConnector(gameData.UI.SelectedPipeType.ConnectorPlacements[gameData.UI.ConnectorSelection], pipeConnector, gameData.UI.RotationSnapped));
 
 				constructionMarker.ShouldDraw = true;
 

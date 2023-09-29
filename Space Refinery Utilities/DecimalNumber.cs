@@ -3,9 +3,9 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// Move to Space_Refinery_Utlities?
-// Do the same as UnitsUsage to ensure no performance penalty in release? AKA alias it with FixedDecimalLong8? Partial even?! Hmmm! partial with all static functions!
-namespace Space_Refinery_Game;
+// Do the same as UnitsUsage to ensure no performance penalty in release? AKA alias it with FixedDecimalLong8? Partial even?! Hmmm! partial with all static functions! and make the others reference FixedDecimalLong8 instead of DecimalNumber!
+// These static methods as extensions on FixedDecimalLong8 in release maybe?
+namespace Space_Refinery_Utilities;
 
 [JsonConverter(typeof(DecimalNumberJsonConverter))]
 public struct DecimalNumber : IFixedPrecisionNumeral<DecimalNumber>, IEquatable<DecimalNumber>

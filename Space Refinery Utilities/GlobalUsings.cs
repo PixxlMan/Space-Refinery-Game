@@ -1,1 +1,1 @@
-﻿global using DN = Space_Refinery_Game.DecimalNumber;
+﻿global using DN = Space_Refinery_Utilities.DecimalNumber;

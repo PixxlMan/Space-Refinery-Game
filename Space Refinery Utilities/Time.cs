@@ -1,6 +1,7 @@
-﻿using System.Diagnostics;
+﻿using Space_Refinery_Game;
+using System.Diagnostics;
 
-namespace Space_Refinery_Game;
+namespace Space_Refinery_Utilities; // move to utilities?
 
 public static class Time // https://fpstoms.com/
 {

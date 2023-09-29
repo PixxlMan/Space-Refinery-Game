@@ -30,9 +30,9 @@ partial class UI
 
 		DoHotbar(deltaTime);
 
-		DoInformationPanel(deltaTime);
-
 		DrawCrosshair();
+
+		DoInformationPanel(deltaTime);
 
 		if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show miscellaneous debugging menus") && MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show miscellaneous debugging menus in game"))
 		{
@@ -53,9 +53,9 @@ partial class UI
 		informationPanelFading = DecimalNumber.Clamp(informationPanelFading, 0, 1);
 
 		Vector2FixedDecimalInt4 panelLocation;
-
 		if (currentlySelectedInformationProvider is null || Player.LookedAtPhysicsObject is null)
 		{
+			return;
 			panelLocation = new Vector2FixedDecimalInt4((width / 4 * 3)/* - ImGui.GetWindowSize().X / 2*/, (height / 2) - ImGui.GetWindowSize().Y / 2);
 		}
 		else
@@ -82,7 +82,7 @@ partial class UI
 
 			if (CurrentlySelectedInformationProvider is not null)
 			{
-				ImGui.TextDisabled($"Information for: {CurrentlySelectedInformationProvider.Name}");
+				ImGui.TextDisabled($"{CurrentlySelectedInformationProvider.Name}");
 				CurrentlySelectedInformationProvider.InformationUI();
 			}
 			else

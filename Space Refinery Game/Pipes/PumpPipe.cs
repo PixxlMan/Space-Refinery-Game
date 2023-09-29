@@ -1,6 +1,6 @@
 ﻿using ImGuiNET;
 using System.Xml;
-using static Space_Refinery_Game.DecimalNumber;
+using static Space_Refinery_Utilities.DecimalNumber;
 
 namespace Space_Refinery_Game
 {

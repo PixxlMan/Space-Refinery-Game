@@ -30,7 +30,7 @@ namespace Space_Refinery_Game
 					).NormalizeQuaternion()
 				);
 
-		private volatile PhysicsObject? lookedAtPhysicsObject;
+		private PhysicsObject? lookedAtPhysicsObject;
 
 		public PhysicsObject? LookedAtPhysicsObject { get { return lookedAtPhysicsObject; } }
 

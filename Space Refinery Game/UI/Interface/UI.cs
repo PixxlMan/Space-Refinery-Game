@@ -9,8 +9,8 @@ namespace Space_Refinery_Game
 	public sealed partial class UI : IRenderable
 	{
 		private IInformationProvider currentlySelectedInformationProvider;
-		public IInformationProvider CurrentlySelectedInformationProvider { get { return currentlySelectedInformationProvider; } set { lock (syncRoot) currentlySelectedInformationProvider = value; } }
-
+		public IInformationProvider CurrentlySelectedInformationProvider { get { lock (syncRoot) return currentlySelectedInformationProvider; } set { lock (syncRoot) currentlySelectedInformationProvider = value; } }
+		/*do locking on each individual object itself? and of course get rid of the field then - all accesses have to be locked! even from within this class*/
 		private ImGuiRenderer imGuiRenderer;
 
 		private GraphicsDevice gd;

@@ -1,3 +1,4 @@
+﻿using Space_Refinery_Game;
 ﻿using System.Diagnostics;
 
 namespace Space_Refinery_Utilities;
@@ -11,7 +12,12 @@ public static class Logging
 
 	public static void Log(string logText)
 	{
-		Console.WriteLine(logText);
+		Console.WriteLine($"[LOG] {logText}");
+	}
+
+	public static void LogSimulation(string logText)
+	{
+		Console.WriteLine($"[SIMUL@{Time.TicksElapsed}] {logText}");
 	}
 
 	/// <remarks>
@@ -21,17 +27,17 @@ public static class Logging
 	// TODO: make this, and maybe all logging methods, faster by avoiding the slow console. Perhaps use a separate thread for that.
 	public static void LogDebug(string logText)
 	{
-		Console.WriteLine(logText);
+		Console.WriteLine($"[DEBUG] {logText}");
 	}
 
 	public static void LogError(string logText)
 	{
-		LogColor(logText, ConsoleColor.Red);
+		LogColor($"[ERROR@{Time.TicksElapsed}={Time.CurrentTickTime} s] {logText}", ConsoleColor.Red);
 	}
 
 	public static void LogWarning(string logText)
 	{
-		LogColor(logText, ConsoleColor.Yellow);
+		LogColor($"[WARN] {logText}", ConsoleColor.Yellow);
 	}
 
 	public static void LogColor(string logText, ConsoleColor color)

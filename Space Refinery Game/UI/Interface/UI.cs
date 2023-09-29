@@ -240,10 +240,9 @@ namespace Space_Refinery_Game
 
 		private void PostUI(CommandList cl)
 		{
-				imGuiRenderer.WindowResized((int)width, (int)height);
+			imGuiRenderer.WindowResized((int)width, (int)height);
 
-				imGuiRenderer.Render(gd, cl);
-			}
+			imGuiRenderer.Render(gd, cl);
 		}
 
 		public void Update()

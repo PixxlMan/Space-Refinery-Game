@@ -1,9 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Collections.Concurrent;
-using Space_Refinery_Utilities;
 
-// Move to Space_Refinery_Utilities?
-namespace Space_Refinery_Game;
+namespace Space_Refinery_Utilities;
 
 public static class CollectionExtensions
 {

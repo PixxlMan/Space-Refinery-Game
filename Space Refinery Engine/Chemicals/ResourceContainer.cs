@@ -1,6 +1,4 @@
 ﻿using ImGuiNET;
-using Space_Refinery_Game;
-using Space_Refinery_Utilities;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Xml;

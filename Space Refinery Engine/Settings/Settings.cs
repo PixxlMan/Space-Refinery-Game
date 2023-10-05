@@ -1,8 +1,6 @@
 ﻿using ImGuiNET;
-using Space_Refinery_Utilities;
 using System.Collections.Concurrent;
 using System.Xml;
-using Space_Refinery_Game;
 
 namespace Space_Refinery_Engine // Is this really thread safe? It's accessed statically, so it ought to be.
 {

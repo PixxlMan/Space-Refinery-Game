@@ -1,6 +1,4 @@
-﻿using Space_Refinery_Game;
-
-namespace Space_Refinery_Utilities.Units;
+﻿namespace Space_Refinery_Utilities.Units;
 
 public static class UnitsMath
 {

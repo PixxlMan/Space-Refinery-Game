@@ -1,6 +1,5 @@
 ﻿using FixedPrecision;
 using FXRenderer;
-using Space_Refinery_Game;
 using Space_Refinery_Utilities;
 using Space_Refinery_Utilities.Units;
 using System.Collections.Concurrent;

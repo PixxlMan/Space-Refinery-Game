@@ -4,7 +4,6 @@
 
 
 #if IncludeUnits
-using Space_Refinery_Game;
 using System.Numerics;
 
 namespace Space_Refinery_Utilities.Units;

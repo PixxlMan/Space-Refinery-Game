@@ -1,10 +1,8 @@
 ﻿using FixedPrecision;
 using FXRenderer;
 using ImGuiNET;
-using Space_Refinery_Utilities;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using Space_Refinery_Game;
 
 namespace Space_Refinery_Engine;
 

@@ -5,7 +5,6 @@ using Space_Refinery_Utilities;
 using System.Xml;
 using Veldrid;
 using static FixedPrecision.Convenience;
-using Space_Refinery_Game;
 
 namespace Space_Refinery_Engine
 {

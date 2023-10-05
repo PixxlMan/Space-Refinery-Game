@@ -1,7 +1,5 @@
 ﻿using FixedPrecision;
 using ImGuiNET;
-using Space_Refinery_Utilities;
-using Space_Refinery_Game;
 
 namespace Space_Refinery_Engine.Audio
 {

@@ -1,6 +1,4 @@
-﻿using Space_Refinery_Game;
-
-namespace Space_Refinery_Utilities;
+﻿namespace Space_Refinery_Utilities;
 
 public static class Calculations
 {

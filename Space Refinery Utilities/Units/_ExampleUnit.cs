@@ -4,8 +4,6 @@
 
 
 #if IncludeUnits
-using Space_Refinery_Game;
-
 
 namespace Space_Refinery_Utilities.Units;
 

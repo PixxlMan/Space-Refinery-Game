@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<OutputType>Exe</OutputType>
+	<OutputType>Library</OutputType>
 	<TargetFramework>net7.0</TargetFramework>
 	<RootNamespace>Space_Refinery_Game</RootNamespace>
 	<ImplicitUsings>enable</ImplicitUsings>
@@ -234,6 +234,7 @@
   </ItemGroup>
 
   <ItemGroup>
+	<ProjectReference Include="..\Space Refinery Engine\Space Refinery Engine.csproj" />
 	<ProjectReference Include="..\Space Refinery Game Renderer\Space Refinery Game Renderer.csproj" />
 	<ProjectReference Include="..\Space Refinery Utilities\Space Refinery Utilities.csproj" />
   </ItemGroup>

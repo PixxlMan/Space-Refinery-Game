@@ -1,4 +1,6 @@
-﻿namespace Space_Refinery_Game
+﻿using Space_Refinery_Engine;
+
+namespace Space_Refinery_Game
 {
 	public sealed class HydrogenOxygenCombustionReactionType : ReactionType // https://en.wikipedia.org/wiki/Oxyhydrogen
 	{

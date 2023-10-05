@@ -1,4 +1,6 @@
-﻿namespace Space_Refinery_Game;
+﻿using Space_Refinery_Engine;
+
+namespace Space_Refinery_Game;
 
 public sealed class ElectrolysisReactionType : ReactionType // https://sv.wikipedia.org/wiki/Elektrolys, https://en.wikipedia.org/wiki/Electrolysis_of_water, https://en.wikipedia.org/wiki/Water_splitting
 {

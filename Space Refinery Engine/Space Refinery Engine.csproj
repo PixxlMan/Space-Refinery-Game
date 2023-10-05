@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -6,11 +6,56 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
+	<EnablePreviewFeatures>true</EnablePreviewFeatures>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="soft_oal.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Space Refinery Utilities\GlobalUsings.cs" Link="GlobalUsings.cs" />
+    <Compile Include="..\Space Refinery Utilities\Units\UnitsUsage.cs" Link="UnitsUsage.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="soft_oal.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="BepuPhysics" Version="2.4.0" />
+        <PackageReference Include="SharpAudio" Version="1.0.65-beta" />
+        <PackageReference Include="SharpAudio.ALBinding" Version="1.0.65-beta" />
+        <PackageReference Include="SharpAudio.Codec" Version="1.0.65-beta" />
+        <PackageReference Include="Singulink.Reflection.ObjectFactory" Version="1.0.0" />
+        <PackageReference Include="Veldrid" Version="4.9.0" />
+        <PackageReference Include="Veldrid.ImGui" Version="5.72.0" />
+        <PackageReference Include="Veldrid.RenderDoc" Version="1.0.1" />
+        <PackageReference Include="Veldrid.SDL2" Version="4.9.0" />
+        <PackageReference Include="Veldrid.SPIRV" Version="1.0.15" />
+        <PackageReference Include="Veldrid.StartupUtilities" Version="4.9.0" />
+        <PackageReference Include="Veldrid.Utilities" Version="4.9.0" />
+    </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Space Refinery Game Renderer\Space Refinery Game Renderer.csproj" />
     <ProjectReference Include="..\Space Refinery Utilities\Space Refinery Utilities.csproj" />
+  </ItemGroup>
+    
+  <ItemGroup>
+   <Reference Include="FixedPrecision">
+      <HintPath>..\..\FixedPrecision\FixedPrecision\bin\Debug\net7.0\FixedPrecision.dll</HintPath>
+    </Reference>
+    <Reference Include="FXRenderer">
+      <HintPath>..\..\FXPRenderer\FXRenderer\bin\Debug\net7.0\FXRenderer.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+    
+  <ItemGroup>
+    <Using Include="Space_Refinery_Utilities" />
   </ItemGroup>
 
 </Project>

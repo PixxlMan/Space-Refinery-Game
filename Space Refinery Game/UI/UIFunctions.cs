@@ -56,6 +56,7 @@ namespace Space_Refinery_Game
 
 		public static void DoSelector<T>(ICollection<T> selectables, Guid guid, ref int selection, out bool hasSelection, out T selected)
 			where T : IUIInspectable
+			// Is this one also borked?
 		{
 			hasSelection = false;
 
@@ -136,13 +137,25 @@ namespace Space_Refinery_Game
 				int selectionIndex = 0;
 				foreach (TEnum selectable in selectables)
 				{
-					if (ImGui.Selectable($"{selectable}", selectionIndex == selection) || selectionIndex == selection)
+					bool currentEnumSelected = selection == selectionIndex;
+
+					ImGui.Checkbox($"{selectable}", ref currentEnumSelected);
+
+					if (currentEnumSelected && selection != selectionIndex) // The checkbox has been ticked.
 					{
 						selection = selectionIndex;
 
 						hasSelection = true;
 
 						selected = selectable;
+					}
+					else if (selection == selectionIndex) // The checkbox has been unticked.
+					{
+						selection = -1;
+
+						hasSelection = false;
+
+						selected = default;
 					}
 
 					selectionIndex++;

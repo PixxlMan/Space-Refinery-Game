@@ -88,7 +88,7 @@ public sealed class MainGame
 				var extensionManifest = ExtensionManifest.GenerateNoFileManifest(name, extensionDirectory);
 
 				nameToExtensionManifest.Add(name, extensionManifest);
-				extensionManifestToDirectoryName.Add(extensionManifest, name);
+				extensionManifestToDirectoryName.Add(extensionManifest, Path.GetFullPath(extensionDirectory)!);
 				continue;
 			}
 
@@ -107,7 +107,7 @@ public sealed class MainGame
 				foreach (var extensionManifest in extensionManifests)
 				{
 					nameToExtensionManifest.Add(extensionManifest.ExtensionName, extensionManifest);
-					extensionManifestToDirectoryName.Add(extensionManifest, Path.GetDirectoryName(manifestFilePath)!);
+					extensionManifestToDirectoryName.Add(extensionManifest, Path.GetFullPath(Path.GetDirectoryName(manifestFilePath)!)!);
 				}
 			}
 		}

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SerializationReferenceHandler>
+	<Count>1</Count>
+	<Elements>
+		<IEntitySerializable>
+			<Type>Space_Refinery_Engine.ExtensionManifest</Type>
+			<Reference>EngineManifest</Reference>
+			<ExtensionName>Engine</ExtensionName>
+			<ExtensionVersion>1.0.0.0</ExtensionVersion>
+			<HasAssembly>False</HasAssembly>
+			<AssetsPath>../Assets</AssetsPath> <!--Same path!-->
+			<Collection>
+				<Count>0</Count>
+				<Elements/>
+			</Collection>
+		</IEntitySerializable>
+	</Elements>
+</SerializationReferenceHandler>

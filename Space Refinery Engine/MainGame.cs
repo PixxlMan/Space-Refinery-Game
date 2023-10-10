@@ -6,6 +6,7 @@ using Space_Refinery_Utilities;
 using System.Diagnostics;
 using System.Xml;
 using Veldrid;
+using static Space_Refinery_Engine.SerializationPaths;
 
 namespace Space_Refinery_Engine;
 
@@ -19,27 +20,119 @@ public sealed class MainGame
 	private Player Player { get; set; }
 	private UI UI { get => GameData.UI; set => GameData.UI = value; }
 	private Settings Settings { get => GameData.Settings; set => GameData.Settings = value; }
-
+	
 	public GameData GameData { get; private set; }
 
 	public static SerializationReferenceHandler GlobalReferenceHandler;
 
-	private static void DeserializeIntoGlobalReferenceHandler(SerializationReferenceHandler globalReferenceHandler, SerializationData serializationData)
+	private static void DeserializeIntoGlobalReferenceHandler(SerializationReferenceHandler globalReferenceHandler, GameData gameData)
 	{
 		var stopwatch = new Stopwatch();
 		stopwatch.Start();
 
-		foreach (var serializationReferenceXmlFiles in Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "Assets"), "*.srh.xml", SearchOption.AllDirectories))
-		{
-			using var individualFileReader = XmlReader.Create(serializationReferenceXmlFiles, new XmlReaderSettings() { ConformanceLevel = ConformanceLevel.Document });
+		var extensions = LoadExtensions(new(gameData), globalReferenceHandler);
 
-			globalReferenceHandler.DeserializeInto(individualFileReader, serializationData, false);
+		List<(Extension, string[] filePaths)> srhFiles = new();
+
+		foreach (var extension in extensions)
+		{
+			srhFiles.Add((extension, Directory.GetFiles(Path.Combine(ModPath, extension.ExtensionManifest.AssetsPath), $"*{SerializableReferenceHandlerFileExtension}", SearchOption.AllDirectories)));
+		}
+		
+		Action? DeserializationCompleteEvent = null;
+
+		foreach ((var extension, var files) in srhFiles)
+		{
+			SerializationData serializationData = new(gameData) { DeserializationCompleteEvent = DeserializationCompleteEvent };
+
+			foreach (var file in files)
+			{
+				if (file.EndsWith(ExtensionManifestFileExtension))
+				{ // Manifest files have already been deserialized earlier when loading extensions and should be not be deserialized twice.
+					continue;
+				}
+
+				using var individualFileReader = XmlReader.Create(file, new XmlReaderSettings() { ConformanceLevel = ConformanceLevel.Document });
+
+				globalReferenceHandler.DeserializeInto(individualFileReader, serializationData, false);
+			}
 		}
 
-		serializationData.SerializationComplete();
+		DeserializationCompleteEvent?.Invoke();
 
 		stopwatch.Stop();
 		Logging.Log($"Deserialized all ({globalReferenceHandler.ReferenceCount}!) global references in {stopwatch.ElapsedMilliseconds} ms");
+	}
+
+	private static ICollection<Extension> LoadExtensions(SerializationData serializationData, SerializationReferenceHandler referenceHandler)
+	{
+		Dictionary<string, ExtensionManifest> nameToExtensionManifest = new();
+		Dictionary<ExtensionManifest, string> extensionManifestToDirectoryName = new();
+
+		List<string> manifestFilePaths = new();
+
+		manifestFilePaths.AddRange(Directory.GetFiles(AssetsPath, $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
+		manifestFilePaths.AddRange(Directory.GetFiles("../../../../Space Refinery Game/bin/Debug/net7.0/Assets", $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
+
+		// Find all extension manifest files and add them to manifestFilePaths,
+		// or if there is a directory without any manifest file create a 'No File'-manifest and add it to nameToExtensionManifest and extensionManifestToDirectoryName.
+		Directory.CreateDirectory(ModPath);
+		foreach (var extensionDirectory in Directory.GetDirectories(ModPath))
+		{
+			var extensionManifestsInDirectory = Directory.GetFiles(extensionDirectory, $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories);
+
+			if (extensionManifestsInDirectory.Length == 0)
+			{
+				var name = Path.GetDirectoryName(extensionDirectory)!;
+
+				var extensionManifest = ExtensionManifest.GenerateNoFileManifest(name, extensionDirectory);
+
+				nameToExtensionManifest.Add(name, extensionManifest);
+				extensionManifestToDirectoryName.Add(extensionManifest, name);
+				continue;
+			}
+
+			manifestFilePaths.Add(extensionManifestsInDirectory[0]);
+		}
+
+		// Deserialize the manifests and add them to nameToExtensionManifest and extensionManifestToDirectoryName.
+		referenceHandler.EnterAllowEventualReferenceMode(allowUnresolvedEventualReferences: false);
+		{
+			foreach (var manifestFilePath in manifestFilePaths)
+			{
+				using XmlReader reader = XmlReader.Create(manifestFilePath);
+
+				referenceHandler.DeserializeInto<ExtensionManifest>(reader, serializationData, out var extensionManifests);
+
+				foreach (var extensionManifest in extensionManifests)
+				{
+					nameToExtensionManifest.Add(extensionManifest.ExtensionName, extensionManifest);
+					extensionManifestToDirectoryName.Add(extensionManifest, Path.GetDirectoryName(manifestFilePath)!);
+				}
+			}
+		}
+		referenceHandler.ExitAllowEventualReferenceMode();
+
+		// Check dependencies for extensions.
+		foreach (var extensionManifest in nameToExtensionManifest.Values)
+		{
+			foreach (var dependency in extensionManifest.Dependencies)
+			{
+				if (!ExtensionDependency.SatisfiesDependency(dependency, nameToExtensionManifest[dependency.DependedExtension.ExtensionName].ExtensionVersion))
+				{
+					throw new Exception($"Dependency of {extensionManifest.ExtensionName} to {dependency.DependedExtension.ExtensionName} {dependency.DependencyKind} {dependency.DependencySpecificity} {dependency.ExtensionVersion} could not be satisifed with version {dependency.ExtensionVersion}.");
+				}
+			}
+		}
+
+		// Create extension objects and load their respective assemblies.
+		List<Extension> extensions = new();
+		foreach (var extensionManifest in nameToExtensionManifest.Values)
+		{
+			extensions.Add(Extension.CreateAndLoadFromExtensionManifest(extensionManifest, extensionManifestToDirectoryName[extensionManifest]));
+		}
+
+		return extensions;
 	}
 
 	public Starfield Starfield { get; private set; }
@@ -89,7 +182,7 @@ public sealed class MainGame
 
 		DebugSettings.AccessSetting("Fill music queue", (ActionDebugSetting)AudioWorld.MusicSystem.FillQueue);
 
-		DeserializeIntoGlobalReferenceHandler(GlobalReferenceHandler , new SerializationData(GameData));
+		DeserializeIntoGlobalReferenceHandler(GlobalReferenceHandler, GameData);
 
 		Settings.LoadSettingValues();
 

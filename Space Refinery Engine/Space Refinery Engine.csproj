@@ -11,6 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\DefaultPipeConnector.srh.xml" />
+    <None Remove="Assets\EmptySRHFile.srh.xml" />
     <None Remove="soft_oal.dll" />
   </ItemGroup>
 
@@ -20,6 +22,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Assets\DefaultPipeConnector.srh.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\EmptySRHFile.srh.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Mods\README.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="soft_oal.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

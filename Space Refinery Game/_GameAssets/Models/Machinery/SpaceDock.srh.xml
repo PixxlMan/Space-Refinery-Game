@@ -31,7 +31,7 @@
 				</Elements>
 			</ConnectorProperties>
 			<HasConnectorNames>False</HasConnectorNames>
-			<ModelPath>Assets\Models\Machinery\SpaceDock.obj</ModelPath>
+			<ModelPath>Models\Machinery\SpaceDock.obj</ModelPath>
 			<Type>Space_Refinery_Game.SpaceDockPipe</Type>
 		</IEntitySerializable>
 	</Elements>

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net7.0</TargetFramework>
-    <RootNamespace>Space_Refinery_Game</RootNamespace>
+    <RootNamespace>Space_Refinery_GameAssets\</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>Latest</LangVersion>
       <!--
@@ -24,189 +24,189 @@
     </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Assets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Intro.ogg" />
-    <None Remove="Assets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Loop - Export 1.mp3" />
-    <None Remove="Assets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Loop.ogg" />
-    <None Remove="Assets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Outro.ogg" />
-    <None Remove="Assets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Whole - Export 1.mp3" />
-    <None Remove="Assets\Audio\Music\Industrial Fumes - Loop - Export 1.wav" />
-    <None Remove="Assets\Audio\Music\Industrial Fumes - Whole - Export 1.wav" />
-    <None Remove="Assets\Audio\Music\Industrial Fumes.xml" />
-    <None Remove="Assets\BaseGame.manifest.srh.xml" />
-    <None Remove="Assets\Chemical types\Hydrogen.srh.xml" />
-    <None Remove="Assets\Chemical types\Oxygen.srh.xml" />
-    <None Remove="Assets\Chemical types\Water.srh.xml" />
-    <None Remove="Assets\External\Fonts\OpenSans\LICENSE.txt" />
-    <None Remove="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Bold.ttf" />
-    <None Remove="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Light.ttf" />
-    <None Remove="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Regular.ttf" />
-    <None Remove="Assets\Models\Machinery\MachineryCombustionChamber.obj" />
-    <None Remove="Assets\Models\Machinery\MachineryCombustionChamber.srh.xml" />
-    <None Remove="Assets\Models\Machinery\MachineryElectrolysis.obj" />
-    <None Remove="Assets\Models\Machinery\MachineryElectrolysis.srh.xml" />
-    <None Remove="Assets\Models\Machinery\MachineryGeneric.obj" />
-    <None Remove="Assets\Models\Machinery\SpaceDock.obj" />
-    <None Remove="Assets\Models\Machinery\SpaceDock.srh.xml" />
-    <None Remove="Assets\Models\PipeEnd.srh.xml" />
-    <None Remove="Assets\Models\Pipe\CleanedUpPipe.obj" />
-    <None Remove="Assets\Models\Pipe\Pipe.obj" />
-    <None Remove="Assets\Models\Pipe\Pipe180Bend.obj" />
-    <None Remove="Assets\Models\Pipe\Pipe90Bend.obj" />
-    <None Remove="Assets\Models\Pipe\PipeBend180.obj" />
-    <None Remove="Assets\Models\Pipe\PipeBend45.obj" />
-    <None Remove="Assets\Models\Pipe\PipeBend90.obj" />
-    <None Remove="Assets\Models\Pipe\PipeBend90.srh.xml" />
-    <None Remove="Assets\Models\Pipe\PipeDivergeT.xml" />
-    <None Remove="Assets\Models\Pipe\PipeDivergeX.srh.xml" />
-    <None Remove="Assets\Models\Pipe\PipeSpecialPump.srh.xml" />
-    <None Remove="Assets\Models\Pipe\PipeStraight.obj" />
-    <None Remove="Assets\Models\Pipe\PipeStraightDivergeT.obj" />
-    <None Remove="Assets\Models\Pipe\PipeStraightDivergeX.obj" />
-    <None Remove="Assets\Models\Pipe\PipeStraightDivergeY.obj" />
-    <None Remove="Assets\Models\Pipe\Special\MachineryElectrolysis.srh.xml" />
-    <None Remove="Assets\Models\Pipe\Special\PipeSpecialEnd.obj" />
-    <None Remove="Assets\Models\Pipe\Special\PipeSpecialPump.obj" />
-    <None Remove="Assets\Models\Pipe\Special\PipeSpecialValve.obj" />
-    <None Remove="Assets\Models\Pipe\Special\PipeSpecialValve.srh.xml" />
-    <None Remove="Assets\Models\Pipe\Special\PipeSpecialValveInternalBlocker.obj" />
-    <None Remove="Assets\Models\SpaceDock.srh.xml" />
-    <None Remove="Assets\Reaction Types\Electrolysis.srh.xml" />
-    <None Remove="Assets\Reaction Types\HydrogenOxygenCombustion.srh.xml" />
-    <None Remove="Assets\Reaction Types\PhaseChange.srh.xml" />
-    <None Remove="Assets\Settings\Graphics\DisplaySettings.srh.xml" />
-    <None Remove="Assets\Settings\VolumeSettings.srh.xml" />
+    <None Remove="_GameAssets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Intro.ogg" />
+    <None Remove="_GameAssets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Loop - Export 1.mp3" />
+    <None Remove="_GameAssets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Loop.ogg" />
+    <None Remove="_GameAssets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Outro.ogg" />
+    <None Remove="_GameAssets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Whole - Export 1.mp3" />
+    <None Remove="_GameAssets\Audio\Music\Industrial Fumes - Loop - Export 1.wav" />
+    <None Remove="_GameAssets\Audio\Music\Industrial Fumes - Whole - Export 1.wav" />
+    <None Remove="_GameAssets\Audio\Music\Industrial Fumes.xml" />
+    <None Remove="_GameAssets\BaseGame.manifest.srh.xml" />
+    <None Remove="_GameAssets\Chemical types\Hydrogen.srh.xml" />
+    <None Remove="_GameAssets\Chemical types\Oxygen.srh.xml" />
+    <None Remove="_GameAssets\Chemical types\Water.srh.xml" />
+    <None Remove="_GameAssets\External\Fonts\OpenSans\LICENSE.txt" />
+    <None Remove="_GameAssets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Bold.ttf" />
+    <None Remove="_GameAssets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Light.ttf" />
+    <None Remove="_GameAssets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Regular.ttf" />
+    <None Remove="_GameAssets\Models\Machinery\MachineryCombustionChamber.obj" />
+    <None Remove="_GameAssets\Models\Machinery\MachineryCombustionChamber.srh.xml" />
+    <None Remove="_GameAssets\Models\Machinery\MachineryElectrolysis.obj" />
+    <None Remove="_GameAssets\Models\Machinery\MachineryElectrolysis.srh.xml" />
+    <None Remove="_GameAssets\Models\Machinery\MachineryGeneric.obj" />
+    <None Remove="_GameAssets\Models\Machinery\SpaceDock.obj" />
+    <None Remove="_GameAssets\Models\Machinery\SpaceDock.srh.xml" />
+    <None Remove="_GameAssets\Models\PipeEnd.srh.xml" />
+    <None Remove="_GameAssets\Models\Pipe\CleanedUpPipe.obj" />
+    <None Remove="_GameAssets\Models\Pipe\Pipe.obj" />
+    <None Remove="_GameAssets\Models\Pipe\Pipe180Bend.obj" />
+    <None Remove="_GameAssets\Models\Pipe\Pipe90Bend.obj" />
+    <None Remove="_GameAssets\Models\Pipe\PipeBend180.obj" />
+    <None Remove="_GameAssets\Models\Pipe\PipeBend45.obj" />
+    <None Remove="_GameAssets\Models\Pipe\PipeBend90.obj" />
+    <None Remove="_GameAssets\Models\Pipe\PipeBend90.srh.xml" />
+    <None Remove="_GameAssets\Models\Pipe\PipeDivergeT.xml" />
+    <None Remove="_GameAssets\Models\Pipe\PipeDivergeX.srh.xml" />
+    <None Remove="_GameAssets\Models\Pipe\PipeSpecialPump.srh.xml" />
+    <None Remove="_GameAssets\Models\Pipe\PipeStraight.obj" />
+    <None Remove="_GameAssets\Models\Pipe\PipeStraightDivergeT.obj" />
+    <None Remove="_GameAssets\Models\Pipe\PipeStraightDivergeX.obj" />
+    <None Remove="_GameAssets\Models\Pipe\PipeStraightDivergeY.obj" />
+    <None Remove="_GameAssets\Models\Pipe\Special\MachineryElectrolysis.srh.xml" />
+    <None Remove="_GameAssets\Models\Pipe\Special\PipeSpecialEnd.obj" />
+    <None Remove="_GameAssets\Models\Pipe\Special\PipeSpecialPump.obj" />
+    <None Remove="_GameAssets\Models\Pipe\Special\PipeSpecialValve.obj" />
+    <None Remove="_GameAssets\Models\Pipe\Special\PipeSpecialValve.srh.xml" />
+    <None Remove="_GameAssets\Models\Pipe\Special\PipeSpecialValveInternalBlocker.obj" />
+    <None Remove="_GameAssets\Models\SpaceDock.srh.xml" />
+    <None Remove="_GameAssets\Reaction Types\Electrolysis.srh.xml" />
+    <None Remove="_GameAssets\Reaction Types\HydrogenOxygenCombustion.srh.xml" />
+    <None Remove="_GameAssets\Reaction Types\PhaseChange.srh.xml" />
+    <None Remove="_GameAssets\Settings\Graphics\DisplaySettings.srh.xml" />
+    <None Remove="_GameAssets\Settings\VolumeSettings.srh.xml" />
     <None Remove="OpenAL32.dll" />
     <None Remove="Pipe_1mx1m_Straight.obj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Intro.ogg">
+    <Content Include="_GameAssets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Intro.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Loop.ogg">
+    <Content Include="_GameAssets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Loop.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Outro.ogg">
+    <Content Include="_GameAssets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Outro.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Audio\Music\Ambient\Industrial Fumes\IndustrialFumes.srh.xml">
+    <Content Include="_GameAssets\Audio\Music\Ambient\Industrial Fumes\IndustrialFumes.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Chemical types\Water.srh.xml">
+    <Content Include="_GameAssets\Chemical types\Water.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Chemical types\Oxygen.srh.xml">
+    <Content Include="_GameAssets\Chemical types\Oxygen.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Chemical types\Hydrogen.srh.xml">
+    <Content Include="_GameAssets\Chemical types\Hydrogen.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\BaseGame.manifest.srh.xml">
+    <Content Include="_GameAssets\BaseGame.manifest.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\External\Fonts\OpenSans\LICENSE.txt">
+    <Content Include="_GameAssets\External\Fonts\OpenSans\LICENSE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Bold.ttf">
+    <Content Include="_GameAssets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Bold.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Light.ttf">
+    <Content Include="_GameAssets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Light.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Regular.ttf">
+    <Content Include="_GameAssets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Regular.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Machinery\MachineryCombustionChamber.obj">
+    <Content Include="_GameAssets\Models\Machinery\MachineryCombustionChamber.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Machinery\MachineryCombustionChamber.srh.xml">
+    <Content Include="_GameAssets\Models\Machinery\MachineryCombustionChamber.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Machinery\MachineryElectrolysis.obj">
+    <Content Include="_GameAssets\Models\Machinery\MachineryElectrolysis.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Machinery\MachineryElectrolysis.srh.xml">
+    <Content Include="_GameAssets\Models\Machinery\MachineryElectrolysis.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Machinery\MachineryGeneric.obj">
+    <Content Include="_GameAssets\Models\Machinery\MachineryGeneric.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Machinery\SpaceDock.srh.xml">
+    <Content Include="_GameAssets\Models\Machinery\SpaceDock.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Machinery\SpaceDock.obj">
+    <Content Include="_GameAssets\Models\Machinery\SpaceDock.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Pipe\PipeDivergeX.srh.xml">
+    <Content Include="_GameAssets\Models\Pipe\PipeDivergeX.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Pipe\PipeBend180.obj">
+    <Content Include="_GameAssets\Models\Pipe\PipeBend180.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Pipe\PipeBend45.obj">
+    <Content Include="_GameAssets\Models\Pipe\PipeBend45.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Pipe\PipeBend90.obj">
+    <Content Include="_GameAssets\Models\Pipe\PipeBend90.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Pipe\PipeDivergeT.xml">
+    <Content Include="_GameAssets\Models\Pipe\PipeDivergeT.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Pipe\PipeBend90.srh.xml">
+    <Content Include="_GameAssets\Models\Pipe\PipeBend90.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Pipe\Special\PipeSpecialPump.srh.xml">
+    <Content Include="_GameAssets\Models\Pipe\Special\PipeSpecialPump.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Pipe\PipeStraight.obj">
+    <Content Include="_GameAssets\Models\Pipe\PipeStraight.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Pipe\PipeStraightDivergeT.obj">
+    <Content Include="_GameAssets\Models\Pipe\PipeStraightDivergeT.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Pipe\PipeStraightDivergeX.obj">
+    <Content Include="_GameAssets\Models\Pipe\PipeStraightDivergeX.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Pipe\PipeStraightDivergeY.obj">
+    <Content Include="_GameAssets\Models\Pipe\PipeStraightDivergeY.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Pipe\PipeStraight.srh.xml">
+    <Content Include="_GameAssets\Models\Pipe\PipeStraight.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Pipe\Special\PipeSpecialEnd.obj">
+    <Content Include="_GameAssets\Models\Pipe\Special\PipeSpecialEnd.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Pipe\Special\PipeSpecialPump.obj">
+    <Content Include="_GameAssets\Models\Pipe\Special\PipeSpecialPump.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Pipe\Special\PipeSpecialValve.obj">
+    <Content Include="_GameAssets\Models\Pipe\Special\PipeSpecialValve.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Pipe\Special\PipeSpecialValveInternalBlocker.obj">
+    <Content Include="_GameAssets\Models\Pipe\Special\PipeSpecialValveInternalBlocker.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Pipe\Special\PipeSpecialEnd.srh.xml">
+    <Content Include="_GameAssets\Models\Pipe\Special\PipeSpecialEnd.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Pipe\Special\PipeSpecialValve.srh.xml">
+    <Content Include="_GameAssets\Models\Pipe\Special\PipeSpecialValve.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Reaction Types\PhaseChange.srh.xml">
+    <Content Include="_GameAssets\Reaction Types\PhaseChange.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Reaction Types\HydrogenOxygenCombustion.srh.xml">
+    <Content Include="_GameAssets\Reaction Types\HydrogenOxygenCombustion.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Reaction Types\Electrolysis.srh.xml">
+    <Content Include="_GameAssets\Reaction Types\Electrolysis.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Settings\Audio\VolumeSettings.srh.xml">
+    <Content Include="_GameAssets\Settings\Audio\VolumeSettings.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Settings\Units\UnitSettings.srh.xml">
+    <Content Include="_GameAssets\Settings\Units\UnitSettings.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Settings\Graphics\DisplaySettings.srh.xml">
+    <Content Include="_GameAssets\Settings\Graphics\DisplaySettings.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -64,7 +64,7 @@
 				</Elements>
 			</ConnectorProperties>
 			<HasConnectorNames>False</HasConnectorNames>
-			<ModelPath>Assets\Models\Pipe\PipeStraightDivergeX.obj</ModelPath>
+			<ModelPath>Models\Pipe\PipeStraightDivergeX.obj</ModelPath>
 			<Type>Space_Refinery_Game.OrdinaryPipe</Type>
 		</IEntitySerializable>
 	</Elements>

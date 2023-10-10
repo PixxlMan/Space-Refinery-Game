@@ -72,7 +72,7 @@ public sealed class MainGame
 		List<string> manifestFilePaths = new();
 
 		manifestFilePaths.AddRange(Directory.GetFiles(AssetsPath, $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
-		manifestFilePaths.AddRange(Directory.GetFiles("../../../../Space Refinery Game/bin/Debug/net7.0/Assets", $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
+		manifestFilePaths.AddRange(Directory.GetFiles("../../../../Space Refinery Game/bin/Debug/net7.0/_GameAssets", $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
 
 		// Find all extension manifest files and add them to manifestFilePaths,
 		// or if there is a directory without any manifest file create a 'No File'-manifest and add it to nameToExtensionManifest and extensionManifestToDirectoryName.

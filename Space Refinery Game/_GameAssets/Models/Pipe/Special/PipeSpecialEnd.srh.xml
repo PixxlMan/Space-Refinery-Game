@@ -4,26 +4,16 @@
 	<Elements>
 		<IEntitySerializable>
 			<Type>Space_Refinery_Game.PipeType</Type>
-			<Reference>T Pipe</Reference>
-			<Name>T Pipe</Name>
+			<Reference>Pipe End</Reference>
+			<Name>Pipe End</Name>
 			<Shape>Cylindrical</Shape>
-			<FlowableVolume>0.24</FlowableVolume>
+			<FlowableVolume>0</FlowableVolume>
 			<Friction>0.04</Friction>
 			<ConnectorPlacements>
-				<Count>3</Count>
+				<Count>1</Count>
 				<Elements>
 					<Position>
-						<X>0</X>
-						<Y>-0.5</Y>
-						<Z>0</Z>
-					</Position>
-					<Direction>
-						<X>0</X>
-						<Y>-1</Y>
-						<Z>0</Z>
-					</Direction>
-					<Position>
-						<X>0.5</X>
+						<X>0.0125</X>
 						<Y>0</Y>
 						<Z>0</Z>
 					</Position>
@@ -32,28 +22,17 @@
 						<Y>0</Y>
 						<Z>0</Z>
 					</Direction>
-					<Position>
-						<X>-0.5</X>
-						<Y>0</Y>
-						<Z>0</Z>
-					</Position>
-					<Direction>
-						<X>-1</X>
-						<Y>0</Y>
-						<Z>0</Z>
-					</Direction>
 				</Elements>
 			</ConnectorPlacements>
 			<ConnectorProperties>
-				<Count>3</Count>
+				<Count>2</Count>
 				<Elements>
-					<Reference>DefaultPipeConnector</Reference>
 					<Reference>DefaultPipeConnector</Reference>
 					<Reference>DefaultPipeConnector</Reference>
 				</Elements>
 			</ConnectorProperties>
 			<HasConnectorNames>False</HasConnectorNames>
-			<ModelPath>Assets\Models\Pipe\PipeStraightDivergeT.obj</ModelPath>
+			<ModelPath>Models\Pipe\Special\PipeSpecialEnd.obj</ModelPath>
 			<Type>Space_Refinery_Game.OrdinaryPipe</Type>
 		</IEntitySerializable>
 	</Elements>

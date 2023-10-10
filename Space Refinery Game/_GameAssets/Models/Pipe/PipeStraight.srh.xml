@@ -4,24 +4,14 @@
 	<Elements>
 		<IEntitySerializable>
 			<Type>Space_Refinery_Game.PipeType</Type>
-			<Reference>Combustion Chamber</Reference>
-			<Name>Combustion Chamber</Name>
+			<Reference>Straight Pipe</Reference>
+			<Name>Straight Pipe</Name>
 			<Shape>Cylindrical</Shape>
 			<FlowableVolume>0.16</FlowableVolume>
 			<Friction>0.04</Friction>
 			<ConnectorPlacements>
-				<Count>3</Count>
+				<Count>2</Count>
 				<Elements>
-					<Position>
-						<X>-0.5</X>
-						<Y>0</Y>
-						<Z>0</Z>
-					</Position>
-					<Direction>
-						<X>-1</X>
-						<Y>0</Y>
-						<Z>0</Z>
-					</Direction>
 					<Position>
 						<X>0.5</X>
 						<Y>0</Y>
@@ -33,36 +23,27 @@
 						<Z>0</Z>
 					</Direction>
 					<Position>
-						<X>0</X>
-						<Y>0.5</Y>
+						<X>-0.5</X>
+						<Y>0</Y>
 						<Z>0</Z>
 					</Position>
 					<Direction>
-						<X>0</X>
-						<Y>1</Y>
+						<X>-1</X>
+						<Y>0</Y>
 						<Z>0</Z>
 					</Direction>
 				</Elements>
 			</ConnectorPlacements>
 			<ConnectorProperties>
-				<Count>3</Count>
+				<Count>2</Count>
 				<Elements>
-					<Reference>DefaultPipeConnector</Reference>
 					<Reference>DefaultPipeConnector</Reference>
 					<Reference>DefaultPipeConnector</Reference>
 				</Elements>
 			</ConnectorProperties>
-			<HasConnectorNames>True</HasConnectorNames>
-			<Collection>
-				<Count>3</Count>
-				<Elements>
-					<ConnectorName>FuelInput</ConnectorName>
-					<ConnectorName>OxygenInput</ConnectorName>
-					<ConnectorName>ProductOutput</ConnectorName>
-				</Elements>
-			</Collection>
-			<ModelPath>Assets\Models\Machinery\MachineryCombustionChamber.obj</ModelPath>
-			<Type>Space_Refinery_Game.MachineryCombustionChamber</Type>
+			<HasConnectorNames>False</HasConnectorNames>
+			<ModelPath>Models\Pipe\PipeStraight.obj</ModelPath>
+			<Type>Space_Refinery_Game.OrdinaryPipe</Type>
 		</IEntitySerializable>
 	</Elements>
 </SerializationReferenceHandler>

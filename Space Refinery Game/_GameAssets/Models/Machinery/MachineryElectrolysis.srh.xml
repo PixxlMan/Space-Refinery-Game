@@ -61,7 +61,7 @@
 					<ConnectorName>WaterInput</ConnectorName>
 				</Elements>
 			</Collection>
-			<ModelPath>Assets\Models\Machinery\MachineryElectrolysis.obj</ModelPath>
+			<ModelPath>Models\Machinery\MachineryElectrolysis.obj</ModelPath>
 			<Type>Space_Refinery_Game.ElectrolysisMachinery</Type>
 		</IEntitySerializable>
 	</Elements>

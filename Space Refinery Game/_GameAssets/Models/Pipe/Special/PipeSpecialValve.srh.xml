@@ -4,26 +4,26 @@
 	<Elements>
 		<IEntitySerializable>
 			<Type>Space_Refinery_Game.PipeType</Type>
-			<Reference>90 Bend Pipe</Reference>
-			<Name>90 Bend Pipe</Name>
+			<Reference>Valve Pipe</Reference>
+			<Name>Valve Pipe</Name>
 			<Shape>Cylindrical</Shape>
-			<FlowableVolume>0.16</FlowableVolume>
+			<FlowableVolume>0.04</FlowableVolume>
 			<Friction>0.04</Friction>
 			<ConnectorPlacements>
 				<Count>2</Count>
 				<Elements>
 					<Position>
-						<X>0</X>
-						<Y>-0.5</Y>
+						<X>0.25</X>
+						<Y>0</Y>
 						<Z>0</Z>
 					</Position>
 					<Direction>
-						<X>0</X>
-						<Y>-1</Y>
+						<X>1</X>
+						<Y>0</Y>
 						<Z>0</Z>
 					</Direction>
 					<Position>
-						<X>-0.5</X>
+						<X>-0.25</X>
 						<Y>0</Y>
 						<Z>0</Z>
 					</Position>
@@ -42,8 +42,8 @@
 				</Elements>
 			</ConnectorProperties>
 			<HasConnectorNames>False</HasConnectorNames>
-			<ModelPath>Assets\Models\Pipe\PipeBend90.obj</ModelPath>
-			<Type>Space_Refinery_Game.OrdinaryPipe</Type>
+			<ModelPath>Models\Pipe\Special\PipeSpecialValve.obj</ModelPath>
+			<Type>Space_Refinery_Game.ValvePipe</Type>
 		</IEntitySerializable>
 	</Elements>
 </SerializationReferenceHandler>

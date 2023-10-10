@@ -3,7 +3,7 @@ using Space_Refinery_Engine.Audio;
 
 namespace Space_Refinery_Engine
 {
-	public sealed class GameData // Should this be thread safe? Or maybe just made readonly?
+	public sealed record class GameData
 	{
 		public enum GameDataChange
 		{

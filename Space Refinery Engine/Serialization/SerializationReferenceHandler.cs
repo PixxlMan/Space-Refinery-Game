@@ -205,4 +205,47 @@ public sealed class SerializationReferenceHandler
 			}
 		}
 	}
+
+	public void DeserializeInto<T>(XmlReader reader, SerializationData serializationData, out ICollection<T> deserializedCollection, bool exitAllowEventualReferenceModeBeforeReturning = true)
+		where T : ISerializableReference
+	{
+		lock (SyncRoot)
+		{
+			EnterAllowEventualReferenceMode(false);
+
+			deserializedCollection = reader.DeserializeCollection<T>((r) =>
+				{
+					var deserialized = (T)r.DeserializeEntitySerializableWithEmbeddedType(serializationData, this);
+					RegisterReference(deserialized);
+					return deserialized;
+				},
+				nameof(SerializationReferenceHandler));
+
+			if (exitAllowEventualReferenceModeBeforeReturning)
+			{
+				ExitAllowEventualReferenceMode();
+			}
+		}
+	}
+
+	public void DeserializeInto(XmlReader reader, SerializationData serializationData, out ICollection<ISerializableReference> deserializedCollection, bool exitAllowEventualReferenceModeBeforeReturning = true)
+	{
+		lock (SyncRoot)
+		{
+			EnterAllowEventualReferenceMode(false);
+
+			deserializedCollection = reader.DeserializeCollection((r) =>
+				{
+					var deserialized = (ISerializableReference)r.DeserializeEntitySerializableWithEmbeddedType(serializationData, this);
+					RegisterReference(deserialized);
+					return deserialized;
+				},
+				nameof(SerializationReferenceHandler));
+
+			if (exitAllowEventualReferenceModeBeforeReturning)
+			{
+				ExitAllowEventualReferenceMode();
+			}
+		}
+	}
 }

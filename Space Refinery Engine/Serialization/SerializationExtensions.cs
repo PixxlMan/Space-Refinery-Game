@@ -36,7 +36,7 @@ namespace Space_Refinery_Engine
 
 		public static Type DeserializeType(this XmlReader reader, string name = "Type")
 		{
-			return Type.GetType(reader.ReadString(name), true);
+			return Type.GetType(reader.ReadString(name), true)!;
 		}
 
 		public static void Serialize(this XmlWriter writer, Enum @enum, string name = "Enum")

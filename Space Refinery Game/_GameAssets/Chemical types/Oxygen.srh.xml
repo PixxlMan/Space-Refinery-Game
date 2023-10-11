@@ -4,7 +4,7 @@
 	<Elements>
 		<!--Yabbabbabba-->
 		<IEntitySerializable>
-			<Type>Space_Refinery_Game.ChemicalType</Type>
+			<Type>Space_Refinery_Engine.ChemicalType</Type>
 			<ChemicalType>
 				<Reference>Oxygen</Reference>
 				<ChemicalName>Oxygen</ChemicalName>

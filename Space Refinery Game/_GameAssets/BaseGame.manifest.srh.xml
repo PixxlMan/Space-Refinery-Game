@@ -8,7 +8,7 @@
 			<ExtensionName>Space Refinery Base Game</ExtensionName>
 			<ExtensionVersion>1.0.0.0</ExtensionVersion>
 			<HasAssembly>True</HasAssembly>
-			<ExtensionAssemblyName>Space Refinery Game</ExtensionAssemblyName>
+			<ExtensionAssemblyName>../Space Refinery Game</ExtensionAssemblyName>
 			<AssetsPath>../../../../../Space Refinery Game/bin/Debug/net7.0/_GameAssets</AssetsPath>
 			<Collection>
 				<Count>1</Count>

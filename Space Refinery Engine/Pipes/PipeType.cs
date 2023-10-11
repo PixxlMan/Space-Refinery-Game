@@ -125,7 +125,7 @@ namespace Space_Refinery_Engine
 
 			Mesh = serializationData.GameData.GraphicsWorld.MeshLoader.LoadCached(ModelPath);
 
-			TypeOfPipe = reader.DeserializeType();
+			TypeOfPipe = reader.DeserializeType(serializationData);
 
 			if (!PipeTypes.TryAdd(Name, this))
 			{

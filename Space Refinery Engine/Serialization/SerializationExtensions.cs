@@ -34,9 +34,14 @@ namespace Space_Refinery_Engine
 			writer.WriteElementString(name, type.FullName);
 		}
 
-		public static Type DeserializeType(this XmlReader reader, string name = "Type")
+		public static Type DeserializeType(this XmlReader reader, SerializationData serializationData, string name = "Type")
 		{
-			return Type.GetType(reader.ReadString(name), true)!;
+			var typeName = reader.ReadString(name);
+
+			// If there is no AssemblyContext, then move on and seek normally. If the AssemblyContext seek turned up blank, also check regular type.
+			// The type might be in another, accessible, type.
+			return serializationData.AssemblyContext?.GetType(typeName, false)
+				?? Type.GetType(typeName, true)!;
 		}
 
 		public static void Serialize(this XmlWriter writer, Enum @enum, string name = "Enum")

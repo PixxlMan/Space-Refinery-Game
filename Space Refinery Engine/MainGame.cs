@@ -43,7 +43,7 @@ public sealed class MainGame
 
 		foreach ((var extension, var files) in srhFiles)
 		{
-			SerializationData serializationData = new(gameData) { DeserializationCompleteEvent = DeserializationCompleteEvent };
+			SerializationData serializationData = new(gameData, extension.HostAssembly!) { DeserializationCompleteEvent = DeserializationCompleteEvent };
 
 			foreach (var file in files)
 			{

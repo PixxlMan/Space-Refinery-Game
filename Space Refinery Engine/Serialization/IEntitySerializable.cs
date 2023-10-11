@@ -57,7 +57,7 @@ namespace Space_Refinery_Engine
 		{
 			reader.ReadStartElement(name);
 			{
-				Type type = reader.DeserializeType();
+				Type type = reader.DeserializeType(serializationData);
 
 				if (!type.IsAssignableTo(typeof(IEntitySerializable)))
 				{

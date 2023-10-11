@@ -3,7 +3,7 @@
 	<Count>1</Count>
 	<Elements>
 		<IEntitySerializable>
-			<Type>Space_Refinery_Game.PipeType</Type>
+			<Type>Space_Refinery_Engine.PipeType</Type>
 			<Reference>T Pipe</Reference>
 			<Name>T Pipe</Name>
 			<Shape>Cylindrical</Shape>

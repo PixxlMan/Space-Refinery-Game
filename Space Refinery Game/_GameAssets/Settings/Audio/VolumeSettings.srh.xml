@@ -3,14 +3,14 @@
 	<Count>2</Count>
 	<Elements>
 		<IEntitySerializable>
-			<Type>Space_Refinery_Game.SliderSetting</Type>
+			<Type>Space_Refinery_Engine.SliderSetting</Type>
 			<Reference>Main Volume</Reference>
 			<Name>Main Volume</Name>
 			<Description>
 				Controls the output volume of all audio.
 			</Description>
 			<DefaultValue>
-				<Type>Space_Refinery_Game.SliderSettingValue</Type>
+				<Type>Space_Refinery_Engine.SliderSettingValue</Type>
 				<SliderValue>50</SliderValue>
 			</DefaultValue>
 			<Min>0</Min>
@@ -18,14 +18,14 @@
 			<SliderValueSuffix>%%</SliderValueSuffix>
 		</IEntitySerializable>
 		<IEntitySerializable>
-			<Type>Space_Refinery_Game.SliderSetting</Type>
+			<Type>Space_Refinery_Engine.SliderSetting</Type>
 			<Reference>Music Volume</Reference>
 			<Name>Music Volume</Name>
 			<Description>
 				Controls the volume of music.
 			</Description>
 			<DefaultValue>
-				<Type>Space_Refinery_Game.SliderSettingValue</Type>
+				<Type>Space_Refinery_Engine.SliderSettingValue</Type>
 				<SliderValue>100</SliderValue>
 			</DefaultValue>
 			<Min>0</Min>

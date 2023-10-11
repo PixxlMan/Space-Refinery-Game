@@ -3,14 +3,14 @@
 	<Count>3</Count>
 	<Elements>
 		<IEntitySerializable>
-			<Type>Space_Refinery_Game.SliderSetting</Type>
+			<Type>Space_Refinery_Engine.SliderSetting</Type>
 			<Reference>Field Of View</Reference>
 			<Name>FoV</Name>
 			<Description>
 				Set the width of the character's view in degrees (°).
 			</Description>
 			<DefaultValue>
-				<Type>Space_Refinery_Game.SliderSettingValue</Type>
+				<Type>Space_Refinery_Engine.SliderSettingValue</Type>
 				<SliderValue>65</SliderValue>
 			</DefaultValue>
 			<Min>30</Min>
@@ -18,14 +18,14 @@
 			<SliderValueSuffix>°</SliderValueSuffix>
 		</IEntitySerializable>
 		<IEntitySerializable>
-			<Type>Space_Refinery_Game.SliderSetting</Type>
+			<Type>Space_Refinery_Engine.SliderSetting</Type>
 			<Reference>Max Framerate</Reference>
 			<Name>Max FPS</Name>
 			<Description>
 				Set the maximum framerate for the game. Only used if Limit Framerate is enabled.
 			</Description>
 			<DefaultValue>
-				<Type>Space_Refinery_Game.SliderSettingValue</Type>
+				<Type>Space_Refinery_Engine.SliderSettingValue</Type>
 				<SliderValue>500</SliderValue>
 			</DefaultValue>
 			<Min>10</Min>
@@ -33,14 +33,14 @@
 			<SliderValueSuffix>FPS</SliderValueSuffix>
 		</IEntitySerializable>
 		<IEntitySerializable>
-			<Type>Space_Refinery_Game.SwitchSetting</Type>
+			<Type>Space_Refinery_Engine.SwitchSetting</Type>
 			<Reference>Limit Framerate</Reference>
 			<Name>Limit FPS</Name>
 			<Description>
 				Enable to limit the framerate to the framerate specified in Max FPS.
 			</Description>
 			<DefaultValue>
-				<Type>Space_Refinery_Game.SwitchSettingValue</Type>
+				<Type>Space_Refinery_Engine.SwitchSettingValue</Type>
 				<SwitchValue>True</SwitchValue>
 			</DefaultValue>
 		</IEntitySerializable>

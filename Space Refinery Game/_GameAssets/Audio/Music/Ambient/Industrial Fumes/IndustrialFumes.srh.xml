@@ -3,28 +3,28 @@
 	<Count>4</Count>
 	<Elements>
 		<IEntitySerializable>
-			<Type>Space_Refinery_Game.Audio.AudioResource</Type>
+			<Type>Space_Refinery_Engine.Audio.AudioResource</Type>
 			<Reference>72241C36-2DDE-4622-A6D3-FDFD1ED29E2E</Reference>
 			<Name>Industrial Fumes Intro</Name>
 			<ResourcePath>Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Intro.ogg</ResourcePath>
 			<ClipVolume>1</ClipVolume>
 		</IEntitySerializable>
 		<IEntitySerializable>
-			<Type>Space_Refinery_Game.Audio.AudioResource</Type>
+			<Type>Space_Refinery_Engine.Audio.AudioResource</Type>
 			<Reference>e3a0ef41-d682-43f2-8238-5945cac64618</Reference>
 			<Name>Industrial Fumes Loop</Name>
 			<ResourcePath>Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Loop.ogg</ResourcePath>
 			<ClipVolume>1</ClipVolume>
 		</IEntitySerializable>
 		<IEntitySerializable>
-			<Type>Space_Refinery_Game.Audio.AudioResource</Type>
+			<Type>Space_Refinery_Engine.Audio.AudioResource</Type>
 			<Reference>bdb1f893-3aed-44bd-9169-fa9c37d0e270</Reference>
 			<Name>Industrial Fumes Outro</Name>
 			<ResourcePath>Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Outro.ogg</ResourcePath>
 			<ClipVolume>1</ClipVolume>
 		</IEntitySerializable>
 		<IEntitySerializable>
-			<Type>Space_Refinery_Game.Audio.MusicResource</Type>
+			<Type>Space_Refinery_Engine.Audio.MusicResource</Type>
 			<Reference>537454ea-3bb6-4cea-849b-232796d68f2e</Reference>
 			<Name>Industrial Fumes Music</Name>
 			<Tracks>

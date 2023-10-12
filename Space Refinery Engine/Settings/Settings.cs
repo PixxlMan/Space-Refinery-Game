@@ -226,10 +226,9 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 			{
 				r.ReadStartElement(nameof(ISettingValue));
 				{
-					r.DeserializeReference<Setting>(
-						settingsReferenceHandler,
-						(st) => st.SettingValue = (ISettingValue)r.DeserializeEntitySerializableWithEmbeddedType(serializationData, settingsReferenceHandler),
-						"SettingReference");
+					var setting = r.DeserializeKnownReference<Setting>(settingsReferenceHandler, "SettingReference");
+
+					setting.SettingValue = (ISettingValue)r.DeserializeEntitySerializableWithEmbeddedType(serializationData, settingsReferenceHandler);
 				}
 				r.ReadEndElement();
 			}, "SettingValues");

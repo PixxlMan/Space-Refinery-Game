@@ -8,6 +8,8 @@
 			<ExtensionName>Engine</ExtensionName>
 			<ExtensionVersion>1.0.0.0</ExtensionVersion>
 			<HasAssembly>False</HasAssembly>
+			<!--<HasAssembly>True</HasAssembly>
+			<EngineAssembly/>-->
 			<AssetsPath>../Assets</AssetsPath> <!--Same path!-->
 			<Collection>
 				<Count>0</Count>

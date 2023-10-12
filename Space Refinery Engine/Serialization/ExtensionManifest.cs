@@ -20,15 +20,18 @@ public sealed class ExtensionManifest : ISerializableReference
 	[NotNull]
 	public ICollection<ExtensionDependency>? Dependencies;
 
+	/// <summary>
+	/// Relative path to the assets directory.
+	/// </summary>
 	[NotNull]
 	public string? AssetsPath;
 
-	public static ExtensionManifest GenerateNoFileManifest(string extensionName, string assetsPath)
+	public static ExtensionManifest GenerateNoFileManifest(string extensionName, string relativeAssetsPath)
 	{
 		return new ExtensionManifest()
 		{
 			ExtensionName = extensionName,
-			AssetsPath = assetsPath,
+			AssetsPath = relativeAssetsPath,
 			Dependencies = Array.Empty<ExtensionDependency>(),
 			ExtensionVersion = new(1, 0, 0, 0),
 		};

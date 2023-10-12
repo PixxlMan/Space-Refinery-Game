@@ -13,9 +13,13 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 		private SerializationReferenceHandler settingsReferenceHandler = new();
 		private ConcurrentDictionary<string, Setting> settings = new();
 
-		public Settings()
+		private GameData gameData;
+
+		public Settings(GameData gameData)
 		{
 			settingsReferenceHandler.EnterAllowEventualReferenceMode(false);
+
+			this.gameData = gameData;
 		}
 
 		public SerializableReference SerializableReference { get; private set; }
@@ -173,7 +177,7 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 
 			using var writer = XmlWriter.Create(stream, new XmlWriterSettings() { Indent = true, IndentChars = "\t" });
 
-			SerializeSettingValues(writer);
+			SerializeSettingValues(writer, new(gameData, MainGame.EngineExtension));
 
 			writer.Flush();
 			writer.Close();
@@ -191,7 +195,7 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 			{
 				using var reader = XmlReader.Create(settingValuesPath, new XmlReaderSettings() { ConformanceLevel = ConformanceLevel.Document });
 
-				DeserializeSettingValues(reader);
+				DeserializeSettingValues(reader, new(gameData, MainGame.EngineExtension));
 			}
 			else
 			{
@@ -203,7 +207,7 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 			AcceptAllSettings();
 		}
 
-		public void SerializeSettingValues(XmlWriter writer)
+		public void SerializeSettingValues(XmlWriter writer, SerializationData serializationData)
 		{
 			writer.Serialize(settings.Values, (w, st) =>
 			{ 
@@ -216,13 +220,16 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 			}, "SettingValues");
 		}
 
-		public void DeserializeSettingValues(XmlReader reader)
+		public void DeserializeSettingValues(XmlReader reader, SerializationData serializationData)
 		{
 			reader.DeserializeCollection((r) =>
 			{
 				r.ReadStartElement(nameof(ISettingValue));
 				{
-					r.DeserializeReference<Setting>(settingsReferenceHandler, (st) => st.SettingValue = (ISettingValue)r.DeserializeEntitySerializableWithEmbeddedType(null, settingsReferenceHandler), "SettingReference");
+					r.DeserializeReference<Setting>(
+						settingsReferenceHandler,
+						(st) => st.SettingValue = (ISettingValue)r.DeserializeEntitySerializableWithEmbeddedType(serializationData, settingsReferenceHandler),
+						"SettingReference");
 				}
 				r.ReadEndElement();
 			}, "SettingValues");

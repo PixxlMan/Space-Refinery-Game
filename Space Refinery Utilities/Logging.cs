@@ -13,13 +13,64 @@ public static class Logging
 
 	private const int scopeIndentation = 4;
 
+	private const int minimumIndentation = 16; // Try to avoid overwriting the pre-message text.
+
+	private static int extraSpace = 0;
+
+	private const int spaceMargin = 1;
+
+	public enum LogType
+	{
+		Error,
+		Warning,
+		Simulation,
+		Log,
+		Debug,
+	}
+
+	private static void PreFormat(LogType logType)
+	{
+		string timeStamp = $"@{Time.CurrentTickTime} s:";
+
+		switch (logType)
+		{
+			case LogType.Error:
+				Console.Write($"[ERROR]{timeStamp}");
+				break;
+			case LogType.Warning:
+				Console.Write($"[WARN]{timeStamp}");
+				break;
+			case LogType.Simulation:
+				timeStamp = $"{timeStamp} & {Time.TicksElapsed} ticks";
+				Console.Write($"[SIMUL]{timeStamp}");
+				break;
+			case LogType.Log:
+				Console.Write($"[LOG]{timeStamp}");
+				break;
+			case LogType.Debug:
+				// Debug doesn't call PreFormat.
+				break;
+			default:
+				Console.Write($"[MISC]{timeStamp}");
+				break;
+		}
+
+		const int longestLogTag = 7;
+		if (timeStamp.Length + longestLogTag + spaceMargin >= minimumIndentation + extraSpace)
+		{
+			extraSpace = timeStamp.Length + longestLogTag + spaceMargin - minimumIndentation;
+		}
+
+		Console.SetCursorPosition(minimumIndentation + extraSpace + scopeIndentation * scopeDepth, Console.GetCursorPosition().Top);
+	}
+
 	[DebuggerHidden]
 	public static void Log(string logText)
 	{
 		lock (syncRoot)
 		{
-			Indent();
-			Console.WriteLine($"[LOG] {logText}");
+			PreFormat(LogType.Log);
+			Console.WriteLine($"{logText}");
 		}
 	}
 
@@ -28,8 +79,8 @@ public static class Logging
 	{
 		lock (syncRoot)
 		{
-			Indent();
-			Console.WriteLine($"[SIMUL@{Time.TicksElapsed}] {logText}");
+			PreFormat(LogType.Simulation);
+			Console.WriteLine($"{logText}");
 		}
 	}
 
@@ -56,8 +107,7 @@ public static class Logging
 	{
 		lock (syncRoot)
 		{
-			Indent();
-			LogColor($"[ERROR@{Time.TicksElapsed}={Time.CurrentTickTime} s] {logText}", ConsoleColor.Red);
+			LogColor($"{logText}", ConsoleColor.Red, LogType.Error);
 		}
 	}
 
@@ -66,24 +116,21 @@ public static class Logging
 	{
 		lock (syncRoot)
 		{
-			Indent();
-			LogColor($"[WARN] {logText}", ConsoleColor.Yellow);
+			LogColor($"{logText}", ConsoleColor.Yellow, LogType.Warning);
 		}
 	}
 
 	[DebuggerHidden]
-	public static void LogColor(string logText, ConsoleColor color)
+	public static void LogColor(string logText, ConsoleColor color, LogType logType)
 	{
 		lock (syncRoot)
 		{
-			Indent();
-			lock (syncRoot)
-			{
-				var originalColor = Console.ForegroundColor;
-				Console.ForegroundColor = color;
-				Console.WriteLine(logText);
-				Console.ForegroundColor = originalColor;
-			}
+			PreFormat(logType);
+
+			var originalColor = Console.ForegroundColor;
+			Console.ForegroundColor = color;
+			Console.WriteLine(logText);
+			Console.ForegroundColor = originalColor;
 		}
 	}
 
@@ -109,11 +156,6 @@ public static class Logging
 		}
 	}
 
-	private static void Indent()
-	{
-		Console.SetCursorPosition(scopeIndentation * scopeDepth, Console.GetCursorPosition().Top);
-	}
-
 	[DebuggerHidden]
 	public static void LogAll<T>(IEnumerable<T> enumerable, string logText)
 	{
@@ -131,7 +173,7 @@ public static class Logging
 	}
 
 	[DebuggerHidden]
-	public static void LogAll<T>(IEnumerable<T> enumerable, Func<T, string> stringLogFunc, string logText)
+	public static void LogAll<T>(IEnumerable<T> enumerable, string logText, Func<T, string> stringLogFunc)
 	{
 		lock (syncRoot)
 		{

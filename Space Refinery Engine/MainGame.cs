@@ -63,7 +63,6 @@ public sealed class MainGame
 
 		List<SerializationData> serializationDatas = new(); // get rid of this when extension context is gone too!
 
-
 		foreach ((var extension, var files) in srhFiles)
 		{
 			SerializationData serializationData = new(gameData, extension);
@@ -105,6 +104,8 @@ public sealed class MainGame
 
 		manifestFilePaths.AddRange(Directory.GetFiles(AssetsPath, $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
 		manifestFilePaths.AddRange(Directory.GetFiles("../../../../Space Refinery Game/bin/Debug/net7.0/_GameAssets", $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
+
+		Logging.LogAll(manifestFilePaths, "Manifest file paths to be parsed");
 
 		// Find all extension manifest files and add them to manifestFilePaths,
 		// or if there is a directory without any manifest file create a 'No File'-manifest and add it to nameToExtensionManifest and extensionManifestToDirectoryName.

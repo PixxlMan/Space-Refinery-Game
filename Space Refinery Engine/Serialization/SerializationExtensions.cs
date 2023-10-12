@@ -79,6 +79,36 @@ namespace Space_Refinery_Engine
 			return value;
 		}
 
+		/// <summary>
+		/// Returns an absolute path from the contained path relative to the assets directory of the extension.
+		/// </summary>
+		/// <returns>An absolute path from the contained path relative to the assets directory of the extension.</returns>
+		public static string ReadAssetPath(this XmlReader reader, SerializationData serializationData, string? name = null)
+		{
+			string extensionAssetsRelativePath;
+
+			if (name is null)
+			{
+				reader.ReadStartElement();
+				{
+					extensionAssetsRelativePath = reader.ReadString();
+				}
+				reader.ReadEndElement();
+			}
+			else
+			{
+				reader.ReadStartElement(name);
+				{
+					extensionAssetsRelativePath = reader.ReadString();
+				}
+				reader.ReadEndElement();
+			}
+
+			var absolutePath = Path.Combine(serializationData.ExtensionContext.AssetsPath, extensionAssetsRelativePath);
+
+			return absolutePath;
+		}
+
 		public static void Serialize(this XmlWriter writer, Transform transform, string? name = null)
 		{
 			writer.WriteStartElement(name ?? nameof(Transform));

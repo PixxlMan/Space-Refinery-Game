@@ -105,10 +105,9 @@ public sealed class MainGame
 		manifestFilePaths.AddRange(Directory.GetFiles(AssetsPath, $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
 		manifestFilePaths.AddRange(Directory.GetFiles("../../../../Space Refinery Game/bin/Debug/net7.0/_GameAssets", $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
 
-		Logging.LogAll(manifestFilePaths, "Manifest file paths to be parsed");
-
 		// Find all extension manifest files and add them to manifestFilePaths,
-		// or if there is a directory without any manifest file create a 'No File'-manifest and add it to nameToExtensionManifest and extensionManifestToDirectoryName.
+		// or if there is a directory without any manifest file create a 'No File'-manifest
+		// and add it to nameToExtensionManifest and extensionManifestToDirectoryName.
 		Directory.CreateDirectory(ModPath);
 		foreach (var extensionDirectory in Directory.GetDirectories(ModPath))
 		{
@@ -127,6 +126,10 @@ public sealed class MainGame
 
 			manifestFilePaths.Add(extensionManifestsInDirectory[0]);
 		}
+
+		Logging.LogAll(manifestFilePaths, "Extension manifest files to be loaded");
+
+		Logging.LogAll(nameToExtensionManifest.Keys, "Additional extension manifest files generated");
 
 		// Deserialize the manifests and add them to nameToExtensionManifest and extensionManifestToDirectoryName.
 		referenceHandler.EnterAllowEventualReferenceMode(allowUnresolvedEventualReferences: false);

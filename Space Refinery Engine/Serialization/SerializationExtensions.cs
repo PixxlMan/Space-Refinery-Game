@@ -569,15 +569,46 @@ namespace Space_Refinery_Engine
 			return serializableReference;
 		}
 
+		/// <summary>
+		/// Deserializes a reference and adds a reference access callback to eventually get the reference.
+		/// </summary>
+		/// <remarks>
+		/// <paramref name="refrenceRegisteredCallback"/> can be called at any time. Do not perform any serialization inside the callback as it may not return immediately.
+		/// Instead use <see cref="DeserializeKnownReference"/> to access a serializable reference when it is known to exist.
+		/// </remarks>
 		public static void DeserializeReference(this XmlReader reader, SerializationReferenceHandler referenceHandler, Action<ISerializableReference> referenceRegisteredCallback, string name = "Reference")
 		{
 			referenceHandler.GetEventualReference(ReadReference(reader, name), referenceRegisteredCallback);
 		}
 
+		/// <summary>
+		/// Deserializes a reference and adds a reference access callback to eventually get the reference.
+		/// </summary>
+		/// <remarks>
+		/// <paramref name="refrenceRegisteredCallback"/> can be called at any time. Do not perform any serialization inside the callback as it may not return immediately.
+		/// Instead use <see cref="DeserializeKnownReference{T}"/> to access a serializable reference when it is known to exist.
+		/// </remarks>
 		public static void DeserializeReference<T>(this XmlReader reader, SerializationReferenceHandler referenceHandler, Action<T> refrenceRegisteredCallback, string name = "Reference")
 			where T : ISerializableReference
 		{
 			DeserializeReference(reader, referenceHandler, (s) => refrenceRegisteredCallback((T)s), name);
+		}
+
+		/// <summary>
+		/// Deserialized and accesses a reference when it's known to exist at time of call.
+		/// </summary>
+		public static ISerializableReference DeserializeKnownReference(this XmlReader reader, SerializationReferenceHandler referenceHandler, string name = "Reference")
+		{
+			return referenceHandler[ReadReference(reader, name)];
+		}
+
+		/// <summary>
+		/// Deserialized and accesses a reference when it's known to exist at time of call.
+		/// </summary>
+		public static T DeserializeKnownReference<T>(this XmlReader reader, SerializationReferenceHandler referenceHandler, string name = "Reference")
+			where T : ISerializableReference
+		{
+			return (T)DeserializeKnownReference(reader, referenceHandler, name);
 		}
 	}
 }

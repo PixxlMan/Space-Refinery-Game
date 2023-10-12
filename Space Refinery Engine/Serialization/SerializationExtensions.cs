@@ -38,9 +38,9 @@ namespace Space_Refinery_Engine
 		{
 			var typeName = reader.ReadString(name);
 
-			// If there is no AssemblyContext, then move on and seek normally. If the AssemblyContext seek turned up blank, also check regular type.
-			// The type might be in another, accessible, type.
-			return serializationData.AssemblyContext?.GetType(typeName, false)
+			// If there is no HostAssembly, then move on and seek normally. If the HostAssembly seek turned up blank, also check regular type.
+			// The type might be in another, accessible, assembly.
+			return serializationData.ExtensionContext.HostAssembly?.GetType(typeName, false)
 				?? Type.GetType(typeName, true)!;
 		}
 
@@ -574,7 +574,7 @@ namespace Space_Refinery_Engine
 			referenceHandler.GetEventualReference(ReadReference(reader, name), referenceRegisteredCallback);
 		}
 
-		public static void DeserializeReference<T>(this XmlReader reader, SerializationReferenceHandler referenceHandler, Action<T> refrenceRegisteredCallback, string? name = "Reference")
+		public static void DeserializeReference<T>(this XmlReader reader, SerializationReferenceHandler referenceHandler, Action<T> refrenceRegisteredCallback, string name = "Reference")
 			where T : ISerializableReference
 		{
 			DeserializeReference(reader, referenceHandler, (s) => refrenceRegisteredCallback((T)s), name);

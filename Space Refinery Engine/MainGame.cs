@@ -4,6 +4,7 @@ using Space_Refinery_Engine.Audio;
 using Space_Refinery_Game_Renderer;
 using Space_Refinery_Utilities;
 using System.Diagnostics;
+using System.Reflection;
 using System.Xml;
 using Veldrid;
 using static Space_Refinery_Engine.SerializationPaths;
@@ -20,17 +21,38 @@ public sealed class MainGame
 	private Player Player { get; set; }
 	private UI UI { get => GameData.UI; set => GameData.UI = value; }
 	private Settings Settings { get => GameData.Settings; set => GameData.Settings = value; }
-	
+
 	public GameData GameData { get; private set; }
+
+	public Starfield Starfield { get; private set; }
+
+	public static DebugRender DebugRender;
+
+	public static DebugSettings DebugSettings = new();
+
+	private Window window;
+
+	public bool Paused;
+
+	public readonly object UpdateSyncObject = new();
+
+	public Guid SaveGuid { get; private set; } = Guid.NewGuid();
+
+	public event Action<IntervalUnit> CollectUpdatePerformanceData;
+
+	private string responseSpinner = "_";
+	public string ResponseSpinner { get { lock (responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
 
 	public static SerializationReferenceHandler GlobalReferenceHandler;
 
 	private static void DeserializeIntoGlobalReferenceHandler(SerializationReferenceHandler globalReferenceHandler, GameData gameData)
 	{
+		Logging.Log("Deserializing into global reference handler");
+
 		var stopwatch = new Stopwatch();
 		stopwatch.Start();
 
-		var extensions = LoadExtensions(new(gameData), globalReferenceHandler);
+		var extensions = LoadExtensions(new(gameData, new("default", true, Assembly.GetExecutingAssembly(), new ExtensionManifest(), string.Empty, string.Empty)), globalReferenceHandler);
 
 		List<(Extension, string[] filePaths)> srhFiles = new();
 
@@ -38,12 +60,15 @@ public sealed class MainGame
 		{
 			srhFiles.Add((extension, Directory.GetFiles(Path.Combine(ModPath, extension.ExtensionManifest.AssetsPath), $"*{SerializableReferenceHandlerFileExtension}", SearchOption.AllDirectories)));
 		}
-		
-		Action? DeserializationCompleteEvent = null;
+
+		List<SerializationData> serializationDatas = new(); // get rid of this when extension context is gone too!
+
 
 		foreach ((var extension, var files) in srhFiles)
 		{
-			SerializationData serializationData = new(gameData, extension.HostAssembly!) { DeserializationCompleteEvent = DeserializationCompleteEvent };
+			SerializationData serializationData = new(gameData, extension);
+
+			serializationDatas.Add(serializationData);
 
 			foreach (var file in files)
 			{
@@ -58,14 +83,21 @@ public sealed class MainGame
 			}
 		}
 
-		DeserializationCompleteEvent?.Invoke();
+		foreach (var serializationData in serializationDatas)
+		{
+			serializationData.SerializationComplete();
+		}
 
 		stopwatch.Stop();
 		Logging.Log($"Deserialized all ({globalReferenceHandler.ReferenceCount}!) global references in {stopwatch.ElapsedMilliseconds} ms");
 	}
 
+	public static Extension EngineExtension;
+
 	private static ICollection<Extension> LoadExtensions(SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 	{
+		Logging.Log("Loading extensions");
+
 		Dictionary<string, ExtensionManifest> nameToExtensionManifest = new();
 		Dictionary<ExtensionManifest, string> extensionManifestToDirectoryName = new();
 
@@ -129,30 +161,20 @@ public sealed class MainGame
 		List<Extension> extensions = new();
 		foreach (var extensionManifest in nameToExtensionManifest.Values)
 		{
-			extensions.Add(Extension.CreateAndLoadFromExtensionManifest(extensionManifest, extensionManifestToDirectoryName[extensionManifest]));
+			var extension = Extension.CreateAndLoadFromExtensionManifest(extensionManifest, extensionManifestToDirectoryName[extensionManifest]);
+
+			if (extension.ExtensionManifest.SerializableReference == "EngineManifest")
+			{
+				Debug.Assert(EngineExtension is null);
+				EngineExtension = extension;
+			}
+
+			extensions.Add(extension);
 		}
+		Debug.Assert(EngineExtension is not null);
 
 		return extensions;
 	}
-
-	public Starfield Starfield { get; private set; }
-
-	public static DebugRender DebugRender;
-
-	public static DebugSettings DebugSettings = new();
-
-	private Window window;
-
-	public bool Paused;
-
-	public readonly object UpdateSyncObject = new();
-
-	public Guid SaveGuid { get; private set; } = Guid.NewGuid();
-
-	public event Action<IntervalUnit> CollectUpdatePerformanceData;
-
-	private string responseSpinner = "_";
-	public string ResponseSpinner { get { lock (responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
 
 	public void Start(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
@@ -173,19 +195,21 @@ public sealed class MainGame
 
 		GlobalReferenceHandler = new();
 		GlobalReferenceHandler.EnterAllowEventualReferenceMode(false);
+		{
 
-		Settings = new();
+			Settings = new(GameData);
 
-		AudioWorld = AudioWorld.Create(GameData);
+			AudioWorld = AudioWorld.Create(GameData);
 
-		AudioWorld.MusicSystem.SetTags(MusicTag.Intense);
+			AudioWorld.MusicSystem.SetTags(MusicTag.Intense);
 
-		DebugSettings.AccessSetting("Fill music queue", (ActionDebugSetting)AudioWorld.MusicSystem.FillQueue);
+			DebugSettings.AccessSetting("Fill music queue", (ActionDebugSetting)AudioWorld.MusicSystem.FillQueue);
 
-		DeserializeIntoGlobalReferenceHandler(GlobalReferenceHandler, GameData);
+			DeserializeIntoGlobalReferenceHandler(GlobalReferenceHandler, GameData);
 
-		Settings.LoadSettingValues();
+			Settings.LoadSettingValues();
 
+		}
 		GlobalReferenceHandler.ExitAllowEventualReferenceMode();
 
 		PhysicsWorld = new();
@@ -358,7 +382,7 @@ public sealed class MainGame
 
 			using XmlReader reader = XmlReader.Create(stream);
 
-			var serializationData = new SerializationData(GameData);
+			var serializationData = new SerializationData(GameData, EngineExtension);
 
 			reader.ReadStartElement(nameof(MainGame));
 			{

@@ -99,7 +99,6 @@ namespace Space_Refinery_Engine
 		public static IEntitySerializable DeserializeEntitySerializableWithEmbeddedType(this XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 			=> IEntitySerializable.DeserializeWithEmbeddedType(reader, serializationData, referenceHandler);
 
-
 		public static void SerializeWithoutEmbeddedType(this XmlWriter writer, IEntitySerializable entitySerializable, string name)
 			=> IEntitySerializable.SerializeWithoutEmbeddedType(writer, entitySerializable, name);
 

@@ -9,16 +9,19 @@ public static class Logging
 {
 	private static object syncRoot = new();
 
+	[DebuggerHidden]
 	public static void Log(string logText)
 	{
 		Console.WriteLine($"[LOG] {logText}");
 	}
 
+	[DebuggerHidden]
 	public static void LogSimulation(string logText)
 	{
 		Console.WriteLine($"[SIMUL@{Time.TicksElapsed}] {logText}");
 	}
 
+	[DebuggerHidden]
 	/// <remarks>
 	/// This method is ignored in builds without the "IncludeAdditionalDebugLogging" conditional compilation symbol is defined.
 	/// </remarks>
@@ -29,16 +32,19 @@ public static class Logging
 		Console.WriteLine($"[DEBUG] {logText}");
 	}
 
+	[DebuggerHidden]
 	public static void LogError(string logText)
 	{
 		LogColor($"[ERROR@{Time.TicksElapsed}={Time.CurrentTickTime} s] {logText}", ConsoleColor.Red);
 	}
 
+	[DebuggerHidden]
 	public static void LogWarning(string logText)
 	{
 		LogColor($"[WARN] {logText}", ConsoleColor.Yellow);
 	}
 
+	[DebuggerHidden]
 	public static void LogColor(string logText, ConsoleColor color)
 	{
 		lock (syncRoot) // It's okay to lock here, becuase Logging an error doesn't have to be very fast.

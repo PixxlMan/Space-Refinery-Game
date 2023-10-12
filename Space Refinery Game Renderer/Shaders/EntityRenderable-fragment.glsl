@@ -75,7 +75,10 @@ void main() // https://learnopengl.com/PBR/Lighting
 	
     color = color / (color + vec3(1.0));
     color = pow(color, vec3(1.0/2.2));  
-   
+
+    // Add ambient lighting. Not PBR-based.
+    color = max(color, 0.2);
+
     outputColor = vec4(color, 1.0);
 }
 

@@ -3,7 +3,7 @@
 	<Count>1</Count>
 	<Elements>
 		<IEntitySerializable>
-			<Type>Space_Refinery_Engine'.ChemicalType</Type>
+			<Type>Space_Refinery_Engine.ChemicalType</Type>
 			<ChemicalType>
 				<Reference>Water</Reference>
 				<ChemicalName>Water</ChemicalName>

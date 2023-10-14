@@ -62,7 +62,7 @@ public sealed class MainGame
 
 		foreach (var extension in extensions)
 		{
-			srhFiles.Add((extension, Directory.GetFiles(Path.Combine(ModPath, extension.ExtensionManifest.AssetsPath), $"*{SerializableReferenceHandlerFileExtension}", SearchOption.AllDirectories)));
+			srhFiles.Add((extension, Directory.GetFiles(Path.Combine(extension.ExtensionPath, extension.ExtensionManifest.AssetsPath), $"*{SerializableReferenceHandlerFileExtension}", SearchOption.AllDirectories)));
 		}
 
 		List<SerializationData> serializationDatas = new(); // get rid of this when extension context is gone too!

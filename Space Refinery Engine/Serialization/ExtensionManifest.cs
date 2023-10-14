@@ -74,7 +74,7 @@ public sealed class ExtensionManifest : ISerializableReference
 
 		AssetsPath = reader.ReadString(nameof(AssetsPath));
 
-		Dependencies = reader.DeserializeCollection((reader) => reader.DeserializeEntitySerializableWithoutEmbeddedType<ExtensionDependency>(serializationData, referenceHandler));
+		Dependencies = reader.DeserializeCollection((reader) => reader.DeserializeEntitySerializableWithoutEmbeddedType<ExtensionDependency>(serializationData, referenceHandler), nameof(Dependencies));
 	}
 }
 

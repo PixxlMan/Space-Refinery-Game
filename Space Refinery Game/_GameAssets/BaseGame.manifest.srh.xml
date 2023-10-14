@@ -10,7 +10,7 @@
 			<HasAssembly>True</HasAssembly>
 			<ExtensionAssemblyName>../Space Refinery Game</ExtensionAssemblyName>
 			<AssetsPath>../../../../../Space Refinery Game/bin/Debug/net7.0/_GameAssets</AssetsPath>
-			<Collection>
+			<Dependencies>
 				<Count>1</Count>
 				<Elements>
 					<IEntitySerializable>
@@ -20,7 +20,7 @@
 						<DependencySpecificity>DependAny</DependencySpecificity>
 					</IEntitySerializable>
 				</Elements>
-			</Collection>
+			</Dependencies>
 		</IEntitySerializable>
 	</Elements>
 </SerializationReferenceHandler>

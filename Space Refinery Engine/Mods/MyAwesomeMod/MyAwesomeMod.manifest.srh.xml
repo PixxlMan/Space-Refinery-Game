@@ -4,13 +4,11 @@
 	<Elements>
 		<IEntitySerializable>
 			<Type>Space_Refinery_Engine.ExtensionManifest</Type>
-			<Reference>EngineManifest</Reference>
-			<ExtensionName>Engine</ExtensionName>
+			<Reference>MyAwesomeModManifest</Reference>
+			<ExtensionName>My Awesome Mod!!</ExtensionName>
 			<ExtensionVersion>1.0.0.0</ExtensionVersion>
 			<HasAssembly>False</HasAssembly>
-			<!--<HasAssembly>True</HasAssembly>
-			<EngineAssembly/>-->
-			<AssetsPath>../Assets</AssetsPath> <!--Same path!-->
+			<AssetsPath>Assets</AssetsPath> <!--Same path!-->
 			<Dependencies>
 				<Count>0</Count>
 				<Elements/>

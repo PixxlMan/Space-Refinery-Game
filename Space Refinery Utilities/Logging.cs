@@ -13,7 +13,7 @@ public static class Logging
 
 	private const int scopeIndentation = 4;
 
-	private const int minimumIndentation = 16; // Try to avoid overwriting the pre-message text.
+	private const int minimumIndentation = 20;
 
 	private static int extraSpace = 0;
 
@@ -135,18 +135,19 @@ public static class Logging
 	}
 
 	[DebuggerHidden]
-	private static void LogScopeStart(string scopeName)
+	public static void LogScopeStart(string scopeName)
 	{
 		lock (syncRoot)
 		{
-			Log($"{scopeName}: {{");
+			Log($"{scopeName}:");
+			Log("{");
 
 			scopeDepth++;
 		}
 	}
 
 	[DebuggerHidden]
-	private static void LogScopeEnd()
+	public static void LogScopeEnd()
 	{
 		lock (syncRoot)
 		{

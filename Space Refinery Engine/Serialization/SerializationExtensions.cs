@@ -5,6 +5,7 @@
 using FixedPrecision;
 using FXRenderer;
 using System.Collections.Concurrent;
+using System.Reflection;
 using System.Xml;
 
 namespace Space_Refinery_Engine;
@@ -51,7 +52,7 @@ public static class SerializationExtensions
 			}
 
 			foreach (var type in extension.HostAssembly!.GetTypes())
-	{
+			{
 				if (type.IsAssignableTo(typeof(IEntitySerializable)))
 				{
 					fullSerializableTypeNameToType.AddUnique(type.FullName!, type);
@@ -104,12 +105,10 @@ public static class SerializationExtensions
 		return value;
 	}
 
-	/// <summary>
-	/// Returns an absolute path from the contained path relative to the assets directory of the extension.
-	/// </summary>
-	/// <returns>An absolute path from the contained path relative to the assets directory of the extension.</returns>
-	public static string ReadAssetPath(this XmlReader reader, SerializationData serializationData, string? name = null)
+	public static string ReadResorucePath(this XmlReader reader, SerializationData serializationData, string? name = null)
 	{
+		ArgumentNullException.ThrowIfNull(serializationData.BasePathForAssetDeserialization, nameof(serializationData.BasePathForAssetDeserialization));
+
 		string extensionAssetsRelativePath;
 
 		if (name is null)
@@ -129,7 +128,7 @@ public static class SerializationExtensions
 			reader.ReadEndElement();
 		}
 
-		var absolutePath = Path.Combine(serializationData.ExtensionContext.AssetsPath, extensionAssetsRelativePath);
+		var absolutePath = Path.Combine(serializationData.BasePathForAssetDeserialization, extensionAssetsRelativePath);
 
 		return absolutePath;
 	}

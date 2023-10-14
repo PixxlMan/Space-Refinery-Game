@@ -121,7 +121,7 @@ namespace Space_Refinery_Engine
 				ConnectorNames = (string[])reader.DeserializeCollection((r) => r.ReadString("ConnectorName"));
 			}
 
-			ModelPath = reader.ReadAssetPath(serializationData, nameof(ModelPath));
+			ModelPath = reader.ReadResorucePath(serializationData, nameof(ModelPath));
 
 			Mesh = serializationData.GameData.GraphicsWorld.MeshLoader.LoadCached(ModelPath);
 

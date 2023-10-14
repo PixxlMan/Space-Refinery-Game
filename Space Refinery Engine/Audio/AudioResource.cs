@@ -39,7 +39,7 @@ namespace Space_Refinery_Engine.Audio
 
 			Name = reader.ReadString(nameof(Name));
 
-			ResourcePath = reader.ReadString(nameof(ResourcePath));
+			ResourcePath = reader.ReadResorucePath(serializationData, nameof(ResourcePath));
 
 			ClipVolume = reader.DeserializeFixedDecimalLong8(nameof(ClipVolume));
 		}

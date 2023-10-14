@@ -2,26 +2,23 @@
 
 namespace Space_Refinery_Engine;
 
-public sealed class Extension(string extensionName, bool hasAssembly, Assembly? hostAssembly, ExtensionManifest extensionManifest, string extensionPath, string assetsPath)
+/// <summary>
+/// 
+/// </summary>
+/// <param name="ExtensionName">Absolute path to the location of the extension's manifest file.</param>
+/// <param name="HasAssembly"></param>
+/// <param name="HostAssembly"></param>
+/// <param name="ExtensionManifest"></param>
+/// <param name="ExtensionPath"></param>
+/// <param name="AssetsPath">Absolute path to the assets of this extension.</param>
+public sealed record class Extension(
+	string ExtensionName,
+	bool HasAssembly,
+	Assembly? HostAssembly,
+	ExtensionManifest ExtensionManifest,
+	string ExtensionPath,
+	string AssetsPath)
 {
-	public string ExtensionName = extensionName;
-
-	/// <summary>
-	/// Absolute path to the location of the extension's manifest file.
-	/// </summary>
-	public string ExtensionPath = extensionPath;
-
-	/// <summary>
-	/// Absolute path to the assets of this extension.
-	/// </summary>
-	public string AssetsPath = assetsPath;
-
-	public bool HasAssembly = hasAssembly;
-
-	public Assembly? HostAssembly = hostAssembly;
-
-	public ExtensionManifest ExtensionManifest = extensionManifest;
-
 	// The reason ExtensionPath cannot be loaded from an ExtensionManifest is that the ExtensionManifest has no knowledge or power over it's containing
 	// directory. Therefore information must be gathered about where the ExtensionManifest was loaded from and then provided to the
 	// CreateAndLoadFromExtensionManifest method.

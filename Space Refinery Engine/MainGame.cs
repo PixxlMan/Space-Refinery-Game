@@ -69,7 +69,7 @@ public sealed class MainGame
 
 		foreach ((var extension, var files) in srhFiles)
 		{
-			SerializationData serializationData = new(gameData, extension);
+			SerializationData serializationData = new(gameData, extension.AssetsPath);
 
 			serializationDatas.Add(serializationData);
 
@@ -395,7 +395,7 @@ public sealed class MainGame
 
 			using XmlReader reader = XmlReader.Create(stream);
 
-			var serializationData = new SerializationData(GameData, EngineExtension);
+			var serializationData = new SerializationData(GameData);
 
 			reader.ReadStartElement(nameof(MainGame));
 			{

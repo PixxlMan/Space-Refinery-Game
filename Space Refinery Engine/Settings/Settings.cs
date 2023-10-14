@@ -177,7 +177,7 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 
 			using var writer = XmlWriter.Create(stream, new XmlWriterSettings() { Indent = true, IndentChars = "\t" });
 
-			SerializeSettingValues(writer, new(gameData, MainGame.EngineExtension));
+			SerializeSettingValues(writer, new(gameData));
 
 			writer.Flush();
 			writer.Close();
@@ -195,7 +195,7 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 			{
 				using var reader = XmlReader.Create(settingValuesPath, new XmlReaderSettings() { ConformanceLevel = ConformanceLevel.Document });
 
-				DeserializeSettingValues(reader, new(gameData, MainGame.EngineExtension));
+				DeserializeSettingValues(reader, new(gameData, MainGame.EngineExtension.AssetsPath));
 			}
 			else
 			{

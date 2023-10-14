@@ -40,16 +40,46 @@ public struct DecimalNumber : IFixedPrecisionNumeral<DecimalNumber>, IEquatable<
 
 	public static DecimalNumber RadiansToDegrees => FixedDecimalLong8.RadiansToDegrees;
 
+	/// <summary>
+	/// 10
+	/// </summary>
 	public static DecimalNumber Deca => 10;
+	/// <summary>
+	/// 100
+	/// </summary>
 	public static DecimalNumber Hecto => 100;
+	/// <summary>
+	/// 1000
+	/// </summary>
 	public static DecimalNumber Kilo => 1000;
+	/// <summary>
+	/// 1 000 000
+	/// </summary>
 	public static DecimalNumber Mega => 1_000_000;
+	/// <summary>
+	/// 1 000 000 000
+	/// </summary>
 	public static DecimalNumber Giga => 1_000_000_000;
+	/// <summary>
+	/// 1 000 000 000 000
+	/// </summary>
 	public static DecimalNumber Tera => 1_000_000_000_000;
 
+	/// <summary>
+	/// 0.1
+	/// </summary>
 	public static DecimalNumber Deci => 1 / (DecimalNumber)10;
+	/// <summary>
+	/// 0.01
+	/// </summary>
 	public static DecimalNumber Centi => 1 / (DecimalNumber)100;
+	/// <summary>
+	/// 0.001
+	/// </summary>
 	public static DecimalNumber Milli => 1 / (DecimalNumber)1000;
+	/// <summary>
+	/// 0.000001
+	/// </summary>
 	public static DecimalNumber Micro => 1 / (DecimalNumber)1_000_000;
 
 	public static DecimalNumber Abs(DecimalNumber a)

@@ -31,6 +31,12 @@ partial class UI
 				ImGui.TextUnformatted(gameData.GraphicsWorld.ResponseSpinner.ToString());
 			}
 
+			if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Display elapsed time and ticks", true))
+			{
+				ImGui.Text($"Tick time: {Time.CurrentTickTime}");
+				ImGui.Text($"Tick: {Time.TicksElapsed}");
+			}
+
 			DoDebugStatusUI?.Invoke();
 		}
 		ImGui.End();

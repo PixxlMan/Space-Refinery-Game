@@ -47,7 +47,7 @@ public sealed class MainGame
 
 	private static void DeserializeIntoGlobalReferenceHandler(SerializationReferenceHandler globalReferenceHandler, GameData gameData)
 	{
-		Logging.Log("Deserializing into global reference handler");
+		Logging.LogScopeStart("Deserializing into global reference handler");
 
 		var stopwatch = new Stopwatch();
 		stopwatch.Start();
@@ -89,13 +89,15 @@ public sealed class MainGame
 
 		stopwatch.Stop();
 		Logging.Log($"Deserialized all ({globalReferenceHandler.ReferenceCount}!) global references in {stopwatch.ElapsedMilliseconds} ms");
+
+		Logging.LogScopeEnd();
 	}
 
 	public static Extension EngineExtension;
 
 	private static ICollection<Extension> LoadExtensions(SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 	{
-		Logging.Log("Loading extensions");
+		Logging.LogScopeStart("Loading extensions");
 
 		Dictionary<string, ExtensionManifest> nameToExtensionManifest = new();
 		Dictionary<ExtensionManifest, string> extensionManifestToDirectoryName = new();
@@ -176,6 +178,8 @@ public sealed class MainGame
 			extensions.Add(extension);
 		}
 		Debug.Assert(EngineExtension is not null);
+
+		Logging.LogScopeEnd();
 
 		return extensions;
 	}

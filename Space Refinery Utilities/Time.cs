@@ -30,7 +30,18 @@ public static class Time // https://fpstoms.com/
 		TimeUnit timeToStopWaiting = intervalStartTime + intervalTime;
 		while (stopwatch.Elapsed.TotalSeconds < timeToStopWaiting)
 		{
-			Thread.SpinWait(4);
+			if (timeToStopWaiting - stopwatch.Elapsed.TotalSeconds > 10 * (TimeUnit)DN.Milli)
+			{
+				Thread.Sleep(6);
+			}
+			else if (timeToStopWaiting - stopwatch.Elapsed.TotalSeconds > 2 * (TimeUnit)DN.Milli)
+			{
+				Thread.Yield();
+			}
+			else
+			{
+				Thread.SpinWait(4);
+			}
 		}
 
 		timeOfContinuation = timeToStopWaiting;

@@ -52,7 +52,11 @@ public sealed class MainGame
 		var stopwatch = new Stopwatch();
 		stopwatch.Start();
 
-		var extensions = LoadExtensions(new(gameData, new("default", true, Assembly.GetExecutingAssembly(), new ExtensionManifest(), string.Empty, string.Empty)), globalReferenceHandler);
+		SerializationExtensions.FindAndIndexSerializableTypes(new[] { Assembly.GetExecutingAssembly() });
+
+		var extensions = LoadExtensions(new(gameData, null), globalReferenceHandler);
+
+		SerializationExtensions.FindAndIndexSerializableTypes(extensions);
 
 		List<(Extension, string[] filePaths)> srhFiles = new();
 
@@ -88,6 +92,7 @@ public sealed class MainGame
 		}
 
 		stopwatch.Stop();
+
 		Logging.Log($"Deserialized all ({globalReferenceHandler.ReferenceCount}!) global references in {stopwatch.ElapsedMilliseconds} ms");
 
 		Logging.LogScopeEnd();

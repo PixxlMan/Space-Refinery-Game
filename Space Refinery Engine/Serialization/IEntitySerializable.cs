@@ -1,4 +1,5 @@
 ﻿using Singulink.Reflection;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Xml;
 
@@ -57,12 +58,9 @@ namespace Space_Refinery_Engine
 		{
 			reader.ReadStartElement(name);
 			{
-				Type type = reader.DeserializeType(serializationData);
+				Type type = reader.DeserializeSerializableType();
 
-				if (!type.IsAssignableTo(typeof(IEntitySerializable)))
-				{
-					throw new Exception($"Cannot deserialize object of type '{type.AssemblyQualifiedName}' as it does not inherit from {nameof(IEntitySerializable)}.");
-				}
+				Debug.Assert(type.IsAssignableTo(typeof(IEntitySerializable)), $"Cannot deserialize object of type '{type.AssemblyQualifiedName}' as it does not inherit from {nameof(IEntitySerializable)}.");
 
 				IEntitySerializable entitySerializable;
 

@@ -21,14 +21,52 @@ public static class SerializationExtensions
 		writer.WriteElementString(name, type.FullName);
 	}
 
-	public static Type DeserializeType(this XmlReader reader, SerializationData serializationData, string name = "Type")
+	private static ConcurrentDictionary<string, Type>? fullSerializableTypeNameToType;
+
+	internal static void FindAndIndexSerializableTypes(ICollection<Assembly> assemblies)
 	{
+		fullSerializableTypeNameToType ??= new();
+
+		foreach (var assembly in assemblies)
+		{
+			foreach (var type in assembly.GetTypes())
+			{
+				if (type.IsAssignableTo(typeof(IEntitySerializable)))
+				{
+					fullSerializableTypeNameToType.AddUnique(type.FullName!, type);
+				}
+			}
+		}
+	}
+
+	internal static void FindAndIndexSerializableTypes(ICollection<Extension> extensions)
+	{
+		fullSerializableTypeNameToType ??= new();
+
+		foreach (var extension in extensions)
+		{
+			if (!extension.HasAssembly)
+			{
+				continue;
+			}
+
+			foreach (var type in extension.HostAssembly!.GetTypes())
+	{
+				if (type.IsAssignableTo(typeof(IEntitySerializable)))
+				{
+					fullSerializableTypeNameToType.AddUnique(type.FullName!, type);
+				}
+			}
+		}
+	}
+
+	public static Type DeserializeSerializableType(this XmlReader reader, string name = "Type")
+	{
+		ArgumentNullException.ThrowIfNull(fullSerializableTypeNameToType);
+
 		var typeName = reader.ReadString(name);
 
-		// If there is no HostAssembly, then move on and seek normally. If the HostAssembly seek turned up blank, also check regular type.
-		// The type might be in another, accessible, assembly.
-		return serializationData.ExtensionContext.HostAssembly?.GetType(typeName, false)
-			?? Type.GetType(typeName, true)!;
+		return fullSerializableTypeNameToType[typeName];
 	}
 
 	public static void Serialize(this XmlWriter writer, Enum @enum, string name = "Enum")

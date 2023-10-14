@@ -20,9 +20,9 @@ namespace Space_Refinery_Engine.Audio
 		private float[] _readBuf;
 
 		// From Decoder
-		protected AudioFormat _audioFormat;
-		protected int _numSamples = 0;
-		protected int _readSize;
+		private AudioFormat _audioFormat;
+		private int _numSamples = 0;
+		private int _readSize;
 
 		public AudioClipPlayback(string path)
 		{

@@ -21,7 +21,7 @@ public sealed class GameWorld
 
 	public ConcurrentDictionary<Entity, EmptyType> Entities = new();
 
-	public event Action<IntervalUnit> CollectTickPerformanceData;
+	public event Action<IntervalUnit>? CollectTickPerformanceData;
 
 	private string responseSpinner = "_";
 	public string ResponseSpinner { get { lock (responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.

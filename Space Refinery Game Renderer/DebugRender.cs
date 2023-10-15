@@ -25,7 +25,7 @@ namespace Space_Refinery_Game_Renderer
 
 		private List<DebugRenderable> persistentRenderables = new();
 
-		public event Action AddDebugObjects;
+		public event Action? AddDebugObjects;
 
 		private object sync = new();
 

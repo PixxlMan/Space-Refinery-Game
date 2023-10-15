@@ -49,13 +49,13 @@ public sealed class GraphicsWorld
 
 	public bool ShouldLimitFramerate = true;
 
-	public event Action<CommandList> CustomDrawOperations;
+	public event Action<CommandList>? CustomDrawOperations;
 
-	public event Action FrameRendered;
+	public event Action? FrameRendered;
 
-	public event Action<IntervalUnit> CollectRenderingPerformanceData;
+	public event Action<IntervalUnit>? CollectRenderingPerformanceData;
 
-	public event Action<int, int> WindowResized;
+	public event Action<int, int>? WindowResized;
 
 	public void SetUp(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{

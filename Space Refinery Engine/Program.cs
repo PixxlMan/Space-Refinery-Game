@@ -12,6 +12,8 @@ public static class Program
 	{
 		Console.ForegroundColor = ConsoleColor.White; // Sometimes while debugging, the program could crash while the logger is printing colored text. This will ensure that when the console is reused, it has the right color from the start!
 
+		Logging.StartTime();
+
 		Logging.LogDebug($"Logs from {nameof(Logging.LogDebug)} are included in this build.");
 		Logging.Log($"Build version: {"haven't started with this yet"}");
 

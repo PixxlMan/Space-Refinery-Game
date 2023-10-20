@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Space_Refinery_Utilities;
 
@@ -19,6 +20,14 @@ public static class Logging
 
 	private const int spaceMargin = 1;
 
+	private readonly static Stopwatch stopwatch = new();
+
+	public static void StartTime()
+	{
+		stopwatch.Start();
+		Log($"Logging began at {DateTime.UtcNow} UTC");
+	}
+
 	public enum LogType
 	{
 		Error,
@@ -28,9 +37,10 @@ public static class Logging
 		Debug,
 	}
 
+	[DebuggerHidden]
 	private static void PreFormat(LogType logType)
 	{
-		string timeStamp = $"@{Time.CurrentTickTime} s:";
+		string timeStamp = $"@{stopwatch.Elapsed} s:";
 
 		switch (logType)
 		{
@@ -41,7 +51,7 @@ public static class Logging
 				Console.Write($"[WARN]{timeStamp}");
 				break;
 			case LogType.Simulation:
-				timeStamp = $"{timeStamp} & {Time.TicksElapsed} ticks";
+				timeStamp = $"{stopwatch.Elapsed} s & {Time.CurrentTickTime} tt & {Time.TicksElapsed} ticks";
 				Console.Write($"[SIMUL]{timeStamp}");
 				break;
 			case LogType.Log:
@@ -64,6 +74,8 @@ public static class Logging
 		Console.SetCursorPosition(minimumIndentation + extraSpace + scopeIndentation * scopeDepth, Console.GetCursorPosition().Top);
 	}
 
+	// also log current thread's name?
+	// perhaps not to console, but seems sensible for text file log
 	[DebuggerHidden]
 	public static void Log(string logText)
 	{

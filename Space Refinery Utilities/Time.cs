@@ -47,6 +47,11 @@ public static class Time // https://fpstoms.com/
 		timeOfContinuation = timeToStopWaiting;
 	}
 
+	public static void Reset()
+	{
+		TicksElapsed = 0;
+	}
+
 	public static string ResponseSpinner(TimeUnit time)
 	{
 		return "|/-\\"[(int)((DecimalNumber)time / 0.05) & 3].ToString(); // https://github.com/ocornut/imgui/issues/1901#issuecomment-400563921

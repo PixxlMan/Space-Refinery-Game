@@ -269,5 +269,15 @@ namespace Space_Refinery_Game_Renderer
 			DrawRay(transform.Position, -transform.LocalUnitY, new(0, .4f, 0, 1));
 			DrawRay(transform.Position, -transform.LocalUnitZ, new(0, 0, .4f, 1));
 		}
+
+		public void Reset()
+		{
+			lock (sync)
+			{
+				debugRenderables.Clear();
+				persistentRenderables.Clear();
+				AddDebugObjects = null;
+			}
+		}
 	}
 }

@@ -38,159 +38,18 @@ public sealed class MainGame
 
 	public Guid SaveGuid { get; private set; } = Guid.NewGuid();
 
-	public event Action<IntervalUnit> CollectUpdatePerformanceData;
+	public event Action<IntervalUnit>? CollectUpdatePerformanceData;
 
 	private string responseSpinner = "_";
 	public string ResponseSpinner { get { lock (responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
 
-	public static SerializationReferenceHandler GlobalReferenceHandler;
-
-	private static void DeserializeIntoGlobalReferenceHandler(SerializationReferenceHandler globalReferenceHandler, GameData gameData)
-	{
-		Logging.LogScopeStart("Deserializing into global reference handler");
-
-		var stopwatch = new Stopwatch();
-		stopwatch.Start();
-
-		SerializationExtensions.FindAndIndexSerializableTypes(new[] { Assembly.GetExecutingAssembly() });
-
-		var extensions = LoadExtensions(new(gameData, null), globalReferenceHandler);
-
-		SerializationExtensions.FindAndIndexSerializableTypes(extensions);
-
-		List<(Extension, string[] filePaths)> srhFiles = new();
-
-		foreach (var extension in extensions)
-		{
-			srhFiles.Add((extension, Directory.GetFiles(Path.Combine(extension.ExtensionPath, extension.ExtensionManifest.AssetsPath), $"*{SerializableReferenceHandlerFileExtension}", SearchOption.AllDirectories)));
-		}
-
-		List<SerializationData> serializationDatas = new(); // get rid of this when extension context is gone too!
-
-		foreach ((var extension, var files) in srhFiles)
-		{
-			SerializationData serializationData = new(gameData, extension.AssetsPath);
-
-			serializationDatas.Add(serializationData);
-
-			foreach (var file in files)
-			{
-				if (file.EndsWith(ExtensionManifestFileExtension))
-				{ // Manifest files have already been deserialized earlier when loading extensions and should be not be deserialized twice.
-					continue;
-				}
-
-				using var individualFileReader = XmlReader.Create(file, new XmlReaderSettings() { ConformanceLevel = ConformanceLevel.Document });
-
-				globalReferenceHandler.DeserializeInto(individualFileReader, serializationData, false);
-			}
-		}
-
-		foreach (var serializationData in serializationDatas)
-		{
-			serializationData.SerializationComplete();
-		}
-
-		stopwatch.Stop();
-
-		Logging.Log($"Deserialized all ({globalReferenceHandler.ReferenceCount}!) global references in {stopwatch.ElapsedMilliseconds} ms");
-
-		Logging.LogScopeEnd();
-	}
-
-	public static Extension EngineExtension;
-
-	private static ICollection<Extension> LoadExtensions(SerializationData serializationData, SerializationReferenceHandler referenceHandler)
-	{
-		Logging.LogScopeStart("Loading extensions");
-
-		Dictionary<string, ExtensionManifest> nameToExtensionManifest = new();
-		Dictionary<ExtensionManifest, string> extensionManifestToDirectoryName = new();
-
-		List<string> manifestFilePaths = new();
-
-		manifestFilePaths.AddRange(Directory.GetFiles(AssetsPath, $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
-		manifestFilePaths.AddRange(Directory.GetFiles("../../../../Space Refinery Game/bin/Debug/net7.0/_GameAssets", $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
-
-		// Find all extension manifest files and add them to manifestFilePaths,
-		// or if there is a directory without any manifest file create a 'No File'-manifest
-		// and add it to nameToExtensionManifest and extensionManifestToDirectoryName.
-		Directory.CreateDirectory(ModPath);
-		foreach (var extensionDirectory in Directory.GetDirectories(ModPath))
-		{
-			var extensionManifestsInDirectory = Directory.GetFiles(extensionDirectory, $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories);
-
-			if (extensionManifestsInDirectory.Length == 0)
-			{
-				var name = Path.GetDirectoryName(extensionDirectory)!;
-
-				var extensionManifest = ExtensionManifest.GenerateNoFileManifest(name, extensionDirectory);
-
-				nameToExtensionManifest.Add(name, extensionManifest);
-				extensionManifestToDirectoryName.Add(extensionManifest, Path.GetFullPath(extensionDirectory)!);
-				continue;
-			}
-
-			manifestFilePaths.Add(extensionManifestsInDirectory[0]);
-		}
-
-		Logging.LogAll(manifestFilePaths, "Extension manifest files to be loaded");
-
-		Logging.LogAll(nameToExtensionManifest.Keys, "Additional extension manifest files generated");
-
-		// Deserialize the manifests and add them to nameToExtensionManifest and extensionManifestToDirectoryName.
-		referenceHandler.EnterAllowEventualReferenceMode(allowUnresolvedEventualReferences: false);
-		{
-			foreach (var manifestFilePath in manifestFilePaths)
-			{
-				using XmlReader reader = XmlReader.Create(manifestFilePath);
-
-				referenceHandler.DeserializeInto<ExtensionManifest>(reader, serializationData, out var extensionManifests);
-
-				foreach (var extensionManifest in extensionManifests)
-				{
-					nameToExtensionManifest.Add(extensionManifest.ExtensionName, extensionManifest);
-					extensionManifestToDirectoryName.Add(extensionManifest, Path.GetFullPath(Path.GetDirectoryName(manifestFilePath)!)!);
-				}
-			}
-		}
-		referenceHandler.ExitAllowEventualReferenceMode();
-
-		// Check dependencies for extensions.
-		foreach (var extensionManifest in nameToExtensionManifest.Values)
-		{
-			foreach (var dependency in extensionManifest.Dependencies)
-			{
-				if (!ExtensionDependency.SatisfiesDependency(dependency, nameToExtensionManifest[dependency.DependedExtension.ExtensionName].ExtensionVersion))
-				{
-					throw new Exception($"Dependency of {extensionManifest.ExtensionName} to {dependency.DependedExtension.ExtensionName} {dependency.DependencyKind} {dependency.DependencySpecificity} {dependency.ExtensionVersion} could not be satisifed with version {dependency.ExtensionVersion}.");
-				}
-			}
-		}
-
-		// Create extension objects and load their respective assemblies.
-		List<Extension> extensions = new();
-		foreach (var extensionManifest in nameToExtensionManifest.Values)
-		{
-			var extension = Extension.CreateAndLoadFromExtensionManifest(extensionManifest, extensionManifestToDirectoryName[extensionManifest]);
-
-			if (extension.ExtensionManifest.SerializableReference == "EngineManifest")
-			{
-				Debug.Assert(EngineExtension is null);
-				EngineExtension = extension;
-			}
-
-			extensions.Add(extension);
-		}
-		Debug.Assert(EngineExtension is not null);
-
-		Logging.LogScopeEnd();
-
-		return extensions;
-	}
+	public static SerializationReferenceHandler GlobalReferenceHandler { get; internal set; }
+	public static Extension EngineExtension { get; internal set; }
 
 	public void Start(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
+		Logging.LogScopeStart("Game initialization");
+
 		GameData = new()
 		{
 			MainGame = this
@@ -218,7 +77,7 @@ public sealed class MainGame
 
 			DebugSettings.AccessSetting("Fill music queue", (ActionDebugSetting)AudioWorld.MusicSystem.FillQueue);
 
-			DeserializeIntoGlobalReferenceHandler(GlobalReferenceHandler, GameData);
+			ResourceDeserialization.DeserializeIntoGlobalReferenceHandler(GlobalReferenceHandler, GameData);
 
 			Settings.LoadSettingValues();
 
@@ -233,7 +92,7 @@ public sealed class MainGame
 
 		Player = Player.Create(GameData);
 
-		UI = UI.CreateAndAdd(GameData, Player);
+		UI = UI.CreateAndAdd(GameData);
 
 		UI.PauseStateChanged += UI_PauseStateChanged;
 
@@ -260,6 +119,8 @@ public sealed class MainGame
 		Settings.RegisterToSettingValue<SwitchSettingValue>("Limit FPS", (value) => GraphicsWorld.ShouldLimitFramerate = value.SwitchValue);
 
 		FormatUnit.RegisterToSettings(Settings);
+
+		Logging.LogScopeEnd();
 	}
 
 	private void UI_PauseStateChanged(bool paused)
@@ -344,7 +205,7 @@ public sealed class MainGame
 		lock (GameWorld.TickSyncObject)
 		lock (UpdateSyncObject)
 		{
-			Logging.Log($"Serialization started. Serializing {ReferenceHandler.ReferenceCount} references.");
+			Logging.LogScopeStart($"Serialization started - serializing {ReferenceHandler.ReferenceCount} references");
 
 			File.Delete(path);
 
@@ -378,6 +239,8 @@ public sealed class MainGame
 			stopwatch.Stop();
 
 			Logging.Log($"Serialized all state in {stopwatch.Elapsed.TotalMilliseconds} ms.");
+
+			Logging.LogScopeEnd();
 		}
 	}
 
@@ -385,7 +248,7 @@ public sealed class MainGame
 	{
 		lock (GameWorld.TickSyncObject)// lock (SynchronizationObject)
 		{
-			Logging.Log($"Deserialization started.");
+			Logging.LogScopeStart($"Deserialization started.");
 
 			Stopwatch stopwatch = new();
 
@@ -417,11 +280,8 @@ public sealed class MainGame
 
 				Player.Destroy();
 
-#if NAÏVE_Reset
-				NaïveClear();
-#else
 				Reset();
-#endif
+
 				if (ignoreCleanupTimeFromPerformanceProfiling)
 				{
 					stopwatch.Start();
@@ -434,17 +294,6 @@ public sealed class MainGame
 					stopwatch.Stop();
 				}
 
-#if !NAÏVE_Reset
-
-				UI.AddToGraphicsWorld();
-
-				Starfield.AddToGraphicsWorld();
-
-				foreach (var pipeType in PipeType.PipeTypes.Values)
-				{
-					pipeType.BatchRenderable.AddToGraphicsWorld();
-				}
-#endif
 				if (ignoreCleanupTimeFromPerformanceProfiling)
 				{
 					stopwatch.Start();
@@ -468,6 +317,8 @@ public sealed class MainGame
 			stopwatch.Stop();
 			
 			Logging.Log($"Deserialized all state in {stopwatch.Elapsed.TotalMilliseconds} ms. Deserialized {ReferenceHandler.ReferenceCount} references.");
+
+			Logging.LogScopeEnd();
 		}
 	}
 

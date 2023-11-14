@@ -106,8 +106,6 @@ public sealed class MainGame
 
 		InputTracker.IgnoreNextFrameMousePosition = true;
 
-		//DebugRender.ShouldRender = true;
-
 		StartUpdating();
 
 		GameWorld.StartTicking();
@@ -327,11 +325,36 @@ public sealed class MainGame
 	/// </summary>
 	private void Reset() // TODO: to allow mods or third party extensions to also clear their stuff, also call an event? Otherwise they would be unable to clear their data when Destroy is not called.
 	{ // uh also what about all the subscriptions...? hmmm.. gonna need a lite-destroy method. aw man. (or weak events, HINT HINT MICROSOFT). or maybe just nulling, now that I think abiout it... Hmmmm....
+		Logging.LogScopeStart("Resetting state");
+
+		// Resetting:
+
 		GameWorld.ResetUnsafe();
 		GraphicsWorld.Reset();
 		// clear the batch renderables instead? well then again this deals with extras so until scene management like stuff ig....
 		AudioWorld.Reset();
 		PhysicsWorld.Reset();
+
+		Time.Reset();
+
+		DebugRender.Reset();
+
+		GameData.Reset();
+
+		// Restoring:
+
+		UI.AddToGraphicsWorld();
+
+		Starfield.AddToGraphicsWorld();
+
+		foreach (var pipeType in PipeType.PipeTypes.Values)
+		{
+			pipeType.BatchRenderable.AddToGraphicsWorld();
+		}
+
+		GameData.Restore();
+
+		Logging.LogScopeEnd();
 	}
 
 	/// <summary>

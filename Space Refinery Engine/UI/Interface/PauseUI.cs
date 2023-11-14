@@ -51,7 +51,7 @@ partial class UI
 				{
 					lock (gameData.GameWorld.TickSyncObject)
 					{
-						gameData.MainGame.Serialize(@"R:\save.xml");
+						gameData.MainGame.Serialize($@"{Environment.CurrentDirectory}\save.xml");
 					}
 				});
 			}
@@ -62,7 +62,7 @@ partial class UI
 				{
 					lock (gameData.GameWorld.TickSyncObject)// lock (gameData.GameWorld.SynchronizationObject)
 					{
-						gameData.MainGame.Deserialize(@"R:\save.xml");
+						gameData.MainGame.Deserialize($@"{Environment.CurrentDirectory}\save.xml");
 					}
 				});
 			}

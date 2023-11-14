@@ -59,6 +59,16 @@ namespace Space_Refinery_Engine
 			GameDataChangedEvent?.Invoke(gameDataChange);
 		}
 
+		public void Reset()
+		{
+			GameDataChangedEvent = null;
+		}
+
+		public void Restore()
+		{
+			PerformanceStatisticsCollector.Restore();
+		}
+
 		public UI UI { get => uI; set { uI = value; GameDataChanged(GameDataChange.UI); } }
 
 		public PhysicsWorld PhysicsWorld { get => physicsWorld; set { physicsWorld = value; GameDataChanged(GameDataChange.PhysicsWorld); } }

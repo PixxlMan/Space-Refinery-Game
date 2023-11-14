@@ -323,6 +323,11 @@ public sealed class GraphicsWorld
 			{
 				batchRenderable.Clear();
 			}
+
+			CustomDrawOperations = null;
+			FrameRendered = null;
+			CollectRenderingPerformanceData = null;
+			WindowResized = null;
 		}
 	}
 }

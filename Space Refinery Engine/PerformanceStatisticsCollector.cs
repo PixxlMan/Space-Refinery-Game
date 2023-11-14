@@ -30,12 +30,17 @@ public sealed class PerformanceStatisticsCollector
 
 		Mode = mode;
 
-		gameData.GameDataChangedEvent += GameDataChanged;
+		Restore();
 
 		GameDataChanged(GameData.GameDataChange.PhysicsWorld);
 		GameDataChanged(GameData.GameDataChange.GraphicsWorld);
 		GameDataChanged(GameData.GameDataChange.GameWorld);
 		GameDataChanged(GameData.GameDataChange.MainGame);
+	}
+
+	public void Restore()
+	{
+		gameData.GameDataChangedEvent += GameDataChanged;
 	}
 
 	public void GameDataChanged(GameData.GameDataChange gameDataChange)

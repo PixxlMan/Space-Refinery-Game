@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net7.0</TargetFramework>
-    <RootNamespace>Space_Refinery_GameAssets\</RootNamespace>
+    <RootNamespace>Space_Refinery_Game</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>Latest</LangVersion>
       <!--

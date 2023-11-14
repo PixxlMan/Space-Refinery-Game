@@ -56,10 +56,12 @@ namespace Space_Refinery_Engine
 			if (lookedAtPhysicsObject is not null)
 			{
 				gameData.UI.CurrentlySelectedInformationProvider = lookedAtPhysicsObject.InformationProvider;
+				gameData.UI.CurrentlyLookedAtPhysicsObject = lookedAtPhysicsObject;
 			}
 			else
 			{
 				gameData.UI.CurrentlySelectedInformationProvider = null;
+				gameData.UI.CurrentlyLookedAtPhysicsObject = null;
 			}
 
 			if (lookedAtPhysicsObject is not null)

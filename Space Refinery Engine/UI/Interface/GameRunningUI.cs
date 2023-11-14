@@ -47,24 +47,60 @@ partial class UI
 
 	private DecimalNumber informationPanelFading = 1;
 
+	private PhysicsObject? lastLookedAtPhysicsObject;
+
+	private PhysicsObject? currentlyLookedAtPhysicsObject;
+
+	// Magically set by Player.
+	internal PhysicsObject? CurrentlyLookedAtPhysicsObject
+	{
+		get
+		{
+			lock (syncRoot)
+				return currentlyLookedAtPhysicsObject;
+		}
+		set
+		{
+			lock (syncRoot)
+				currentlyLookedAtPhysicsObject = value;
+		}
+	}
+
+	private IInformationProvider? currentlySelectedInformationProvider;
+	// Magically set by Player.
+	internal IInformationProvider? CurrentlySelectedInformationProvider { get { lock (syncRoot) return currentlySelectedInformationProvider; } set { lock (syncRoot) currentlySelectedInformationProvider = value; } }
+	/*do locking on each individual objects themselves? and of course get rid of the field then - all accesses have to be locked! even from within this class*/
+
 	private void DoInformationPanel(DecimalNumber deltaTime)
 	{
 		informationPanelFading += 1 * /*informationPanelFading **/ deltaTime * (CurrentlySelectedInformationProvider is null ? -1 : 4);
 		informationPanelFading = DecimalNumber.Clamp(informationPanelFading, 0, 1);
 
 		Vector2FixedDecimalInt4 panelLocation;
-		if (currentlySelectedInformationProvider is null || Player.LookedAtPhysicsObject is null)
+
+		// Lock to ensure LookedAtPhysicsObject isn't destroyed while being used.
+		lock (gameData.PhysicsWorld.SyncRoot)
 		{
-			return;
-			panelLocation = new Vector2FixedDecimalInt4((width / 4 * 3)/* - ImGui.GetWindowSize().X / 2*/, (height / 2) - ImGui.GetWindowSize().Y / 2);
-		}
-		else
-		{
-			panelLocation = gameData.GraphicsWorld.Camera.WorldPointToScreenPoint(Player.LookedAtPhysicsObject.Transform.Position, Size, out bool _ /*since the values will clamp to the edges of the screen, we don't need to do anything*/);
+			if (currentlySelectedInformationProvider is null || CurrentlyLookedAtPhysicsObject is null || !CurrentlyLookedAtPhysicsObject.Valid)
+			{
+				if (informationPanelFading != 0 && lastLookedAtPhysicsObject is not null && lastLookedAtPhysicsObject.Valid)
+				{
+					panelLocation = gameData.GraphicsWorld.Camera.WorldPointToScreenPoint(lastLookedAtPhysicsObject.Transform.Position, Size, out _);
+				}
+				else
+				{
+					panelLocation = new Vector2FixedDecimalInt4((width / 4 * 3)/* - ImGui.GetWindowSize().X / 2*/, (height / 2) - ImGui.GetWindowSize().Y / 2);
+				}
+			}
+			else
+			{
+				panelLocation = gameData.GraphicsWorld.Camera.WorldPointToScreenPoint(CurrentlyLookedAtPhysicsObject.Transform.Position, Size, out _ /*since the values will clamp to the edges of the screen, we don't need to do anything*/);
+
+				lastLookedAtPhysicsObject = CurrentlyLookedAtPhysicsObject;
+			}
 		}
 
-		// add if
-		// (looking at but not visible, place at middle!, ensure visibility when inside object?)
+		// add if (looking at but not visible) -> place at middle! - to ensure visibility when inside object?)
 
 		ImGui.SetNextWindowBgAlpha((float)informationPanelFading);
 		ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoInputs);
@@ -125,7 +161,7 @@ partial class UI
 				}
 				else
 				{
-					ImGui.TextDisabled(hotbarItems[i].Name);
+					ImGui.TextDisabled(hotbarItems[i]!.Name);
 				}
 
 				ImGui.NextColumn();

@@ -8,9 +8,6 @@ namespace Space_Refinery_Engine
 {
 	public sealed partial class UI : IRenderable
 	{
-		private IInformationProvider currentlySelectedInformationProvider;
-		public IInformationProvider CurrentlySelectedInformationProvider { get { lock (syncRoot) return currentlySelectedInformationProvider; } set { lock (syncRoot) currentlySelectedInformationProvider = value; } }
-		/*do locking on each individual object itself? and of course get rid of the field then - all accesses have to be locked! even from within this class*/
 		private ImGuiRenderer imGuiRenderer;
 
 		private GraphicsDevice gd;
@@ -49,9 +46,6 @@ namespace Space_Refinery_Engine
 		private int height;
 
 		private Vector2FixedDecimalInt4 Size => new(width, height);
-
-		// The UI system only ever needs to support one player. There's no reason it would ever need to support more.
-		public Player Player { get; }
 
 		ImDrawListPtr drawList;
 
@@ -127,13 +121,11 @@ namespace Space_Refinery_Engine
 			SelectedEntityConnectorChanged?.Invoke(ConnectorSelection);
 		}
 
-		private UI(GameData gameData, Player player)
+		private UI(GameData gameData)
 		{
 			this.gameData = gameData;
 
 			gd = gameData.GraphicsWorld.GraphicsDevice;
-
-			Player = player;
 
 			imGuiRenderer = new(gd, gd.MainSwapchain.Framebuffer.OutputDescription, (int)width, (int)height);
 
@@ -195,11 +187,11 @@ namespace Space_Refinery_Engine
 			gameData.GraphicsWorld.AddRenderable(this, 1);
 		}
 
-		public static UI CreateAndAdd(GameData gameData, Player player)
+		public static UI CreateAndAdd(GameData gameData)
 		{
 			ImGui.CreateContext();
 
-			UI ui = new(gameData, player);
+			UI ui = new(gameData);
 
 			ui.hotbarItems.Add(null); // Add empty slot
 			ui.hotbarItems.AddRange(PipeType.PipeTypes.Values);

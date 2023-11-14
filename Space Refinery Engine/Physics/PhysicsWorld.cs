@@ -78,6 +78,11 @@ public sealed partial class PhysicsWorld
 		thread.Start();
 	}
 
+	public bool HasHandle(BodyHandle bodyHandle)
+	{
+		return PhysicsObjectLookup.ContainsKey(bodyHandle);
+	}
+
 	public PhysicsObject AddPhysicsObject<TShape>(PhysicsObjectDescription<TShape> physicsObjectDescription, Entity entity) where TShape : unmanaged, IConvexShape
 	{
 		lock (SyncRoot)
@@ -107,6 +112,8 @@ public sealed partial class PhysicsWorld
 	{
 		lock (SyncRoot)
 		{
+			HandleExistsSafetyCheck(physicsObject.BodyHandle);
+
 			PhysicsObjectLookup.Remove(physicsObject.BodyHandle);
 
 			simulation.Bodies.Remove(physicsObject.BodyHandle);
@@ -123,6 +130,7 @@ public sealed partial class PhysicsWorld
 			PhysicsObjectLookup.Clear();
 			convexHulls.Clear(); // When the simulation is cleared, this will be outdated, so it must too be cleared.
 			simulation.Clear();
+			simulation.Bodies.Clear();
 		}
 	}
 
@@ -157,6 +165,9 @@ public sealed partial class PhysicsWorld
 	{ // OPTIMIZE: remove old shapes and don't always add the new ones if identical ones are already used (pass TypedIndex instead of TShape to the AddPhysicsObject method to accomodate more easily sharing the same shape between pipes of the same type)
 		lock (SyncRoot)
 		{
+			PhysicsObjectNotDestroyedSafetyCheck(physicsObject);
+			HandleExistsSafetyCheck(physicsObject.BodyHandle);
+
 			// Something here causes bepu physics to get unstable.
 			var oldShape = simulation.Bodies[physicsObject.BodyHandle].Collidable.Shape;
 			simulation.Bodies[physicsObject.BodyHandle].SetShape(simulation.Shapes.Add(shape));
@@ -170,6 +181,8 @@ public sealed partial class PhysicsWorld
 	{
 		lock (SyncRoot)
 		{
+			HandleExistsSafetyCheck(bodyHandle);
+
 			RigidPose pose = simulation.Bodies[bodyHandle].Pose;
 
 			return new(pose.Position.ToFixed<Vector3FixedDecimalInt4>(), pose.Orientation.ToFixed<QuaternionFixedDecimalInt4>());
@@ -180,11 +193,29 @@ public sealed partial class PhysicsWorld
 	{
 		lock (SyncRoot)
 		{
+			HandleExistsSafetyCheck(bodyHandle);
+
 			RigidPose pose = simulation.Bodies[bodyHandle].Pose;
 
 			pose.Position = transform.Position.ToVector3();
 
 			pose.Orientation = transform.Rotation.ToQuaternion();
+		}
+	}
+
+	private void HandleExistsSafetyCheck(BodyHandle bodyHandle)
+	{
+		if (!PhysicsObjectLookup.ContainsKey(bodyHandle))
+		{
+			throw new ArgumentException($"{nameof(BodyHandle)} is either invalid or the corresponding object is destroyed!", nameof(bodyHandle));
+		}
+	}
+
+	private void PhysicsObjectNotDestroyedSafetyCheck(PhysicsObject physicsObject)
+	{
+		if (physicsObject.Destroyed)
+		{
+			throw new ArgumentException($"{nameof(PhysicsObject)} is destroyed!", nameof(physicsObject));
 		}
 	}
 }

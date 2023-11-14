@@ -17,6 +17,11 @@ namespace Space_Refinery_Engine
 
 		public readonly BodyHandle BodyHandle;
 
+		/// <summary>
+		/// Indicates whether this <see cref="PhysicsObject"/> is valid and can be used.
+		/// </summary>
+		public bool Valid => !Destroyed && World.HasHandle(BodyHandle);
+
 		public bool Destroyed;
 
 		public PhysicsObject(PhysicsWorld world, BodyHandle bodyHandle, Entity entity)

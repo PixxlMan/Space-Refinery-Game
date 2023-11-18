@@ -59,7 +59,7 @@ namespace Space_Refinery_Engine
 
 			if (!PipeTypes.TryAdd(Name, this))
 			{
-				throw new Exception($"Couldn't add {nameof(PipeType)} '{Name}' to dictionary of all available PipeTypes.");
+				throw new Exception($"Couldn't add {nameof(PipeType)} '{Name}' to dictionary of all available PipeTypes as another pipe type with the same name already exists.");
 			}
 		}
 
@@ -129,7 +129,7 @@ namespace Space_Refinery_Engine
 
 			if (!PipeTypes.TryAdd(Name, this))
 			{
-				throw new Exception($"Couldn't add {nameof(PipeType)} '{Name}' to dictionary of all available PipeTypes.");
+				throw new Exception($"Couldn't add {nameof(PipeType)} '{Name}' to dictionary of all available PipeTypes as another pipe type with the same name already exists.");
 			}
 
 			BatchRenderable = BatchRenderable.CreateAndAdd($"{Name} Pipe Type Batch Renderable", serializationData.GameData.GraphicsWorld, RenderingResources.DefaultPBRData, Mesh, RenderingResources.DefaultTexture, serializationData.GameData.GraphicsWorld.CameraProjViewBuffer, serializationData.GameData.GraphicsWorld.LightInfoBuffer);

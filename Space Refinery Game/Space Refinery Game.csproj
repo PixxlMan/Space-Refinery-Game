@@ -17,6 +17,12 @@
     <DefineConstants>$(DefineConstants);IncludeAdditionalDebugLogging</DefineConstants>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="_GameAssets\Models\Pipe\Textures\Rusty Metal Sheet\textures\**" />
+    <EmbeddedResource Remove="_GameAssets\Models\Pipe\Textures\Rusty Metal Sheet\textures\**" />
+    <None Remove="_GameAssets\Models\Pipe\Textures\Rusty Metal Sheet\textures\**" />
+  </ItemGroup>
+
     <ItemGroup> <!--https://ingebrigtsen.blog/2021/08/13/c-10-reuse-global-usings-in-multiple-projects/-->
         <!--Make sure to include the global usage definitions for units.-->
         <Compile Include="../Space Refinery Utilities/Units/UnitsUsage.cs" />
@@ -65,6 +71,9 @@
     <None Remove="_GameAssets\Models\Pipe\Special\PipeSpecialValve.obj" />
     <None Remove="_GameAssets\Models\Pipe\Special\PipeSpecialValve.srh.xml" />
     <None Remove="_GameAssets\Models\Pipe\Special\PipeSpecialValveInternalBlocker.obj" />
+    <None Remove="_GameAssets\Models\Pipe\Textures\Rusty Metal Sheet\Rusty Metal Sheet.srh.xml" />
+    <None Remove="_GameAssets\Models\Pipe\Textures\Rusty Metal Sheet\rusty_metal_sheet.bin" />
+    <None Remove="_GameAssets\Models\Pipe\Textures\Rusty Metal Sheet\rusty_metal_sheet_2k.gltf" />
     <None Remove="_GameAssets\Models\SpaceDock.srh.xml" />
     <None Remove="_GameAssets\Reaction Types\Electrolysis.srh.xml" />
     <None Remove="_GameAssets\Reaction Types\HydrogenOxygenCombustion.srh.xml" />
@@ -175,6 +184,9 @@
     <Content Include="_GameAssets\Models\Pipe\Special\PipeSpecialValve.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="_GameAssets\Models\Pipe\Textures\Rusty Metal Sheet\Rusty Metal Sheet.srh.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="_GameAssets\Reaction Types\PhaseChange.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -227,6 +239,24 @@
 
   <ItemGroup>
     <Using Include="Space_Refinery_Utilities" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="_GameAssets\Models\Pipe\Textures\Rusty Metal Sheet\rusty_metal_sheet_ao_2k.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="_GameAssets\Models\Pipe\Textures\Rusty Metal Sheet\rusty_metal_sheet_diff_2k.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="_GameAssets\Models\Pipe\Textures\Rusty Metal Sheet\rusty_metal_sheet_disp_2k.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="_GameAssets\Models\Pipe\Textures\Rusty Metal Sheet\rusty_metal_sheet_nor_gl_2k.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="_GameAssets\Models\Pipe\Textures\Rusty Metal Sheet\rusty_metal_sheet_rough_2k.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

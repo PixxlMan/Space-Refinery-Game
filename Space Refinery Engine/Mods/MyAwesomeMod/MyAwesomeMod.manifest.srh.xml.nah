@@ -1,4 +1,6 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+﻿
+
+<?xml version="1.0" encoding="utf-8"?>
 <SerializationReferenceHandler>
 	<Count>1</Count>
 	<Elements>
@@ -15,4 +17,4 @@
 			</Dependencies>
 		</IEntitySerializable>
 	</Elements>
-</SerializationReferenceHandler>
+</SerializationReferenceHandler><!--Add dependencies for engine and base game, also make sure extensions are loaded in an order that ensures they have all necessary dependencies resolved!-->

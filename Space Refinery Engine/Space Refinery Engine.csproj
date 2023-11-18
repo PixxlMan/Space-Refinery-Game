@@ -19,8 +19,8 @@
     <None Remove="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Light.ttf" />
     <None Remove="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Regular.ttf" />
     <None Remove="Mods\MyAwesomeMod\Assets\PipeStraightCool.obj" />
-    <None Remove="Mods\MyAwesomeMod\Assets\PipeStraightCOOL.srh.xml" />
-    <None Remove="Mods\MyAwesomeMod\MyAwesomeMod.manifest.srh.xml" />
+    <None Remove="Mods\MyAwesomeMod\Assets\PipeStraightCOOL.srh.xml.nah" />
+    <None Remove="Mods\MyAwesomeMod\MyAwesomeMod.manifest.srh.xml.nah" />
     <None Remove="Mods\README.txt" />
     <None Remove="soft_oal.dll" />
   </ItemGroup>

@@ -43,6 +43,7 @@
 			</ConnectorProperties>
 			<HasConnectorNames>False</HasConnectorNames>
 			<ModelPath>Models\Pipe\Special\PipeSpecialValve.obj</ModelPath>
+			<MaterialInfo>Rusty Metal Sheet</MaterialInfo>
 			<Type>Space_Refinery_Game.ValvePipe</Type>
 		</IEntitySerializable>
 	</Elements>

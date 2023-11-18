@@ -50,6 +50,7 @@
 				</Elements>
 			</Collection>
 			<ModelPath>Models\Pipe\Special\PipeSpecialPump.obj</ModelPath>
+			<MaterialInfo>Rusty Metal Sheet</MaterialInfo>
 			<Type>Space_Refinery_Game.PumpPipe</Type>
 		</IEntitySerializable>
 	</Elements>

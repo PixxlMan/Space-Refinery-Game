@@ -43,6 +43,7 @@
 			</ConnectorProperties>
 			<HasConnectorNames>False</HasConnectorNames>
 			<ModelPath>Models\Pipe\PipeBend90.obj</ModelPath>
+			<MaterialInfo>Rusty Metal Sheet</MaterialInfo>
 			<Type>Space_Refinery_Game.OrdinaryPipe</Type>
 		</IEntitySerializable>
 	</Elements>

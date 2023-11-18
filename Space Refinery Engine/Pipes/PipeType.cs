@@ -20,6 +20,10 @@ namespace Space_Refinery_Engine
 
 		public Mesh Mesh { get; private set; }
 
+		public MaterialInfo MaterialInfo;
+
+		public Material Material { get; private set; }
+
 		public PipeProperties PipeProperties;
 
 		public Type TypeOfPipe;
@@ -89,6 +93,8 @@ namespace Space_Refinery_Engine
 
 			writer.WriteElementString(nameof(ModelPath), ModelPath);
 
+			writer.SerializeReference(MaterialInfo, nameof(MaterialInfo));
+
 			writer.Serialize(TypeOfPipe);
 		}
 
@@ -125,6 +131,8 @@ namespace Space_Refinery_Engine
 
 			Mesh = serializationData.GameData.GraphicsWorld.MeshLoader.LoadCached(ModelPath);
 
+			reader.DeserializeReference<MaterialInfo>(referenceHandler, (mI) => MaterialInfo = mI, nameof(MaterialInfo));
+
 			TypeOfPipe = reader.DeserializeSerializableType();
 
 			if (!PipeTypes.TryAdd(Name, this))
@@ -132,9 +140,12 @@ namespace Space_Refinery_Engine
 				throw new Exception($"Couldn't add {nameof(PipeType)} '{Name}' to dictionary of all available PipeTypes as another pipe type with the same name already exists.");
 			}
 
-			BatchRenderable = BatchRenderable.CreateAndAdd($"{Name} Pipe Type Batch Renderable", serializationData.GameData.GraphicsWorld, RenderingResources.DefaultPBRData, Mesh, RenderingResources.DefaultTexture, serializationData.GameData.GraphicsWorld.CameraProjViewBuffer, serializationData.GameData.GraphicsWorld.LightInfoBuffer);
+			serializationData.DeserializationCompleteEvent += () =>
+			{
+				BatchRenderable = BatchRenderable.CreateAndAdd($"{Name} Pipe Type Batch Renderable", serializationData.GameData.GraphicsWorld, Mesh, serializationData.GameData.GraphicsWorld.MaterialLoader.LoadCached(MaterialInfo.MaterialTexturePaths), serializationData.GameData.GraphicsWorld.CameraProjViewBuffer, serializationData.GameData.GraphicsWorld.LightInfoBuffer);
 
-			serializationData.GameData.GraphicsWorld.AddRenderable(BatchRenderable);
+				serializationData.GameData.GraphicsWorld.AddRenderable(BatchRenderable);
+			};
 		}
 	}
 }

@@ -32,6 +32,7 @@
 			</ConnectorProperties>
 			<HasConnectorNames>False</HasConnectorNames>
 			<ModelPath>Models\Machinery\SpaceDock.obj</ModelPath>
+			<MaterialInfo>Rusty Metal Sheet</MaterialInfo>
 			<Type>Space_Refinery_Game.SpaceDockPipe</Type>
 		</IEntitySerializable>
 	</Elements>

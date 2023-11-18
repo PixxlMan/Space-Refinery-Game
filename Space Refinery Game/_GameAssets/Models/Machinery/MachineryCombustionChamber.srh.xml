@@ -62,6 +62,7 @@
 				</Elements>
 			</Collection>
 			<ModelPath>Models\Machinery\MachineryCombustionChamber.obj</ModelPath>
+			<MaterialInfo>Rusty Metal Sheet</MaterialInfo>
 			<Type>Space_Refinery_Game.MachineryCombustionChamber</Type>
 		</IEntitySerializable>
 	</Elements>

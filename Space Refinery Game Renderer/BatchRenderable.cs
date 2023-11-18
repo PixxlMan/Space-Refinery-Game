@@ -10,17 +10,15 @@ public sealed partial class BatchRenderable : IRenderable
 {
 	private Mesh mesh;
 
-	private ResourceSet textureSet;
+	private Material material;
 
 	private ResourceSet resourceSet;
-
-	private ResourceSet pbrSet;
 
 	private DeviceBuffer transformationsBuffer;
 
 	private GraphicsWorld graphicsWorld;
 
-	private object SyncRoot = new();
+	private readonly object syncRoot = new();
 
 	public string Name;
 
@@ -30,7 +28,7 @@ public sealed partial class BatchRenderable : IRenderable
 		get => shouldDraw;
 		set
 		{
-			lock (SyncRoot)
+			lock (syncRoot)
 			{
 				if (!value)
 				{
@@ -70,7 +68,7 @@ public sealed partial class BatchRenderable : IRenderable
 	[Obsolete("This method is intended for debugging purposes only!")]
 	public int DebugGetRenderableIndex(object associatedObject)
 	{
-		lock (SyncRoot)
+		lock (syncRoot)
 		{
 			if (!transformsDictionary.TryGetValue(associatedObject, out var index))
 			{
@@ -84,7 +82,7 @@ public sealed partial class BatchRenderable : IRenderable
 
 	public void CreateBatchRenderableEntity(Transform transform, object associatedObject)
 	{
-		lock (SyncRoot)
+		lock (syncRoot)
 		{
 			var blittableTransform = transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero);
 
@@ -119,7 +117,7 @@ public sealed partial class BatchRenderable : IRenderable
 
 	public void RemoveBatchRenderableEntity(object associatedObject)
 	{
-		lock (SyncRoot)
+		lock (syncRoot)
 		{
 			int index = transformsDictionary[associatedObject];
 
@@ -148,7 +146,7 @@ public sealed partial class BatchRenderable : IRenderable
 
 	public void UpdateTransform(object associatedObject, Transform transform)
 	{
-		lock (SyncRoot)
+		lock (syncRoot)
 		{
 			var blittableTransform = transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero);
 
@@ -167,23 +165,16 @@ public sealed partial class BatchRenderable : IRenderable
 		graphicsWorld.AddRenderable(this);
 	}
 
-	public static BatchRenderable CreateAndAdd(string name, GraphicsWorld graphicsWorld, PBRData pBRData, Mesh mesh, Texture texture, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
+	public static BatchRenderable CreateAndAdd(string name, GraphicsWorld graphicsWorld, Mesh mesh, Material material, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
 	{
 		BatchRenderable batchRenderable = new()
 		{
+			Name = name,
 			mesh = mesh,
-			Name = name
+			material = material,
 		};
 
-		TextureView textureView = graphicsWorld.Factory.CreateTextureView(texture);
-
-		DeviceBuffer pbrBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(PBRData.SizeInBytes, BufferUsage.UniformBuffer));
-		graphicsWorld.GraphicsDevice.UpdateBuffer(pbrBuffer, 0, pBRData);
-		batchRenderable.pbrSet = graphicsWorld.Factory.CreateResourceSet(new ResourceSetDescription(PBRDataLayout, pbrBuffer));
-
-		batchRenderable.textureSet = graphicsWorld.Factory.CreateResourceSet(new ResourceSetDescription(TextureLayout, textureView, graphicsWorld.GraphicsDevice.Aniso4xSampler));
-
-		BindableResource[] bindableResources = new BindableResource[] { lightInfoBuffer, cameraProjViewBuffer };
+		BindableResource[] bindableResources = [lightInfoBuffer, cameraProjViewBuffer];
 		ResourceSetDescription resourceSetDescription = new ResourceSetDescription(SharedLayout, bindableResources);
 		batchRenderable.resourceSet = graphicsWorld.Factory.CreateResourceSet(resourceSetDescription);
 
@@ -200,7 +191,7 @@ public sealed partial class BatchRenderable : IRenderable
 
 	private void ManageTransformsBuffer()
 	{
-		lock (SyncRoot)
+		lock (syncRoot)
 		{
 			// The buffer has not been created yet and should be initialized to the initialCapacity.
 			if (currentCapacity == 0 || transformationsBuffer is null)
@@ -278,7 +269,7 @@ public sealed partial class BatchRenderable : IRenderable
 
 	private void ReuploadTransformsBuffer()
 	{
-		lock (SyncRoot)
+		lock (syncRoot)
 		{
 			graphicsWorld.GraphicsDevice.UpdateBuffer(transformationsBuffer, 0, transforms.ToArray());
 		}
@@ -286,7 +277,7 @@ public sealed partial class BatchRenderable : IRenderable
 
 	public void AddDrawCommands(CommandList commandList, FixedDecimalLong8 deltaTime)
 	{
-		lock (SyncRoot)
+		lock (syncRoot)
 		{
 			if (TransformsCount == 0 || !shouldDraw)
 			{
@@ -295,7 +286,7 @@ public sealed partial class BatchRenderable : IRenderable
 
 			commandList.SetPipeline(PipelineResource);
 			commandList.SetGraphicsResourceSet(0, resourceSet);
-			commandList.SetGraphicsResourceSet(1, textureSet);
+			material.AddSetCommands(commandList);
 			commandList.SetVertexBuffer(0, mesh.VertexBuffer);
 			commandList.SetIndexBuffer(mesh.IndexBuffer, mesh.IndexFormat);
 			commandList.SetVertexBuffer(1, transformationsBuffer);
@@ -306,7 +297,7 @@ public sealed partial class BatchRenderable : IRenderable
 
 	public void Destroy()
 	{
-		lock (SyncRoot)
+		lock (syncRoot)
 		{
 			if (shouldDraw)
 			{

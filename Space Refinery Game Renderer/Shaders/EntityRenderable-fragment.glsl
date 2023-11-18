@@ -9,15 +9,11 @@ layout(set = 0, binding = 0) uniform LightInfo
 	float padding1;
 };
 
-layout(set = 1, binding = 0) uniform texture2D Tex;
-layout(set = 1, binding = 1) uniform sampler Samp;
-
-layout(set = 2, binding = 0) uniform PbrData
-{
-    float metallic;
-    float roughness;
-    float ao;
-};
+layout(set = 1, binding = 0) uniform sampler Samp;
+layout(set = 1, binding = 1) uniform texture2D DiffTex;
+layout(set = 1, binding = 2) uniform texture2D MetalTex;
+layout(set = 1, binding = 3) uniform texture2D RoughTex;
+layout(set = 1, binding = 4) uniform texture2D AOTex;
 
 layout(location = 0) in vec3 fsin_Position_WorldSpace;
 layout(location = 1) in vec3 fsin_Normal;
@@ -34,7 +30,10 @@ const float PI = 3.14159265359;
 
 void main() // https://learnopengl.com/PBR/Lighting
 {
-	vec3 texColor = vec3(texture(sampler2D(Tex, Samp), fsin_TexCoord));
+	vec3 texColor = vec3(texture(sampler2D(DiffTex, Samp), fsin_TexCoord));
+    float metallic = float(texture(sampler2D(MetalTex, Samp), fsin_TexCoord));
+    float roughness = float(texture(sampler2D(RoughTex, Samp), fsin_TexCoord));
+    float ao = float(texture(sampler2D(AOTex, Samp), fsin_TexCoord));
 
     vec3 N = normalize(fsin_Normal);
     vec3 V = normalize(fsin_Position_WorldSpace);

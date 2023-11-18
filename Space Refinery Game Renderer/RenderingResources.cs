@@ -5,22 +5,15 @@ namespace Space_Refinery_Game_Renderer;
 
 public static class RenderingResources
 {
-	public static PBRData DefaultPBRData { get; private set; } = new()
-	{
-		Metallic = .85f,
-		Roughness = .25f,
-		Ao = 0,
-	};
-
 	public static Texture DefaultTexture { get; private set; }
+
+	public static Material DefaultMaterial { get; private set; }
 
 	public static bool HasCreatedStaticDeviceResources { get; private set; } = false;
 
-	public static ResourceLayout PBRDataLayout { get; private set; }
-
-	public static ResourceLayout AuxillaryDataLayout { get; private set; }
-
 	public static ResourceLayout TextureLayout { get; private set; }
+
+	public static ResourceLayout MaterialLayout { get; private set; }
 
 	public static ResourceLayout SharedLayout { get; private set; }
 
@@ -37,20 +30,22 @@ public static class RenderingResources
 			return;
 		}
 
-		DefaultTexture = Utils.GetSolidColoredTexture(RgbaByte.LightGrey, graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
-
-		ResourceLayoutElementDescription[] pbrLayoutDescriptions =
-		{
-			new ResourceLayoutElementDescription("PBRData", ResourceKind.UniformBuffer, ShaderStages.Fragment),
-		};
-		PBRDataLayout = graphicsWorld.Factory.CreateResourceLayout(new ResourceLayoutDescription(pbrLayoutDescriptions));
-
 		ResourceLayoutElementDescription[] textureLayoutDescriptions =
 		{
 			new ResourceLayoutElementDescription("Tex", ResourceKind.TextureReadOnly, ShaderStages.Fragment),
 			new ResourceLayoutElementDescription("Samp", ResourceKind.Sampler, ShaderStages.Fragment),
 		};
 		TextureLayout = graphicsWorld.Factory.CreateResourceLayout(new ResourceLayoutDescription(textureLayoutDescriptions));
+
+		ResourceLayoutElementDescription[] materialLayoutDescriptions =
+		{
+			new ResourceLayoutElementDescription("Sampler", ResourceKind.Sampler, ShaderStages.Fragment),
+			new ResourceLayoutElementDescription("DiffuseTexture", ResourceKind.TextureReadOnly, ShaderStages.Fragment),
+			new ResourceLayoutElementDescription("MetallicTexture", ResourceKind.TextureReadOnly, ShaderStages.Fragment),
+			new ResourceLayoutElementDescription("RoughnessTexture", ResourceKind.TextureReadOnly, ShaderStages.Fragment),
+			new ResourceLayoutElementDescription("AOTexture", ResourceKind.TextureReadOnly, ShaderStages.Fragment),
+		};
+		MaterialLayout = graphicsWorld.Factory.CreateResourceLayout(new ResourceLayoutDescription(materialLayoutDescriptions));
 
 		ResourceLayoutElementDescription[] resourceLayoutElementDescriptions =
 		{
@@ -94,15 +89,18 @@ public static class RenderingResources
 			scissorTestEnabled: false
 			),
 			PrimitiveTopology = PrimitiveTopology.TriangleList,
-			ResourceLayouts = new ResourceLayout[] { SharedLayout, TextureLayout, PBRDataLayout, AuxillaryDataLayout },
+			ResourceLayouts = new ResourceLayout[] { SharedLayout, MaterialLayout },
 			ShaderSet = new ShaderSetDescription(
-				vertexLayouts: new VertexLayoutDescription[] { VertexLayout, TransformationVertexShaderParameterLayout },
+				vertexLayouts: [VertexLayout, TransformationVertexShaderParameterLayout],
 				shaders: graphicsWorld.ShaderLoader.LoadCached("EntityRenderable")
 			),
 			Outputs = graphicsWorld.GraphicsDevice.MainSwapchain.Framebuffer.OutputDescription
 		};
 
 		PipelineResource = graphicsWorld.Factory.CreateGraphicsPipeline(pipelineDescription);
+
+		DefaultTexture = Utils.GetSolidColoredTexture(RgbaByte.LightGrey, graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
+		DefaultMaterial = Material.FromTextures(graphicsWorld.GraphicsDevice, graphicsWorld.Factory, "Default Material", DefaultTexture, DefaultTexture, DefaultTexture, DefaultTexture);
 
 		HasCreatedStaticDeviceResources = true;
 	}

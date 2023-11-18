@@ -10,11 +10,9 @@ public sealed class EntityRenderable : IRenderable
 {
 	private Mesh mesh;
 
-	private ResourceSet textureSet;
+	private Material material;
 
 	private ResourceSet resourceSet;
-
-	private ResourceSet pbrSet;
 
 	private DeviceBuffer transformationBuffer;
 
@@ -51,26 +49,20 @@ public sealed class EntityRenderable : IRenderable
 
 	public Transform Transform;
 
-	public static EntityRenderable CreateAndAdd(GraphicsWorld graphicsWorld, Transform transform, Mesh mesh, Texture texture, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
+	public static EntityRenderable CreateAndAdd(GraphicsWorld graphicsWorld, Transform transform, Mesh mesh, Material material, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
 	{
 		EntityRenderable entityRenderable = new(transform);
 
 		entityRenderable.mesh = mesh;
 
-		TextureView textureView = graphicsWorld.Factory.CreateTextureView(texture);
-
-		DeviceBuffer pbrBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(PBRData.SizeInBytes, BufferUsage.UniformBuffer));
-		graphicsWorld.GraphicsDevice.UpdateBuffer(pbrBuffer, 0, new PBRData(0.75f, 0.25f, .5f));
-		entityRenderable.pbrSet = graphicsWorld.Factory.CreateResourceSet(new ResourceSetDescription(PBRDataLayout, pbrBuffer));
-
-		entityRenderable.textureSet = graphicsWorld.Factory.CreateResourceSet(new ResourceSetDescription(TextureLayout, textureView, graphicsWorld.GraphicsDevice.Aniso4xSampler));
+		entityRenderable.material = material;
 
 		entityRenderable.transformationBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes, BufferUsage.VertexBuffer));
 
 		graphicsWorld.GraphicsDevice.UpdateBuffer(entityRenderable.transformationBuffer, 0, entityRenderable.Transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
 
-		BindableResource[] bindableResources = new BindableResource[] { lightInfoBuffer, cameraProjViewBuffer };
-		ResourceSetDescription resourceSetDescription = new ResourceSetDescription(SharedLayout, bindableResources);
+		BindableResource[] bindableResources = [lightInfoBuffer, cameraProjViewBuffer];
+		ResourceSetDescription resourceSetDescription = new(SharedLayout, bindableResources);
 		entityRenderable.resourceSet = graphicsWorld.Factory.CreateResourceSet(resourceSetDescription);
 
 		entityRenderable.graphicsWorld = graphicsWorld;
@@ -86,7 +78,7 @@ public sealed class EntityRenderable : IRenderable
 
 		commandList.SetPipeline(PipelineResource);
 		commandList.SetGraphicsResourceSet(0, resourceSet);
-		commandList.SetGraphicsResourceSet(1, textureSet);
+		material.AddSetCommands(commandList);
 		commandList.SetVertexBuffer(0, mesh.VertexBuffer);
 		commandList.SetIndexBuffer(mesh.IndexBuffer, mesh.IndexFormat);
 		commandList.SetVertexBuffer(1, transformationBuffer);
@@ -106,21 +98,6 @@ public sealed class EntityRenderable : IRenderable
 			shouldDraw = false;
 		}			
 	}
-}
-
-public struct PBRData
-{
-	public PBRData(float metallic, float roughness, float ao)
-	{
-		Metallic = metallic;
-		Roughness = roughness;
-		Ao = ao;
-	}
-
-	public const int SizeInBytes = 16; // Size has to be a multiple of 16! //4;
-	public float Metallic;
-	public float Roughness;
-	public float Ao;
 }
 
 public struct AuxillaryData

@@ -38,6 +38,8 @@ public sealed class GraphicsWorld
 
 	public MeshLoader MeshLoader { get; private set; }
 
+	public MaterialLoader MaterialLoader { get; private set; }
+
 	public ShaderLoader ShaderLoader { get; private set; }
 
 	private string responseSpinner = "_";
@@ -59,10 +61,23 @@ public sealed class GraphicsWorld
 
 	public void SetUp(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
+		Logging.LogScopeStart("Setting up GraphicsWorld");
+
+		// No dependency
+		Configuration.Default.PreferContiguousImageBuffers = true; // Use contigous image buffers in ImageSharp to load textures.
+																   // This is necessary for them to uploadable to the GPU!
+
+		// No dependency
+		ShaderLoader = new(this);
+
+
+		// No dependency
 		this.window = window;
 
 		window.Resized += HandleWindowResized;
 
+
+		// Depends on window
 		Camera = new(window.Width, window.Height, Perspective.Perspective);
 
 		Camera.Transform.Position = new Vector3FixedDecimalInt4(0, 0, 10);
@@ -73,13 +88,20 @@ public sealed class GraphicsWorld
 
 		Camera.FieldOfView = 75 * FixedDecimalInt4.DegreesToRadians;
 
-		MeshLoader = new(this);
 
-		ShaderLoader = new(this);
-
+		// These depend on the shader loader
 		CreateDeviceObjects(gd, factory, swapchain);
 
 		RenderingResources.CreateStaticDeviceResources(this);
+
+
+		// These depend on the device resources.
+		MeshLoader = new(this);
+		
+		// This depends on using contigous image buffers.
+		MaterialLoader = new(this);
+
+		Logging.LogScopeEnd();
 	}
 
 	private void HandleWindowResized()
@@ -171,6 +193,8 @@ public sealed class GraphicsWorld
 
 	public void AddRenderable(IRenderable renderable)
 	{
+		Debug.Assert(renderable is not null);
+
 		lock (unorderedRenderables)
 		{
 			unorderedRenderables.Add(renderable);
@@ -179,6 +203,8 @@ public sealed class GraphicsWorld
 
 	public void AddRenderable(IRenderable renderable, int order)
 	{
+		Debug.Assert(renderable is not null);
+
 		lock (specificOrderRenderables)
 		{
 			if (specificOrderRenderables.ContainsKey(order))
@@ -198,6 +224,8 @@ public sealed class GraphicsWorld
 
 	public void RemoveRenderable(IRenderable renderable)
 	{
+		Debug.Assert(renderable is not null);
+
 		lock (unorderedRenderables)
 		{
 			if (unorderedRenderables.Contains(renderable))

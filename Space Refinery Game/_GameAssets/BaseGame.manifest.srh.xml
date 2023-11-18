@@ -9,7 +9,7 @@
 			<ExtensionVersion>1.0.0.0</ExtensionVersion>
 			<HasAssembly>True</HasAssembly>
 			<ExtensionAssemblyName>../Space Refinery Game</ExtensionAssemblyName>
-			<AssetsPath>../../../../../Space Refinery Game/bin/Debug/net7.0/_GameAssets</AssetsPath>
+			<AssetsPath>../../../../../Space Refinery Game/bin/Debug/net8.0/_GameAssets</AssetsPath>
 			<Dependencies>
 				<Count>1</Count>
 				<Elements>

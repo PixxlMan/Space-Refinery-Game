@@ -70,7 +70,7 @@ public static class ResourceDeserialization
 		List<string> manifestFilePaths = new();
 
 		manifestFilePaths.AddRange(Directory.GetFiles(AssetsPath, $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
-		manifestFilePaths.AddRange(Directory.GetFiles("../../../../Space Refinery Game/bin/Debug/net7.0/_GameAssets", $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
+		manifestFilePaths.AddRange(Directory.GetFiles("../../../../Space Refinery Game/bin/Debug/net8.0/_GameAssets", $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
 
 		// Find all extension manifest files and add them to manifestFilePaths,
 		// or if there is a directory without any manifest file create a 'No File'-manifest

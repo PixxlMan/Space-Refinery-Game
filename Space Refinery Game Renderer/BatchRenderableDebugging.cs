@@ -7,11 +7,11 @@ namespace Space_Refinery_Game_Renderer
 		// TODO: what is the purpose of this static list? should it be kept in main game or similar? or by graphics system? or manager for batch renderables? is it just here for debug? if so, maybe change the debug menu to somehow work with a provided gamedata?
 		public static readonly List<BatchRenderable> BatchRenderables = new();
 
-		private static object syncRoot = new();
+		private static object staticSyncRoot = new();
 
 		private static void RegisterBatchRenderable(BatchRenderable batchRenderable)
 		{
-			lock (syncRoot)
+			lock (staticSyncRoot)
 			{
 				BatchRenderables.Add(batchRenderable);
 			}
@@ -19,7 +19,7 @@ namespace Space_Refinery_Game_Renderer
 
 		private static void UnregisterBatchRenderable(BatchRenderable batchRenderable)
 		{
-			lock (syncRoot)
+			lock (staticSyncRoot)
 			{
 				BatchRenderables.Remove(batchRenderable);
 			}
@@ -29,7 +29,7 @@ namespace Space_Refinery_Game_Renderer
 		{
 			//ImGui.SetNextWindowSizeConstraints(new(100, 100), new(1000, 1000));
 			ImGui.Begin("Renderable Debugging");
-			lock (syncRoot)
+			lock (staticSyncRoot)
 			{
 				ImGui.Columns(BatchRenderables.Count);
 				foreach (var batchRenderable in BatchRenderables)
@@ -44,7 +44,7 @@ namespace Space_Refinery_Game_Renderer
 
 		private static void DoDebugUIForBatchRenderable(BatchRenderable batchRenderable)
 		{
-			lock (batchRenderable.SyncRoot)
+			lock (batchRenderable.syncRoot)
 			{
 				ImGui.BulletText(batchRenderable.Name);
 				bool shouldDraw = batchRenderable.ShouldDraw;

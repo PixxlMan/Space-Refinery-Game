@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>Space_Refinery_Game</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>Latest</LangVersion>
@@ -213,7 +213,9 @@
     <PackageReference Include="SharpAudio.ALBinding" Version="1.0.65-beta" />
     <PackageReference Include="SharpAudio.Codec" Version="1.0.65-beta" />
     <PackageReference Include="Singulink.Reflection.ObjectFactory" Version="1.0.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.0.2" />
     <PackageReference Include="Veldrid" Version="4.9.0" />
+    <PackageReference Include="Veldrid.ImageSharp" Version="4.9.0" />
     <PackageReference Include="Veldrid.ImGui" Version="5.72.0" />
     <PackageReference Include="Veldrid.RenderDoc" Version="1.0.1" />
     <PackageReference Include="Veldrid.SDL2" Version="4.9.0" />

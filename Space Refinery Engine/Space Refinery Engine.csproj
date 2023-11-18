@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>Space_Refinery_Engine</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -55,10 +55,10 @@
     <Content Include="Mods\MyAwesomeMod\Assets\PipeStraightCool.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Mods\MyAwesomeMod\Assets\PipeStraightCOOL.srh.xml">
+    <Content Include="Mods\MyAwesomeMod\Assets\PipeStraightCOOL.srh.xml.nah">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Mods\MyAwesomeMod\MyAwesomeMod.manifest.srh.xml">
+    <Content Include="Mods\MyAwesomeMod\MyAwesomeMod.manifest.srh.xml.nah">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Mods\README.txt">

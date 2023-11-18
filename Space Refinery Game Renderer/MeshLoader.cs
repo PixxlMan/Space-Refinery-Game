@@ -1,32 +1,31 @@
 ﻿using FXRenderer;
 
-namespace Space_Refinery_Game_Renderer
+namespace Space_Refinery_Game_Renderer;
+
+public sealed class MeshLoader
 {
-	public sealed class MeshLoader
+	private Dictionary<string, Mesh> meshCache = new();
+
+	private GraphicsWorld graphicsWorld;
+
+	public MeshLoader(GraphicsWorld graphicsWorld)
 	{
-		private Dictionary<string, Mesh> meshCache = new();
+		this.graphicsWorld = graphicsWorld;
+	}
 
-		private GraphicsWorld graphicsWorld;
+	public Mesh LoadCached(string path)
+	{
+		path = Path.GetFullPath(path);
 
-		public MeshLoader(GraphicsWorld graphicsWorld)
+		if (meshCache.ContainsKey(path))
 		{
-			this.graphicsWorld = graphicsWorld;
+			return meshCache[path];
 		}
 
-		public Mesh LoadCached(string path)
-		{
-			path = Path.GetFullPath(path);
+		var mesh = Mesh.LoadMesh(graphicsWorld.GraphicsDevice, graphicsWorld.Factory, path);
 
-			if (meshCache.ContainsKey(path))
-			{
-				return meshCache[path];
-			}
+		meshCache.Add(path, mesh);
 
-			var mesh = Mesh.LoadMesh(graphicsWorld.GraphicsDevice, graphicsWorld.Factory, path);
-
-			meshCache.Add(path, mesh);
-
-			return mesh;
-		}
+		return mesh;
 	}
 }

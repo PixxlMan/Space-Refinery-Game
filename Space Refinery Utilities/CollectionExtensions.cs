@@ -28,7 +28,7 @@ public static class CollectionExtensions
 	{
 		if (!dictionary.TryAdd(key, value))
 		{
-			throw new Exception(exceptionText ?? $"Item has already been added to this {nameof(ConcurrentDictionary<TKey, TValue>)}. It is not unique.");
+			throw new Exception(exceptionText ?? $"Key has already been added to this {nameof(ConcurrentDictionary<TKey, TValue>)}. It is not unique.");
 		}
 	}
 
@@ -37,7 +37,7 @@ public static class CollectionExtensions
 	{
 		if (!dictionary.Remove(key, out _))
 		{
-			throw new Exception(exceptionText ?? $"Item does not exist in this {nameof(ConcurrentDictionary<TKey, TValue>)}.");
+			throw new Exception(exceptionText ?? $"Key does not exist in this {nameof(ConcurrentDictionary<TKey, TValue>)}.");
 		}
 	}
 
@@ -46,7 +46,7 @@ public static class CollectionExtensions
 	{
 		if (!dictionary.TryAdd(key, default))
 		{
-			throw new Exception(exceptionText ?? $"Item has already been added to this {nameof(ConcurrentDictionary<TKey, EmptyType>)}. It is not unique.");
+			throw new Exception(exceptionText ?? $"Key has already been added to this {nameof(ConcurrentDictionary<TKey, EmptyType>)}. It is not unique.");
 		}
 	}
 
@@ -55,7 +55,7 @@ public static class CollectionExtensions
 	{
 		if (!dictionary.Remove(key, out _))
 		{
-			throw new Exception(exceptionText ?? $"Item does not exist in this {nameof(ConcurrentDictionary<TKey, EmptyType>)}.");
+			throw new Exception(exceptionText ?? $"Key does not exist in this {nameof(ConcurrentDictionary<TKey, EmptyType>)}.");
 		}
 	}
 }

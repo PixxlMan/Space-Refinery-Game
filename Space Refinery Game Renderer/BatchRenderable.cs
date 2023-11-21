@@ -131,17 +131,35 @@ public sealed partial class BatchRenderable : IRenderable
 		}
 	}
 
+	public void Reset()
+	{
+		lock (syncRoot)
+		{
+			shouldDraw = true;
+
+			Clear();
+		}
+	}
+
+	public void Restore()
+	{
+		graphicsWorld.AddRenderable(this);
+	}
+
 	public void Clear()
 	{
-		Logging.LogDebug($"Clearing {nameof(BatchRenderable)} '{Name}'.");
+		lock (syncRoot)
+		{
+			Logging.LogDebug($"Clearing {nameof(BatchRenderable)} '{Name}'.");
 
-		transformsDictionary.Clear();
+			transformsDictionary.Clear();
 
-		availableIndexesQueue.Clear();
+			availableIndexesQueue.Clear();
 
-		transforms.Clear();
+			transforms.Clear();
 
-		ManageTransformsBuffer();
+			ManageTransformsBuffer();
+		}
 	}
 
 	public void UpdateTransform(object associatedObject, Transform transform)
@@ -158,11 +176,6 @@ public sealed partial class BatchRenderable : IRenderable
 
 			graphicsWorld.GraphicsDevice.UpdateBuffer(transformationsBuffer, (uint)index * BlittableTransform.SizeInBytes, ref blittableTransform, BlittableTransform.SizeInBytes);			
 		}
-	}
-
-	public void AddToGraphicsWorld()
-	{
-		graphicsWorld.AddRenderable(this);
 	}
 
 	public static BatchRenderable CreateAndAdd(string name, GraphicsWorld graphicsWorld, Mesh mesh, Material material, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
@@ -184,7 +197,7 @@ public sealed partial class BatchRenderable : IRenderable
 
 		RegisterBatchRenderable(batchRenderable);
 
-		batchRenderable.AddToGraphicsWorld();
+		batchRenderable.Restore();
 
 		return batchRenderable;
 	}

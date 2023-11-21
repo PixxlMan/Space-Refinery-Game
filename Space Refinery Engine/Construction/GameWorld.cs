@@ -33,10 +33,15 @@ public sealed class GameWorld
 
 	public void RemoveEntity(Entity entity)
 	{
-		//Entities.RemoveStrict(entity, $"This {nameof(Entity)} cannot be found.");
-		Entities.Remove(entity, out _);
+		lock (TickSyncObject)
+		{
+			if (!Entities.Remove(entity, out _))
+			{
+				return; // If the construction was not in the Constructions dictionary there's nothing to deconstruct.
+			}
 
-		entity.Destroy();
+			entity.Destroy();
+		}
 	}
 
 	public void AddConstruction(IConstruction construction)
@@ -47,11 +52,17 @@ public sealed class GameWorld
 
 	public void Deconstruct(IConstruction construction)
 	{
-		Constructions.RemoveStrict(construction);
+		lock (TickSyncObject)
+		{
+			if (!Constructions.Remove(construction, out _))
+			{
+				return; // If the construction was not in the Constructions dictionary there's nothing to deconstruct.
+			}
 
-		construction.Deconstruct();
+			construction.Deconstruct();
 
-		RemoveEntity(construction);
+			RemoveEntity(construction);
+		}
 	}
 
 	public void StartTicking()

@@ -35,8 +35,6 @@ namespace Space_Refinery_Engine
 
 		Connector[] IConnectable.Connectors => Connectors;
 
-		public ConstructionInfo? ConstructionInfo { get; private set; }
-
 		public bool Created;
 
 		public bool Constructed => !Created;
@@ -79,7 +77,7 @@ namespace Space_Refinery_Engine
 
 				pipe.Created = true;
 
-				pipe.SetUp(pipeType, null, connectors, physObj, gameData);
+				pipe.SetUp(pipeType, connectors, physObj, gameData);
 
 				gameData.GameWorld.AddEntity(pipe);
 
@@ -232,7 +230,7 @@ namespace Space_Refinery_Engine
 
 				var connectors = CreateConnectors(pipeType, pipe, gameData);
 
-				pipe.SetUp(pipeType, new(indexOfSelectedConnector, rotation), connectors, physObj, gameData);
+				pipe.SetUp(pipeType, connectors, physObj, gameData);
 
 				pipe.Created = false;
 
@@ -246,12 +244,11 @@ namespace Space_Refinery_Engine
 			}
 		}
 
-		private void SetUp(PipeType pipeType, ConstructionInfo? constructionInfo, PipeConnector[] connectors, PhysicsObject physicsObject, GameData gameData)
+		private void SetUp(PipeType pipeType, PipeConnector[] connectors, PhysicsObject physicsObject, GameData gameData)
 		{
 			lock (SyncRoot)
 			{
 				PipeType = pipeType;
-				ConstructionInfo = constructionInfo;
 				UI = gameData.UI;
 				PhysicsWorld = gameData.PhysicsWorld;
 				PhysicsObject = physicsObject;
@@ -362,7 +359,7 @@ namespace Space_Refinery_Engine
 
 				serializationData.DeserializationCompleteEvent += () =>
 				{
-					SetUp(pipeType, null, connectors, physObj, serializationData.GameData);
+					SetUp(pipeType, connectors, physObj, serializationData.GameData);
 				};
 
 				Created = true;

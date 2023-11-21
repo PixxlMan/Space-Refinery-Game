@@ -49,6 +49,13 @@ namespace Space_Refinery_Engine
 
 		ImDrawListPtr drawList;
 
+		public void Restore()
+		{
+			gameData.GraphicsWorld.AddRenderable(this, 1);
+
+			gameData.GraphicsWorld.WindowResized += WindowResized;
+		}
+
 		public void ChangeEntitySelection(int selectionDelta)
 		{
 			lock (syncRoot)
@@ -130,8 +137,6 @@ namespace Space_Refinery_Engine
 			imGuiRenderer = new(gd, gd.MainSwapchain.Framebuffer.OutputDescription, (int)width, (int)height);
 
 			imGuiRenderer.CreateDeviceResources(gd, gd.MainSwapchain.Framebuffer.OutputDescription);
-
-			gameData.GraphicsWorld.WindowResized += WindowResized;
 		}
 
 		private void WindowResized(int width, int height)
@@ -182,11 +187,6 @@ namespace Space_Refinery_Engine
 			}
 		}
 
-		public void AddToGraphicsWorld()
-		{
-			gameData.GraphicsWorld.AddRenderable(this, 1);
-		}
-
 		public static UI CreateAndAdd(GameData gameData)
 		{
 			ImGui.CreateContext();
@@ -198,7 +198,7 @@ namespace Space_Refinery_Engine
 
 			ui.Style();
 
-			ui.AddToGraphicsWorld();
+			ui.Restore();
 
 			return ui;
 		}
@@ -388,7 +388,7 @@ namespace Space_Refinery_Engine
 					DoPauseMenuUI(deltaTime);
 				}
 			}
-		}		
+		}
 
 		public void Style() // https://github.com/ocornut/imgui/issues/707
 		{

@@ -341,15 +341,20 @@ public sealed class MainGame
 
 		GameData.Reset();
 
+		foreach (var pipeType in PipeType.PipeTypes.Values)
+		{
+			pipeType.BatchRenderable.Reset();
+		}
+
 		// Restoring:
 
-		UI.AddToGraphicsWorld();
+		UI.Restore();
 
 		Starfield.AddToGraphicsWorld();
 
 		foreach (var pipeType in PipeType.PipeTypes.Values)
 		{
-			pipeType.BatchRenderable.AddToGraphicsWorld();
+			pipeType.BatchRenderable.Restore();
 		}
 
 		GameData.Restore();

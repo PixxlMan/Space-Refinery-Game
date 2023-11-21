@@ -6,20 +6,15 @@ using System.Diagnostics;
 
 namespace Space_Refinery_Engine;
 
-public sealed class GameWorld
+public sealed class GameWorld(GameData gameData)
 {
-	public GameWorld(GameData gameData)
-	{
-		GameData = gameData;
-	}
-
 	public object TickSyncObject = new();
 
-	public GameData GameData;
+	public GameData GameData = gameData;
 
-	public ConcurrentDictionary<IConstruction, EmptyType> Constructions = new();
+	private HashSet<IConstruction> constructions = new();
 
-	public ConcurrentDictionary<Entity, EmptyType> Entities = new();
+	private HashSet<Entity> entities = new();
 
 	public event Action<IntervalUnit>? CollectTickPerformanceData;
 
@@ -28,17 +23,22 @@ public sealed class GameWorld
 
 	public void AddEntity(Entity entity)
 	{
-		Entities.AddUnique(entity, $"This {nameof(Entity)} has already been added.");
+		lock (TickSyncObject)
+		{
+			entities.AddUnique(entity, $"This {nameof(Entity)} has already been added.");
+		}
 	}
 
 	public void RemoveEntity(Entity entity)
 	{
 		lock (TickSyncObject)
 		{
-			if (!Entities.Remove(entity, out _))
+			if (!entities.Contains(entity))
 			{
-				return; // If the construction was not in the Constructions dictionary there's nothing to deconstruct.
+				return; // If the construction was not in the constructions dictionary there's nothing to deconstruct.
 			}
+
+			entities.Remove(entity);
 
 			entity.Destroy();
 		}
@@ -47,16 +47,20 @@ public sealed class GameWorld
 	public void AddConstruction(IConstruction construction)
 	{
 		lock (TickSyncObject)
-			Constructions.AddUnique(construction);
+		{
+			AddEntity(construction);
+
+			constructions.AddUnique(construction);
+		}
 	}
 
 	public void Deconstruct(IConstruction construction)
 	{
 		lock (TickSyncObject)
 		{
-			if (!Constructions.Remove(construction, out _))
+			if (!constructions.Contains(construction))
 			{
-				return; // If the construction was not in the Constructions dictionary there's nothing to deconstruct.
+				return; // If the construction was not in the constructions dictionary there's nothing to deconstruct.
 			}
 
 			construction.Deconstruct();
@@ -106,41 +110,24 @@ public sealed class GameWorld
 	{
 		lock (TickSyncObject)
 		{
-			foreach (var entity in Entities.Keys)
+			foreach (var entity in entities)
 			{
 				entity.Tick();
 			}
 		}
 	}
 
-	public void ClearAll()
+	public void Destroy()
 	{
 		lock (TickSyncObject)
 		{
-			foreach (Entity entity in Entities.Keys)
+			Parallel.ForEach(entities, (e) =>
 			{
-				RemoveEntity(entity);
-			}
-		}
-	}
+				e.Destroy();
+			});
 
-	public void ClearAllParallell()
-	{
-		lock (TickSyncObject)
-		{
-			Parallel.ForEach(Entities.Keys, RemoveEntity);
-		}
-	}
-
-	/// <remarks>
-	/// This method simply removes the references to all entites, it does not call Destroy methods. All entities must be responsibly Destroyed manually - don't litter!
-	/// </remarks>
-	public void ResetUnsafe()
-	{
-		lock (TickSyncObject)
-		{
-			Entities.Clear();
-			Constructions.Clear();
+			entities.Clear();
+			constructions.Clear();
 		}
 	}
 
@@ -148,9 +135,9 @@ public sealed class GameWorld
 	{
 		if (ImGui.Begin("Game World Debug Info"))
 		{
-			ImGui.Text($"Total entities: {Entities.Count}");
+			ImGui.Text($"Total entities: {entities.Count}");
 
-			ImGui.Text($"Total constructions: {Constructions.Count}");
+			ImGui.Text($"Total constructions: {constructions.Count}");
 
 			ImGui.End();
 		}

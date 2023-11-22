@@ -8,7 +8,7 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 	/// Handles all settings that are global for the entire game, such as volume, graphics settings or language etc.
 	/// Does not store debug settings or per-save settings, such as difficulty preset.
 	/// </summary>
-	public sealed class Settings
+	public sealed class Settings : IEntitySerializable
 	{
 		private SerializationReferenceHandler settingsReferenceHandler = new();
 		private ConcurrentDictionary<string, Setting> settings = new();
@@ -21,8 +21,6 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 
 			this.gameData = gameData;
 		}
-
-		public SerializableReference SerializableReference { get; private set; }
 
 		/// <summary>
 		/// Registers an action for handling an accepted change and optionally an action for handling any change.
@@ -142,7 +140,7 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 				setting.Accept();
 			}
 
-			SaveSettingValues();
+			SaveSettingsToSettingsFile();
 		}
 
 		public void AddSetting(Setting setting)
@@ -167,7 +165,7 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 		private static readonly string settingValuesPath = Path.Combine(Environment.CurrentDirectory, "UserData", "Settings.srh.c.xml");
 		private static readonly string settingValuesDirectoryPath = Path.Combine(Environment.CurrentDirectory, "UserData");
 
-		public void SaveSettingValues()
+		public void SaveSettingsToSettingsFile()
 		{
 			Logging.Log("Saving setting values");
 
@@ -187,7 +185,7 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 			stream.Dispose();
 		}
 
-		public void LoadSettingValues()
+		public void LoadSettingValuesFromSettingsFile()
 		{
 			Logging.Log("Loading setting values");
 
@@ -207,7 +205,7 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 			AcceptAllSettings();
 		}
 
-		public void SerializeSettingValues(XmlWriter writer, SerializationData serializationData)
+		private void SerializeSettingValues(XmlWriter writer, SerializationData serializationData)
 		{
 			writer.Serialize(settings.Values, (w, st) =>
 			{ 
@@ -220,7 +218,7 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 			}, "SettingValues");
 		}
 
-		public void DeserializeSettingValues(XmlReader reader, SerializationData serializationData)
+		private void DeserializeSettingValues(XmlReader reader, SerializationData serializationData)
 		{
 			reader.DeserializeCollection((r) =>
 			{
@@ -232,6 +230,16 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 				}
 				r.ReadEndElement();
 			}, "SettingValues");
+		}
+
+		public void SerializeState(XmlWriter writer, SerializationData serializationData)
+		{
+			SerializeSettingValues(writer, serializationData);
+		}
+
+		public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
+		{
+			DeserializeSettingValues(reader, serializationData);
 		}
 	}
 }

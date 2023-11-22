@@ -171,7 +171,7 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 
 			using var writer = XmlWriter.Create(stream, new XmlWriterSettings() { Indent = true, IndentChars = "\t" });
 
-			SerializeSettingValues(writer, new(gameData));
+			SerializeSettingValues(writer);
 
 			writer.Flush();
 			writer.Close();

@@ -98,7 +98,7 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 
 		UI.PauseStateChanged += UI_PauseStateChanged;
 
-		GameWorld = new(GameData);
+		GameWorld = new();
 
 		ReferenceHandler = new();
 
@@ -110,7 +110,7 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 
 		StartUpdating();
 
-		GameWorld.StartTicking();
+		GameWorld.StartTicking(this);
 
 		Settings.RegisterToSettingValue<SliderSettingValue>("FoV", (value) => GraphicsWorld.Camera.FieldOfView = value * DecimalNumber.DegreesToRadians);
 

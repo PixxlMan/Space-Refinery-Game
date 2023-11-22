@@ -11,7 +11,7 @@ using static Space_Refinery_Engine.SerializationPaths;
 
 namespace Space_Refinery_Engine;
 
-public sealed class MainGame
+public sealed class MainGame // TODO: make everything thread safe! or is it already, it's just that it cannot change at runtime anyways?
 {
 	private GraphicsWorld GraphicsWorld { get => GameData.GraphicsWorld; set => GameData.GraphicsWorld = value; }
 	private AudioWorld AudioWorld { get => GameData.AudioWorld; set => GameData.AudioWorld = value; }
@@ -21,6 +21,8 @@ public sealed class MainGame
 	private Player Player { get; set; }
 	private UI UI { get => GameData.UI; set => GameData.UI = value; }
 	private Settings Settings { get => GameData.Settings; set => GameData.Settings = value; }
+
+	public Game CurrentGame { get; private set; }
 
 	public GameData GameData { get; private set; }
 
@@ -360,13 +362,5 @@ public sealed class MainGame
 		GameData.Restore();
 
 		Logging.LogScopeEnd();
-	}
-
-	/// <summary>
-	/// This method is simply here for comparision and contrast.
-	/// </summary>
-	private void NaïveClear()
-	{
-		GameWorld.ClearAll();
 	}
 }

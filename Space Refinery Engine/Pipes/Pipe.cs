@@ -9,6 +9,7 @@ using Veldrid;
 
 namespace Space_Refinery_Engine
 {
+	// TODO: make thread safe.
 	public abstract class Pipe : Entity, IConstruction, IConnectable
 	{
 		public PhysicsWorld PhysicsWorld;
@@ -246,8 +247,6 @@ namespace Space_Refinery_Engine
 				pipe.SetUp(pipeType, connectors, physObj, gameData);
 
 				pipe.Created = false;
-
-				gameData.GameWorld.AddEntity(pipe);
 
 				gameData.GameWorld.AddConstruction(pipe);
 

@@ -68,7 +68,7 @@ public sealed class GameWorld : IEntitySerializable
 		}
 	}
 
-	public void StartTicking(MainGame mainGame)
+	public void StartTicking(MainGame mainGame) // TODO: add new game status type from which pause information could be derived instead of this?
 	{
 		Thread thread = new Thread(new ThreadStart(() =>
 		{

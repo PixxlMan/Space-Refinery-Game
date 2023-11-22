@@ -1,6 +1,6 @@
 ﻿namespace Space_Refinery_Engine
 {
-	public interface Entity
+	public interface Entity : ISerializableReference
 	{
 		public abstract IInformationProvider InformationProvider { get; }
 

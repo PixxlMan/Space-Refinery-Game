@@ -3,14 +3,13 @@ using FXRenderer;
 using ImGuiNET;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Xml;
 
 namespace Space_Refinery_Engine;
 
-public sealed class GameWorld(GameData gameData)
+public sealed class GameWorld : IEntitySerializable
 {
 	public object TickSyncObject = new();
-
-	public GameData GameData = gameData;
 
 	private HashSet<IConstruction> constructions = new();
 
@@ -69,7 +68,7 @@ public sealed class GameWorld(GameData gameData)
 		}
 	}
 
-	public void StartTicking()
+	public void StartTicking(MainGame mainGame)
 	{
 		Thread thread = new Thread(new ThreadStart(() =>
 		{
@@ -79,9 +78,9 @@ public sealed class GameWorld(GameData gameData)
 			TimeUnit timeLastUpdate = stopwatch.Elapsed;
 			TimeUnit time;
 			IntervalUnit deltaTime;
-			while (/*GameData.MainGame.Running*/true)
+			while (true)
 			{
-				if (!GameData.MainGame.Paused)
+				if (!mainGame.Paused)
 				{
 					time = stopwatch.Elapsed;
 
@@ -133,13 +132,34 @@ public sealed class GameWorld(GameData gameData)
 
 	public void DoDebugUI()
 	{
-		if (ImGui.Begin("Game World Debug Info"))
+		lock (TickSyncObject)
 		{
-			ImGui.Text($"Total entities: {entities.Count}");
+			if (ImGui.Begin("Game World Debug Info"))
+			{
+				ImGui.Text($"Total entities: {entities.Count}");
 
-			ImGui.Text($"Total constructions: {constructions.Count}");
+				ImGui.Text($"Total constructions: {constructions.Count}");
 
-			ImGui.End();
+				ImGui.End();
+			}
 		}
+	}
+
+	public void SerializeState(XmlWriter writer, SerializationData serializationData)
+	{
+		writer.Serialize(entities, nameof(entities));
+
+		writer.Serialize(constructions, nameof(constructions));
+	}
+
+	public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
+	{
+		ConcurrentBag<Entity> entities = new();
+
+		reader.DeserializeReferenceCollection(entities, referenceHandler, nameof(entities));
+
+		ConcurrentBag<IConstruction> constructions = new();
+
+		reader.DeserializeReferenceCollection(constructions, referenceHandler, nameof(entities));
 	}
 }

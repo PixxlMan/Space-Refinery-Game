@@ -45,7 +45,20 @@ namespace Space_Refinery_Engine
 
 		protected Dictionary<string, PipeConnector> NamedConnectors = new();
 
-		public bool Destroyed { get; private set; }
+		private bool destroyed;
+		public bool Destroyed
+		{
+			get
+			{
+				lock (SyncRoot)
+					return destroyed;
+			}
+			private set
+			{
+				lock (SyncRoot)
+					destroyed = value;
+			}
+		}
 
 		protected readonly object SyncRoot = new();
 

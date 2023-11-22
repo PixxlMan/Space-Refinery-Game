@@ -145,7 +145,7 @@ public sealed class GameWorld : IEntitySerializable
 		}
 	}
 
-	public void SerializeState(XmlWriter writer, SerializationData serializationData)
+	public void SerializeState(XmlWriter writer)
 	{
 		writer.Serialize(entities, nameof(entities));
 

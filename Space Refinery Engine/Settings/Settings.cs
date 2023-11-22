@@ -201,7 +201,7 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 			AcceptAllSettings();
 		}
 
-		private void SerializeSettingValues(XmlWriter writer, SerializationData serializationData)
+		private void SerializeSettingValues(XmlWriter writer)
 		{
 			writer.Serialize(settings.Values, (w, st) =>
 			{ 
@@ -231,9 +231,9 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 			}, "SettingValues");
 		}
 
-		public void SerializeState(XmlWriter writer, SerializationData serializationData)
+		public void SerializeState(XmlWriter writer)
 		{
-			SerializeSettingValues(writer, serializationData);
+			SerializeSettingValues(writer);
 		}
 
 		public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)

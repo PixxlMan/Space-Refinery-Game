@@ -212,6 +212,7 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 				w.WriteStartElement(nameof(ISettingValue));
 				{
 					w.SerializeReference(st, "SettingReference");
+
 					w.SerializeWithEmbeddedType(st.SettingValue);
 				}
 				w.WriteEndElement();
@@ -227,6 +228,8 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 					var setting = r.DeserializeKnownReference<Setting>(settingsReferenceHandler, "SettingReference");
 
 					setting.SettingValue = (ISettingValue)r.DeserializeEntitySerializableWithEmbeddedType(serializationData, settingsReferenceHandler);
+
+					settings[setting.Name] = setting;
 				}
 				r.ReadEndElement();
 			}, "SettingValues");

@@ -81,7 +81,7 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 
 			ResourceDeserialization.DeserializeIntoGlobalReferenceHandler(GlobalReferenceHandler, GameData);
 
-			Settings.LoadSettingValues();
+			Settings.LoadSettingValuesFromSettingsFile();
 
 		}
 		GlobalReferenceHandler.ExitAllowEventualReferenceMode();

@@ -4,10 +4,6 @@ using System.Xml;
 
 namespace Space_Refinery_Engine // Is this really thread safe? It's accessed statically, so it ought to be.
 {
-	/// <summary>
-	/// Handles all settings that are global for the entire game, such as volume, graphics settings or language etc.
-	/// Does not store debug settings or per-save settings, such as difficulty preset.
-	/// </summary>
 	public sealed class Settings : IEntitySerializable
 	{
 		private SerializationReferenceHandler settingsReferenceHandler = new();

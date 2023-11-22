@@ -74,7 +74,7 @@ namespace Space_Refinery_Engine
 
 			if (ShouldShowConstructionMarker(lookedAtPhysicsObject))
 			{
-				PipeConnector pipeConnector = lookedAtPhysicsObject.Entity is Connector con ? (PipeConnector)con : (PipeConnector)(((InformationProxy)lookedAtPhysicsObject.Entity).ProxiedEntity);
+				PipeConnector pipeConnector = (PipeConnector)lookedAtPhysicsObject.Entity;
 
 				constructionMarker.SetMesh(gameData.UI.SelectedPipeType.Mesh);
 
@@ -229,7 +229,7 @@ namespace Space_Refinery_Engine
 
 		private bool ShouldShowConstructionMarker(PhysicsObject lookedAtPhysicsObject)
 		{
-			return lookedAtPhysicsObject is not null && (((lookedAtPhysicsObject.Entity is Connector connector && (connector).Vacant) || (lookedAtPhysicsObject.Entity is InformationProxy informationProxy && informationProxy.ProxiedEntity is Connector proxiedConnector && proxiedConnector.Vacant))) && gameData.UI.SelectedPipeType is not null;
+			return lookedAtPhysicsObject is not null && (((lookedAtPhysicsObject.Entity is Connector connector && (connector).Vacant))) && gameData.UI.SelectedPipeType is not null;
 		}
 
 		public bool Destroyed = false;

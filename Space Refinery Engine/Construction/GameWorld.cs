@@ -24,6 +24,14 @@ public sealed class GameWorld : IEntitySerializable
 	{
 		lock (TickSyncObject)
 		{
+			Debug.Assert(entity is not IConstruction, "An attempt was made to register a construction as an entity, use AddConstruction instead.");
+
+			AddEntityImpl(entity);
+		}
+	}
+
+	private void AddEntityImpl(Entity entity)
+	{
 			entities.AddUnique(entity, $"This {nameof(Entity)} has already been added.");
 		}
 	}

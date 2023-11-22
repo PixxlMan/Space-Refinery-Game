@@ -356,6 +356,33 @@ public static class SerializationExtensions
 		writer.WriteEndElement();
 	}
 
+	// Variant that supports using IEntitySerializable as T instead. Might work, haven't tested. USE ONLY IN CASE OF EMERGENCY!
+	//public static void Serialize<T>(this XmlWriter writer, ICollection<T> collection, string? name = null)
+	//	where T : IEntitySerializable
+	//{
+	//	writer.WriteStartElement(name ?? "Collection");
+	//	{
+	//		writer.WriteElementString("Count", collection.Count.ToString());
+
+	//		writer.WriteStartElement("Elements");
+	//		{
+	//			foreach (T serializable in collection)
+	//			{
+	//				if (serializable is ISerializableReference serializableReference)
+	//				{
+	//					writer.SerializeReference(serializableReference);
+	//				}
+	//				else
+	//				{
+	//					writer.SerializeWithEmbeddedType(serializable);
+	//				}
+	//			}
+	//		}				
+	//		writer.WriteEndElement();
+	//	}
+	//	writer.WriteEndElement();
+	//}
+
 	public static ICollection<T> DeserializeCollection<T>(this XmlReader reader, Func<XmlReader, T> deserializationAction, string? name = null)
 	{
 		T[] array;

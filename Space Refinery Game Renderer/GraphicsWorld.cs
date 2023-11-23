@@ -35,6 +35,16 @@ public sealed class GraphicsWorld
 	public DeviceBuffer ViewInfoBuffer;
 
 	private Window window;
+	public Window Window
+	{
+		get
+		{
+			lock (window)
+			{
+				return window;
+			}
+		}
+	}
 
 	public MeshLoader MeshLoader { get; private set; }
 

@@ -42,7 +42,7 @@ namespace Space_Refinery_Engine
 			}
 			else
 			{
-				entitySerializable = ObjectFactory.CreateInstance<T>();
+				entitySerializable = ObjectFactory.CreateInstance<T>(nonPublic: true);
 			}
 
 			reader.ReadStartElement(name);

@@ -245,7 +245,7 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 	{
 		lock (GameData.Game.GameWorld.TickSyncObject)// lock (SynchronizationObject)
 		{
-			Logging.LogScopeStart($"Deserialization started.");
+			Logging.LogScopeStart($"Deserialization started");
 
 			Stopwatch stopwatch = new();
 

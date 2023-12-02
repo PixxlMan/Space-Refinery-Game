@@ -49,7 +49,7 @@ partial class UI
 			{
 				Task.Run(() =>
 				{
-					lock (gameData.GameWorld.TickSyncObject)
+					lock (gameData.Game.GameWorld.TickSyncObject)
 					{
 						gameData.MainGame.Serialize($@"{Environment.CurrentDirectory}\save.xml");
 					}
@@ -60,7 +60,7 @@ partial class UI
 			{
 				Task.Run(() =>
 				{
-					lock (gameData.GameWorld.TickSyncObject)// lock (gameData.GameWorld.SynchronizationObject)
+					lock (gameData.Game.GameWorld.TickSyncObject)// lock (gameData.Game.GameWorld.SynchronizationObject)
 					{
 						gameData.MainGame.Deserialize($@"{Environment.CurrentDirectory}\save.xml");
 					}

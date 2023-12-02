@@ -7,24 +7,22 @@ namespace Space_Refinery_Engine
 	{
 		public enum GameDataChange
 		{
-			UI,
-			PhysicsWorld,
 			GraphicsWorld,
+			PhysicsWorld,
 			AudioWorld,
-			GameWorld,
 			MainGame,
-			ReferenceHandler,
 			Settings,
+			Game,
+			UI,
 		}
 
-		private UI uI;
-		private PhysicsWorld physicsWorld;
 		private GraphicsWorld graphicsWorld;
+		private PhysicsWorld physicsWorld;
 		private AudioWorld audioWorld;
-		private GameWorld gameWorld;
 		private MainGame mainGame;
-		private SerializationReferenceHandler referenceHandler;
 		private Settings settings;
+		private Game game;
+		private UI uI;
 
 		public event Action<GameDataChange> GameDataChangedEvent;
 
@@ -33,23 +31,22 @@ namespace Space_Refinery_Engine
 
 		}
 
-		public GameData(UI ui, PhysicsWorld physicsWorld, GraphicsWorld graphicsWorld, AudioWorld audioWorld, GameWorld gameWorld, MainGame mainGame, SerializationReferenceHandler referenceHandler, Settings settings)
+		public GameData(GraphicsWorld graphicsWorld, PhysicsWorld physicsWorld, AudioWorld audioWorld, MainGame mainGame, Settings settings, Game game, UI uI)
 		{
-			UI = ui;
-			PhysicsWorld = physicsWorld;
-			GraphicsWorld = graphicsWorld;
-			AudioWorld = audioWorld;
-			GameWorld = gameWorld;
-			MainGame = mainGame;
-			ReferenceHandler = referenceHandler;
-			Settings = settings;
+			this.graphicsWorld = graphicsWorld;
+			this.physicsWorld = physicsWorld;
+			this.audioWorld = audioWorld;
+			this.mainGame = mainGame;
+			this.settings = settings;
+			this.game = game;
+			this.uI = uI;
 
 			PerformanceStatisticsCollector = new(this, PerformanceStatisticsCollector.PerformanceStatisticsCollectorMode.Averaged);
 		}
 
 		public PerformanceStatisticsCollector PerformanceStatisticsCollector { get; private set; }
 
-		void GameDataChanged(GameDataChange gameDataChange)
+		private void GameDataChanged(GameDataChange gameDataChange)
 		{
 			if (PerformanceStatisticsCollector is null)
 			{
@@ -69,20 +66,18 @@ namespace Space_Refinery_Engine
 			PerformanceStatisticsCollector.Restore();
 		}
 
-		public UI UI { get => uI; set { uI = value; GameDataChanged(GameDataChange.UI); } }
+		public GraphicsWorld GraphicsWorld { get => graphicsWorld; set { graphicsWorld = value; GameDataChanged(GameDataChange.GraphicsWorld); } }
 
 		public PhysicsWorld PhysicsWorld { get => physicsWorld; set { physicsWorld = value; GameDataChanged(GameDataChange.PhysicsWorld); } }
 
-		public GraphicsWorld GraphicsWorld { get => graphicsWorld; set { graphicsWorld = value; GameDataChanged(GameDataChange.GraphicsWorld); } }
-
 		public AudioWorld AudioWorld { get => audioWorld; set { audioWorld = value; GameDataChanged(GameDataChange.AudioWorld); } }
-
-		public GameWorld GameWorld { get => gameWorld; set { gameWorld = value; GameDataChanged(GameDataChange.GameWorld); } }
 
 		public MainGame MainGame { get => mainGame; set { mainGame = value; GameDataChanged(GameDataChange.MainGame); } }
 
-		public SerializationReferenceHandler ReferenceHandler { get => referenceHandler; set { referenceHandler = value; GameDataChanged(GameDataChange.ReferenceHandler); } }
-
 		public Settings Settings { get => settings; set { settings = value; GameDataChanged(GameDataChange.Settings); } }
+
+		public Game Game { get => game; set { game = value; GameDataChanged(GameDataChange.Game); } }
+
+		public UI UI { get => uI; set { uI = value; GameDataChanged(GameDataChange.UI); } }
 	}
 }

@@ -444,7 +444,7 @@ namespace Space_Refinery_Engine
 
 					GameData = serializationData.GameData;
 
-					serializationData.GameData.GameWorld.AddEntity(this);
+					serializationData.GameData.Game.GameWorld.AddEntity(this);
 				}
 				reader.ReadEndElement();
 			}
@@ -471,9 +471,9 @@ namespace Space_Refinery_Engine
 
 				MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
 
-				GameData.GameWorld.RemoveEntity(this);
+				GameData.Game.GameWorld.RemoveEntity(this);
 
-				GameData.ReferenceHandler.RemoveReference(this);
+				GameData.Game.GameReferenceHandler.RemoveReference(this);
 			}
 		}
 

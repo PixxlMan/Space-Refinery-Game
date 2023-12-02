@@ -88,7 +88,7 @@ namespace Space_Refinery_Engine
 
 					if (InputTracker.GetMouseButton(MouseButton.Left))
 					{
-						Pipe.Build(pipeConnector, gameData.UI.SelectedPipeType, gameData.UI.ConnectorSelection, gameData.UI.RotationSnapped, gameData, gameData.ReferenceHandler);
+						Pipe.Build(pipeConnector, gameData.UI.SelectedPipeType, gameData.UI.ConnectorSelection, gameData.UI.RotationSnapped, gameData, gameData.Game.GameReferenceHandler);
 
 						constructionMarker.ShouldDraw = false;
 					}
@@ -172,7 +172,7 @@ namespace Space_Refinery_Engine
 				}
 				if (InputTracker.GetMouseButton(MouseButton.Right))
 				{
-					gameData.GameWorld.Deconstruct(construction);
+					gameData.Game.GameWorld.Deconstruct(construction);
 				}
 			}
 

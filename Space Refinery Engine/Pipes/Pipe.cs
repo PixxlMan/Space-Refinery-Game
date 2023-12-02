@@ -75,7 +75,7 @@ namespace Space_Refinery_Engine
 
 		public static Pipe Create(PipeType pipeType, Transform transform, GameData gameData, SerializationReferenceHandler referenceHandler)
 		{
-			lock (gameData.GameWorld.TickSyncObject)
+			lock (gameData.Game.GameWorld.TickSyncObject)
 			{
 				Pipe pipe = (Pipe)ObjectFactory.CreateInstance(pipeType.TypeOfPipe, true);
 
@@ -93,7 +93,7 @@ namespace Space_Refinery_Engine
 
 				pipe.SetUp(pipeType, connectors, physObj, gameData);
 
-				gameData.GameWorld.AddConstruction(pipe);
+				gameData.Game.GameWorld.AddConstruction(pipe);
 
 				referenceHandler.RegisterReference(pipe);
 
@@ -164,9 +164,9 @@ namespace Space_Refinery_Engine
 
 					PipeConnector connector = new PipeConnector(pipe, ConnectorSide.A, transform, pipeType.ConnectorProperties[i], gameData);
 
-					gameData.GameWorld.AddEntity(connector);
+					gameData.Game.GameWorld.AddEntity(connector);
 
-					gameData.ReferenceHandler.RegisterReference(connector);
+					gameData.Game.GameReferenceHandler.RegisterReference(connector);
 
 					connectors[i] = connector;
 
@@ -204,7 +204,7 @@ namespace Space_Refinery_Engine
 
 		public static bool ValidateBuild(Connector connector, IEntityType entityType, int indexOfSelectedConnector, FixedDecimalLong8 rotation, GameData gameData)
 		{
-			lock (gameData.GameWorld.TickSyncObject)
+			lock (gameData.Game.GameWorld.TickSyncObject)
 			{
 				Transform transform = Connector.GenerateTransformForConnector(((PipeType)entityType).ConnectorPlacements[indexOfSelectedConnector], connector, rotation);
 
@@ -222,7 +222,7 @@ namespace Space_Refinery_Engine
 
 		public static IConstruction Build(Connector connector, IEntityType entityType, int indexOfSelectedConnector, FixedDecimalLong8 rotation, GameData gameData, SerializationReferenceHandler referenceHandler)
 		{
-			lock (gameData.GameWorld.TickSyncObject)
+			lock (gameData.Game.GameWorld.TickSyncObject)
 			{
 				PipeConnector pipeConnector = (PipeConnector)connector;
 
@@ -246,7 +246,7 @@ namespace Space_Refinery_Engine
 
 				pipe.Created = false;
 
-				gameData.GameWorld.AddConstruction(pipe);
+				gameData.Game.GameWorld.AddConstruction(pipe);
 
 				referenceHandler.RegisterReference(pipe);
 
@@ -264,9 +264,9 @@ namespace Space_Refinery_Engine
 				PhysicsObject = physicsObject;
 				Connectors = connectors;
 				GraphicsWorld = gameData.GraphicsWorld;
-				GameWorld = gameData.GameWorld;
+				GameWorld = gameData.Game.GameWorld;
 				MainGame = gameData.MainGame;
-				ReferenceHandler = gameData.ReferenceHandler;
+				ReferenceHandler = gameData.Game.GameReferenceHandler;
 
 				SetUp();
 			}
@@ -374,7 +374,7 @@ namespace Space_Refinery_Engine
 
 				Created = true;
 
-				serializationData.GameData.GameWorld.AddConstruction(this);
+				serializationData.GameData.Game.GameWorld.AddConstruction(this);
 			}
 		}
 

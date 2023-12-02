@@ -105,7 +105,7 @@ partial class UI
 		ImGui.NextColumn();
 		{
 			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"({gameData.PerformanceStatisticsCollector.RendererFramerate} FPS) {gameData.GraphicsWorld.ResponseSpinner}");
-			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"({gameData.PerformanceStatisticsCollector.TicksPerSecond} TPS) {gameData.GameWorld.ResponseSpinner}");
+			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"({gameData.PerformanceStatisticsCollector.TicksPerSecond} TPS) {gameData.Game.GameWorld.ResponseSpinner}");
 			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"({gameData.PerformanceStatisticsCollector.UpdatesPerSecond} UPS) {gameData.MainGame.ResponseSpinner}");
 			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"({gameData.PerformanceStatisticsCollector.PhysicsUpdatesPerSecond} PUPS) {gameData.PhysicsWorld.ResponseSpinner}");
 		}
@@ -119,7 +119,7 @@ partial class UI
 
 		BatchRenderable.DoDebugUI();
 
-		gameData.GameWorld.DoDebugUI();
+		gameData.Game.GameWorld.DoDebugUI();
 
 		if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show dot at {0, 0, 0}"))
 		{

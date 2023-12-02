@@ -14,14 +14,6 @@ public sealed class PerformanceStatisticsCollector
 
 	GameData gameData;
 
-	private GameWorld gameWorld;
-
-	private GraphicsWorld graphicsWorld;
-
-	private PhysicsWorld physicsWorld;
-
-	private MainGame mainGame;
-
 	public PerformanceStatisticsCollectorMode Mode;
 
 	public PerformanceStatisticsCollector(GameData gameData, PerformanceStatisticsCollectorMode mode)
@@ -34,7 +26,7 @@ public sealed class PerformanceStatisticsCollector
 
 		GameDataChanged(GameData.GameDataChange.PhysicsWorld);
 		GameDataChanged(GameData.GameDataChange.GraphicsWorld);
-		GameDataChanged(GameData.GameDataChange.GameWorld);
+		GameDataChanged(GameData.GameDataChange.Game);
 		GameDataChanged(GameData.GameDataChange.MainGame);
 	}
 
@@ -48,43 +40,39 @@ public sealed class PerformanceStatisticsCollector
 		switch (gameDataChange)
 		{
 			case GameData.GameDataChange.PhysicsWorld:
-				if (physicsWorld is not null)
-					physicsWorld.CollectPhysicsPerformanceData -= PhysicsWorld_CollectPerformanceData;
+				if (gameData.PhysicsWorld is not null)
+					gameData.PhysicsWorld.CollectPhysicsPerformanceData -= PhysicsWorld_CollectPerformanceData;
 
 				if (gameData.PhysicsWorld is not null)
 				{
-					physicsWorld = gameData.PhysicsWorld;
-					physicsWorld.CollectPhysicsPerformanceData += PhysicsWorld_CollectPerformanceData;
+					gameData.PhysicsWorld.CollectPhysicsPerformanceData += PhysicsWorld_CollectPerformanceData;
 				}
 				break;
 			case GameData.GameDataChange.GraphicsWorld:
-				if (graphicsWorld is not null)
-					graphicsWorld.CollectRenderingPerformanceData -= GraphicsWorld_CollectPerformanceData;
+				if (gameData.GraphicsWorld is not null) // TODO: we need to either keep the old ones, or better yet, just replace the performance collector every time? why not.
+					gameData.GraphicsWorld.CollectRenderingPerformanceData -= GraphicsWorld_CollectPerformanceData;
 
 				if (gameData.GraphicsWorld is not null)
 				{
-					graphicsWorld = gameData.GraphicsWorld;
-					graphicsWorld.CollectRenderingPerformanceData += GraphicsWorld_CollectPerformanceData;
+					gameData.GraphicsWorld.CollectRenderingPerformanceData += GraphicsWorld_CollectPerformanceData;
 				}
 				break;
-			case GameData.GameDataChange.GameWorld:
-				if (gameWorld is not null)
-					gameWorld.CollectTickPerformanceData -= GameWorld_CollectPerformanceData;
+			case GameData.GameDataChange.Game:
+				if (gameData.Game is not null)
+					gameData.Game.GameWorld.CollectTickPerformanceData -= GameWorld_CollectPerformanceData;
 
-				if (gameData.GameWorld is not null)
+				if (gameData.Game is not null)
 				{
-					gameWorld = gameData.GameWorld;
-					gameWorld.CollectTickPerformanceData += GameWorld_CollectPerformanceData;
+					gameData.Game.GameWorld.CollectTickPerformanceData += GameWorld_CollectPerformanceData;
 				}
 				break;
 			case GameData.GameDataChange.MainGame:
-				if (mainGame is not null)
-					mainGame.CollectUpdatePerformanceData -= MainGame_CollectPerformanceData;
+				if (gameData.MainGame is not null)
+					gameData.MainGame.CollectUpdatePerformanceData -= MainGame_CollectPerformanceData;
 
 				if (gameData.MainGame is not null)
 				{
-					mainGame = gameData.MainGame;
-					mainGame.CollectUpdatePerformanceData += MainGame_CollectPerformanceData;
+					gameData.MainGame.CollectUpdatePerformanceData += MainGame_CollectPerformanceData;
 				}
 				break;
 		}

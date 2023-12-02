@@ -63,6 +63,24 @@ public sealed class GraphicsWorld // TODO: make entierly thread safe
 	private CommandList commandList;
 
 	private DeviceBuffer cameraProjViewBuffer;
+	public DeviceBuffer CameraProjViewBuffer
+	{
+		get
+		{
+			lock (cameraProjViewBuffer)
+			{
+				return cameraProjViewBuffer;
+			}
+		}
+
+		set
+		{
+			lock (cameraProjViewBuffer)
+			{
+				cameraProjViewBuffer = value;
+			}
+		}
+	}
 
 	private DeviceBuffer lightInfoBuffer;
 
@@ -131,7 +149,7 @@ public sealed class GraphicsWorld // TODO: make entierly thread safe
 
 	public void SetUp(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
-		Debug.Assert(!setUp, "The GraphicsWorld has already been set up!");
+		Debug.Assert(setUp, "The GraphicsWorld has already been set up!");
 
 		setUp = true;
 
@@ -197,6 +215,8 @@ public sealed class GraphicsWorld // TODO: make entierly thread safe
 
 	public void Run()
 	{
+		Debug.Assert(!setUp, "The GraphicsWorld has not been set up!");
+
 		Thread thread = new Thread(new ThreadStart(() =>
 		{
 			Stopwatch stopwatch = new();
@@ -257,7 +277,7 @@ public sealed class GraphicsWorld // TODO: make entierly thread safe
 
 		commandList = factory.CreateCommandList();
 
-		cameraProjViewBuffer = factory.CreateBuffer(
+		CameraProjViewBuffer = factory.CreateBuffer(
 			new BufferDescription((uint)(Unsafe.SizeOf<Matrix4x4>() * 2), BufferUsage.UniformBuffer | BufferUsage.Dynamic));
 		lightInfoBuffer = factory.CreateBuffer(new BufferDescription(32, BufferUsage.UniformBuffer | BufferUsage.Dynamic));
 		lightDir = Vector3FixedDecimalInt4.Normalize(new Vector3FixedDecimalInt4((FixedDecimalInt4)0.3, (FixedDecimalInt4)0.75, -(FixedDecimalInt4)0.3));
@@ -326,7 +346,7 @@ public sealed class GraphicsWorld // TODO: make entierly thread safe
 			Camera.UpdateViewMatrix();
 
 			// Update per-frame resources.
-			commandList.UpdateBuffer(cameraProjViewBuffer, 0, new MatrixPair(Camera.ViewMatrix.ToMatrix4x4(), Camera.ProjectionMatrix.ToMatrix4x4()));
+			commandList.UpdateBuffer(CameraProjViewBuffer, 0, new MatrixPair(Camera.ViewMatrix.ToMatrix4x4(), Camera.ProjectionMatrix.ToMatrix4x4()));
 
 			commandList.UpdateBuffer(lightInfoBuffer, 0, new LightInfo(lightDir.ToVector3(), Camera.Transform.Position.ToVector3()));
 

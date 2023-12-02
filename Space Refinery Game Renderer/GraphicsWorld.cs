@@ -10,7 +10,7 @@ using Veldrid;
 
 namespace Space_Refinery_Game_Renderer;
 
-public sealed class GraphicsWorld
+public sealed class GraphicsWorld // TODO: make entierly thread safe
 {
 	private HashSet<IRenderable> unorderedRenderables = new();
 
@@ -18,21 +18,55 @@ public sealed class GraphicsWorld
 
 	private ConcurrentDictionary<IRenderable, int> renderableToOrder = new();
 
-	public GraphicsDevice GraphicsDevice;
+	private GraphicsDevice graphicsDevice;
+	public GraphicsDevice GraphicsDevice
+	{
+		get
+		{
+			lock (graphicsDevice)
+			{
+				return graphicsDevice;
+			}
+		}
+		set
+		{
+			lock (graphicsDevice)
+			{
+				graphicsDevice = value;
+			}
+		}
+	}
 
-	public ResourceFactory Factory;
+	private ResourceFactory factory;
+	public ResourceFactory Factory
+	{
+		get
+		{
+			lock (factory)
+			{
+				return factory;
+			}
+		}
+		set
+		{
+			lock (factory)
+			{
+				factory = value;
+			}
+		}
+	}
 
-	public Swapchain Swapchain;
+	private Swapchain swapchain;
 
 	private CommandList commandList;
 
-	public DeviceBuffer CameraProjViewBuffer;
+	private DeviceBuffer cameraProjViewBuffer;
 
-	public DeviceBuffer LightInfoBuffer;
+	private DeviceBuffer lightInfoBuffer;
 
 	private Vector3FixedDecimalInt4 lightDir;
 
-	public DeviceBuffer ViewInfoBuffer;
+	private DeviceBuffer viewInfoBuffer;
 
 	private Window window;
 	public Window Window
@@ -42,6 +76,13 @@ public sealed class GraphicsWorld
 			lock (window)
 			{
 				return window;
+			}
+		}
+		private set
+		{
+			lock (window)
+			{
+				window = value;
 			}
 		}
 	}
@@ -54,8 +95,25 @@ public sealed class GraphicsWorld
 
 	private string responseSpinner = "_";
 	public string ResponseSpinner { get { lock(responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
-
-	public Camera Camera;
+	
+	private Camera camera;
+	public Camera Camera
+	{
+		get
+		{
+			lock (camera)
+			{
+				return camera;
+			}
+		}
+		private set
+		{
+			lock (camera)
+			{
+				camera = value;
+			}
+		}
+	}
 
 	public IntervalUnit FrametimeLowerLimit = 0.001;
 
@@ -82,12 +140,12 @@ public sealed class GraphicsWorld
 
 
 		// No dependency
-		this.window = window;
+		Window = window;
 
 		window.Resized += HandleWindowResized;
 
 
-		// Depends on window
+		// Depends on Window
 		Camera = new(window.Width, window.Height, Perspective.Perspective);
 
 		Camera.Transform.Position = new Vector3FixedDecimalInt4(0, 0, 10);
@@ -116,16 +174,16 @@ public sealed class GraphicsWorld
 
 	private void HandleWindowResized()
 	{
-		Camera.WindowResized(window.Width, window.Height);
+		Camera.WindowResized(Window.Width, Window.Height);
 
-		lock (Swapchain) // is locking necessary for Swapchain?
+		lock (swapchain) // is locking necessary for swapchain?
 		{
-			Swapchain.Resize(window.Width, window.Height);
+			swapchain.Resize(Window.Width, Window.Height);
 		}
 
-		GraphicsDevice.ResizeMainWindow(window.Width, window.Height);
+		GraphicsDevice.ResizeMainWindow(Window.Width, Window.Height);
 
-		WindowResized?.Invoke((int)window.Width, (int)window.Height);
+		WindowResized?.Invoke((int)Window.Width, (int)Window.Height);
 	}
 
 	public void Run()
@@ -138,7 +196,7 @@ public sealed class GraphicsWorld
 			TimeUnit timeLastUpdate = stopwatch.Elapsed.TotalSeconds;
 			TimeUnit time;
 			IntervalUnit deltaTime;
-			while (window.Exists)
+			while (Window.Exists)
 			{
 				time = stopwatch.Elapsed.TotalSeconds;
 
@@ -150,7 +208,7 @@ public sealed class GraphicsWorld
 				try
 				{
 #endif
-					window.PumpEvents();
+					Window.PumpEvents();
 #if SilenceWeirdErrors
 				}
 				catch (Exception ex)
@@ -186,16 +244,16 @@ public sealed class GraphicsWorld
 	{
 		this.GraphicsDevice = gd;
 		this.Factory = factory;
-		this.Swapchain = swapchain;
+		this.swapchain = swapchain;
 
 		commandList = factory.CreateCommandList();
 
-		CameraProjViewBuffer = factory.CreateBuffer(
+		cameraProjViewBuffer = factory.CreateBuffer(
 			new BufferDescription((uint)(Unsafe.SizeOf<Matrix4x4>() * 2), BufferUsage.UniformBuffer | BufferUsage.Dynamic));
-		LightInfoBuffer = factory.CreateBuffer(new BufferDescription(32, BufferUsage.UniformBuffer | BufferUsage.Dynamic));
+		lightInfoBuffer = factory.CreateBuffer(new BufferDescription(32, BufferUsage.UniformBuffer | BufferUsage.Dynamic));
 		lightDir = Vector3FixedDecimalInt4.Normalize(new Vector3FixedDecimalInt4((FixedDecimalInt4)0.3, (FixedDecimalInt4)0.75, -(FixedDecimalInt4)0.3));
 
-		ViewInfoBuffer = factory.CreateBuffer(new BufferDescription((uint)Unsafe.SizeOf<MatrixPair>(), BufferUsage.UniformBuffer | BufferUsage.Dynamic));
+		viewInfoBuffer = factory.CreateBuffer(new BufferDescription((uint)Unsafe.SizeOf<MatrixPair>(), BufferUsage.UniformBuffer | BufferUsage.Dynamic));
 	}
 
 	public void AddRenderable(IRenderable renderable)
@@ -259,18 +317,18 @@ public sealed class GraphicsWorld
 			Camera.UpdateViewMatrix();
 
 			// Update per-frame resources.
-			commandList.UpdateBuffer(CameraProjViewBuffer, 0, new MatrixPair(Camera.ViewMatrix.ToMatrix4x4(), Camera.ProjectionMatrix.ToMatrix4x4()));
+			commandList.UpdateBuffer(cameraProjViewBuffer, 0, new MatrixPair(Camera.ViewMatrix.ToMatrix4x4(), Camera.ProjectionMatrix.ToMatrix4x4()));
 
-			commandList.UpdateBuffer(LightInfoBuffer, 0, new LightInfo(lightDir.ToVector3(), Camera.Transform.Position.ToVector3()));
+			commandList.UpdateBuffer(lightInfoBuffer, 0, new LightInfo(lightDir.ToVector3(), Camera.Transform.Position.ToVector3()));
 
 			Matrix4x4.Invert(Camera.ProjectionMatrix.ToMatrix4x4(), out Matrix4x4 inverseProjection);
 			Matrix4x4.Invert(Camera.ViewMatrix.ToMatrix4x4(), out Matrix4x4 inverseView);
-			commandList.UpdateBuffer(ViewInfoBuffer, 0, new MatrixPair(
+			commandList.UpdateBuffer(viewInfoBuffer, 0, new MatrixPair(
 				inverseProjection,
 				inverseView));
 
-			// We want to render directly to the output window.
-			commandList.SetFramebuffer(Swapchain.Framebuffer);
+			// We want to render directly to the output Window.
+			commandList.SetFramebuffer(swapchain.Framebuffer);
 			commandList.ClearColorTarget(0, RgbaFloat.Pink);
 			commandList.ClearDepthStencil(1f);
 
@@ -334,8 +392,8 @@ public sealed class GraphicsWorld
 		GraphicsDevice.SubmitCommands(commandList);
 		GraphicsDevice.WaitForIdle();
 
-		// Once commands have been submitted, the rendered image can be presented to the application window.
-		GraphicsDevice.SwapBuffers(Swapchain);
+		// Once commands have been submitted, the rendered image can be presented to the application Window.
+		GraphicsDevice.SwapBuffers(swapchain);
 	}
 
 	/// <summary>

@@ -10,7 +10,19 @@ using Veldrid;
 
 namespace Space_Refinery_Game_Renderer;
 
-public sealed class GraphicsWorld // TODO: make entierly thread safe
+/// <remarks>
+/// <para>
+/// Lifetime:
+/// There is only one GraphicsWorld in the game and it's lifetime will last during the entire lifetime of the application.
+/// The reason is that it is very expensive create and intialize this object.
+/// </para>
+/// <para>
+/// Thread safety:
+/// The GraphicsWorld is entierly thread safe, although not all exposed objects are necessarily thread safe! Caution needs to be exercised when using
+/// the exposed graphics implementation details!
+/// </para>
+/// </remarks>
+public sealed class GraphicsWorld
 {
 	private bool setUp = false;
 

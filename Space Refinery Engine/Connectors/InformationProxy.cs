@@ -5,6 +5,7 @@ namespace Space_Refinery_Engine;
 
 // todo: make thread safe
 
+// TODO: Rename to physics proxy? that would more accurately describe the purpose and actual use case!
 public sealed class InformationProxy
 {
 	public Entity ProxiedEntity { get; }

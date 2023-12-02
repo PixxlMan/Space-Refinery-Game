@@ -646,7 +646,7 @@ public static class SerializationExtensions
 	}
 
 	/// <summary>
-	/// Deserialized and accesses a reference when it's known to exist at time of call.
+	/// Deserializes and accesses a reference when it's known to exist at time of call.
 	/// </summary>
 	public static ISerializableReference DeserializeKnownReference(this XmlReader reader, SerializationReferenceHandler referenceHandler, string name = "Reference")
 	{
@@ -654,7 +654,7 @@ public static class SerializationExtensions
 	}
 
 	/// <summary>
-	/// Deserialized and accesses a reference when it's known to exist at time of call.
+	/// Deserializes and accesses a reference when it's known to exist at time of call.
 	/// </summary>
 	public static T DeserializeKnownReference<T>(this XmlReader reader, SerializationReferenceHandler referenceHandler, string name = "Reference")
 		where T : ISerializableReference

@@ -72,7 +72,7 @@ public record Game : ISerializableReference
 		}
 	}
 
-	public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
+	public void DeserializeState(XmlReader reader, SerializationData serializationData, [MaybeNull]SerializationReferenceHandler _ /*Will always be null since this method is what deserializes the SerializableReferenceHandler to begin with!*/)
 	{
 		lock (syncRoot)
 		{
@@ -82,9 +82,9 @@ public record Game : ISerializableReference
 
 				GameReferenceHandler = SerializationReferenceHandler.Deserialize(reader, serializationData, false);
 
-				GameWorld = reader.DeserializeEntitySerializableWithoutEmbeddedType<GameWorld>(serializationData, referenceHandler, nameof(GameWorld));
+				GameWorld = reader.DeserializeEntitySerializableWithoutEmbeddedType<GameWorld>(serializationData, GameReferenceHandler, nameof(GameWorld));
 
-				GameSettings = reader.DeserializeEntitySerializableWithoutEmbeddedType<Settings>(serializationData, referenceHandler, nameof(GameSettings));
+				GameSettings = reader.DeserializeEntitySerializableWithoutEmbeddedType<Settings>(serializationData, GameReferenceHandler, nameof(GameSettings));
 
 				Player = Player.Deserialize(reader, serializationData);
 

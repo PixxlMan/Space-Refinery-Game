@@ -624,7 +624,7 @@ public static class SerializationExtensions
 	/// Deserializes a reference and adds a reference access callback to eventually get the reference.
 	/// </summary>
 	/// <remarks>
-	/// <paramref name="refrenceRegisteredCallback"/> can be called at any time. Do not perform any serialization inside the callback as it may not return immediately.
+	/// <paramref name="referenceRegisteredCallback"/> can be called at any time. Do not perform any serialization inside the callback as it may not return immediately.
 	/// Instead use <see cref="DeserializeKnownReference"/> to access a serializable reference when it is known to exist.
 	/// </remarks>
 	public static void DeserializeReference(this XmlReader reader, SerializationReferenceHandler referenceHandler, Action<ISerializableReference> referenceRegisteredCallback, string name = "Reference")

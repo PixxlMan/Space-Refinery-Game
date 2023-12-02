@@ -85,6 +85,19 @@ public static class Logging
 			Console.WriteLine($"{logText}");
 		}
 	}
+	
+	[DebuggerHidden]
+	public static void LogIf(bool condition, string logText)
+	{
+		if (condition)
+		{
+			lock (syncRoot)
+			{
+				PreFormat(LogType.Log);
+				Console.WriteLine($"{logText}");
+			}
+		}
+	}
 
 	[DebuggerHidden]
 	public static void LogSimulation(string logText)

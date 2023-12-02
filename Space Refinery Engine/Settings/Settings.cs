@@ -11,6 +11,9 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 
 		private GameData gameData;
 
+		private Settings()
+		{ }
+
 		public Settings(GameData gameData)
 		{
 			settingsReferenceHandler.EnterAllowEventualReferenceMode(false);
@@ -181,6 +184,7 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 			stream.Dispose();
 		}
 
+		// Todo: make static loader method?
 		public void LoadSettingValuesFromSettingsFile()
 		{
 			Logging.Log("Loading setting values");

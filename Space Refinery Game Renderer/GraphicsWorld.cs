@@ -59,6 +59,24 @@ public sealed class GraphicsWorld // TODO: make entierly thread safe
 	}
 
 	private Swapchain swapchain;
+	public Swapchain Swapchain
+	{
+		get
+		{
+			lock (swapchain)
+			{
+				return swapchain;
+			}
+		}
+
+		set
+		{
+			lock (swapchain)
+			{
+				swapchain = value;
+			}
+		}
+	}
 
 	private CommandList commandList;
 
@@ -83,10 +101,46 @@ public sealed class GraphicsWorld // TODO: make entierly thread safe
 	}
 
 	private DeviceBuffer lightInfoBuffer;
+	public DeviceBuffer LightInfoBuffer
+	{
+		get
+		{
+			lock (lightInfoBuffer)
+			{
+				return lightInfoBuffer;
+			}
+		}
+
+		set
+		{
+			lock (lightInfoBuffer)
+			{
+				lightInfoBuffer = value;
+			}
+		}
+	}
 
 	private Vector3FixedDecimalInt4 lightDir;
 
 	private DeviceBuffer viewInfoBuffer;
+	public DeviceBuffer ViewInfoBuffer
+	{
+		get
+		{
+			lock (viewInfoBuffer)
+			{
+				return viewInfoBuffer;
+			}
+		}
+
+		set
+		{
+			lock (viewInfoBuffer)
+			{
+				viewInfoBuffer = value;
+			}
+		}
+	}
 
 	private Window window;
 	public Window Window

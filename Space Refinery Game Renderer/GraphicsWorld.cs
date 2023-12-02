@@ -176,9 +176,6 @@ public sealed class GraphicsWorld
 
 				FrameRendered?.Invoke();
 			}
-
-			// If the window no longer exists, close the game.
-			Environment.Exit(69);
 		}))
 		{ Name = "Render Thread" };
 

@@ -215,7 +215,7 @@ public sealed class GraphicsWorld
 
 	public void SetUp(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
-		Debug.Assert(setUp, "The GraphicsWorld has already been set up!");
+		Debug.Assert(!setUp, "The GraphicsWorld has already been set up!");
 
 		setUp = true;
 
@@ -230,13 +230,13 @@ public sealed class GraphicsWorld
 
 
 		// No dependency
-		Window = window;
+		this.window = window;
 
-		window.Resized += HandleWindowResized;
+		Window.Resized += HandleWindowResized;
 
 
 		// Depends on Window
-		Camera = new(window.Width, window.Height, Perspective.Perspective);
+		camera = new(window.Width, window.Height, Perspective.Perspective);
 
 		Camera.Transform.Position = new Vector3FixedDecimalInt4(0, 0, 10);
 
@@ -281,7 +281,7 @@ public sealed class GraphicsWorld
 
 	public void Run()
 	{
-		Debug.Assert(!setUp, "The GraphicsWorld has not been set up!");
+		Debug.Assert(setUp, "The GraphicsWorld has not been set up!");
 
 		Thread thread = new Thread(new ThreadStart(() =>
 		{
@@ -337,13 +337,13 @@ public sealed class GraphicsWorld
 
 	private void CreateDeviceObjects(GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
-		this.GraphicsDevice = gd;
-		this.Factory = factory;
+		this.graphicsDevice = gd;
+		this.factory = factory;
 		this.swapchain = swapchain;
 
 		commandList = factory.CreateCommandList();
 
-		CameraProjViewBuffer = factory.CreateBuffer(
+		cameraProjViewBuffer = factory.CreateBuffer(
 			new BufferDescription((uint)(Unsafe.SizeOf<Matrix4x4>() * 2), BufferUsage.UniformBuffer | BufferUsage.Dynamic));
 		lightInfoBuffer = factory.CreateBuffer(new BufferDescription(32, BufferUsage.UniformBuffer | BufferUsage.Dynamic));
 		lightDir = Vector3FixedDecimalInt4.Normalize(new Vector3FixedDecimalInt4((FixedDecimalInt4)0.3, (FixedDecimalInt4)0.75, -(FixedDecimalInt4)0.3));

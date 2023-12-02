@@ -168,6 +168,6 @@ public sealed class GameWorld : IEntitySerializable
 
 		ConcurrentBag<IConstruction> constructions = new();
 
-		reader.DeserializeReferenceCollection(constructions, referenceHandler, nameof(entities));
+		reader.DeserializeReferenceCollection(constructions, referenceHandler, nameof(constructions));
 	}
 }

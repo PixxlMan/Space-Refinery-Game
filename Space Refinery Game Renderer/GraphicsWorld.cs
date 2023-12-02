@@ -12,6 +12,8 @@ namespace Space_Refinery_Game_Renderer;
 
 public sealed class GraphicsWorld // TODO: make entierly thread safe
 {
+	private bool setUp = false;
+
 	private HashSet<IRenderable> unorderedRenderables = new();
 
 	private SortedDictionary<int, HashSet<IRenderable>> specificOrderRenderables = new(); // Use Lookup<int, IRenderable> and sort manually as it's not very common to add objects?
@@ -129,6 +131,10 @@ public sealed class GraphicsWorld // TODO: make entierly thread safe
 
 	public void SetUp(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
+		Debug.Assert(!setUp, "The GraphicsWorld has already been set up!");
+
+		setUp = true;
+
 		Logging.LogScopeStart("Setting up GraphicsWorld");
 
 		// No dependency
@@ -174,16 +180,19 @@ public sealed class GraphicsWorld // TODO: make entierly thread safe
 
 	private void HandleWindowResized()
 	{
-		Camera.WindowResized(Window.Width, Window.Height);
-
-		lock (swapchain) // is locking necessary for swapchain?
+		lock (Window)
 		{
-			swapchain.Resize(Window.Width, Window.Height);
+			Camera.WindowResized(Window.Width, Window.Height);
+
+			lock (swapchain)
+			{
+				swapchain.Resize(Window.Width, Window.Height);
+			}
+
+			GraphicsDevice.ResizeMainWindow(Window.Width, Window.Height);
+
+			WindowResized?.Invoke((int)Window.Width, (int)Window.Height);
 		}
-
-		GraphicsDevice.ResizeMainWindow(Window.Width, Window.Height);
-
-		WindowResized?.Invoke((int)Window.Width, (int)Window.Height);
 	}
 
 	public void Run()
@@ -327,8 +336,11 @@ public sealed class GraphicsWorld // TODO: make entierly thread safe
 				inverseProjection,
 				inverseView));
 
-			// We want to render directly to the output Window.
-			commandList.SetFramebuffer(swapchain.Framebuffer);
+			lock (swapchain)
+			{
+				// We want to render directly to the output Window.
+				commandList.SetFramebuffer(swapchain.Framebuffer);
+			}
 			commandList.ClearColorTarget(0, RgbaFloat.Pink);
 			commandList.ClearDepthStencil(1f);
 
@@ -393,7 +405,10 @@ public sealed class GraphicsWorld // TODO: make entierly thread safe
 		GraphicsDevice.WaitForIdle();
 
 		// Once commands have been submitted, the rendered image can be presented to the application Window.
-		GraphicsDevice.SwapBuffers(swapchain);
+		lock (swapchain)
+		{
+			GraphicsDevice.SwapBuffers(swapchain);
+		}
 	}
 
 	/// <summary>

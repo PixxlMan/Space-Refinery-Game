@@ -1,45 +1,96 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Microsoft.Toolkit.HighPerformance;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 
 namespace Space_Refinery_Engine;
 
 public record Game : ISerializableReference
 {
-	public Game(SerializableReference serializableReference, GameWorld gameWorld, Settings gameSettings)
-	{
-		SerializableReference = serializableReference;
-
-		GameWorld = gameWorld;
-
-		GameSettings = gameSettings;
-	}
-
 	private Game()
-	{
+	{  }
 
+	private SerializableReference serializableReference;
+	public SerializableReference SerializableReference
+	{
+		get
+		{
+			lock (syncRoot)
+			{
+				return serializableReference;
+			}
+		}
+		private set
+		{
+			lock (syncRoot)
+			{
+				serializableReference = value;
+			}
+		}
 	}
 
-	public SerializableReference SerializableReference { get; private set; }
+	public SerializationReferenceHandler GameReferenceHandler { get; private set; }
 
 	public GameWorld GameWorld { get; private set; }
 
 	public Settings GameSettings { get; private set; }
 
+	public Player Player { get; private set; }
+
+	private object syncRoot = new();
+
+	public static Game CreateGame(SerializableReference gameName, GameData gameData)
+	{
+		Game game = new()
+		{
+			SerializableReference = gameName,
+			GameWorld = new(),
+			GameSettings = new(gameData),
+			GameReferenceHandler = new(),
+			Player = Player.Create(gameData),
+		};
+
+		return game;
+	}
+
 	public void SerializeState(XmlWriter writer)
 	{
-		writer.SerializeReference(this);
+		lock (syncRoot)
+		{
+			writer.WriteStartElement(nameof(Game));
+			{
+				writer.SerializeReference(this);
 
-		writer.SerializeWithoutEmbeddedType(GameWorld, nameof(GameWorld));
+				GameReferenceHandler.Serialize(writer);
 
-		writer.SerializeWithoutEmbeddedType(GameSettings, nameof(GameSettings));
+				writer.SerializeWithoutEmbeddedType(GameWorld, nameof(GameWorld));
+
+				writer.SerializeWithoutEmbeddedType(GameSettings, nameof(GameSettings));
+
+				Player.Serialize(writer);
+			}
+			writer.WriteEndElement();
+		}
 	}
 
 	public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 	{
-		SerializableReference = reader.ReadReference();
+		lock (syncRoot)
+		{
+			reader.ReadStartElement(nameof(Game));
+			{
+				SerializableReference = reader.ReadReference();
 
-		GameWorld = reader.DeserializeEntitySerializableWithoutEmbeddedType<GameWorld>(serializationData, referenceHandler, nameof(GameWorld));
+				GameReferenceHandler = SerializationReferenceHandler.Deserialize(reader, serializationData, false);
 
-		GameSettings = reader.DeserializeEntitySerializableWithoutEmbeddedType<Settings>(serializationData, referenceHandler, nameof(GameSettings));
+				GameWorld = reader.DeserializeEntitySerializableWithoutEmbeddedType<GameWorld>(serializationData, referenceHandler, nameof(GameWorld));
+
+				GameSettings = reader.DeserializeEntitySerializableWithoutEmbeddedType<Settings>(serializationData, referenceHandler, nameof(GameSettings));
+
+				Player = Player.Deserialize(reader, serializationData);
+
+				GameReferenceHandler.ExitAllowEventualReferenceMode();
+			}
+			reader.ReadEndElement();
+		}
 	}
 }

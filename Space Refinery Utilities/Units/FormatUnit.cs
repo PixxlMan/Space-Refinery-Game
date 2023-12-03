@@ -1,13 +1,27 @@
-﻿namespace Space_Refinery_Engine;
+﻿namespace Space_Refinery_Utilities;
 
 public static class FormatUnit
 {
-	public static void RegisterToSettings(Settings settings)
-	{
-		settings.RegisterToSettingValue<SwitchSettingValue>("Use Celcius", (v) => useCelcius = v);
-	}
+	private static readonly object syncRoot = new();
 
-	static bool useCelcius = false;
+	private static bool useCelcius;
+	public static bool UseCelcius
+	{
+		get
+		{
+			lock (syncRoot)
+			{
+				return useCelcius;
+			}
+		}
+		set
+		{
+			lock (syncRoot)
+			{
+				useCelcius = value;
+			}
+		}
+	}
 
 	/// <summary>
 	/// Formats a mass in kilograms according to player preferences.
@@ -86,11 +100,8 @@ public static class FormatUnit
 	{
 		string prefix = string.Empty;
 		var time = (DecimalNumber)timeUnit;
-		if (time <= 1) /*Only produce prefix if below one, we do not want larger prefixes such as mega or kilo here - kiloseconds or megaseconds is weird.*/
-		{
-			time.FormatStandardPrefix(out prefix, out var scaledSpecificHeatCapacity);
-		}
-		return $"{time.ToString(decimals: 2)} {prefix}s";
+		time.FormatStandardPrefix(out prefix, out var scaledTime, AllowedPrefixesFlags.CommonTime);
+		return $"{scaledTime.ToString(decimals: 2)} {prefix}s";
 	}
 
 	/// <summary>
@@ -180,22 +191,61 @@ public static class FormatUnit
 		return $"{Math.Round(((DecimalNumber)value * 100).ToDecimal(), 1)} %";
 	}
 
-	public static void FormatStandardPrefix(this DecimalNumber unscaledValue, out string prefix, out DecimalNumber scaledValue)
+	[Flags]
+	public enum AllowedPrefixesFlags
 	{
-		if (unscaledValue > DecimalNumber.Giga)
+		Giga = 1,
+		Mega = 2,
+		Kilo = 4,
+		Hecto = 8,
+		// No prefix.
+		Deci = 16,
+		Centi = 32,
+		Milli = 64,
+		Micro = 128,
+		Nano = 256,
+
+		CommonLarge = Giga | Mega | Kilo,
+		CommonTime = Milli | Micro | Nano,
+		All = Giga | Mega | Kilo | Hecto | Deci | Centi | Milli | Micro | Nano,
+	}
+
+	public static void FormatStandardPrefix(this DecimalNumber unscaledValue, out string prefix, out DecimalNumber scaledValue, AllowedPrefixesFlags allowedPrefixesFlags = AllowedPrefixesFlags.CommonLarge)
+	{
+		if (unscaledValue > DecimalNumber.Giga && allowedPrefixesFlags.HasFlag(AllowedPrefixesFlags.Giga))
 		{
 			prefix = "G";
 			scaledValue = unscaledValue / DecimalNumber.Giga;
 		}
-		else if (unscaledValue > DecimalNumber.Mega)
+		else if (unscaledValue > DecimalNumber.Mega && allowedPrefixesFlags.HasFlag(AllowedPrefixesFlags.Mega))
 		{
 			prefix = "M";
 			scaledValue = unscaledValue / DecimalNumber.Mega;
 		}
-		else if (unscaledValue > DecimalNumber.Kilo)
+		else if (unscaledValue > DecimalNumber.Kilo && allowedPrefixesFlags.HasFlag(AllowedPrefixesFlags.Kilo))
 		{
 			prefix = "k";
 			scaledValue = unscaledValue / DecimalNumber.Kilo;
+		}
+		else if (unscaledValue > DecimalNumber.Deci && allowedPrefixesFlags.HasFlag(AllowedPrefixesFlags.Deci))
+		{
+			prefix = "d";
+			scaledValue = unscaledValue / DecimalNumber.Deci;
+		}
+		else if (unscaledValue > DecimalNumber.Centi && allowedPrefixesFlags.HasFlag(AllowedPrefixesFlags.Centi))
+		{
+			prefix = "c";
+			scaledValue = unscaledValue / DecimalNumber.Centi;
+		}
+		else if (unscaledValue > DecimalNumber.Milli && allowedPrefixesFlags.HasFlag(AllowedPrefixesFlags.Milli))
+		{
+			prefix = "m";
+			scaledValue = unscaledValue / DecimalNumber.Milli;
+		}
+		else if (unscaledValue > DecimalNumber.Micro && allowedPrefixesFlags.HasFlag(AllowedPrefixesFlags.Micro))
+		{
+			prefix = "μ";
+			scaledValue = unscaledValue / DecimalNumber.Micro;
 		}
 		else
 		{

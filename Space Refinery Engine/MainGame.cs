@@ -118,9 +118,14 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 
 		GameData.Settings.RegisterToSettingValue<SwitchSettingValue>("Limit FPS", (value) => GameData.GraphicsWorld.ShouldLimitFramerate = value.SwitchValue);
 
-		FormatUnit.RegisterToSettings(GameData.Settings);
+		RegisterFormatToSettings(GameData.Settings);
 
 		Logging.LogScopeEnd();
+	}
+
+	public static void RegisterFormatToSettings(Settings settings)
+	{
+		settings.RegisterToSettingValue<SwitchSettingValue>("Use Celcius", (v) => FormatUnit.UseCelcius = v);
 	}
 
 	private void UI_PauseStateChanged(bool paused)
@@ -258,6 +263,8 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 			var serializationData = new SerializationData(GameData);
 
 			//GameData.Game?.Destroy();
+
+			GameData.Game?.GameWorld.Destroy();
 
 			GameData.Game = reader.DeserializeEntitySerializableWithoutEmbeddedType<Game>(serializationData, null, nameof(Game));
 

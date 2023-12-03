@@ -198,7 +198,7 @@ namespace Space_Refinery_Engine
 
 		public SerializableReference SerializableReference { get; private set; } = Guid.NewGuid();
 
-		private (IConnectable connectableA, IConnectable connectableB) connectables;
+		private (IConnectable? connectableA, IConnectable? connectableB) connectables;
 		/// <summary>
 		/// Automatically updates things dependent on the Vacancy status of the connector.
 		/// </summary>

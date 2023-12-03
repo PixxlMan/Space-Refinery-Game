@@ -8,9 +8,7 @@ namespace Space_Refinery_Utilities;
 /// </remarks>
 public static class Logging
 {
-	private static object syncRoot = new();
-
-	private static int scopeDepth = 0;
+	private static readonly object syncRoot = new();
 
 	private const int scopeIndentation = 4;
 
@@ -45,23 +43,23 @@ public static class Logging
 		switch (logType)
 		{
 			case LogType.Error:
-				Console.Write($"[ERROR]{timeStamp}");
+				Console.Write($"{{{Environment.CurrentManagedThreadId}}}[ERROR]{timeStamp}");
 				break;
 			case LogType.Warning:
-				Console.Write($"[WARN]{timeStamp}");
+				Console.Write($"{{{Environment.CurrentManagedThreadId}}}[WARN]{timeStamp}");
 				break;
 			case LogType.Simulation:
 				timeStamp = $"{stopwatch.Elapsed} s & {Time.CurrentTickTime} tt & {Time.TicksElapsed} ticks";
-				Console.Write($"[SIMUL]{timeStamp}");
+				Console.Write($"{{{Environment.CurrentManagedThreadId}}}[SIMUL]{timeStamp}");
 				break;
 			case LogType.Log:
-				Console.Write($"[LOG]{timeStamp}");
+				Console.Write($"{{{Environment.CurrentManagedThreadId}}}[LOG]{timeStamp}");
 				break;
 			case LogType.Debug:
 				// Debug doesn't call PreFormat.
 				break;
 			default:
-				Console.Write($"[MISC]{timeStamp}");
+				Console.Write($"{{{Environment.CurrentManagedThreadId}}}[MISC]{timeStamp}");
 				break;
 		}
 
@@ -69,6 +67,13 @@ public static class Logging
 		if (timeStamp.Length + longestLogTag + spaceMargin >= minimumIndentation + extraSpace)
 		{
 			extraSpace = timeStamp.Length + longestLogTag + spaceMargin - minimumIndentation;
+		}
+
+		int scopeDepth = 0;
+
+		if (scopeTimings.TryGetValue(Environment.CurrentManagedThreadId, out Stack<long>? value))
+		{
+			scopeDepth = value.Count;
 		}
 
 		Console.SetCursorPosition(minimumIndentation + extraSpace + scopeIndentation * scopeDepth, Console.GetCursorPosition().Top);
@@ -159,6 +164,8 @@ public static class Logging
 		}
 	}
 
+	private static readonly Dictionary<int, Stack<long>> scopeTimings = new();
+
 	[DebuggerHidden]
 	public static void LogScopeStart(string scopeName)
 	{
@@ -167,7 +174,14 @@ public static class Logging
 			Log($"{scopeName}:");
 			Log("{");
 
-			scopeDepth++;
+			if (scopeTimings.ContainsKey(Environment.CurrentManagedThreadId))
+			{
+				scopeTimings[Environment.CurrentManagedThreadId].Push(stopwatch.ElapsedTicks);
+			}
+			else
+			{
+				scopeTimings.Add(Environment.CurrentManagedThreadId, new([stopwatch.ElapsedTicks]));
+			}
 		}
 	}
 
@@ -176,9 +190,10 @@ public static class Logging
 	{
 		lock (syncRoot)
 		{
-			scopeDepth--;
-
-			Log("}");
+			long elapsedTicks = (stopwatch.ElapsedTicks - scopeTimings[Environment.CurrentManagedThreadId].Pop());
+			var time = FormatUnit.FormatTime((double)elapsedTicks / Stopwatch.Frequency);
+			
+			Log($"}} ({time})");
 		}
 	}
 

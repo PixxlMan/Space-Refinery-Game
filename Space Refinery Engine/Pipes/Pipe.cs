@@ -93,7 +93,7 @@ namespace Space_Refinery_Engine
 
 				pipe.SetUp(pipeType, connectors, physObj, gameData);
 
-				gameData.Game.GameWorld.AddConstruction(pipe);
+				gameData.Game.GameWorld.AddEntity(pipe);
 
 				referenceHandler.RegisterReference(pipe);
 
@@ -246,7 +246,7 @@ namespace Space_Refinery_Engine
 
 				pipe.Created = false;
 
-				gameData.Game.GameWorld.AddConstruction(pipe);
+				gameData.Game.GameWorld.AddEntity(pipe);
 
 				referenceHandler.RegisterReference(pipe);
 
@@ -374,7 +374,7 @@ namespace Space_Refinery_Engine
 
 				Created = true;
 
-				serializationData.GameData.Game.GameWorld.AddConstruction(this);
+				serializationData.GameData.Game.GameWorld.AddEntity(this);
 			}
 		}
 

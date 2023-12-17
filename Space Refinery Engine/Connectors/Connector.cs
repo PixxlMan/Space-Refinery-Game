@@ -471,8 +471,6 @@ namespace Space_Refinery_Engine
 
 				MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
 
-				GameData.Game.GameWorld.RemoveEntity(this);
-
 				GameData.Game.GameReferenceHandler.RemoveReference(this);
 			}
 		}

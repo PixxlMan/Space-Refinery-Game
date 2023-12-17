@@ -12,8 +12,6 @@ public sealed class GameWorld : IEntitySerializable
 {
 	public object TickSyncObject = new();
 
-	private HashSet<IConstruction> constructions = new();
-
 	private HashSet<Entity> entities = new();
 
 	public event Action<IntervalUnit>? CollectTickPerformanceData;
@@ -25,15 +23,8 @@ public sealed class GameWorld : IEntitySerializable
 	{
 		lock (TickSyncObject)
 		{
-			Debug.Assert(entity is not IConstruction, "An attempt was made to register a construction as an entity, use AddConstruction instead.");
-
-			AddEntityImpl(entity);
+			entities.AddUnique(entity, $"This {nameof(Entity)} has already been added.");
 		}
-	}
-
-	private void AddEntityImpl(Entity entity)
-	{
-		entities.AddUnique(entity, $"This {nameof(Entity)} has already been added.");
 	}
 
 	public void RemoveEntity(Entity entity)
@@ -42,37 +33,12 @@ public sealed class GameWorld : IEntitySerializable
 		{
 			if (!entities.Contains(entity))
 			{
-				return; // If the construction was not in the constructions dictionary there's nothing to deconstruct.
+				return; // If the entity is not in the entities dictionary, there's nothing to remove.
 			}
 
 			entities.Remove(entity);
 
 			entity.Destroy();
-		}
-	}
-
-	public void AddConstruction(IConstruction construction)
-	{
-		lock (TickSyncObject)
-		{
-			AddEntityImpl(construction);
-
-			constructions.AddUnique(construction);
-		}
-	}
-
-	public void Deconstruct(IConstruction construction)
-	{
-		lock (TickSyncObject)
-		{
-			if (!constructions.Contains(construction))
-			{
-				return; // If the construction was not in the constructions dictionary there's nothing to deconstruct.
-			}
-
-			construction.Deconstruct();
-
-			RemoveEntity(construction);
 		}
 	}
 
@@ -134,7 +100,6 @@ public sealed class GameWorld : IEntitySerializable
 			});
 
 			entities.Clear();
-			constructions.Clear();
 		}
 	}
 
@@ -146,8 +111,6 @@ public sealed class GameWorld : IEntitySerializable
 			{
 				ImGui.Text($"Total entities: {entities.Count}");
 
-				ImGui.Text($"Total constructions: {constructions.Count}");
-
 				ImGui.End();
 			}
 		}
@@ -156,8 +119,6 @@ public sealed class GameWorld : IEntitySerializable
 	public void SerializeState(XmlWriter writer)
 	{
 		writer.Serialize(entities, nameof(entities));
-
-		writer.Serialize(constructions, nameof(constructions));
 	}
 
 	public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)

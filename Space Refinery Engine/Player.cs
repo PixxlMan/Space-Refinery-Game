@@ -172,7 +172,7 @@ namespace Space_Refinery_Engine
 				}
 				if (InputTracker.GetMouseButton(MouseButton.Right))
 				{
-					gameData.Game.GameWorld.Deconstruct(construction);
+					gameData.Game.GameWorld.RemoveEntity(construction);
 				}
 			}
 

@@ -6,7 +6,9 @@ public static class Convenience
 	{
 		random ??= Random.Shared;
 
-		return collection.ElementAt(random.Next(0, collection.Count));
+		int nextElement = random.Next(0, collection.Count);
+
+		return collection.ElementAt(nextElement);
 	}
 	
 	public static T SelectRandomNew<T>(this ICollection<T> collection, T current, Random? random = null)

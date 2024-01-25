@@ -79,8 +79,6 @@ public static class Logging
 		Console.SetCursorPosition(minimumIndentation + extraSpace + scopeIndentation * scopeDepth, Console.GetCursorPosition().Top);
 	}
 
-	// also log current thread's name?
-	// perhaps not to console, but seems sensible for text file log
 	[DebuggerHidden]
 	public static void Log(string logText)
 	{

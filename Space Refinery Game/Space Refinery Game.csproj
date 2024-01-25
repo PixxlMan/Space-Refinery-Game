@@ -30,6 +30,8 @@
     </ItemGroup>
 
   <ItemGroup>
+    <None Remove="_GameAssets\Audio\Music\Ambient\Around Ruins\Around Ruins.ogg" />
+    <None Remove="_GameAssets\Audio\Music\Ambient\Around Ruins\AroundRuins.srh.xml" />
     <None Remove="_GameAssets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Intro.ogg" />
     <None Remove="_GameAssets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Loop - Export 1.mp3" />
     <None Remove="_GameAssets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Loop.ogg" />
@@ -86,6 +88,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="_GameAssets\Audio\Music\Ambient\Around Ruins\Around Ruins.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_GameAssets\Audio\Music\Ambient\Around Ruins\AroundRuins.srh.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="_GameAssets\Audio\Music\Ambient\Industrial Fumes\Industrial Fumes - Intro.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

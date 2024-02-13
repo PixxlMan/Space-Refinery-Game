@@ -4,6 +4,11 @@ public static class Convenience
 {
 	public static T SelectRandom<T>(this ICollection<T> collection, Random? random = null)
 	{
+		if (collection.Count == 0)
+		{
+			throw new Exception("Cannot select an element when the collection is empty");
+		}
+
 		random ??= Random.Shared;
 
 		int nextElement = random.Next(0, collection.Count);

@@ -41,9 +41,7 @@
     <None Remove="_GameAssets\Audio\Music\Industrial Fumes - Whole - Export 1.wav" />
     <None Remove="_GameAssets\Audio\Music\Industrial Fumes.xml" />
     <None Remove="_GameAssets\BaseGame.manifest.srh.xml" />
-    <None Remove="_GameAssets\Chemical types\Argon.srh.xml" />
     <None Remove="_GameAssets\Chemical types\Hydrogen.srh.xml" />
-    <None Remove="_GameAssets\Chemical types\Nitrogen.srh.xml" />
     <None Remove="_GameAssets\Chemical types\Oxygen.srh.xml" />
     <None Remove="_GameAssets\Chemical types\Water.srh.xml" />
     <None Remove="_GameAssets\Models\Machinery\MachineryCombustionChamber.obj" />
@@ -106,12 +104,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="_GameAssets\Audio\Music\Ambient\Industrial Fumes\IndustrialFumes.srh.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="_GameAssets\Chemical types\Argon.srh.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="_GameAssets\Chemical types\Nitrogen.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="_GameAssets\Chemical types\Water.srh.xml">
@@ -229,7 +221,6 @@
 
   <ItemGroup>
     <PackageReference Include="BepuPhysics" Version="2.4.0" />
-    <PackageReference Include="CsvHelper" Version="31.0.0" />
     <PackageReference Include="SharpAudio" Version="1.0.65-beta" />
     <PackageReference Include="SharpAudio.ALBinding" Version="1.0.65-beta" />
     <PackageReference Include="SharpAudio.Codec" Version="1.0.65-beta" />

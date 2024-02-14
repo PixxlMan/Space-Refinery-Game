@@ -55,7 +55,7 @@
 			<HasConnectorNames>False</HasConnectorNames>
 			<ModelPath>Models\Pipe\PipeStraightDivergeT.obj</ModelPath>
 			<MaterialInfo>Rusty Metal Sheet</MaterialInfo>
-			<Type>Space_Refinery_Engine.OrdinaryPipe</Type>
+			<Type>Space_Refinery_Game.OrdinaryPipe</Type>
 		</IEntitySerializable>
 	</Elements>
 </SerializationReferenceHandler>

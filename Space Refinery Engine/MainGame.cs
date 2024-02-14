@@ -8,7 +8,6 @@ using System.Reflection;
 using System.Xml;
 using Veldrid;
 using static Space_Refinery_Engine.SerializationPaths;
-using CsvHelper;
 
 namespace Space_Refinery_Engine;
 
@@ -118,8 +117,6 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 		GameData.Settings.RegisterToSettingValue<SliderSettingValue>("Max FPS", (value) => GameData.GraphicsWorld.FrametimeLowerLimit = IntervalRateConversionUnit.Unit / (RateUnit)value.SliderValue);
 
 		GameData.Settings.RegisterToSettingValue<SwitchSettingValue>("Limit FPS", (value) => GameData.GraphicsWorld.ShouldLimitFramerate = value.SwitchValue);
-
-		DebugSettings.AccessSetting<ActionDebugSetting>("Start/stop CSV record", new ActionDebugSetting(GameData.Game.Player.CSVRecord));
 
 		RegisterFormatToSettings(GameData.Settings);
 

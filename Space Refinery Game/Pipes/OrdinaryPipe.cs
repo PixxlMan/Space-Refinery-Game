@@ -2,7 +2,7 @@
 using Space_Refinery_Utilities;
 using System.Xml;
 
-namespace Space_Refinery_Engine
+namespace Space_Refinery_Game
 {
 	public sealed class OrdinaryPipe : Pipe
 	{

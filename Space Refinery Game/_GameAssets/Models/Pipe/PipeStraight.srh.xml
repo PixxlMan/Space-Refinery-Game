@@ -7,7 +7,7 @@
 			<Reference>Straight Pipe</Reference>
 			<Name>Straight Pipe</Name>
 			<Shape>Cylindrical</Shape>
-			<FlowableVolume>0.1</FlowableVolume> <!--Changed!-->
+			<FlowableVolume>0.16</FlowableVolume>
 			<Friction>0.04</Friction>
 			<ConnectorPlacements>
 				<Count>2</Count>
@@ -44,7 +44,7 @@
 			<HasConnectorNames>False</HasConnectorNames>
 			<ModelPath>Models\Pipe\PipeStraight.obj</ModelPath>
 			<MaterialInfo>Rusty Metal Sheet</MaterialInfo>
-			<Type>Space_Refinery_Engine.OrdinaryPipe</Type>
+			<Type>Space_Refinery_Game.OrdinaryPipe</Type>
 		</IEntitySerializable>
 	</Elements>
 </SerializationReferenceHandler>

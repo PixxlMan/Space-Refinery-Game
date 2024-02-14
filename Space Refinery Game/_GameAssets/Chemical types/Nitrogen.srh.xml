@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SerializationReferenceHandler> <!--Good table: https://ch301.cm.utexas.edu/data/section2.php?target=heat-transition.php-->
+	<Count>1</Count>
+	<Elements>
+		<IEntitySerializable>
+			<Type>Space_Refinery_Engine.ChemicalType</Type>
+			<ChemicalType>
+				<Reference>Nitrogen</Reference>
+				<ChemicalName>Nitrogen</ChemicalName>
+				<MolarMass>14.007<!--[g/mol]--></MolarMass>
+				<EnthalpyOfVaporization>0<!--[J/kg]--></EnthalpyOfVaporization>
+				<TemperatureOfVaporization>373.15</TemperatureOfVaporization>
+				<EnthalpyOfFusion>0<!--[J/kg]--></EnthalpyOfFusion>
+				<TemperatureOfFusion>63.05</TemperatureOfFusion>
+				<SpecificHeatCapacity>1 040<!--[J/(K*kg)]--></SpecificHeatCapacity>
+				<CommonPhase>Liquid</CommonPhase>
+				<GasPhaseType>
+					<ResourceType>
+						<ResourceName>Nitrogen Gas</ResourceName>
+						<Density>1.251<!--[kg/m³]--></Density> <!--At 0℃-->		
+					</ResourceType>
+				</GasPhaseType>
+				<LiquidPhaseType>
+					<ResourceType>
+						<ResourceName>Liquid Nitrogen</ResourceName>
+						<Density>808</Density>
+					</ResourceType>
+				</LiquidPhaseType>
+				<SolidPhaseType>
+					<ResourceType>
+						<ResourceName>Solid Nitrogen</ResourceName>
+						<Density>0</Density>
+					</ResourceType>
+				</SolidPhaseType>
+			</ChemicalType>				
+		</IEntitySerializable>
+	</Elements>
+</SerializationReferenceHandler>

@@ -66,7 +66,7 @@
 			<HasConnectorNames>False</HasConnectorNames>
 			<ModelPath>Models\Pipe\PipeStraightDivergeX.obj</ModelPath>
 			<MaterialInfo>Rusty Metal Sheet</MaterialInfo>
-			<Type>Space_Refinery_Game.OrdinaryPipe</Type>
+			<Type>Space_Refinery_Engine.OrdinaryPipe</Type>
 		</IEntitySerializable>
 	</Elements>
 </SerializationReferenceHandler>

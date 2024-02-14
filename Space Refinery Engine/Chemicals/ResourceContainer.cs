@@ -81,7 +81,7 @@ namespace Space_Refinery_Engine
 			}
 		}
 
-		private VolumeUnit maxVolume;
+		public VolumeUnit maxVolume;
 		public VolumeUnit MaxVolume => maxVolume;
 
 		public VolumeUnit FreeVolume => (MaxVolume - Volume).Max(0);

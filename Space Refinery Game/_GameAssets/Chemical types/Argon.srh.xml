@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SerializationReferenceHandler>
+	<Count>1</Count>
+	<Elements>
+		<IEntitySerializable>
+			<Type>Space_Refinery_Engine.ChemicalType</Type>
+			<ChemicalType>
+				<Reference>Argon</Reference>
+				<ChemicalName>Argon</ChemicalName>
+				<MolarMass>39.95<!--[g/mol]--></MolarMass>
+				<EnthalpyOfVaporization>0<!--[J/kg]--></EnthalpyOfVaporization>
+				<TemperatureOfVaporization>87.4</TemperatureOfVaporization>
+				<EnthalpyOfFusion>0<!--[J/kg]--></EnthalpyOfFusion>
+				<TemperatureOfFusion>83.9</TemperatureOfFusion>
+				<SpecificHeatCapacity>520.33<!--[J/(K*kg)]--></SpecificHeatCapacity>
+				<CommonPhase>Liquid</CommonPhase>
+				<GasPhaseType>
+					<ResourceType>
+						<ResourceName>Argon Gas</ResourceName>
+						<Density>1.784<!--[kg/m³]--></Density> <!--At 0℃-->		
+					</ResourceType>
+				</GasPhaseType>
+				<LiquidPhaseType>
+					<ResourceType>
+						<ResourceName>Liquid Argon</ResourceName>
+						<Density>1401</Density>
+					</ResourceType>
+				</LiquidPhaseType>
+				<SolidPhaseType>
+					<ResourceType>
+						<ResourceName>Solid Argon</ResourceName>
+						<Density>1.784</Density>
+					</ResourceType>
+				</SolidPhaseType>
+			</ChemicalType>				
+		</IEntitySerializable>
+	</Elements>
+</SerializationReferenceHandler>

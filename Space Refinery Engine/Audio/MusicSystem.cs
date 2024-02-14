@@ -23,7 +23,7 @@ namespace Space_Refinery_Engine.Audio
 
 		private SequencialPlayback sequencialPlayback;
 
-		private MusicResource currentMusic;
+		private MusicResource? currentMusic;
 
 		private int loops;
 
@@ -103,7 +103,11 @@ namespace Space_Refinery_Engine.Audio
 						nextMusicPart = MusicPart.Outro;
 					}
 					playedLoops++;
-					return currentMusic.Loops.SelectRandom().AudioResource.CreatePlayback();
+
+					if (currentMusic.Loops.Count > 0) // If there are no loops to play we can just skip to the outro.
+					{
+						return currentMusic.Loops.SelectRandom().AudioResource.CreatePlayback();
+					}
 				}
 
 				if (nextMusicPart == MusicPart.Outro)

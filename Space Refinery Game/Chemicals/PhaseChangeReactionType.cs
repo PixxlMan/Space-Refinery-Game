@@ -17,6 +17,8 @@ public sealed class PhaseChangeReactionType : ReactionType
 		{
 			foreach (var unit in resourceContainer.EnumerateResources())
 			{
+				return;
+
 				ResourceType resourceType = unit.ResourceType;
 				ChemicalType chemicalType = resourceType.ChemicalType;
 
@@ -99,13 +101,13 @@ public sealed class PhaseChangeReactionType : ReactionType
 
 	private static void TransitionPhase(ResourceUnitData previousUnit, ChemicalPhase newPhase, MolarEnergyUnit phaseTransitionEnthalpy, EnergyUnit energyDelta, out ResourceUnitData newUnit, out ResourceUnitData changeFactorUnit)
 	{
-		throw new NotImplementedException();
-
 		ResourceType previousResourceType = previousUnit.ResourceType;
 		ChemicalType chemicalType = previousResourceType.ChemicalType;
 		ResourceType newResourceType = chemicalType.GetResourceTypeForPhase(newPhase);
 
 		Debug.Assert(phaseTransitionEnthalpy > 0);
 		Debug.Assert(energyDelta > 0);
+
+		throw new NotImplementedException();
 	}
 }

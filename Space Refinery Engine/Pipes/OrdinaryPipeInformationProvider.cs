@@ -1,7 +1,7 @@
 ﻿using ImGuiNET;
 using Space_Refinery_Engine;
 
-namespace Space_Refinery_Game
+namespace Space_Refinery_Engine
 {
 	public sealed class OrdinaryPipeInformationProvider : PipeInformationProvider
 	{

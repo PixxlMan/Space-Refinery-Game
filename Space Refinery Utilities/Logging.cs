@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace Space_Refinery_Utilities;
 
@@ -20,10 +21,14 @@ public static class Logging
 
 	private readonly static Stopwatch stopwatch = new();
 
-	public static void StartTime()
+	private static LogLevel loggingFilterLevel;
+
+	public static void SetUp(LogLevel filterLevel)
 	{
 		stopwatch.Start();
-		Log($"Logging began at {DateTime.UtcNow} UTC");
+		loggingFilterLevel = filterLevel;
+
+		Log($"Logging at level '{filterLevel}' began at {DateTime.UtcNow} UTC");
 	}
 
 	public enum LogType
@@ -33,6 +38,18 @@ public static class Logging
 		Simulation,
 		Log,
 		Debug,
+	}
+
+	public enum LogLevel : int
+	{
+		None = 0,
+		Everything = int.MaxValue,
+		Release = Critical,
+		Debug = Everything,
+
+		Critical = 1,
+		Basic = 2,
+		Deep = 3,
 	}
 
 	[DebuggerHidden]
@@ -80,25 +97,26 @@ public static class Logging
 	}
 
 	[DebuggerHidden]
-	public static void Log(string logText)
+	public static void Log(string logText, LogLevel logLevel = LogLevel.Basic)
 	{
+		if (logLevel > loggingFilterLevel)
+		{
+			return;
+		}
+
 		lock (syncRoot)
 		{
 			PreFormat(LogType.Log);
 			Console.WriteLine($"{logText}");
 		}
 	}
-	
+
 	[DebuggerHidden]
-	public static void LogIf(bool condition, string logText)
+	public static void LogIf(bool condition, string logText, LogLevel logLevel = LogLevel.Basic)
 	{
 		if (condition)
 		{
-			lock (syncRoot)
-			{
-				PreFormat(LogType.Log);
-				Console.WriteLine($"{logText}");
-			}
+			Log(logText, logLevel);
 		}
 	}
 
@@ -131,26 +149,31 @@ public static class Logging
 	}
 
 	[DebuggerHidden]
-	public static void LogError(string logText)
+	public static void LogError(string logText, LogLevel logLevel = LogLevel.Critical)
 	{
 		lock (syncRoot)
 		{
-			LogColor($"{logText}", ConsoleColor.Red, LogType.Error);
+			LogColor($"{logText}", ConsoleColor.Red, LogType.Error, logLevel);
 		}
 	}
 
 	[DebuggerHidden]
-	public static void LogWarning(string logText)
+	public static void LogWarning(string logText, LogLevel logLevel = LogLevel.Basic)
 	{
 		lock (syncRoot)
 		{
-			LogColor($"{logText}", ConsoleColor.Yellow, LogType.Warning);
+			LogColor($"{logText}", ConsoleColor.Yellow, LogType.Warning, logLevel);
 		}
 	}
 
 	[DebuggerHidden]
-	public static void LogColor(string logText, ConsoleColor color, LogType logType)
+	public static void LogColor(string logText, ConsoleColor color, LogType logType, LogLevel logLevel = LogLevel.Basic)
 	{
+		if (logLevel > loggingFilterLevel)
+		{
+			return;
+		}
+
 		lock (syncRoot)
 		{
 			PreFormat(logType);

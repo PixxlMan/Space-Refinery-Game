@@ -20,7 +20,7 @@ namespace Space_Refinery_Engine
 
 		public int EntitySelection;
 
-		public event Action<IEntityType> SelectedEntityTypeChanged;
+		public event Action<IEntityType?> SelectedEntityTypeChanged;
 
 		public bool Paused;
 
@@ -32,9 +32,9 @@ namespace Space_Refinery_Engine
 
 		public event Action<FixedDecimalLong8> SelectedEntityRotated;
 
-		public int ConnectorSelection;
+		public int? ConnectorSelection;
 
-		public event Action<int> SelectedEntityConnectorChanged;
+		public event Action<int?> SelectedEntityConnectorChanged;
 
 		public event Action<bool> PauseStateChanged;
 
@@ -108,6 +108,11 @@ namespace Space_Refinery_Engine
 				if (SelectedPipeType is null)
 				{
 					return;
+				}
+
+				if (SelectedPipeType.ConnectorPlacements.Length == 0)
+				{
+					ConnectorSelection = null;
 				}
 
 				ConnectorSelection += selectionDelta;

@@ -74,12 +74,17 @@ namespace Space_Refinery_Engine
 			}
 			else
 			{
+				if (GameData.UI.ConnectorSelection is null)
+				{
+					return;
+				}
+
 				SetProxyState(Vacant);
 
 				var shape = GameData.PhysicsWorld.GetConvexHullForMesh(GameData.UI.SelectedPipeType.Mesh);
 
 				var transform = GenerateTransformForConnector(
-							GameData.UI.SelectedPipeType.ConnectorPlacements[GameData.UI.ConnectorSelection],
+							GameData.UI.SelectedPipeType.ConnectorPlacements[GameData.UI.ConnectorSelection.Value],
 							this, GameData.UI.RotationSnapped);
 
 				Proxy.SetPhysicsObjectState(transform, shape, GameData.PhysicsWorld);

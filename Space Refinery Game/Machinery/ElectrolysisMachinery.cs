@@ -66,7 +66,7 @@ namespace Space_Refinery_Game
 			//throw new NotImplementedException();
 		}
 
-		ElectrolysisReactionType electrolysisReaction = (ElectrolysisReactionType)ReactionType.ReactionTypes[0];
+		ElectrolysisReactionType electrolysisReaction = (ElectrolysisReactionType)ReactionType.ReactionTypes[0]; // TODO: how is this ok?
 
 		public override void Tick()
 		{

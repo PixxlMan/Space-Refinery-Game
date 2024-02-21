@@ -17,7 +17,7 @@ namespace Space_Refinery_Engine
 
 		public FixedDecimalInt4 LookPitch;
 
-		public Transform CameraTransform => 
+		public Transform CameraTransform =>
 			new(
 				Transform.Position,
 				QuaternionFixedDecimalInt4.Concatenate(
@@ -71,23 +71,23 @@ namespace Space_Refinery_Engine
 				}
 			}
 
-			if (ShouldShowConstructionMarker(lookedAtPhysicsObject))
+			if (ShouldShowConstructionMarker(lookedAtPhysicsObject)) // An entity with no connectors will never return true and we can therefore safely assume there will always be a connector selection.
 			{
 				PipeConnector pipeConnector = (PipeConnector)lookedAtPhysicsObject.Entity;
 
 				constructionMarker.SetMesh(gameData.UI.SelectedPipeType.Mesh);
 
-				constructionMarker.SetTransform(Connector.GenerateTransformForConnector(gameData.UI.SelectedPipeType.ConnectorPlacements[gameData.UI.ConnectorSelection], pipeConnector, gameData.UI.RotationSnapped));
+				constructionMarker.SetTransform(Connector.GenerateTransformForConnector(gameData.UI.SelectedPipeType.ConnectorPlacements[gameData.UI.ConnectorSelection!.Value], pipeConnector, gameData.UI.RotationSnapped));
 
 				constructionMarker.ShouldDraw = true;
 
-				if (Pipe.ValidateBuild(pipeConnector, gameData.UI.SelectedPipeType, gameData.UI.ConnectorSelection, gameData.UI.RotationSnapped, gameData))
+				if (Pipe.ValidateBuild(pipeConnector, gameData.UI.SelectedPipeType, gameData.UI.ConnectorSelection!.Value, gameData.UI.RotationSnapped, gameData))
 				{
 					constructionMarker.State = ConstructionMarker.ConstructionMarkerState.LegalBuild;
 
 					if (InputTracker.GetMouseButton(MouseButton.Left))
 					{
-						Pipe.Build(pipeConnector, gameData.UI.SelectedPipeType, gameData.UI.ConnectorSelection, gameData.UI.RotationSnapped, gameData, gameData.Game.GameReferenceHandler);
+						Pipe.Build(pipeConnector, gameData.UI.SelectedPipeType, gameData.UI.ConnectorSelection!.Value, gameData.UI.RotationSnapped, gameData, gameData.Game.GameReferenceHandler);
 
 						constructionMarker.ShouldDraw = false;
 					}
@@ -104,70 +104,71 @@ namespace Space_Refinery_Engine
 					DebugStopPoints.RegisterStopPoint(construction.SerializableReference);
 				}
 
+				if (construction is OrdinaryPipe pipe)
 				{
-					//if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Insert resource with button") && construction is OrdinaryPipe pipe)
-					//{
-					//	ChemicalType chemicalType = MainGame.DebugSettings.AccessSetting<ComboDebugSetting<ChemicalType>>("Chemical type to insert with button", new(ChemicalType.ChemicalTypes.ToArray(), ChemicalType.Water));
+					if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Insert resource with button"))
+					{
+						ChemicalType chemicalType = MainGame.DebugSettings.AccessSetting<ComboDebugSetting<ChemicalType>>("Chemical type to insert with button", new(ChemicalType.ChemicalTypes.ToArray(), ChemicalType.Water));
 
-					//	TemperatureUnit temperatureUnit = (TemperatureUnit)(DecimalNumber)MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Temperature of resource to insert with button", new(10, 0, 1_000));
+						TemperatureUnit temperatureUnit = (TemperatureUnit)(DecimalNumber)MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Temperature of resource to insert with button", new(10, 0, 1_000));
 
-					//	ChemicalPhase chemicalPhase = chemicalType.GetChemicalPhaseForTemperature(temperatureUnit);
+						ChemicalPhase chemicalPhase = chemicalType.GetChemicalPhaseForTemperature(temperatureUnit);
 
-					//	MassUnit mass = (MassUnit)(DecimalNumber)MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Mass to insert with button", new(10, 0, 1_000));
+						MassUnit mass = (MassUnit)(DecimalNumber)MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Mass to insert with button", new(10, 0, 1_000));
 
-					//	ResourceType resourceType = chemicalType.GetResourceTypeForPhase(chemicalPhase);
+						ResourceType resourceType = chemicalType.GetResourceTypeForPhase(chemicalPhase);
 
-					//	EnergyUnit internalEnergy = ChemicalType.TemperatureToInternalEnergy(resourceType, temperatureUnit, mass);
+						EnergyUnit internalEnergy = ChemicalType.TemperatureToInternalEnergy(resourceType, temperatureUnit, mass);
 
-					//	ResourceUnitData resource = new(resourceType, ChemicalType.MassToMoles(chemicalType, mass), internalEnergy);
+						ResourceUnitData resource = new(resourceType, ChemicalType.MassToMoles(chemicalType, mass), internalEnergy);
 
-					//	if (InputTracker.GetKeyDown(Key.U) && pipe.ResourceContainer.Volume + resource.Volume < pipe.ResourceContainer.MaxVolume)
-					//	{
-					//		pipe.ResourceContainer.AddResource(resource);
-					//	}
-					//}
-				}
-				{
-					//if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Modify heat with buttons") && construction is OrdinaryPipe pipe)
-					//{
-					//	ChemicalType chemicalType = MainGame.DebugSettings.AccessSetting<ComboDebugSetting<ChemicalType>>("Chemical type to modify heat of with button", new(ChemicalType.ChemicalTypes.ToArray(), ChemicalType.Water));
-					//	ChemicalPhase chemicalPhase = MainGame.DebugSettings.AccessSetting<EnumDebugSetting<ChemicalPhase>>("Chemical phase to modify heat of with button", ChemicalPhase.Liquid);
-					//	ResourceType resourceType = chemicalType.GetResourceTypeForPhase(chemicalPhase);
+						if (InputTracker.GetKeyDown(Key.U) && pipe.ResourceContainer.Volume + resource.Volume < pipe.ResourceContainer.MaxVolume)
+						{
+							pipe.ResourceContainer.AddResource(resource);
+						}
+					}
 
-					//	EnergyUnit energy = (EnergyUnit)(DN)MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Internal energy to modify per unit", new(1_000, 0, 10_000_000));
-					//	EnergyUnit timeAdjustedEnergy = energy * deltaTime;
+					if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Modify heat with buttons"))
+					{
+						ChemicalType chemicalType = MainGame.DebugSettings.AccessSetting<ComboDebugSetting<ChemicalType>>("Chemical type to modify heat of with button", new(ChemicalType.ChemicalTypes.ToArray(), ChemicalType.Water));
+						ChemicalPhase chemicalPhase = MainGame.DebugSettings.AccessSetting<EnumDebugSetting<ChemicalPhase>>("Chemical phase to modify heat of with button", ChemicalPhase.Liquid);
+						ResourceType resourceType = chemicalType.GetResourceTypeForPhase(chemicalPhase);
 
-					//	/*if (InputTracker.GetKeyDown(Key.H))
-					//	{
-					//		foreach (var unitData in pipe.ResourceContainer.EnumerateResources())
-					//		{
-					//			pipe.ResourceContainer.AddResource(new(unitData.ResourceType, 0, energy));
-					//		}
-					//	}
-					//	else */if (InputTracker.GetKey(Key.H))
-					//	{
-					//		var unitData = pipe.ResourceContainer.GetResourceUnitData(resourceType);
-					//		//foreach (var unitData in pipe.ResourceContainer.EnumerateResources()) // todo: distribute added energy evenly among resources according to mass, right now more types means greater total energy added and instant vaporization of small amounts etc. Maybe the adding should be based on mass? like add x j per kg or even per mol.
-					//		{
-					//			pipe.ResourceContainer.AddResource(new(unitData.ResourceType, 0, timeAdjustedEnergy));
-					//		}
-					//	}
-					//	/*else if (InputTracker.GetKeyDown(Key.J))
-					//	{
-					//		foreach (var unitData in pipe.ResourceContainer.EnumerateResources())
-					//		{
-					//			pipe.ResourceContainer.AddResource(ResourceUnitData.CreateNegativeResourceUnit(unitData.ResourceType, 0, -energy));
-					//		}
-					//	}*/
-					//	else if (InputTracker.GetKey(Key.J))
-					//	{
-					//		var unitData = pipe.ResourceContainer.GetResourceUnitData(resourceType);
-					//		//foreach (var unitData in pipe.ResourceContainer.EnumerateResources())
-					//		{
-					//			pipe.ResourceContainer.AddResource(ResourceUnitData.CreateNegativeResourceUnit(unitData.ResourceType, 0, /*Make sure to not remove more energy than there is available.*/UnitsMath.Max(-timeAdjustedEnergy, -unitData.InternalEnergy)));
-					//		}
-					//	}
-					//}
+						EnergyUnit energy = (EnergyUnit)(DN)MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Internal energy to modify per unit", new(1_000, 0, 10_000_000));
+						EnergyUnit timeAdjustedEnergy = energy * deltaTime;
+
+						/*if (InputTracker.GetKeyDown(Key.H))
+						{
+							foreach (var unitData in pipe.ResourceContainer.EnumerateResources())
+							{
+								pipe.ResourceContainer.AddResource(new(unitData.ResourceType, 0, energy));
+							}
+						}
+						else */
+						if (InputTracker.GetKey(Key.H))
+						{
+							var unitData = pipe.ResourceContainer.GetResourceUnitData(resourceType);
+							//foreach (var unitData in pipe.ResourceContainer.EnumerateResources()) // todo: distribute added energy evenly among resources according to mass, right now more types means greater total energy added and instant vaporization of small amounts etc. Maybe the adding should be based on mass? like add x j per kg or even per mol.
+							{
+								pipe.ResourceContainer.AddResource(new(unitData.ResourceType, 0, timeAdjustedEnergy));
+							}
+						}
+						/*else if (InputTracker.GetKeyDown(Key.J))
+						{
+							foreach (var unitData in pipe.ResourceContainer.EnumerateResources())
+							{
+								pipe.ResourceContainer.AddResource(ResourceUnitData.CreateNegativeResourceUnit(unitData.ResourceType, 0, -energy));
+							}
+						}*/
+						else if (InputTracker.GetKey(Key.J))
+						{
+							var unitData = pipe.ResourceContainer.GetResourceUnitData(resourceType);
+							//foreach (var unitData in pipe.ResourceContainer.EnumerateResources())
+							{
+								pipe.ResourceContainer.AddResource(ResourceUnitData.CreateNegativeResourceUnit(unitData.ResourceType, 0, /*Make sure to not remove more energy than there is available.*/UnitsMath.Max(-timeAdjustedEnergy, -unitData.InternalEnergy)));
+							}
+						}
+					}
 				}
 
 				if (InputTracker.GetMouseButton(MouseButton.Right))

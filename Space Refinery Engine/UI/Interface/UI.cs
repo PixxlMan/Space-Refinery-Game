@@ -8,7 +8,7 @@ namespace Space_Refinery_Engine
 {
 	public sealed partial class UI : IRenderable
 	{
-		private ImGuiRenderer imGuiRenderer;
+		private readonly ImGuiRenderer imGuiRenderer;
 
 		private GraphicsDevice gd;
 
@@ -38,7 +38,7 @@ namespace Space_Refinery_Engine
 
 		public event Action<bool> PauseStateChanged;
 
-		private object syncRoot = new();
+		private readonly object syncRoot = new();
 
 		private DecimalNumber hotbarFading = 1;
 

@@ -45,8 +45,6 @@ public static class FormatUnit
 		return $"{volume.ToString(decimals: 2)} m³";
 	}
 
-	//public static readonly string PressureUnit;
-
 	/// <summary>
 	/// Formats a pressure in pascal according to player preferences.
 	/// </summary>
@@ -119,26 +117,19 @@ public static class FormatUnit
 	}
 
 	/// <summary>
-	/// -273.15 ⁰C = absolute zero = 0 K
-	/// </summary>
-	public static readonly DecimalNumber AbsoluteZeroInCelcius = -273.15;
-
-	/// <summary>
 	/// Formats temperature in kelvin according to player preferences.
 	/// </summary>
 	/// <param name="temperatureUnit">[K]</param>
 	/// <returns>Formatted temperature</returns>
 	public static string FormatTemperature(this TemperatureUnit temperatureUnit)
 	{
-		var temperature = (DecimalNumber)temperatureUnit;
-
 		if (useCelcius)
 		{
-			return $"{(temperature + AbsoluteZeroInCelcius).ToString(decimals: 2)} °C";
+			return $"{Calculations.TemperatureToCelcius(temperatureUnit).ToString(decimals: 2)} °C";
 		}
 		else
 		{
-			return $"{temperature.ToString(decimals: 2)} K";
+			return $"{((DecimalNumber)temperatureUnit).ToString(decimals: 2)} K";
 		}
 	}
 

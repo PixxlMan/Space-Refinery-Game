@@ -2,8 +2,8 @@
 using Space_Refinery_Utilities;
 using System.Xml;
 
-namespace Space_Refinery_Engine
-{
+namespace Space_Refinery_Engine;
+
 	public sealed class OrdinaryPipe : Pipe
 	{
 		private OrdinaryPipe()
@@ -82,4 +82,3 @@ namespace Space_Refinery_Engine
 			ResourceContainer = ResourceContainer.Deserialize(reader);
 		}
 	}
-}

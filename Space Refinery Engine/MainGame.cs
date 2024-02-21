@@ -213,7 +213,9 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 		lock (GameData.Game.GameWorld.TickSyncObject)
 		lock (UpdateSyncObject)
 		{
-			Logging.LogScopeStart($"Serialization started - serializing {GameData.Game.GameReferenceHandler.ReferenceCount} references");
+			Logging.LogScopeStart($"Serialization started");
+
+			Logging.Log($"Serializing { GameData.Game.GameReferenceHandler.ReferenceCount} references");
 
 			File.Delete(path);
 
@@ -240,7 +242,7 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 
 			stopwatch.Stop();
 
-			Logging.Log($"Serialized all state in {stopwatch.Elapsed.TotalMilliseconds} ms.");
+			Logging.Log($"Serialized all state in {stopwatch.Elapsed.TotalMilliseconds} ms");
 
 			Logging.LogScopeEnd();
 		}
@@ -280,7 +282,7 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 
 			stopwatch.Stop();
 			
-			Logging.Log($"Deserialized all state in {stopwatch.Elapsed.TotalMilliseconds} ms. Deserialized {GameData.Game.GameReferenceHandler.ReferenceCount} references.");
+			Logging.Log($"Deserialized all {GameData.Game.GameReferenceHandler.ReferenceCount} references in {stopwatch.Elapsed.TotalMilliseconds} ms");
 
 			Logging.LogScopeEnd();
 		}

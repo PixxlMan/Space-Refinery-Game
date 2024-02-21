@@ -1,7 +1,6 @@
 ﻿using FixedPrecision;
 using FXRenderer;
 using Space_Refinery_Game_Renderer;
-using Space_Refinery_Utilities;
 using System.Xml;
 using Veldrid;
 using static FixedPrecision.Convenience;
@@ -170,6 +169,7 @@ namespace Space_Refinery_Engine
 					//	}
 					//}
 				}
+
 				if (InputTracker.GetMouseButton(MouseButton.Right))
 				{
 					gameData.Game.GameWorld.RemoveEntity(construction);

@@ -3,8 +3,8 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Xml;
 
-namespace Space_Refinery_Engine
-{
+namespace Space_Refinery_Engine;
+
 	public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems like changes to resources can occur while reactions are taking place... Is that okay?
 	{
 		private VolumeUnit volume;
@@ -622,4 +622,3 @@ namespace Space_Refinery_Engine
 			}
 		}
 	}
-}

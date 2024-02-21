@@ -106,7 +106,7 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 
 		GameData.Game.GameWorld.StartTicking(this);
 
-		Pipe.Create(PipeType.PipeTypes["Straight Pipe"], new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), GameData, GameData.Game.GameReferenceHandler);
+		Pipe.Create(PipeType.PipeTypes["Experiment Pipe"], new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), GameData, GameData.Game.GameReferenceHandler);
 
 		InputTracker.IgnoreNextFrameMousePosition = true;
 

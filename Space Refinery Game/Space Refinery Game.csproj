@@ -41,7 +41,9 @@
     <None Remove="_GameAssets\Audio\Music\Industrial Fumes - Whole - Export 1.wav" />
     <None Remove="_GameAssets\Audio\Music\Industrial Fumes.xml" />
     <None Remove="_GameAssets\BaseGame.manifest.srh.xml" />
+    <None Remove="_GameAssets\Chemical types\Argon.srh.xml" />
     <None Remove="_GameAssets\Chemical types\Hydrogen.srh.xml" />
+    <None Remove="_GameAssets\Chemical types\Nitrogen.srh.xml" />
     <None Remove="_GameAssets\Chemical types\Oxygen.srh.xml" />
     <None Remove="_GameAssets\Chemical types\Water.srh.xml" />
     <None Remove="_GameAssets\Models\Machinery\MachineryCombustionChamber.obj" />
@@ -53,6 +55,7 @@
     <None Remove="_GameAssets\Models\Machinery\SpaceDock.srh.xml" />
     <None Remove="_GameAssets\Models\PipeEnd.srh.xml" />
     <None Remove="_GameAssets\Models\Pipe\CleanedUpPipe.obj" />
+    <None Remove="_GameAssets\Models\Pipe\ExperimentPipe.srh.xml" />
     <None Remove="_GameAssets\Models\Pipe\Pipe.obj" />
     <None Remove="_GameAssets\Models\Pipe\Pipe180Bend.obj" />
     <None Remove="_GameAssets\Models\Pipe\Pipe90Bend.obj" />
@@ -73,6 +76,7 @@
     <None Remove="_GameAssets\Models\Pipe\Special\PipeSpecialValve.obj" />
     <None Remove="_GameAssets\Models\Pipe\Special\PipeSpecialValve.srh.xml" />
     <None Remove="_GameAssets\Models\Pipe\Special\PipeSpecialValveInternalBlocker.obj" />
+    <None Remove="_GameAssets\Models\Pipe\Textures\Rusty Metal Sheet\Rusty Metal Sheet - Copy.srh.xml" />
     <None Remove="_GameAssets\Models\Pipe\Textures\Rusty Metal Sheet\Rusty Metal Sheet.srh.xml" />
     <None Remove="_GameAssets\Models\Pipe\Textures\Rusty Metal Sheet\rusty_metal_sheet.bin" />
     <None Remove="_GameAssets\Models\Pipe\Textures\Rusty Metal Sheet\rusty_metal_sheet_2k.gltf" />
@@ -104,6 +108,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="_GameAssets\Audio\Music\Ambient\Industrial Fumes\IndustrialFumes.srh.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_GameAssets\Chemical types\Argon.srh.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_GameAssets\Chemical types\Nitrogen.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="_GameAssets\Chemical types\Water.srh.xml">
@@ -157,6 +167,9 @@
     <Content Include="_GameAssets\Models\Pipe\PipeBend90.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="_GameAssets\Models\Pipe\Special\ExperimentPipe.srh.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="_GameAssets\Models\Pipe\Special\PipeSpecialPump.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -193,6 +206,9 @@
     <Content Include="_GameAssets\Models\Pipe\Special\PipeSpecialValve.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="_GameAssets\Models\Pipe\Textures\White\White.srh.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="_GameAssets\Models\Pipe\Textures\Rusty Metal Sheet\Rusty Metal Sheet.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -221,6 +237,7 @@
 
   <ItemGroup>
     <PackageReference Include="BepuPhysics" Version="2.4.0" />
+    <PackageReference Include="CsvHelper" Version="31.0.0" />
     <PackageReference Include="SharpAudio" Version="1.0.65-beta" />
     <PackageReference Include="SharpAudio.ALBinding" Version="1.0.65-beta" />
     <PackageReference Include="SharpAudio.Codec" Version="1.0.65-beta" />

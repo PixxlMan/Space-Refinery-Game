@@ -10,6 +10,8 @@ public static class Program
 {
 	public static void Main()
 	{
+		Thread.CurrentThread.Name = "Main";
+
 		Console.ForegroundColor = ConsoleColor.White; // Sometimes while debugging, the program could crash while the logger is printing colored text. This will ensure that when the console is reused, it has the right color from the start!
 
 		Logging.LogLevel logLevel;
@@ -23,7 +25,7 @@ public static class Program
 		Logging.SetUp(logLevel);
 
 		Logging.LogDebug($"Logs from {nameof(Logging.LogDebug)} are included in this build.");
-		Logging.Log($"Build version: {"haven't started with this yet"}");
+		Logging.LogLegend($"Build version: {"haven't started with this yet"}");
 
 		System.Globalization.CultureInfo.CurrentCulture = (System.Globalization.CultureInfo)System.Globalization.CultureInfo.InvariantCulture.Clone();
 		//System.Globalization.CultureInfo.CurrentCulture.NumberFormat = DecimalNumber.NumberFormat;

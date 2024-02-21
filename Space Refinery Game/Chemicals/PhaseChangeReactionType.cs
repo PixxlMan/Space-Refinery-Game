@@ -13,6 +13,8 @@ public sealed class PhaseChangeReactionType : ReactionType
 
 	public override void Tick(IntervalUnit _, ResourceContainer resourceContainer, ILookup<Type, ReactionFactor> _2, ICollection<ReactionFactor> producedReactionFactors)
 	{
+		return; // Temporarily disabled while doing experiments
+
 		lock (resourceContainer.SyncRoot)
 		{
 			foreach (var unit in resourceContainer.EnumerateResources())

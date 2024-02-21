@@ -5,7 +5,7 @@ using static Space_Refinery_Utilities.DecimalNumber;
 
 namespace Space_Refinery_Game
 {
-	public sealed class PumpPipe : Pipe
+	public sealed class PumpPipe : Pipe // TODO: shouldn't PumpPipe really be machinery?
 	{
 		public bool DirectionAToB;
 

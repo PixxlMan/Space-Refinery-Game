@@ -23,26 +23,55 @@ public static class Logging
 
 	private static LogLevel loggingFilterLevel;
 
+	/// <summary>
+	/// The log level at which to 
+	/// </summary>
+	private const LogLevel logLevelToProduceThreadLegend = LogLevel.Deep;
+
+	/// <summary>
+	/// Used to keep track of which threads (by their ids) have been encountered in the logging system to facilitate printing a legend with the name of the thread the first time it is encountered.
+	/// </summary>
+	private static HashSet<int> encounteredThreads = new();
+
 	public static void SetUp(LogLevel filterLevel)
 	{
 		stopwatch.Start();
 		loggingFilterLevel = filterLevel;
 
-		Log($"Logging at level '{filterLevel}' began at {DateTime.UtcNow} UTC");
+		LogLegend($"Logging at level '{filterLevel}' begins at {DateTime.UtcNow} UTC", LogLevel.Everything);
 	}
 
 	public enum LogType
 	{
+		/// <summary>
+		/// Used for logging errors and problems which occur during execution.
+		/// </summary>
 		Error,
+		/// <summary>
+		/// Used for logging warnings or non-fatal problems which occur during execution.
+		/// </summary>
 		Warning,
+		/// <summary>
+		/// Used to log things about the state of the simulation, will include current tick in output.
+		/// </summary>
 		Simulation,
+		/// <summary>
+		/// A regular ol' log.
+		/// </summary>
 		Log,
+		/// <summary>
+		/// The fastest form of log, should be used in hot paths for minimal impact to performance, although with reduced output detail.
+		/// </summary>
 		Debug,
+		/// <summary>
+		/// Used for explanatory purposes, for instance to declare starting time and thread id to thread name connections.
+		/// </summary>
+		Legend,
 	}
 
 	public enum LogLevel : int
 	{
-		None = 0,
+		None = int.MinValue,
 		Everything = int.MaxValue,
 		Release = Critical,
 		Debug = Everything,
@@ -52,9 +81,23 @@ public static class Logging
 		Deep = 3,
 	}
 
+	/// <remarks>
+	/// All calls to this method must be synchronized with a lock on syncRoot.
+	/// </remarks>
+	/// <param name="logType"></param>
 	[DebuggerHidden]
 	private static void PreFormat(LogType logType)
 	{
+		if (loggingFilterLevel >= logLevelToProduceThreadLegend)
+		{
+			if (!encounteredThreads.Contains(Environment.CurrentManagedThreadId))
+			{
+				encounteredThreads.Add(Environment.CurrentManagedThreadId); // Must add this _before_ calling any other logging method to avoid infinite recursion.
+
+				LogLegend($"Thread '{Thread.CurrentThread.Name}' has id '{Environment.CurrentManagedThreadId}'");
+			}
+		}
+
 		string timeStamp = $"@{stopwatch.Elapsed} s:";
 
 		switch (logType)
@@ -75,11 +118,15 @@ public static class Logging
 			case LogType.Debug:
 				// Debug doesn't call PreFormat.
 				break;
+			case LogType.Legend:
+				Console.Write($"{{{Environment.CurrentManagedThreadId}}}[LGND]{timeStamp}");
+				break;
 			default:
 				Console.Write($"{{{Environment.CurrentManagedThreadId}}}[MISC]{timeStamp}");
 				break;
 		}
 
+		// TODO: the size of the {Environment.CurrentManagedThreadId} is not taken into account here! generate first and check length using string.length for safety and simplicity.
 		const int longestLogTag = 7;
 		if (timeStamp.Length + longestLogTag + spaceMargin >= minimumIndentation + extraSpace)
 		{
@@ -121,11 +168,31 @@ public static class Logging
 	}
 
 	[DebuggerHidden]
-	public static void LogSimulation(string logText)
+	public static void LogSimulation(string logText, LogLevel logLevel = LogLevel.Basic)
 	{
+		if (logLevel > loggingFilterLevel)
+		{
+			return;
+		}
+
 		lock (syncRoot)
 		{
 			PreFormat(LogType.Simulation);
+			Console.WriteLine($"{logText}");
+		}
+	}
+
+	[DebuggerHidden]
+	public static void LogLegend(string logText, LogLevel logLevel = LogLevel.Deep)
+	{
+		if (logLevel > loggingFilterLevel)
+		{
+			return;
+		}
+
+		lock (syncRoot)
+		{
+			PreFormat(LogType.Legend);
 			Console.WriteLine($"{logText}");
 		}
 	}
@@ -151,19 +218,13 @@ public static class Logging
 	[DebuggerHidden]
 	public static void LogError(string logText, LogLevel logLevel = LogLevel.Critical)
 	{
-		lock (syncRoot)
-		{
-			LogColor($"{logText}", ConsoleColor.Red, LogType.Error, logLevel);
-		}
+		LogColor($"{logText}", ConsoleColor.Red, LogType.Error, logLevel);
 	}
 
 	[DebuggerHidden]
 	public static void LogWarning(string logText, LogLevel logLevel = LogLevel.Basic)
 	{
-		lock (syncRoot)
-		{
-			LogColor($"{logText}", ConsoleColor.Yellow, LogType.Warning, logLevel);
-		}
+		LogColor($"{logText}", ConsoleColor.Yellow, LogType.Warning, logLevel);
 	}
 
 	[DebuggerHidden]
@@ -235,8 +296,13 @@ public static class Logging
 	}
 
 	[DebuggerHidden]
-	public static void LogAll<T>(IEnumerable<T> enumerable, string logText, Func<T, string> stringLogFunc)
+	public static void LogAll<T>(IEnumerable<T> enumerable, string logText, Func<T, string> stringLogFunc, LogLevel logLevel = LogLevel.Basic)
 	{
+		if (logLevel > loggingFilterLevel)
+		{
+			return;
+		}
+
 		lock (syncRoot)
 		{
 			LogScopeStart(logText);

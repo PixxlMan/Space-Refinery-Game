@@ -1,4 +1,5 @@
-﻿namespace Space_Refinery_Utilities;
+﻿
+namespace Space_Refinery_Utilities;
 
 public static class Calculations
 {
@@ -24,5 +25,20 @@ public static class Calculations
 		PressureUnit pressure = new((gasMolesDecNum * GasConstant * avgTempDecNum) / (volDecNum));
 
 		return pressure;
+	}
+
+	/// <summary>
+	/// -273.15 ⁰C = absolute zero = 0 K
+	/// </summary>
+	public static readonly DecimalNumber AbsoluteZeroInCelcius = -273.15;
+
+	public static DecimalNumber TemperatureToCelcius(TemperatureUnit temperature)
+	{
+		return (DecimalNumber)temperature + AbsoluteZeroInCelcius;
+	}
+
+	public static TemperatureUnit CelciusToTemperature(DecimalNumber celcius)
+	{
+		return (TemperatureUnit)(celcius - AbsoluteZeroInCelcius);
 	}
 }

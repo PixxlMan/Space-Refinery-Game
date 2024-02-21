@@ -3,6 +3,11 @@ using Space_Refinery_Utilities;
 using System.Collections.Concurrent;
 using System.Xml;
 
+// TODO:
+// since gasses are compressable (and liquids are assumed not to be) they only care about FreeVolume and will always fill it either way!!! maybe rename? FreeVolume -> NonCompressibleVolume
+//
+//
+
 namespace Space_Refinery_Engine
 {
 	public sealed class ChemicalType : ISerializableReference, IUIInspectable
@@ -284,6 +289,8 @@ namespace Space_Refinery_Engine
 				SolidPhaseType.ChemicalType = this;
 			}
 			reader.ReadEndElement();
+
+			Logging.Log($"Deserialized chemical type {ChemicalName}", Logging.LogLevel.Deep);
 
 			chemicalNameToChemicalType.TryAdd(ChemicalName, this);
 		}

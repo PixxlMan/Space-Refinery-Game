@@ -33,7 +33,7 @@ namespace Space_Refinery_Game
 			{
 				return ContainerA;
 			}
-			else if(ConnectorB == pipeConnector)
+			else if (ConnectorB == pipeConnector)
 			{
 				return ContainerB;
 			}

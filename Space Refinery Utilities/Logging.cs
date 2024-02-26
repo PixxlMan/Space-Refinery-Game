@@ -13,12 +13,6 @@ public static class Logging
 
 	private const int scopeIndentation = 4;
 
-	private const int minimumIndentation = 20;
-
-	private static int extraSpace = 0;
-
-	private const int spaceMargin = 1;
-
 	private readonly static Stopwatch stopwatch = new();
 
 	private static LogLevel loggingFilterLevel;
@@ -100,38 +94,37 @@ public static class Logging
 
 		string timeStamp = $"@{stopwatch.Elapsed} s:";
 
+		string formatText = string.Empty;
+
 		switch (logType)
 		{
 			case LogType.Error:
-				Console.Write($"{{{Environment.CurrentManagedThreadId}}}[ERROR]{timeStamp}");
+				formatText = ($"{{{Environment.CurrentManagedThreadId}}}[ERROR]{timeStamp}");
 				break;
 			case LogType.Warning:
-				Console.Write($"{{{Environment.CurrentManagedThreadId}}}[WARN]{timeStamp}");
+				formatText = ($"{{{Environment.CurrentManagedThreadId}}}[WARN]{timeStamp}");
 				break;
 			case LogType.Simulation:
 				timeStamp = $"{stopwatch.Elapsed} s & {Time.CurrentTickTime} tt & {Time.TicksElapsed} ticks";
-				Console.Write($"{{{Environment.CurrentManagedThreadId}}}[SIMUL]{timeStamp}");
+				formatText = ($"{{{Environment.CurrentManagedThreadId}}}[SIMUL]{timeStamp}");
 				break;
 			case LogType.Log:
-				Console.Write($"{{{Environment.CurrentManagedThreadId}}}[LOG]{timeStamp}");
+				formatText = ($"{{{Environment.CurrentManagedThreadId}}}[LOG]{timeStamp}");
 				break;
 			case LogType.Debug:
 				// Debug doesn't call PreFormat.
 				break;
 			case LogType.Legend:
-				Console.Write($"{{{Environment.CurrentManagedThreadId}}}[LGND]{timeStamp}");
+				formatText = ($"{{{Environment.CurrentManagedThreadId}}}[LGND]{timeStamp}");
 				break;
 			default:
-				Console.Write($"{{{Environment.CurrentManagedThreadId}}}[MISC]{timeStamp}");
+				formatText = ($"{{{Environment.CurrentManagedThreadId}}}[MISC]{timeStamp}");
 				break;
-		}
+			}
+
+		Console.Write(formatText);
 
 		// TODO: the size of the {Environment.CurrentManagedThreadId} is not taken into account here! generate first and check length using string.length for safety and simplicity.
-		const int longestLogTag = 7;
-		if (timeStamp.Length + longestLogTag + spaceMargin >= minimumIndentation + extraSpace)
-		{
-			extraSpace = timeStamp.Length + longestLogTag + spaceMargin - minimumIndentation;
-		}
 
 		int scopeDepth = 0;
 
@@ -140,7 +133,7 @@ public static class Logging
 			scopeDepth = value.Count;
 		}
 
-		Console.SetCursorPosition(minimumIndentation + extraSpace + scopeIndentation * scopeDepth, Console.GetCursorPosition().Top);
+		Console.SetCursorPosition((scopeIndentation * scopeDepth) + formatText.Length, Console.GetCursorPosition().Top);
 	}
 
 	[DebuggerHidden]

@@ -7,7 +7,7 @@
 			<Reference>Experiment Pipe</Reference>
 			<Name>Experiment Pipe</Name>
 			<Shape>Cylindrical</Shape>
-			<FlowableVolume>0.01</FlowableVolume>
+			<FlowableVolume>0.77</FlowableVolume>
 			<Friction>0.04</Friction>
 			<ConnectorPlacements>
 				<Count>0</Count>

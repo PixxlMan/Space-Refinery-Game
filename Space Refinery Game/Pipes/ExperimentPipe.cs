@@ -29,6 +29,11 @@ public sealed class ExperimentPipe : MachineryPipe
 
 		if (Activated)
 		{
+			if (ResourceContainer.MaxVolume - 0.0001 <= 0)
+			{
+				Activated = false;
+			}
+
 			RecordedPressureAndTemp.Add(new((decimal)(DecimalNumber)ResourceContainer.Pressure, (decimal)(DecimalNumber)ResourceContainer.AverageTemperature));
 
 			ResourceContainer.MaxVolume -= 0.0001;
@@ -37,11 +42,11 @@ public sealed class ExperimentPipe : MachineryPipe
 
 	protected override void DoMenu()
 	{
-		if (ImGui.Button("Insert 100 g air"))
+		if (ImGui.Button("Insert 1 kg air (0.77 m³ volume)"))
 		{
 			TemperatureUnit temperature = Calculations.CelciusToTemperature(20);
 
-			MassUnit totalMass = 0.1;
+			MassUnit totalMass = 1;
 
 			var nitrogen = ChemicalType.GetChemicalType("Nitrogen");
 			var nitrogenMass = (78.084 / 100) * totalMass;

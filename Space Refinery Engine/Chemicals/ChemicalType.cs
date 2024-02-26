@@ -176,9 +176,9 @@ namespace Space_Refinery_Engine
 		/// <summary>
 		/// [J] to [K]
 		/// </summary>
-		/// <param name="internalEnergy">[J]</param>
+		/// <param name="temperatureEnergy">[J]</param>
 		/// <returns>[K]</returns>
-		public static TemperatureUnit InternalEnergyToTemperature(ResourceType resourceType, EnergyUnit internalEnergy, MassUnit mass)
+		public static TemperatureUnit InternalEnergyToTemperature(ResourceType resourceType, EnergyUnit temperatureEnergy, MassUnit mass)
 		{
 			// E = C * m * dT
 			// E = Internal Energy
@@ -189,24 +189,7 @@ namespace Space_Refinery_Engine
 			// solve for dT:
 			// dT = E / (C * m)
 
-			TemperatureUnit temperatureBase;
-
-			switch (resourceType.ChemicalPhase)
-			{
-				case ChemicalPhase.Solid:
-					temperatureBase = 0;
-					break;
-				case ChemicalPhase.Liquid:
-					temperatureBase = resourceType.ChemicalType.TemperatureOfFusion;
-					break;
-				case ChemicalPhase.Gas:
-					temperatureBase = resourceType.ChemicalType.TemperatureOfVaporization;
-					break;
-				default:
-					throw new GlitchInTheMatrixException();
-			}
-
-			return internalEnergy / (resourceType.ChemicalType.SpecificHeatCapacity * mass) + temperatureBase;
+			return temperatureEnergy / (resourceType.ChemicalType.SpecificHeatCapacity * mass);
 		}
 
 		/// <summary>
@@ -227,24 +210,30 @@ namespace Space_Refinery_Engine
 			// solve for E: well...
 			// E = C * m * dT
 
-			EnergyUnit internalEnergyBase;
+			EnergyUnit phaseEnergy; // Energy not affecting temperature directly, instead "tied up" in phase transitions.
+			EnergyUnit temperatureEnergy; // Energy directly affecting temperature.
+
+			ChemicalType chemicalType = resourceType.ChemicalType;
 
 			switch (resourceType.ChemicalPhase)
 			{
 				case ChemicalPhase.Solid:
-					internalEnergyBase = 0;
+					phaseEnergy = 0;
+					temperatureEnergy = (chemicalType.SpecificHeatCapacity * mass * temperature);
 					break;
 				case ChemicalPhase.Liquid:
-					internalEnergyBase = resourceType.ChemicalType.SpecificHeatCapacity * mass * resourceType.ChemicalType.TemperatureOfFusion;
+					phaseEnergy = chemicalType.SpecificHeatCapacity * mass * chemicalType.TemperatureOfFusion;
+					temperatureEnergy = (chemicalType.SpecificHeatCapacity * mass * temperature);
 					break;
 				case ChemicalPhase.Gas:
-					internalEnergyBase = resourceType.ChemicalType.SpecificHeatCapacity * mass * resourceType.ChemicalType.TemperatureOfVaporization;
+					phaseEnergy = chemicalType.SpecificHeatCapacity * mass * chemicalType.TemperatureOfVaporization;
+					temperatureEnergy = (chemicalType.SpecificHeatCapacity * mass * temperature);
 					break;
 				default:
 					throw new GlitchInTheMatrixException();
 			}
 
-			return resourceType.ChemicalType.SpecificHeatCapacity * mass * temperature - internalEnergyBase;
+			return temperatureEnergy;
 		}
 
 		public void SerializeState(XmlWriter writer)

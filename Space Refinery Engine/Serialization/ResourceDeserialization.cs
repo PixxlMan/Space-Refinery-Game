@@ -7,7 +7,7 @@ namespace Space_Refinery_Engine;
 
 public static class ResourceDeserialization
 {
-	public static void DeserializeIntoGlobalReferenceHandler(SerializationReferenceHandler globalReferenceHandler, GameData gameData)
+	public static void DeserializeIntoGlobalReferenceHandler(SerializationReferenceHandler globalReferenceHandler, GameData gameData, bool includeGameExtension = true)
 	{
 		Logging.LogScopeStart("Deserializing into global reference handler");
 
@@ -16,7 +16,7 @@ public static class ResourceDeserialization
 
 		SerializationExtensions.FindAndIndexSerializableTypes(new[] { Assembly.GetExecutingAssembly() });
 
-		var extensions = LoadExtensions(new(gameData, null), globalReferenceHandler);
+		var extensions = LoadExtensions(new(gameData, null), globalReferenceHandler, includeGameExtension);
 
 		SerializationExtensions.FindAndIndexSerializableTypes(extensions);
 
@@ -60,17 +60,22 @@ public static class ResourceDeserialization
 		Logging.LogScopeEnd();
 	}
 
-	private static ICollection<Extension> LoadExtensions(SerializationData serializationData, SerializationReferenceHandler referenceHandler)
+	private static ICollection<Extension> LoadExtensions(SerializationData serializationData, SerializationReferenceHandler referenceHandler, bool includeGameExtension = true)
 	{
 		Logging.LogScopeStart("Loading extensions");
 
 		Dictionary<string, ExtensionManifest> nameToExtensionManifest = new();
 		Dictionary<ExtensionManifest, string> extensionManifestToDirectoryName = new();
 
-		List<string> manifestFilePaths = new();
+		List<string> manifestFilePaths =
+		[
+			.. Directory.GetFiles(AssetsPath, $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories),
+		];
 
-		manifestFilePaths.AddRange(Directory.GetFiles(AssetsPath, $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
-		manifestFilePaths.AddRange(Directory.GetFiles("../../../../Space Refinery Game/bin/Debug/net8.0/_GameAssets", $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
+		if (includeGameExtension)
+		{
+			manifestFilePaths.AddRange(Directory.GetFiles("../../../../Space Refinery Game/bin/Debug/net8.0/_GameAssets", $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
+		}
 
 		// Find all extension manifest files and add them to manifestFilePaths,
 		// or if there is a directory without any manifest file create a 'No File'-manifest

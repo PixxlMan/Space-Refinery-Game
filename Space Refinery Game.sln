@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Space Refinery Game Rendere
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Space Refinery Utilities", "Space Refinery Utilities\Space Refinery Utilities.csproj", "{148EFCD8-07A8-4D75-BAE7-979FACDFC938}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Space Refinery Engine", "Space Refinery Engine\Space Refinery Engine.csproj", "{3C24C3A9-D749-4E03-BCD6-69B88C138A6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Space Refinery Engine", "Space Refinery Engine\Space Refinery Engine.csproj", "{3C24C3A9-D749-4E03-BCD6-69B88C138A6D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{83CEE590-471C-468F-9FF7-265013E71512}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{3C24C3A9-D749-4E03-BCD6-69B88C138A6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C24C3A9-D749-4E03-BCD6-69B88C138A6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C24C3A9-D749-4E03-BCD6-69B88C138A6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83CEE590-471C-468F-9FF7-265013E71512}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83CEE590-471C-468F-9FF7-265013E71512}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83CEE590-471C-468F-9FF7-265013E71512}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83CEE590-471C-468F-9FF7-265013E71512}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

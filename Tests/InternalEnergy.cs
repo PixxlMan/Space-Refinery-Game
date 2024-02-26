@@ -35,7 +35,7 @@ namespace Tests
 			   
 		public MassUnit WaterMass = 1; // 1 kilogram of water
 			   
-		public TemperatureUnit WaterTemperature = 20 + 273.15; // 20℃
+		public TemperatureUnit WaterTemperature = Calculations.CelciusToTemperature(20); // 20℃
 			   
 		public EnergyUnit WaterTemperatureEnergy;
 

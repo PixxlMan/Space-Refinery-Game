@@ -54,5 +54,15 @@ namespace Tests
 
 			Assert.AreEqual<DecimalNumber>((DecimalNumber)temperature, (DecimalNumber)WaterTemperature);
 		}
+
+		[TestMethod]
+		public void InternalEnergySymmetry()
+		{
+			EnergyUnit internalTemperatureEnergy = ChemicalType.TemperatureToInternalEnergy(WaterResource, WaterTemperature, WaterMass);
+
+			TemperatureUnit temperature = ChemicalType.InternalEnergyToTemperature(WaterResource, internalTemperatureEnergy, WaterMass);
+
+			Assert.AreEqual<DecimalNumber>((DecimalNumber)temperature, (DecimalNumber)WaterTemperature);
+		}
 	}
 }

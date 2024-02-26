@@ -93,6 +93,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		}
 		set
 		{
+			Debug.Assert(value > 0, "Value cannot be negative.");
 			lock (SyncRoot)
 			{
 				maxVolume = value;

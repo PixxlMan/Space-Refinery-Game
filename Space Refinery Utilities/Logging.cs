@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 
 namespace Space_Refinery_Utilities;
 
@@ -92,7 +90,7 @@ public static class Logging
 			}
 		}
 
-		string timeStamp = $"@{stopwatch.Elapsed} s:";
+		string timeStamp = $"@{stopwatch.Elapsed}:";
 
 		string formatText = string.Empty;
 
@@ -124,8 +122,6 @@ public static class Logging
 
 		Console.Write(formatText);
 
-		// TODO: the size of the {Environment.CurrentManagedThreadId} is not taken into account here! generate first and check length using string.length for safety and simplicity.
-
 		int scopeDepth = 0;
 
 		if (scopeTimings.TryGetValue(Environment.CurrentManagedThreadId, out Stack<long>? value))
@@ -133,7 +129,7 @@ public static class Logging
 			scopeDepth = value.Count;
 		}
 
-		Console.SetCursorPosition((scopeIndentation * scopeDepth) + formatText.Length, Console.GetCursorPosition().Top);
+		Console.SetCursorPosition((scopeIndentation * scopeDepth) + (formatText.Length + 1), Console.GetCursorPosition().Top);
 	}
 
 	[DebuggerHidden]

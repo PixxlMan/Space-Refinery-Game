@@ -12,14 +12,6 @@ namespace Tests
 		[TestInitialize]
 		public void Initialize()
 		{
-			ReferenceHandler = new();
-
-			ReferenceHandler.EnterAllowEventualReferenceMode(false);
-			{
-				ResourceDeserialization.DeserializeIntoGlobalReferenceHandler(ReferenceHandler, new(), includeGameExtension: false);
-			}
-			ReferenceHandler.ExitAllowEventualReferenceMode();
-
 			WaterChemical = ChemicalType.Water;
 
 			WaterResource = WaterChemical.GetResourceTypeForPhase(ChemicalPhase.Liquid);
@@ -27,8 +19,6 @@ namespace Tests
 			WaterTemperatureEnergy = WaterChemical.SpecificHeatCapacity * WaterMass * WaterTemperature;
 		}
 
-		public SerializationReferenceHandler ReferenceHandler;
-			   
 		public ChemicalType WaterChemical;
 			   
 		public ResourceType WaterResource;
@@ -44,7 +34,7 @@ namespace Tests
 		{
 			EnergyUnit internalTemperatureEnergy = ChemicalType.TemperatureToInternalEnergy(WaterResource, WaterTemperature, WaterMass);
 
-			Assert.AreEqual<DecimalNumber>((DecimalNumber)internalTemperatureEnergy, (DecimalNumber)WaterTemperatureEnergy);
+			Assert.AreEqual<DecimalNumber>((DecimalNumber)WaterTemperatureEnergy, (DecimalNumber)internalTemperatureEnergy);
 		}
 
 		[TestMethod]
@@ -52,7 +42,7 @@ namespace Tests
 		{
 			TemperatureUnit temperature = ChemicalType.InternalEnergyToTemperature(WaterResource, WaterTemperatureEnergy, WaterMass);
 
-			Assert.AreEqual<DecimalNumber>((DecimalNumber)temperature, (DecimalNumber)WaterTemperature);
+			Assert.AreEqual<DecimalNumber>((DecimalNumber)WaterTemperature, (DecimalNumber)temperature);
 		}
 
 		[TestMethod]
@@ -62,7 +52,7 @@ namespace Tests
 
 			TemperatureUnit temperature = ChemicalType.InternalEnergyToTemperature(WaterResource, internalTemperatureEnergy, WaterMass);
 
-			Assert.AreEqual<DecimalNumber>((DecimalNumber)temperature, (DecimalNumber)WaterTemperature);
+			Assert.AreEqual<DecimalNumber>((DecimalNumber)WaterTemperature, (DecimalNumber)temperature);
 		}
 	}
 }

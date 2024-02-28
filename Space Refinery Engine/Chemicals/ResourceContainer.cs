@@ -93,7 +93,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		}
 		set
 		{
-			Debug.Assert(value > 0, "Value cannot be negative.");
+			Debug.Assert(value > 0, "MaxVolume cannot be negative.");
 			lock (SyncRoot)
 			{
 				maxVolume = value;
@@ -101,7 +101,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		}
 	}
 
-	public VolumeUnit FreeVolume => (MaxVolume - Volume).Max(0); // TODO: Rename Volume to OccupiedVolume? And MaxVolume to Volume?
+	public VolumeUnit FreeVolume => MaxVolume - Volume; // TODO: Rename Volume to OccupiedVolume? And MaxVolume to Volume?
 
 	private PressureUnit pressure;
 	/// <summary>
@@ -197,14 +197,14 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		{
 			recalculateAverageTemperature = false;
 
-			TemperatureUnit totalTemperature = 0;
+			TemperatureUnit averageTemperature = 0;
 
 			foreach (var resourceUnit in resources.Values)
 			{
-				totalTemperature += resourceUnit.Temperature;
+				averageTemperature += (TemperatureUnit)((DN)resourceUnit.Temperature * (DN)(resourceUnit.Mass / Mass));
 			}
 
-			return (TemperatureUnit)((DN)totalTemperature / resources.Count);
+			return averageTemperature;
 		}
 	}
 

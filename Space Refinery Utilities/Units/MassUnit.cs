@@ -172,7 +172,7 @@ public struct GramUnit :
 
 	public static MassUnit operator *(GramUnit grams, ToKilogramUnit unit)
 	{
-		return new(grams.value * ToGramUnit.KilogramToGram); // [g] * [k] => [kg]
+		return new(grams.value * ToKilogramUnit.GramToKilogram); // [g] * [k] => [kg]
 	}
 
 	#region Operators and boilerplate

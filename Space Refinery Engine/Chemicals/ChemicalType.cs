@@ -1,5 +1,4 @@
 ﻿using ImGuiNET;
-using Space_Refinery_Utilities;
 using System.Collections.Concurrent;
 using System.Xml;
 
@@ -148,10 +147,11 @@ namespace Space_Refinery_Engine
 			// m = n * M
 			// [g] = [mol] * [g/mol]
 
-			GramUnit m = moles * chemicalType.MolarMass; // n * M = m
+			GramUnit massGrams = moles * chemicalType.MolarMass; // n * M = m
 
-			return
-				m * ToKilogramUnit.Unit; // [g] -> [kg]
+			MassUnit mass = massGrams * ToKilogramUnit.Unit; // [g] -> [kg]
+
+			return mass;
 		}
 
 		/// <summary>
@@ -167,10 +167,11 @@ namespace Space_Refinery_Engine
 			// n = m / M
 			// [mol] = [g] / [g/mol]
 
-			var massInGrams = mass * ToGramUnit.Unit; // [kg] -> [g]
+			GramUnit massInGrams = mass * ToGramUnit.Unit; // [kg] -> [g]
 
-			return
-				 massInGrams / chemicalType.MolarMass; // m / M = n
+			MolesUnit moles = massInGrams / chemicalType.MolarMass; // m / M = n
+
+			return moles;
 		}
 
 		/// <summary>

@@ -72,10 +72,20 @@ namespace Space_Refinery_Engine
 		/// <remarks>
 		/// If the substance amount or the mass is zero, the temperature will be considered to be zero.
 		/// </remarks>
-		public TemperatureUnit Temperature =>
-			Moles != 0 && Mass != 0
-				? ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass)
-				: 0;
+		public TemperatureUnit Temperature
+		{
+			get
+			{
+				if (Moles != 0 && Mass != 0)
+				{
+					return ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass);
+				}
+				else
+				{
+					return (TemperatureUnit)0;
+				}
+			}
+		}
 
 		/// <summary>
 		/// Mass in [kg].

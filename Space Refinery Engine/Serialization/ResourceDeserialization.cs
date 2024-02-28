@@ -11,23 +11,27 @@ public static class ResourceDeserialization
 	{
 		Logging.LogScopeStart("Deserializing into global reference handler");
 
-		var stopwatch = new Stopwatch();
-		stopwatch.Start();
-
+		Logging.LogScopeStart("Finding types in main assembly");
 		SerializationExtensions.FindAndIndexSerializableTypes(new[] { Assembly.GetExecutingAssembly() });
+		Logging.LogScopeEnd();
 
 		var extensions = LoadExtensions(new(gameData, null), globalReferenceHandler, includeGameExtension);
 
+		Logging.LogScopeStart("Indexing types in extensions");
 		SerializationExtensions.FindAndIndexSerializableTypes(extensions);
+		Logging.LogScopeEnd();
 
+		Logging.LogScopeStart("Finding serializable reference files");
 		List<(Extension, string[] filePaths)> srhFiles = new();
 
 		foreach (var extension in extensions)
 		{
 			srhFiles.Add((extension, Directory.GetFiles(Path.Combine(extension.ExtensionPath, extension.ExtensionManifest.AssetsPath), $"*{SerializableReferenceHandlerFileExtension}", SearchOption.AllDirectories)));
 		}
+		Logging.LogScopeEnd();
 
-		List<SerializationData> serializationDatas = new(); // get rid of this when extension context is gone too!
+		Logging.LogScopeStart("Deserializing serializable reference files");
+		List<SerializationData> serializationDatas = new();
 
 		foreach ((var extension, var files) in srhFiles)
 		{
@@ -52,10 +56,9 @@ public static class ResourceDeserialization
 		{
 			serializationData.SerializationComplete();
 		}
+		Logging.LogScopeEnd();
 
-		stopwatch.Stop();
-
-		Logging.Log($"Deserialized all ({globalReferenceHandler.ReferenceCount}!) global references in {stopwatch.ElapsedMilliseconds} ms");
+		Logging.Log($"Deserialized {globalReferenceHandler.ReferenceCount} references");
 
 		Logging.LogScopeEnd();
 	}

@@ -16,9 +16,15 @@ namespace Space_Refinery_Utilities.Units;
 /// </remarks>
 public struct ToGramUnit
 {
+	/// <summary>
+	/// 1000
+	/// </summary>
 	public static ToGramUnit Unit = default;
 
-	internal static DecimalNumber KilogramToGram => DecimalNumber.Milli;
+	/// <summary>
+	/// 1000
+	/// </summary>
+	internal static DecimalNumber KilogramToGram => DecimalNumber.Kilo;
 
 	public static implicit operator DecimalNumber(ToGramUnit unit) => KilogramToGram;
 }
@@ -32,9 +38,15 @@ public struct ToGramUnit
 /// </remarks>
 public struct ToKilogramUnit
 {
+	/// <summary>
+	/// 0.001
+	/// </summary>
 	public static ToKilogramUnit Unit = default;
 
-	internal static DecimalNumber GramToKilogram => DecimalNumber.Kilo;
+	/// <summary>
+	/// 0.001
+	/// </summary>
+	internal static DecimalNumber GramToKilogram => DecimalNumber.Milli;
 
 	public static implicit operator DecimalNumber(ToKilogramUnit unit) => GramToKilogram;
 }

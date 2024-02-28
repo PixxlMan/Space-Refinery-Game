@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
@@ -31,10 +31,19 @@
     <ProjectReference Include="..\Space Refinery Engine\Space Refinery Engine.csproj" />
   </ItemGroup>
 
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+	</PropertyGroup>
+
   <ItemGroup>
     <Reference Include="FixedPrecision">
-      <HintPath>..\..\FixedPrecision\FixedPrecision\bin\Debug\net7.0\FixedPrecision.dll</HintPath>
-    </Reference>
+	  <HintPath>..\..\FixedPrecision\FixedPrecision\bin\Debug\net7.0\FixedPrecision.dll</HintPath>
+	</Reference>
   </ItemGroup>
 
 </Project>

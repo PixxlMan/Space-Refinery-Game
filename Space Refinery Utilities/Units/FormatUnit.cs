@@ -195,7 +195,7 @@ public static class FormatUnit
 		Milli = 64,
 		Micro = 128,
 		Nano = 256,
-
+		// TODO: how to communicate that no prefix is allowed/disallowed? add no prefix prefix.
 		CommonLarge = Giga | Mega | Kilo,
 		CommonTime = Milli | Micro | Nano,
 		All = Giga | Mega | Kilo | Hecto | Deci | Centi | Milli | Micro | Nano,

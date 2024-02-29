@@ -78,15 +78,15 @@ namespace Space_Refinery_Game
 				{
 					WaterInput.TransferResourceByVolume(ReactionContainer, ChemicalType.Water.LiquidPhaseType,
 						(VolumeUnit)DecimalNumber.Clamp(
-							(DecimalNumber)(WaterInput.Volume * WaterInput.Fullness) * (DecimalNumber)Time.TickInterval,
+							(DecimalNumber)(WaterInput.NonCompressableVolume * WaterInput.Fullness) * (DecimalNumber)Time.TickInterval,
 							0,
-							(DecimalNumber)ReactionContainer.FreeVolume));
+							(DecimalNumber)ReactionContainer.NonCompressableUnoccupiedVolume));
 
 					electrolysisReaction.Tick(Time.TickInterval, ReactionContainer, new ReactionFactor[1] { new ElectricalCurrent(MaxElectricalEnergyPerSecond * Time.TickInterval) }.ToLookup((rF) => rF.GetType()), null);
 					// cache and don't regenerate reaction factors every time?
-					ReactionContainer.TransferResourceByVolume(OxygenOutput, ChemicalType.Oxygen.GasPhaseType, (VolumeUnit)DecimalNumber.Min((DecimalNumber)ReactionContainer.VolumeOf(ChemicalType.Oxygen.GasPhaseType), (DecimalNumber)(OxygenOutput.FreeVolume * (Portion<VolumeUnit>)0.8)));
+					ReactionContainer.TransferResourceByVolume(OxygenOutput, ChemicalType.Oxygen.GasPhaseType, (VolumeUnit)DecimalNumber.Min((DecimalNumber)ReactionContainer.VolumeOf(ChemicalType.Oxygen.GasPhaseType), (DecimalNumber)(OxygenOutput.NonCompressableUnoccupiedVolume * (Portion<VolumeUnit>)0.8)));
 
-					ReactionContainer.TransferResourceByVolume(HydrogenOutput, ChemicalType.Hydrogen.GasPhaseType, (VolumeUnit)DecimalNumber.Min((DecimalNumber)ReactionContainer.VolumeOf(ChemicalType.Hydrogen.GasPhaseType), (DecimalNumber)(HydrogenOutput.FreeVolume * (Portion<VolumeUnit>)0.8)));
+					ReactionContainer.TransferResourceByVolume(HydrogenOutput, ChemicalType.Hydrogen.GasPhaseType, (VolumeUnit)DecimalNumber.Min((DecimalNumber)ReactionContainer.VolumeOf(ChemicalType.Hydrogen.GasPhaseType), (DecimalNumber)(HydrogenOutput.NonCompressableUnoccupiedVolume * (Portion<VolumeUnit>)0.8)));
 
 					//ElectricityInput.ConsumeElectricity();
 				}

@@ -74,8 +74,8 @@ namespace Space_Refinery_Game
 					(VolumeUnit)Min(
 						Min(
 							(DecimalNumber)(MaxFlowRate * Time.TickInterval)
-							, (DecimalNumber)(Transferer.Volume * (Portion<VolumeUnit>)0.5))
-						, (DecimalNumber)(Recipient.FreeVolume * (Portion<VolumeUnit>)0.5))
+							, (DecimalNumber)(Transferer.NonCompressableVolume * (Portion<VolumeUnit>)0.5))
+						, (DecimalNumber)(Recipient.NonCompressableUnoccupiedVolume * (Portion<VolumeUnit>)0.5))
 					);
 			}
 		}
@@ -98,18 +98,18 @@ namespace Space_Refinery_Game
 
 			if (ConnectorA.Vacant)
 			{
-				ConnectorB.TransferResource(this, ContainerA, ContainerA.Volume);
-				ConnectorB.TransferResource(this, ContainerB, ContainerB.Volume);
+				ConnectorB.TransferResource(this, ContainerA, ContainerA.NonCompressableVolume);
+				ConnectorB.TransferResource(this, ContainerB, ContainerB.NonCompressableVolume);
 			}
 			else if (ConnectorB.Vacant)
 			{
-				ConnectorA.TransferResource(this, ContainerA, ContainerA.Volume);
-				ConnectorA.TransferResource(this, ContainerB, ContainerB.Volume);
+				ConnectorA.TransferResource(this, ContainerA, ContainerA.NonCompressableVolume);
+				ConnectorA.TransferResource(this, ContainerB, ContainerB.NonCompressableVolume);
 			}
 			else
 			{
-				ConnectorA.TransferResource(this, ContainerA, ContainerA.Volume);
-				ConnectorB.TransferResource(this, ContainerB, ContainerB.Volume);
+				ConnectorA.TransferResource(this, ContainerA, ContainerA.NonCompressableVolume);
+				ConnectorB.TransferResource(this, ContainerB, ContainerB.NonCompressableVolume);
 			}
 		}
 

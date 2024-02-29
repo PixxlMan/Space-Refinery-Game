@@ -29,14 +29,15 @@ public sealed class ExperimentPipe : MachineryPipe
 
 		if (Activated)
 		{
-			if (ResourceContainer.MaxVolume - 0.0001 <= 0)
+			if (ResourceContainer.VolumeCapacity - 0.0001 <= 0)
 			{
 				Activated = false;
+				return;
 			}
 
 			RecordedPressureAndTemp.Add(new((decimal)(DecimalNumber)ResourceContainer.Pressure, (decimal)(DecimalNumber)ResourceContainer.AverageTemperature));
 
-			ResourceContainer.MaxVolume -= 0.0001;
+			ResourceContainer.VolumeCapacity -= 0.0001;
 		}
 	}
 
@@ -143,7 +144,7 @@ public sealed class ExperimentPipe : MachineryPipe
 				return;
 			}
 
-			var volumePerConnector = (VolumeUnit)((DecimalNumber)ResourceContainer.Volume / connectedConnectors.Count);
+			var volumePerConnector = (VolumeUnit)((DecimalNumber)ResourceContainer.NonCompressableVolume / connectedConnectors.Count);
 
 			foreach (var connectedConnector in connectedConnectors)
 			{

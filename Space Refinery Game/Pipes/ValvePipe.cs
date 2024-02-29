@@ -74,7 +74,7 @@ namespace Space_Refinery_Game
 						continue;
 					}
 
-					resourceContainer.TransferResourceByVolume(lowestFullnessContainer, (resourceContainer.Volume * Limiter) * Time.TickInterval);
+					resourceContainer.TransferResourceByVolume(lowestFullnessContainer, (resourceContainer.NonCompressableVolume * Limiter) * Time.TickInterval);
 				}
 			}
 		}
@@ -101,7 +101,7 @@ namespace Space_Refinery_Game
 					if (connectorResourceContainerPair.Key.Vacant)
 						continue;
 
-					(connectorResourceContainerPair.Key).TransferResource(this, connectorResourceContainerPair.Value, connectorResourceContainerPair.Value.Volume);
+					(connectorResourceContainerPair.Key).TransferResource(this, connectorResourceContainerPair.Value, connectorResourceContainerPair.Value.NonCompressableVolume);
 				}
 			}
 		}

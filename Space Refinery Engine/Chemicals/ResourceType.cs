@@ -16,6 +16,15 @@ public abstract class ResourceType : IUIInspectable, IEntitySerializable
 
 	public abstract ChemicalPhase ChemicalPhase { get; }
 
+	public virtual bool Compressable => ChemicalPhase switch
+	{
+		ChemicalPhase.Solid => false,
+		ChemicalPhase.Liquid => false,
+		ChemicalPhase.Gas => true,
+		ChemicalPhase.Plasma => true,
+		_ => throw new NotImplementedException(),
+	};
+
 	protected ResourceType()
 	{
 

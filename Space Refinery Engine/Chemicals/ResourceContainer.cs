@@ -7,37 +7,40 @@ namespace Space_Refinery_Engine;
 
 public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems like changes to resources can occur while reactions are taking place... Is that okay?
 {
-	private VolumeUnit volume;
+	private VolumeUnit nonCompressableVolume;
 	/// <summary>
-	/// Volume in cubic meters [m³]
+	/// Volume occupied by liquids and solids (uncompressable matter) in cubic meters [m³]
 	/// </summary>
-	public VolumeUnit Volume
+	public VolumeUnit NonCompressableVolume
 	{
 		get
 		{
 			lock (SyncRoot)
 			{
-				if (recalculateVolume)
+				if (recalculateNonCompressableVolume)
 				{
-					volume = RecalculateVolume();
+					nonCompressableVolume = RecalculateNonCompressableVolume();
 				}
 
-				return volume;
+				return nonCompressableVolume;
 			}
 		}
 	}
 
-	private VolumeUnit RecalculateVolume()
+	private VolumeUnit RecalculateNonCompressableVolume()
 	{
 		lock (SyncRoot)
 		{
-			recalculateVolume = false;
+			recalculateNonCompressableVolume = false;
 
 			VolumeUnit volume = 0;
 
 			foreach (var resourceUnit in resources.Values)
 			{
-				volume += resourceUnit.Volume;
+				if (!resourceUnit.ResourceType.Compressable)
+				{
+					volume += resourceUnit.Volume;
+				}
 			}
 
 			return volume;
@@ -81,29 +84,32 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		}
 	}
 
-	private VolumeUnit maxVolume;
-	public VolumeUnit MaxVolume
+	private VolumeUnit volumeCapacity;
+	public VolumeUnit VolumeCapacity
 	{
 		get
 		{
 			lock (SyncRoot)
 			{
-				return maxVolume;
+				return volumeCapacity;
 			}
 		}
 		set
 		{
-			Debug.Assert(value > 0, "MaxVolume cannot be negative.");
+			Debug.Assert(value > 0, $"{nameof(VolumeCapacity)} cannot be negative.");
 			lock (SyncRoot)
 			{
 				InvalidateRecalcuables();
 
-				maxVolume = value;
+				volumeCapacity = value;
 			}
 		}
 	}
 
-	public VolumeUnit FreeVolume => MaxVolume - Volume; // TODO: Rename Volume to OccupiedVolume? And MaxVolume to Volume?
+	/// <summary>
+	/// Volume which is not occupied by non compressable matter in [m³]
+	/// </summary>
+	public VolumeUnit NonCompressableUnoccupiedVolume => VolumeCapacity - NonCompressableVolume;
 
 	private PressureUnit pressure;
 	/// <summary>
@@ -189,7 +195,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 	{
 		lock (SyncRoot)
 		{
-			return Calculations.CalculatePressureUsingIdealGasLaw(GasSubstanceAmount, AverageTemperature, Volume /*- VolumeOfUncompressables*/);
+			return Calculations.CalculatePressureUsingIdealGasLaw(GasSubstanceAmount, AverageTemperature, NonCompressableUnoccupiedVolume);
 		}
 	}
 
@@ -210,7 +216,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		}
 	}
 
-	bool recalculateVolume = false;
+	bool recalculateNonCompressableVolume = false;
 
 	bool recalculateMass = false;
 
@@ -222,20 +228,18 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 
 	public object SyncRoot = new();
 
-	//public event Action ChemicalCompositionChanged
-
 	public Portion<VolumeUnit> Fullness
 	{
 		get
 		{
 			lock (SyncRoot)
 			{
-				if ((DN)MaxVolume == 0)
+				if ((DN)VolumeCapacity == 0)
 				{
 					return 1;
 				}
 
-				return Volume / MaxVolume;
+				return NonCompressableVolume / VolumeCapacity;
 			}
 		}
 	}
@@ -248,7 +252,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 
 	public ResourceContainer(VolumeUnit maxVolume) : this()
 	{
-		this.maxVolume = maxVolume;
+		this.volumeCapacity = maxVolume;
 	}
 
 	private ResourceContainer()
@@ -455,7 +459,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 	{
 		lock (SyncRoot)
 		{
-			recalculateVolume = true;
+			recalculateNonCompressableVolume = true;
 			recalculateMass = true;
 			recalculatePressure = true;
 			recalculateAverageTemperature = true;
@@ -465,7 +469,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 
 	public void TransferResourceByVolume(ResourceContainer targetContainer, VolumeUnit volumeToTransfer)
 	{
-		if (Volume - volumeToTransfer < 0)
+		if (NonCompressableVolume - volumeToTransfer < 0)
 		{
 			throw new InvalidOperationException("Cannot transfer more resource volume than there is volume available.");
 		}
@@ -479,7 +483,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 			return;
 		}
 
-		VolumeUnit intialVolume = Volume;
+		VolumeUnit intialVolume = NonCompressableVolume;
 
 		DN desiredPartOfVolume = (DN)volumeToTransfer / (DN)intialVolume;
 
@@ -500,12 +504,12 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 			resourceUnit.Remove(takenUnitData);
 		}
 
-		Debug.Assert(DN.Difference((DN)intialVolume - (DN)Volume, (DN)volumeToTransfer) < (DN)acceptableVolumeTransferError, "Volume error too large!");
+		Debug.Assert(DN.Difference((DN)intialVolume - (DN)NonCompressableVolume, (DN)volumeToTransfer) < (DN)acceptableVolumeTransferError, "Volume error too large!");
 	}
 
 	public void TransferResourceByVolume(ResourceContainer targetContainer, ResourceType resourceType, VolumeUnit volumeToTransfer)
 	{
-		if (Volume - volumeToTransfer < 0)
+		if (NonCompressableVolume - volumeToTransfer < 0)
 		{
 			throw new InvalidOperationException("Cannot transfer more resource volume than there is volume available.");
 		}
@@ -520,7 +524,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		}
 
 #if DEBUG
-		VolumeUnit intialVolume = Volume;
+		VolumeUnit intialVolume = NonCompressableVolume;
 #endif
 
 		var unit = resources[resourceType];
@@ -536,7 +540,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		unit.Remove(takenUnitData);
 
 #if DEBUG
-		Debug.Assert(DN.Difference((DN)intialVolume - (DN)Volume, (DN)volumeToTransfer) < (DN)acceptableVolumeTransferError, "Volume error too large!");
+		Debug.Assert(DN.Difference((DN)intialVolume - (DN)NonCompressableVolume, (DN)volumeToTransfer) < (DN)acceptableVolumeTransferError, "Volume error too large!");
 #endif
 	}
 
@@ -569,7 +573,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		{
 			writer.WriteStartElement(nameof(ResourceContainer));
 			{
-				writer.Serialize(MaxVolume, nameof(MaxVolume));
+				writer.Serialize(VolumeCapacity, nameof(VolumeCapacity));
 
 				writer.Serialize(resources.Values, (w, ru) => ru.ResourceUnitData.Serialize(w), nameof(resources));
 			}
@@ -583,7 +587,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 
 		reader.ReadStartElement(nameof(ResourceContainer));
 		{
-			resourceContainer.maxVolume = reader.DeserializeUnit<VolumeUnit>(nameof(MaxVolume));
+			resourceContainer.volumeCapacity = reader.DeserializeUnit<VolumeUnit>(nameof(VolumeCapacity));
 
 			reader.DeserializeCollection((r) => resourceContainer.AddResource(ResourceUnitData.Deserialize(r)), nameof(resources));
 		}
@@ -607,8 +611,8 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 			else
 			{
 				ImGui.Text($"{nameof(Mass)}: {Mass.FormatMass()}");
-				ImGui.Text($"{nameof(Volume)}: {Volume.FormatVolume()}");
-				ImGui.Text($"{nameof(MaxVolume)}: {MaxVolume.FormatVolume()}");
+				ImGui.Text($"{nameof(NonCompressableVolume)}: {NonCompressableVolume.FormatVolume()}");
+				ImGui.Text($"{nameof(VolumeCapacity)}: {VolumeCapacity.FormatVolume()}");
 				ImGui.Text($"{nameof(Fullness)}: {Fullness.FormatPercentage()}");
 				ImGui.Text($"{nameof(AverageTemperature)}: {AverageTemperature.FormatTemperature()}");
 				ImGui.Text($"{nameof(Pressure)}: {Pressure.FormatPressure()}");

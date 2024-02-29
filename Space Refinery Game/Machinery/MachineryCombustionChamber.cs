@@ -71,15 +71,15 @@ namespace Space_Refinery_Game
 				{
 					OxygenInput.TransferResourceByVolume(ReactionContainer, ChemicalType.Oxygen.GasPhaseType,
 						UnitsMath.Clamp(
-							OxygenInput.Volume * OxygenInput.Fullness * Time.TickInterval,
+							OxygenInput.NonCompressableVolume * OxygenInput.Fullness * Time.TickInterval,
 							0,
-							UnitsMath.Min(ReactionContainer.FreeVolume, OxygenInput.VolumeOf(ChemicalType.Oxygen.GasPhaseType))));
+							UnitsMath.Min(ReactionContainer.NonCompressableUnoccupiedVolume, OxygenInput.VolumeOf(ChemicalType.Oxygen.GasPhaseType))));
 					
 					FuelInput.TransferResourceByVolume(ReactionContainer,
 						UnitsMath.Clamp(
-							FuelInput.Volume * FuelInput.Fullness * Time.TickInterval,
+							FuelInput.NonCompressableVolume * FuelInput.Fullness * Time.TickInterval,
 							0,
-							UnitsMath.Min(ReactionContainer.FreeVolume, FuelInput.Volume)));
+							UnitsMath.Min(ReactionContainer.NonCompressableUnoccupiedVolume, FuelInput.NonCompressableVolume)));
 
 					ReactionContainer.AddReactionFactor(new Spark(sparkEnergy));
 
@@ -97,7 +97,7 @@ namespace Space_Refinery_Game
 							ReactionContainer.VolumeOf(ChemicalType.Water.LiquidPhaseType),
 							UnitsMath.Max(
 								ReactionContainer.Fullness - ProductOutput.Fullness, 0)
-							* Time.TickInterval * ReactionContainer.Volume)
+							* Time.TickInterval * ReactionContainer.NonCompressableVolume)
 						);
 
 					//ElectricityInput.ConsumeElectricity();

@@ -65,7 +65,7 @@ namespace Space_Refinery_Engine
 
 					var fullnessDifference = (Portion<VolumeUnit>)DN.Abs((DN)recipientContainer.Fullness - (DN)otherContainer.Fullness);
 
-					otherContainer.TransferResourceByVolume(recipientContainer, (VolumeUnit)((DN)(otherContainer.Volume * fullnessDifference) * (DN)Time.TickInterval));
+					otherContainer.TransferResourceByVolume(recipientContainer, (VolumeUnit)((DN)(otherContainer.NonCompressableVolume * fullnessDifference) * (DN)Time.TickInterval));
 				}
 			}
 		}

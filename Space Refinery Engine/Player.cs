@@ -122,7 +122,7 @@ namespace Space_Refinery_Engine
 
 						ResourceUnitData resource = new(resourceType, ChemicalType.MassToMoles(chemicalType, mass), internalEnergy);
 
-						if (InputTracker.GetKeyDown(Key.U) && pipe.ResourceContainer.Volume + resource.Volume < pipe.ResourceContainer.MaxVolume)
+						if (InputTracker.GetKeyDown(Key.U) && pipe.ResourceContainer.NonCompressableVolume + resource.Volume < pipe.ResourceContainer.VolumeCapacity)
 						{
 							pipe.ResourceContainer.AddResource(resource);
 						}

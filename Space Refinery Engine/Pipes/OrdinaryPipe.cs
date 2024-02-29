@@ -46,7 +46,7 @@ public sealed class OrdinaryPipe : Pipe
 				return;
 			}
 
-			var volumePerConnector = (VolumeUnit)((DecimalNumber)ResourceContainer.Volume / connectedConnectors.Count);
+			var volumePerConnector = (VolumeUnit)((DecimalNumber)ResourceContainer.NonCompressableVolume / connectedConnectors.Count);
 
 			foreach (var connectedConnector in connectedConnectors)
 			{

@@ -123,9 +123,9 @@ public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 			return obj is ResourceUnit unit && Equals(unit);
 		}
 
-		public bool Equals(ResourceUnit other)
+	public bool Equals(ResourceUnit? other)
 		{
-			return ReferenceEquals(ResourceType, other.ResourceType) &&
+		return ReferenceEquals(ResourceType, other?.ResourceType) &&
 				   Moles.Equals(other.Moles) &&
 				   InternalEnergy.Equals(other.internalEnergy);
 		}

@@ -1,5 +1,6 @@
 ﻿using FXRenderer;
 using Space_Refinery_Utilities;
+using System.Globalization;
 using Veldrid;
 using Veldrid.StartupUtilities;
 using Veldrid.Utilities;
@@ -27,7 +28,9 @@ public static class Program
 		Logging.LogDebug($"Logs from {nameof(Logging.LogDebug)} are included in this build.");
 		Logging.LogLegend($"Build version: {"haven't started with this yet"}");
 
-		System.Globalization.CultureInfo.CurrentCulture = (System.Globalization.CultureInfo)System.Globalization.CultureInfo.InvariantCulture.Clone();
+		CultureInfo.CurrentCulture = (System.Globalization.CultureInfo)CultureInfo.InvariantCulture.Clone();
+		CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator = " ";
+		CultureInfo.CurrentCulture.NumberFormat.NumberGroupSizes = CultureInfo.GetCultureInfo("se-SE").NumberFormat.NumberGroupSizes;
 		//System.Globalization.CultureInfo.CurrentCulture.NumberFormat = DecimalNumber.NumberFormat;
 		// The previous line cannot be uncommented because the number format is not complete.
 

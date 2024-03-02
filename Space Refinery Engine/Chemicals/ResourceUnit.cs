@@ -14,7 +14,7 @@ public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 		private MolesUnit moles;
 
 		/// <summary>
-		/// Substance amount in [mol].
+	/// [mol] Substance amount.
 		/// </summary>
 		public MolesUnit Moles
 		{
@@ -37,12 +37,11 @@ public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 			}
 		}
 
-		// TODO: add property or method in ChemicalType that gives absolute internal energy. maybe internal energy should be renamed to phase energy?
-
+	// TODO: rename to TemperatureEnergy
 		private EnergyUnit internalEnergy;
 
 		/// <summary>
-		/// [J] Internal energy in the current phase.
+	/// [J] Internal energy directly affecting the temperature.
 		/// </summary>
 		public EnergyUnit InternalEnergy
 		{
@@ -93,7 +92,7 @@ public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 		public MassUnit Mass => ChemicalType.MolesToMass(ChemicalType, Moles);
 
 		/// <summary>
-		/// Volume in [m³].
+	/// The volume of a non compressable resource [m³]. Compressable resources always have zero non compressable volume.
 		/// </summary>
 		public VolumeUnit Volume => Mass / ResourceType.Density;
 

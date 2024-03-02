@@ -174,6 +174,7 @@ namespace Space_Refinery_Engine
 			return moles;
 		}
 
+		// TODO: rename to TemperatureEnergyToTemperature
 		/// <summary>
 		/// [J] to [K]
 		/// </summary>
@@ -182,7 +183,7 @@ namespace Space_Refinery_Engine
 		public static TemperatureUnit InternalEnergyToTemperature(ResourceType resourceType, EnergyUnit temperatureEnergy, MassUnit mass)
 		{
 			// E = C * m * dT
-			// E = Internal Energy
+			// E = Temperature Energy (Internal energy)
 			// m = Mass
 			// C = Specific Heat Capacity
 			// dT = Delta Temperature
@@ -202,7 +203,7 @@ namespace Space_Refinery_Engine
 		public static EnergyUnit TemperatureToInternalEnergy(ResourceType resourceType, TemperatureUnit temperature, MassUnit mass)
 		{
 			// E = C * m * dT
-			// E = Internal Energy
+			// E = Temperature Energy (Internal energy) (Energy directly affecting temperature)
 			// m = mass
 			// C = Specific Heat Capacity
 			// dT = Delta Temperature
@@ -211,8 +212,12 @@ namespace Space_Refinery_Engine
 			// solve for E: well...
 			// E = C * m * dT
 
+			return resourceType.ChemicalType.SpecificHeatCapacity * mass * temperature;
+		}
+
+		public EnergyUnit CalculatePhaseEnergy(ResourceType resourceType, MassUnit mass)
+		{
 			EnergyUnit phaseEnergy; // Energy not affecting temperature directly, instead "tied up" in phase transitions.
-			EnergyUnit temperatureEnergy; // Energy directly affecting temperature.
 
 			ChemicalType chemicalType = resourceType.ChemicalType;
 
@@ -220,21 +225,18 @@ namespace Space_Refinery_Engine
 			{
 				case ChemicalPhase.Solid:
 					phaseEnergy = 0;
-					temperatureEnergy = (chemicalType.SpecificHeatCapacity * mass * temperature);
 					break;
 				case ChemicalPhase.Liquid:
 					phaseEnergy = chemicalType.SpecificHeatCapacity * mass * chemicalType.TemperatureOfFusion;
-					temperatureEnergy = (chemicalType.SpecificHeatCapacity * mass * temperature);
 					break;
 				case ChemicalPhase.Gas:
 					phaseEnergy = chemicalType.SpecificHeatCapacity * mass * chemicalType.TemperatureOfVaporization;
-					temperatureEnergy = (chemicalType.SpecificHeatCapacity * mass * temperature);
 					break;
 				default:
 					throw new GlitchInTheMatrixException();
 			}
 
-			return temperatureEnergy;
+			return phaseEnergy;
 		}
 
 		public void SerializeState(XmlWriter writer)

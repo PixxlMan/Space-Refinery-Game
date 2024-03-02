@@ -1,7 +1,9 @@
 ﻿using ImGuiNET;
 using System.Diagnostics;
 
-namespace Space_Refinery_Engine
+namespace Space_Refinery_Engine;
+
+public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 {
 	public class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 	{
@@ -186,4 +188,3 @@ namespace Space_Refinery_Engine
 			return !(left == right);
 		}
 	}
-}

@@ -512,7 +512,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		var resourceUnit = resources.GetOrAdd(addedResourceUnitData.ResourceType, (_) =>
 		{
 			// Keep in mind: Whatever is in here may be called several times. Consider using Lazy to only perform actions once. https://medium.com/gft-engineering/correctly-using-concurrentdictionarys-addorupdate-method-94b7b41719d6
-			ResourceUnit resourceUnit = new(addedResourceUnitData.ResourceType, this, new(addedResourceUnitData.ResourceType, 0, 0));
+			ResourceUnit resourceUnit = new(addedResourceUnitData.ResourceType, new(addedResourceUnitData.ResourceType, 0, 0));
 
 			resourceUnit.ResourceUnitChanged += ResourceUnit_Changed;
 

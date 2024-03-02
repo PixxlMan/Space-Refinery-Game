@@ -437,7 +437,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		}
 	}
 
-	private ILookup<Type, ReactionFactor> reactionFactors;
+	private ILookup<Type, ReactionFactor>? reactionFactors;
 	private readonly List<ReactionFactor> producedReactionFactors = new();
 
 	public void Tick(IntervalUnit tickInterval)
@@ -480,7 +480,9 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		possibleReactionTypes = ReactionType.GetAllPossibleReactionTypes(chemicalTypes);
 
 		lock (SyncRoot)
+		{
 			invalidatePossibleReactionTypes = false;
+	}
 	}
 
 	private void InvalidatePossibleReactionTypes()

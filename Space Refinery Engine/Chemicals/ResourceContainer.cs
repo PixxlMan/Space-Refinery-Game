@@ -163,7 +163,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 	}
 
 	/// <summary>
-	/// Volume which is not occupied by non compressable matter in [m³]
+	/// Volume which is not occupied by non compressable resources in [m³]
 	/// </summary>
 	public VolumeUnit NonCompressableUnoccupiedVolume => VolumeCapacity - NonCompressableVolume;
 
@@ -187,9 +187,17 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		}
 	}
 
+	private PressureUnit RecalculatePressure()
+	{
+		lock (SyncRoot)
+		{
+			return Calculations.CalculatePressureUsingIdealGasLaw(GasSubstanceAmount, GasTemperature, NonCompressableUnoccupiedVolume);
+		}
+	}
+
 	private TemperatureUnit averageTemperature;
 	/// <summary>
-	/// [K] The average temperature of all resources in this container in kelvin
+	/// [K] The average temperature of all non gaseous resources in this container in kelvin
 	/// </summary>
 	public TemperatureUnit AverageTemperature
 	{
@@ -207,19 +215,80 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		}
 	}
 
-	private MolesUnit gasSubstanceAmount;
+	private TemperatureUnit RecalculateAverageTemperature()
+	{
+		lock (SyncRoot)
+		{
+			recalculateAverageTemperature = false;
+
+			TemperatureUnit averageNonGasTemperature = 0;
+
+			foreach (var resourceUnit in resources.Values)
+			{
+				if (resourceUnit.ResourceType.ChemicalPhase != ChemicalPhase.Gas)
+				{
+					averageNonGasTemperature += (TemperatureUnit)((DN)resourceUnit.NonGasTemperature * (DN)(resourceUnit.Mass / Mass));
+				}
+			}
+
+			averageNonGasTemperature += (TemperatureUnit)((DN)GasTemperature * (DN)(GasMass / Mass));
+
+			return averageNonGasTemperature;
+		}
+	}
+
+	private TemperatureUnit gasTemperature;
 	/// <summary>
-	/// The substance amount of all gas resources in this container in mols [mol]
+	/// [K] The temperature of all gaseous resources in this container in kelvin
 	/// </summary>
-	public MolesUnit GasSubstanceAmount
+	public TemperatureUnit GasTemperature
 	{
 		get
 		{
 			lock (SyncRoot)
 			{
-				if (recalculateGasSubstanceAmount)
+				if (recalculateGasTemperature)
 				{
-					gasSubstanceAmount = RecalculateGasSubstanceAmount();
+					gasTemperature = RecalculateGasTemperature();
+				}
+
+				return gasTemperature;
+			}
+		}
+	}
+
+	private TemperatureUnit RecalculateGasTemperature()
+	{
+		lock (SyncRoot)
+		{
+			recalculateGasTemperature = false;
+
+			if (GasMass == 0 || GasSubstanceAmount == 0)
+			{
+				return 0;
+			}
+			else
+			{
+				return Calculations.TemperatureIdealGasLaw(GasSubstanceAmount, Pressure, NonCompressableUnoccupiedVolume);
+			}
+		}
+	}
+
+	private MolesUnit gasSubstanceAmount;
+	/// <summary>
+	/// The substance amount of all gas resources in this container in mols [mol]
+	/// </summary>
+	public MolesUnit GasSubstanceAmount // TODO: rename to GasMoles for constistency with Moles
+	{
+		get
+		{
+			lock (SyncRoot)
+			{
+				if (recalculateGasSubstanceAmountAndMass)
+				{
+					RecalculateGasSubstanceAmountAndMass(out MolesUnit gasSubstanceAmount, out MassUnit gasMass);
+					this.gasSubstanceAmount = gasSubstanceAmount;
+					this.gasMass = gasMass;
 				}
 
 				return gasSubstanceAmount;
@@ -227,48 +296,45 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		}
 	}
 
-	private MolesUnit RecalculateGasSubstanceAmount()
+	private MassUnit gasMass;
+	/// <summary>
+	/// 
+	/// </summary>
+	public MassUnit GasMass
+	{
+		get
+		{
+			lock (SyncRoot)
+			{
+				if (recalculateGasSubstanceAmountAndMass)
+				{
+					RecalculateGasSubstanceAmountAndMass(out MolesUnit gasSubstanceAmount, out MassUnit gasMass);
+					this.gasSubstanceAmount = gasSubstanceAmount;
+					this.gasMass = gasMass;
+				}
+
+				return gasMass;
+			}
+		}
+	}
+
+	private void RecalculateGasSubstanceAmountAndMass(out MolesUnit gasSubstanceAmount, out MassUnit gasMass)
 	{
 		lock (SyncRoot)
 		{
-			recalculateGasSubstanceAmount = false;
+			recalculateGasSubstanceAmountAndMass = false;
 
-			MolesUnit totalSubstanceAmount = 0;
+			gasSubstanceAmount = 0;
+			gasMass = 0;
 
 			foreach (var resourceUnit in resources.Values)
 			{
 				if (resourceUnit.ResourceType.ChemicalPhase == ChemicalPhase.Gas)
 				{
-					totalSubstanceAmount += resourceUnit.Moles;
+					gasSubstanceAmount += resourceUnit.Moles;
+					gasMass += resourceUnit.Mass;
 				}
 			}
-
-			return (MolesUnit)((DN)totalSubstanceAmount / resources.Count);
-		}
-	}
-
-	private PressureUnit RecalculatePressure()
-	{
-		lock (SyncRoot)
-		{
-			return Calculations.CalculatePressureUsingIdealGasLaw(GasSubstanceAmount, AverageTemperature, CompressableOccupiedVolume);
-		}
-	}
-
-	private TemperatureUnit RecalculateAverageTemperature()
-	{
-		lock (SyncRoot)
-		{
-			recalculateAverageTemperature = false;
-
-			TemperatureUnit averageTemperature = 0;
-
-			foreach (var resourceUnit in resources.Values)
-			{
-				averageTemperature += (TemperatureUnit)((DN)resourceUnit.Temperature * (DN)(resourceUnit.Mass / Mass));
-			}
-
-			return averageTemperature;
 		}
 	}
 
@@ -280,10 +346,15 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 
 	bool recalculateAverageTemperature = false;
 
-	bool recalculateGasSubstanceAmount = false;
+	bool recalculateGasTemperature = false;
+
+	bool recalculateGasSubstanceAmountAndMass = false;
 
 	public object SyncRoot = new();
 
+	/// <summary>
+	/// Fullness as a portion of the volume, considers only non compressable resources because compressable resources are infinetely compressable.
+	/// </summary>
 	public Portion<VolumeUnit> Fullness
 	{
 		get
@@ -519,7 +590,8 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 			recalculateMass = true;
 			recalculatePressure = true;
 			recalculateAverageTemperature = true;
-			recalculateGasSubstanceAmount = true;
+			recalculateGasTemperature = true;
+			recalculateGasSubstanceAmountAndMass = true;
 		}
 	}
 
@@ -660,26 +732,34 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 			{
 				UIFunctions.PushDisabled();
 
-				ImGui.Text("Empty");
+				ImGui.Text("Container is empty");
 
-				UIFunctions.PopEnabledOrDisabledState();
-			}
-			else
-			{
-				ImGui.Text($"{nameof(Mass)}: {Mass.FormatMass()}");
-				ImGui.Text($"{nameof(NonCompressableVolume)}: {NonCompressableVolume.FormatVolume()}");
-				ImGui.Text($"{nameof(VolumeCapacity)}: {VolumeCapacity.FormatVolume()}");
-				ImGui.Text($"{nameof(Fullness)}: {Fullness.FormatPercentage()}");
-				ImGui.Text($"{nameof(AverageTemperature)}: {AverageTemperature.FormatTemperature()}");
-				ImGui.Text($"{nameof(Pressure)}: {Pressure.FormatPressure()}");
-				ImGui.Text($"Different types of resources: {resources.Count}");
 				ImGui.Separator();
+			}
 
-				foreach (var resourceUnit in resources.Values)
-				{
-					resourceUnit.DoUIInspectorReadonly();
-					ImGui.Separator();
-				}
+			ImGui.Text($"{nameof(Mass)}: {Mass.FormatMass()}");
+			ImGui.Text($"{nameof(GasMass)}: {GasMass.FormatMass()}");
+			ImGui.Text($"{nameof(VolumeCapacity)}: {VolumeCapacity.FormatVolume()}");
+			ImGui.Text($"{nameof(TotalVolume)}: {TotalVolume.FormatVolume()}");
+			ImGui.Text($"{nameof(Fullness)}: {Fullness.FormatPercentage()}");
+			ImGui.Text($"{nameof(NonCompressableVolume)}: {NonCompressableVolume.FormatVolume()}");
+			ImGui.Text($"{nameof(CompressableOccupiedVolume)}: {CompressableOccupiedVolume.FormatVolume()}");
+			ImGui.Text($"{nameof(NonCompressableUnoccupiedVolume)}: {NonCompressableUnoccupiedVolume.FormatVolume()}");
+			ImGui.Text($"{nameof(AverageTemperature)}: {AverageTemperature.FormatTemperature()}");
+			ImGui.Text($"{nameof(GasTemperature)}: {GasTemperature.FormatTemperature()}");
+			ImGui.Text($"{nameof(Pressure)}: {Pressure.FormatPressure()}");
+			ImGui.Text($"Different types of resources: {resources.Count}");
+			ImGui.Separator();
+
+			foreach (var resourceUnit in resources.Values)
+			{
+				resourceUnit.DoUIInspectorReadonly();
+				ImGui.Separator();
+			}
+
+			if (Mass == 0)
+			{
+				UIFunctions.PopEnabledOrDisabledState();
 			}
 		}
 		UIFunctions.EndSub();

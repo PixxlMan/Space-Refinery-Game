@@ -9,7 +9,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 {
 	private VolumeUnit nonCompressableVolume; // TODO: check out the uses of this and change some of them to TotalVolume!
 	/// <summary>
-	/// Volume occupied by liquids and solids (uncompressable matter) in cubic meters [m³]
+	/// [m³] sVolume occupied by liquids and solids (uncompressable matter) in cubic meters
 	/// </summary>
 	public VolumeUnit NonCompressableVolume
 	{
@@ -105,7 +105,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 
 	private MassUnit mass;
 	/// <summary>
-	/// Mass in kilograms [kg]
+	/// [kg] Mass in kilograms
 	/// </summary>
 	public MassUnit Mass
 	{
@@ -163,7 +163,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 	}
 
 	/// <summary>
-	/// Volume which is not occupied by non compressable resources in [m³]
+	/// [m³] Volume which is not occupied by non compressable resources in cubic meters
 	/// </summary>
 	public VolumeUnit NonCompressableUnoccupiedVolume => VolumeCapacity - NonCompressableVolume;
 
@@ -197,7 +197,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 
 	private TemperatureUnit averageTemperature;
 	/// <summary>
-	/// [K] The average temperature of all non gaseous resources in this container in kelvin
+	/// [K] The average temperature of all resources in this container in kelvin
 	/// </summary>
 	public TemperatureUnit AverageTemperature
 	{

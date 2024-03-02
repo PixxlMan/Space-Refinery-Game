@@ -1,5 +1,4 @@
-﻿
-namespace Space_Refinery_Utilities;
+﻿namespace Space_Refinery_Utilities;
 
 public static class Calculations
 {
@@ -17,14 +16,34 @@ public static class Calculations
 		// Solve for P:
 		// P = (n * k * T) / V
 
-		DecimalNumber gasMolesDecNum, avgTempDecNum, volDecNum;
-		gasMolesDecNum = (DecimalNumber)gasSubstanceAmount;
-		avgTempDecNum = (DecimalNumber)averageTemperature;
-		volDecNum = (DecimalNumber)volume;
+		var gasMolesDecNum = (DecimalNumber)gasSubstanceAmount;
+		var avgTempDecNum = (DecimalNumber)averageTemperature;
+		var volDecNum = (DecimalNumber)volume;
 
 		PressureUnit pressure = new((gasMolesDecNum * GasConstant * avgTempDecNum) / (volDecNum));
 
 		return pressure;
+	}
+
+	public static TemperatureUnit TemperatureIdealGasLaw(MolesUnit gasSubstanceAmount, PressureUnit pressure, VolumeUnit volume)
+	{
+		// P * V = n * k * T
+		// P = pressure [kg/m³]
+		// V = volume [m³]
+		// n = substance amount [mol]
+		// k = gas constant (8.314 J K-1) [J/K⁻¹]
+		// T = temperature [K]
+		//
+		// Solve for T:
+		// T = (P * V) / (n * k)
+
+		var gasMolesDecNum = (DecimalNumber)gasSubstanceAmount;
+		var pressureDecNum = (DecimalNumber)pressure;
+		var volDecNum = (DecimalNumber)volume;
+
+		TemperatureUnit temperature = new((pressureDecNum * volDecNum) / (gasMolesDecNum * GasConstant));
+
+		return temperature;
 	}
 
 	/// <summary>

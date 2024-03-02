@@ -58,7 +58,7 @@ namespace Space_Refinery_Engine.Audio
 		private readonly AudioFormat _format;
 		private readonly byte[] _silenceData;
 		private readonly byte[] _tempBuf;
-		private readonly Submixer _submixer;
+		private readonly Submixer? _submixer;
 
 		public void Start()
 		{

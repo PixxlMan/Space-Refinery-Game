@@ -126,6 +126,7 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 	public static void RegisterFormatToSettings(Settings settings)
 	{
 		settings.RegisterToSettingValue<SwitchSettingValue>("Use Celcius", (v) => FormatUnit.UseCelcius = v);
+		settings.RegisterToSettingValue<SwitchSettingValue>("Use Pascal", (v) => FormatUnit.UsePascal = v);
 	}
 
 	private void UI_PauseStateChanged(bool paused)

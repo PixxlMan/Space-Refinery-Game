@@ -23,6 +23,25 @@ public static class FormatUnit
 		}
 	}
 
+	private static bool usePascal;
+	public static bool UsePascal
+	{
+		get
+		{
+			lock (syncRoot)
+			{
+				return usePascal;
+			}
+		}
+		set
+		{
+			lock (syncRoot)
+			{
+				usePascal = value;
+			}
+		}
+	}
+
 	/// <summary>
 	/// Formats a mass in kilograms according to player preferences.
 	/// </summary>
@@ -53,7 +72,7 @@ public static class FormatUnit
 	public static string FormatPressure(this PressureUnit pressureUnit)
 	{
 		var pressure = (DecimalNumber)pressureUnit;
-		return $"{pressure.ToString(decimals: 2)} N/m²"; // PressureUnit
+		return $"{pressure.ToString(decimals: 2)} {(usePascal ? "Pa" : "N/m²")}";
 	}
 
 	/// <summary>

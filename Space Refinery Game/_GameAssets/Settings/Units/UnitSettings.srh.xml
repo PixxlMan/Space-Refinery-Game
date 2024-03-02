@@ -1,14 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <SerializationReferenceHandler>
-	<Count>1</Count>
+	<Count>2</Count>
 	<Elements>
 		<IEntitySerializable>
 			<Type>Space_Refinery_Engine.SwitchSetting</Type>
 			<Reference>Use Celcius</Reference>
 			<Name>Use Celcius</Name>
 			<Description>
-				Enable to use celcius (°C) - disable to use kelvin (K).
-				(0 K = -273.15 °C, +1 K -> +1 °C )
+				Enable to use celcius (°C) for temperature - disable to use kelvin (K).
+				(0 K = -273.15 °C, +1 K -> +1 °C)
+			</Description>
+			<DefaultValue>
+				<Type>Space_Refinery_Engine.SwitchSettingValue</Type>
+				<SwitchValue>True</SwitchValue>
+			</DefaultValue>
+		</IEntitySerializable>
+		<IEntitySerializable>
+			<Type>Space_Refinery_Engine.SwitchSetting</Type>
+			<Reference>Use Pascal</Reference>
+			<Name>Use Pascal</Name>
+			<Description>
+				Enable to show pressure as pascal (Pa) - disable to show as newtons per meter squared (N/m²).
+				(1 Pa = 1 N/m²)
 			</Description>
 			<DefaultValue>
 				<Type>Space_Refinery_Engine.SwitchSettingValue</Type>

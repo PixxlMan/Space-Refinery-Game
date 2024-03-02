@@ -7,8 +7,6 @@ public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 {
 	public ResourceType ResourceType { get; private set; }
 
-	public ResourceContainer ResourceContainer { get; private set; }
-
 	public ChemicalType ChemicalType => ResourceType.ChemicalType;
 
 	private MolesUnit moles;
@@ -21,7 +19,9 @@ public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 		get
 		{
 			lock (syncRoot)
+			{
 				return moles;
+			}
 		}
 
 		private set
@@ -95,12 +95,13 @@ public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 	}
 
 	/// <summary>
-	/// Mass in [kg].
+	/// [kg] Mass in kilograms
 	/// </summary>
 	public MassUnit Mass => ChemicalType.MolesToMass(ChemicalType, Moles);
 
 	/// <summary>
-	/// The volume of a non compressable resource [m³]. Compressable resources always have zero non compressable volume.
+	/// [m³] The volume of a non compressable resource in cubic meters.
+	/// Compressable resources always have zero non compressable volume.
 	/// </summary>
 	public VolumeUnit NonCompressableVolume
 	{
@@ -130,16 +131,15 @@ public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 	/// </summary>
 	public MolarEnergyUnit MolarEnergy => InternalEnergy / Moles;
 
-	public event Action<ResourceUnit> ResourceUnitChanged;
+	public event Action<ResourceUnit>? ResourceUnitChanged;
 
 	public ResourceUnitData ResourceUnitData => new(ResourceType, Moles, InternalEnergy); // Not using CreateNegativeResourceUnit here is fine because while ResourceUnitData can be allowed to be negative, a ResourceUnit should always represent a real resource amount.
 
 	private object syncRoot = new();
 
-	public ResourceUnit(ResourceType resourceType, ResourceContainer resourceContainer, ResourceUnitData resourceUnitData)
+	public ResourceUnit(ResourceType resourceType, ResourceUnitData resourceUnitData)
 	{
 		ResourceType = resourceType;
-		ResourceContainer = resourceContainer;
 		moles = resourceUnitData.Moles;
 		internalEnergy = resourceUnitData.InternalEnergy;
 	}
@@ -192,6 +192,7 @@ public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 			ImGui.Text($"{nameof(Moles)}: {Moles.FormatSubstanceAmount()}");
 			ImGui.Text($"{nameof(Mass)}: {Mass.FormatMass()}");
 			ImGui.Text($"{nameof(NonCompressableVolume)}: {NonCompressableVolume.FormatVolume()}");
+			ImGui.Text($"{nameof(UncompressedVolume)}: {UncompressedVolume.FormatVolume()}");
 			ImGui.Text($"{nameof(InternalEnergy)}: {InternalEnergy.FormatEnergy()}");
 			ImGui.Text($"{nameof(MolarEnergy)}: {MolarEnergy.FormatMolarEnergy()}");
 			if (ResourceType.ChemicalPhase != ChemicalPhase.Gas)

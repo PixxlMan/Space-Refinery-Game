@@ -191,7 +191,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 	{
 		lock (SyncRoot)
 		{
-			return Calculations.CalculatePressureUsingIdealGasLaw(GasSubstanceAmount, GasTemperature, NonCompressableUnoccupiedVolume);
+			return Calculations.PressureIdealGasLaw(GasSubstanceAmount, GasTemperature, NonCompressableUnoccupiedVolume);
 		}
 	}
 

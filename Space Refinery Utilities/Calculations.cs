@@ -4,7 +4,7 @@ public static class Calculations
 {
 	public static readonly DecimalNumber GasConstant = (DecimalNumber)8.314;
 
-	public static PressureUnit CalculatePressureUsingIdealGasLaw(MolesUnit gasSubstanceAmount, TemperatureUnit averageTemperature, VolumeUnit volume)
+	public static PressureUnit PressureIdealGasLaw(MolesUnit gasSubstanceAmount, TemperatureUnit averageTemperature, VolumeUnit volume)
 	{
 		// P * V = n * k * T
 		// P = pressure [kg/m³]

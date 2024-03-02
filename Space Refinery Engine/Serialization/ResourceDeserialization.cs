@@ -46,6 +46,8 @@ public static class ResourceDeserialization
 					continue;
 				}
 
+				Logging.Log($"Deserializing serializable reference file {file}", Logging.LogLevel.Deep);
+
 				using var individualFileReader = XmlReader.Create(file, new XmlReaderSettings() { ConformanceLevel = ConformanceLevel.Document });
 
 				globalReferenceHandler.DeserializeInto(individualFileReader, serializationData, false);

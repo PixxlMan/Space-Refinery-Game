@@ -87,7 +87,7 @@ public sealed class PerformanceStatisticsCollector
 	{
 		if (deltaTime > deltaTimeStutterWarningThreshold)
 		{
-			Logging.LogWarning($"Stutter that lasted {FormatUnit.FormatTime(deltaTime)} was detected in {system}!");
+			Logging.LogWarning($"{FormatUnit.FormatTime(deltaTime)} stutter in {system}");
 		}
 	}
 

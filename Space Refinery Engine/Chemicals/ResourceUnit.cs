@@ -5,8 +5,6 @@ namespace Space_Refinery_Engine;
 
 public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 {
-	public class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
-	{
 		public ResourceType ResourceType { get; private set; }
 
 		public ResourceContainer ResourceContainer { get; private set; }

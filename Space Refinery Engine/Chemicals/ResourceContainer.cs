@@ -7,7 +7,7 @@ namespace Space_Refinery_Engine;
 
 public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems like changes to resources can occur while reactions are taking place... Is that okay?
 {
-	private VolumeUnit nonCompressableVolume;
+	private VolumeUnit nonCompressableVolume; // TODO: check out the uses of this and change some of them to TotalVolume!
 	/// <summary>
 	/// Volume occupied by liquids and solids (uncompressable matter) in cubic meters [m³]
 	/// </summary>
@@ -17,9 +17,12 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		{
 			lock (SyncRoot)
 			{
-				if (recalculateNonCompressableVolume)
+				if (recalculateVolume)
 				{
-					nonCompressableVolume = RecalculateNonCompressableVolume();
+					RecalculateVolume(out var totalVolume, out var nonCompressableVolume, out var compressableOccupiedVolume);
+					this.totalVolume = totalVolume;
+					this.nonCompressableVolume = nonCompressableVolume;
+					this.compressableOccupiedVolume = compressableOccupiedVolume;
 				}
 
 				return nonCompressableVolume;
@@ -27,23 +30,76 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		}
 	}
 
-	private VolumeUnit RecalculateNonCompressableVolume()
+	private VolumeUnit totalVolume;
+	public VolumeUnit TotalVolume
+	{
+		get
+		{
+			lock (SyncRoot)
+			{
+				if (recalculateVolume)
+				{
+					RecalculateVolume(out var totalVolume, out var nonCompressableVolume, out var compressableOccupiedVolume);
+					this.totalVolume = totalVolume;
+					this.nonCompressableVolume = nonCompressableVolume;
+					this.compressableOccupiedVolume = compressableOccupiedVolume;
+				}
+
+				return totalVolume;
+			}
+		}
+	}
+
+	private VolumeUnit compressableOccupiedVolume;
+	public VolumeUnit CompressableOccupiedVolume
+	{
+		get
+		{
+			lock (SyncRoot)
+			{
+				if (recalculateVolume)
+				{
+					RecalculateVolume(out var totalVolume, out var nonCompressableVolume, out var compressableOccupiedVolume);
+					this.totalVolume = totalVolume;
+					this.nonCompressableVolume = nonCompressableVolume;
+					this.compressableOccupiedVolume = compressableOccupiedVolume;
+				}
+
+				return totalVolume;
+			}
+		}
+	}
+
+	private void RecalculateVolume(out VolumeUnit totalVolume, out VolumeUnit nonCompressableVolume, out VolumeUnit compressableOccupiedVolume)
 	{
 		lock (SyncRoot)
 		{
-			recalculateNonCompressableVolume = false;
+			recalculateVolume = false;
 
-			VolumeUnit volume = 0;
+			VolumeUnit compressableUncompressedVolume = 0; // The theoretical volume occupied by all compressables if they were not compressed.
+
+			nonCompressableVolume = 0;
 
 			foreach (var resourceUnit in resources.Values)
 			{
 				if (!resourceUnit.ResourceType.Compressable)
 				{
-					volume += resourceUnit.Volume;
+					nonCompressableVolume += resourceUnit.NonCompressableVolume;
 				}
+
+				compressableUncompressedVolume += resourceUnit.UncompressedVolume;
 			}
 
-			return volume;
+			if (compressableUncompressedVolume + nonCompressableVolume > VolumeCapacity)
+			{  // The compressables uncompressed together with the non compressables use more than the available volume, forcing compressables to compress.
+				totalVolume = VolumeCapacity; // Compressables compress to fill available space.
+			}
+			else
+			{ // The compressables do not compress if there is plenty of space.
+				totalVolume = nonCompressableVolume + compressableUncompressedVolume;
+			}
+
+			compressableOccupiedVolume = VolumeCapacity - nonCompressableVolume;
 		}
 	}
 
@@ -195,7 +251,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 	{
 		lock (SyncRoot)
 		{
-			return Calculations.CalculatePressureUsingIdealGasLaw(GasSubstanceAmount, AverageTemperature, NonCompressableUnoccupiedVolume);
+			return Calculations.CalculatePressureUsingIdealGasLaw(GasSubstanceAmount, AverageTemperature, CompressableOccupiedVolume);
 		}
 	}
 
@@ -216,7 +272,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		}
 	}
 
-	bool recalculateNonCompressableVolume = false;
+	bool recalculateVolume = false;
 
 	bool recalculateMass = false;
 
@@ -408,7 +464,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 	{
 		if (resources.TryGetValue(resourceType, out var resourceUnit))
 		{
-			return resourceUnit.Volume;
+			return resourceUnit.NonCompressableVolume;
 		}
 		else
 		{
@@ -459,7 +515,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 	{
 		lock (SyncRoot)
 		{
-			recalculateNonCompressableVolume = true;
+			recalculateVolume = true;
 			recalculateMass = true;
 			recalculatePressure = true;
 			recalculateAverageTemperature = true;
@@ -492,7 +548,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 			var moles = ChemicalType.MassToMoles(
 						resourceUnit.ChemicalType,
 						(MassUnit)(
-							(DN)resourceUnit.Volume / (DN)intialVolume
+							(DN)resourceUnit.NonCompressableVolume / (DN)intialVolume
 								* desiredPartOfVolume
 									* (DN)resourceUnit.ResourceType.Density)
 								); // portion of current resource to transfer
@@ -529,7 +585,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 
 		var unit = resources[resourceType];
 
-		var portion = (DN)unit.Volume / (DN)volumeToTransfer;
+		var portion = (DN)unit.NonCompressableVolume / (DN)volumeToTransfer;
 
 		var moles = ChemicalType.MassToMoles(unit.ChemicalType, volumeToTransfer * resourceType.Density);
 

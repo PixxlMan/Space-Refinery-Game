@@ -2,6 +2,9 @@
 
 public static class Calculations
 {
+	/// <summary>
+	/// [J/K⁻¹] k = 8.314 J/K⁻¹
+	/// </summary>
 	public static readonly DecimalNumber GasConstant = (DecimalNumber)8.314;
 
 	public static PressureUnit PressureIdealGasLaw(MolesUnit gasSubstanceAmount, TemperatureUnit averageTemperature, VolumeUnit volume)
@@ -10,7 +13,7 @@ public static class Calculations
 		// P = pressure [kg/m³]
 		// V = volume [m³]
 		// n = substance amount [mol]
-		// k = gas constant (8.314 J K-1) [J/K⁻¹]
+		// k = gas constant (8.314 J/K⁻¹) [J/K⁻¹]
 		// T = temperature [K]
 		//
 		// Solve for P:
@@ -31,7 +34,7 @@ public static class Calculations
 		// P = pressure [kg/m³]
 		// V = volume [m³]
 		// n = substance amount [mol]
-		// k = gas constant (8.314 J K-1) [J/K⁻¹]
+		// k = gas constant (8.314 J/K⁻¹) [J/K⁻¹]
 		// T = temperature [K]
 		//
 		// Solve for T:

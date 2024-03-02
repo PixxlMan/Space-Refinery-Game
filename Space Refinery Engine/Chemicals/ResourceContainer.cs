@@ -155,7 +155,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 			Debug.Assert(value > 0, $"{nameof(VolumeCapacity)} cannot be negative.");
 			lock (SyncRoot)
 			{
-				InvalidateRecalcuables();
+				InvalidateRecalculables();
 
 				volumeCapacity = value;
 			}
@@ -516,7 +516,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 
 			resourceUnit.ResourceUnitChanged += ResourceUnit_Changed;
 
-			InvalidateRecalcuables();
+			InvalidateRecalculables();
 
 			ResourceCountChanged();
 
@@ -571,7 +571,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 	{
 		lock (SyncRoot)
 		{
-			InvalidateRecalcuables();
+			InvalidateRecalculables();
 
 			if (resources[changed.ResourceType].Moles == (MolesUnit)DN.Zero)
 			{
@@ -582,7 +582,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		}
 	}
 
-	public void InvalidateRecalcuables()
+	public void InvalidateRecalculables()
 	{
 		lock (SyncRoot)
 		{

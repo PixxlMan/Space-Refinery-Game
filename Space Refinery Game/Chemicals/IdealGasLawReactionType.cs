@@ -13,7 +13,7 @@ public sealed class IdealGasLawReactionType : ReactionType
 	{
 		lock (resourceContainer.SyncRoot)
 		{
-			resourceContainer.InvalidateRecalcuables();
+			resourceContainer.InvalidateRecalculables();
 		}
 
 		resourceUnitsToAdd.Clear();

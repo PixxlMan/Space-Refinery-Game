@@ -155,7 +155,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 	/// <summary>
 	/// The substance amount of all gas resources in this container in mols [mol]
 	/// </summary>
-	private MolesUnit GasSubstanceAmount
+	public MolesUnit GasSubstanceAmount
 	{
 		get
 		{

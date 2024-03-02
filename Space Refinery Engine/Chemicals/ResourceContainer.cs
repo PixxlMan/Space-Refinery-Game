@@ -231,7 +231,10 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 				}
 			}
 
-			averageNonGasTemperature += (TemperatureUnit)((DN)GasTemperature * (DN)(GasMass / Mass));
+			if (GasMass != 0)
+			{
+				averageNonGasTemperature += (TemperatureUnit)((DN)GasTemperature * (DN)(GasMass / Mass));
+			}
 
 			return averageNonGasTemperature;
 		}

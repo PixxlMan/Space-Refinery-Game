@@ -29,7 +29,7 @@ public sealed class PhaseChangeReactionType : ReactionType
 					case ChemicalPhase.Solid:
 						// Solid can go to:
 						// - Liquid (if temp > tempOfFusion)
-						if (unit.Temperature > resourceType.ChemicalType.TemperatureOfFusion)
+						if (unit.NonGasTemperature > resourceType.ChemicalType.TemperatureOfFusion)
 						{
 							TransitionPhase(unit, ChemicalPhase.Liquid, chemicalType.EnthalpyOfFusion,
 								unit.InternalEnergy - ChemicalType.TemperatureToInternalEnergy(resourceType, chemicalType.TemperatureOfFusion, unit.Mass),
@@ -46,7 +46,7 @@ public sealed class PhaseChangeReactionType : ReactionType
 						// Liquid can go to:
 						// - Gas (if temp > temperatureOfVaporization)
 						// - Solid (if temp < temperatureOfFusion)
-						if (unit.Temperature > resourceType.ChemicalType.TemperatureOfVaporization)
+						if (unit.NonGasTemperature > resourceType.ChemicalType.TemperatureOfVaporization)
 						{
 							TransitionPhase(unit, ChemicalPhase.Gas, chemicalType.EnthalpyOfVaporization,
 								unit.InternalEnergy - ChemicalType.TemperatureToInternalEnergy(resourceType, chemicalType.TemperatureOfVaporization, unit.Mass),
@@ -54,7 +54,7 @@ public sealed class PhaseChangeReactionType : ReactionType
 							producedReactionFactors.Add(new Vaporizing());
 							Logging.Log("Vaporizing");
 						}
-						else if (unit.Temperature < resourceType.ChemicalType.TemperatureOfFusion)
+						else if (unit.NonGasTemperature < resourceType.ChemicalType.TemperatureOfFusion)
 						{
 							TransitionPhase(unit, ChemicalPhase.Solid, chemicalType.EnthalpyOfFusion,
 								ChemicalType.TemperatureToInternalEnergy(resourceType, chemicalType.TemperatureOfVaporization, unit.Mass) - unit.InternalEnergy,
@@ -71,7 +71,7 @@ public sealed class PhaseChangeReactionType : ReactionType
 						// Gas can go to:
 						// - Liquid (if temp < temperatureOfVaporization)
 						// - Plasma (unsupported)
-						if (unit.Temperature < resourceType.ChemicalType.TemperatureOfVaporization)
+						if (unit.NonGasTemperature < resourceType.ChemicalType.TemperatureOfVaporization)
 						{
 							TransitionPhase(unit, ChemicalPhase.Liquid, chemicalType.EnthalpyOfVaporization,
 								unit.InternalEnergy - ChemicalType.TemperatureToInternalEnergy(resourceType, chemicalType.TemperatureOfVaporization, unit.Mass),

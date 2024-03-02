@@ -38,15 +38,33 @@ namespace Space_Refinery_Engine
 		public VolumeUnit Volume => Mass / ResourceType.Density;
 
 		/// <summary>
-		/// [K]
+		/// [K] The temperature of the resource if it is not a gas.
+		/// Gas temperature is a property of the resource container,
+		/// not the resource itself as it is dependent on the pressure and volume in the container.
 		/// </summary>
 		/// <remarks>
-		/// If the substance amount or the mass is zero, the temperature will be considered to be zero.
+		/// If the substance amount or the mass is zero, the temperature will be considered to be zero
+		/// If the resource is a gas, this method will throw an exception.
 		/// </remarks>
-		public TemperatureUnit Temperature =>
-			Moles != 0 && Mass != 0
-				? ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass)
-				: 0;
+		public TemperatureUnit NonGasTemperature
+		{
+			get
+			{
+				if (ResourceType.ChemicalPhase == ChemicalPhase.Gas)
+				{
+					throw new Exception("A gaseous resource cannot return a non gas temperature.");
+				}
+
+				if (Moles != 0 && Mass != 0)
+				{
+					return ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass);
+				}
+				else
+				{
+					return 0;
+				}
+			}
+		}
 
 		/// <summary>
 		/// [J/mol]

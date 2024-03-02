@@ -89,7 +89,7 @@ public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 			}
 			else
 			{
-				return (TemperatureUnit)0;
+				return 0;
 			}
 		}
 	}

@@ -482,7 +482,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		lock (SyncRoot)
 		{
 			invalidatePossibleReactionTypes = false;
-	}
+		}
 	}
 
 	private void InvalidatePossibleReactionTypes()
@@ -518,14 +518,43 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 
 			resourceUnit.ResourceUnitChanged += ResourceUnit_Changed;
 
-			InvalidateRecalculables();
-
 			ResourceCountChanged();
 
 			return resourceUnit;
 		});
 
-		resourceUnit.Add(addedResourceUnitData);
+		lock (SyncRoot)
+		{
+			if (addedResourceUnitData.ResourceType.ChemicalPhase == ChemicalPhase.Gas)
+			{
+				if (GasSubstanceAmount == 0) // We only need to intialize gas temperature if this is the first gas added to the container.
+				{
+					// We need to bootstrap the ideal gas simulation system by providing an inital gas temperature
+					// Otherwise the temperature will remain zero, leading to the pressure remaing zero (leading to zero temp, leading to zero pressure etc)
+					InitialGasTemperature(addedResourceUnitData);
+				}
+			}
+
+			resourceUnit.Add(addedResourceUnitData);
+		}
+
+		InvalidateRecalculables();
+
+		/// <summary>
+		/// Initializes the gas temperature without using the ideal gas law calculations to bootstrap the ideal gas law simulation
+		/// </summary>
+		void InitialGasTemperature(ResourceUnitData gasUnitData)
+		{
+			lock (SyncRoot)
+			{
+				// Invalidate key recalculables to ensure data is correct since InvalidateRecalculables will not have been called yet
+				recalculateMass = true;
+				recalculateGasSubstanceAmountAndMass = true;
+				recalculateVolume = true;
+
+				gasTemperature = ChemicalType.InternalEnergyToTemperature(gasUnitData.ResourceType, gasUnitData.InternalEnergy, gasUnitData.Mass);
+			}
+		}
 	}
 
 	private void ResourceCountChanged()

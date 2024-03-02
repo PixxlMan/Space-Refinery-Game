@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SerializationReferenceHandler>
+	<Count>1</Count>
+	<Elements>
+		<IEntitySerializable>
+			<Type>Space_Refinery_Game.IdealGasLawReactionType</Type>
+			<ReactionType>
+				<Reference>Ideal Gas Law</Reference>
+				<ReactionName>Ideal Gas Law</ReactionName>
+				<CanOccurSpontaneously>True</CanOccurSpontaneously>
+				<NecessaryChemicals>
+					<Count>0</Count>
+					<Elements/>
+				</NecessaryChemicals>
+			</ReactionType>				
+		</IEntitySerializable>
+	</Elements>
+</SerializationReferenceHandler>

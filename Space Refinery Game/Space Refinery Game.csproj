@@ -84,6 +84,7 @@
     <None Remove="_GameAssets\Models\SpaceDock.srh.xml" />
     <None Remove="_GameAssets\Reaction Types\Electrolysis.srh.xml" />
     <None Remove="_GameAssets\Reaction Types\HydrogenOxygenCombustion.srh.xml" />
+    <None Remove="_GameAssets\Reaction Types\IdealGasLaw.srh.xml" />
     <None Remove="_GameAssets\Reaction Types\PhaseChange.srh.xml" />
     <None Remove="_GameAssets\Settings\Graphics\DisplaySettings.srh.xml" />
     <None Remove="_GameAssets\Settings\VolumeSettings.srh.xml" />
@@ -213,6 +214,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="_GameAssets\Models\Pipe\Textures\White.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_GameAssets\Reaction Types\IdealGasLaw.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="_GameAssets\Reaction Types\PhaseChange.srh.xml">

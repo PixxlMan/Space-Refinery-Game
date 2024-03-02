@@ -511,7 +511,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		}
 	}
 
-	private void InvalidateRecalcuables()
+	public void InvalidateRecalcuables()
 	{
 		lock (SyncRoot)
 		{

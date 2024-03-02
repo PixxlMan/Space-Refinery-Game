@@ -66,25 +66,26 @@ public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 	}
 
 	/// <summary>
-	/// [K]
+	/// [K] The temperature of the resource if it is not a gas.
+	/// Gas temperature is a property of the resource container,
+	/// not the resource itself as it is dependent on the pressure and volume in the container.
 	/// </summary>
 	/// <remarks>
-	/// If the substance amount or the mass is zero, the temperature will be considered to be zero.
+	/// If the substance amount or the mass is zero, the temperature will be considered to be zero
+	/// If the resource is a gas, this method will throw an exception.
 	/// </remarks>
-	public TemperatureUnit Temperature
+	public TemperatureUnit NonGasTemperature
 	{
 		get
 		{
+			if (ResourceType.ChemicalPhase == ChemicalPhase.Gas)
+			{
+				throw new Exception("A gaseous resource cannot return a non gas temperature.");
+			}
+
 			if (Moles != 0 && Mass != 0)
 			{
-				//if (ResourceType.ChemicalPhase != ChemicalPhase.Gas)
-				//{
-					return ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass);
-				//}
-				//else
-				//{
-				//	return Calculations.TemperatureIdealGasLaw(Moles, ResourceContainer.Pressure, (VolumeUnit)(((DecimalNumber)ResourceContainer.CompressableOccupiedVolume / (DecimalNumber)ResourceContainer.GasSubstanceAmount) * (DecimalNumber)Moles));
-				//}
+				return ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass);
 			}
 			else
 			{
@@ -193,7 +194,10 @@ public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 			ImGui.Text($"{nameof(NonCompressableVolume)}: {NonCompressableVolume.FormatVolume()}");
 			ImGui.Text($"{nameof(InternalEnergy)}: {InternalEnergy.FormatEnergy()}");
 			ImGui.Text($"{nameof(MolarEnergy)}: {MolarEnergy.FormatMolarEnergy()}");
-			ImGui.Text($"{nameof(Temperature)}: {Temperature.FormatTemperature()}");
+			if (ResourceType.ChemicalPhase != ChemicalPhase.Gas)
+			{
+				ImGui.Text($"{nameof(NonGasTemperature)}: {NonGasTemperature.FormatTemperature()}");
+			}
 		}
 		UIFunctions.EndSub();
 	}

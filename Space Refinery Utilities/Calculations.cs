@@ -56,6 +56,7 @@ public static class Calculations
 
 		if (DN.Difference((DN)TemperatureIdealGasLaw(gasSubstanceAmount, initialPressure, volume), (DN)TemperatureIdealGasLaw(gasSubstanceAmount, PressureIdealGasLaw(gasSubstanceAmount, initialTemperature, volume), volume)) < 0.001)
 		{
+			Logging.Log("Skipping sim");
 			return;
 		}
 
@@ -64,16 +65,38 @@ public static class Calculations
 			TemperatureUnit oldTemperature = temperature;
 			PressureUnit oldPressure = pressure;
 
-			// Update temperature based on pressure
-			temperature = (TemperatureUnit)RungeKuttaStep((P, T) => ((DN)gasSubstanceAmount * GasConstant * T - P * (DN)volume) / ((DN)volume * (DN)gasSubstanceAmount * GasConstant), (DN)pressure, (DN)temperature, stepSize);
-
 			// Update pressure based on temperature
-			pressure = (PressureUnit)RungeKuttaStep((T, P) => (P * (DN)volume - (DN)gasSubstanceAmount * GasConstant * T) / ((DN)gasSubstanceAmount * GasConstant * T), (DN)temperature, (DN)pressure, stepSize);
+			pressure = (PressureUnit)RungeKuttaStep((T, P) => (P * (DN)volume - (DN)gasSubstanceAmount * GasConstant * T) / ((DN)gasSubstanceAmount * GasConstant * T), (DN)initialTemperature, (DN)initialPressure, stepSize);
+
+			// Update temperature based on pressure
+			temperature = (TemperatureUnit)RungeKuttaStep((P, T) => ((DN)gasSubstanceAmount * GasConstant * T - P * (DN)volume) / ((DN)volume * (DN)gasSubstanceAmount * GasConstant), (DN)initialPressure, (DN)temperature, stepSize);
 
 			i++;
 		}
 	}
 
+	// Good references
+	// https://www.youtube.com/watch?v=hGCP6I2WisM
+	// https://github.com/BSVino/MathForGameDevelopers/blob/numerical-integrations/game/game.cpp
+	// The code is not from here, however it's a good explaination: https://www.geeksforgeeks.org/runge-kutta-4th-order-method-solve-differential-equation/
+	public static DecimalNumber RungeKuttaStep(Func<DecimalNumber, DecimalNumber, DecimalNumber> f, DecimalNumber x0, DecimalNumber y, DecimalNumber h)
+	{
+		// Apply Runge Kutta Formulas
+		// to find next value of y
+		var k1 = h * (f(x0, y));
+
+		var k2 = h * (f(x0 + 0.5 * h,
+						 y + 0.5 * k1));
+
+		var k3 = h * (f(x0 + 0.5 * h,
+						y + 0.5 * k2));
+
+		var k4 = h * (f(x0 + h, y + k3));
+
+		// Update next value of y
+		return y + (1.0 / 6.0) * (k1 + 2
+				   * k2 + 2 * k3 + k4);
+	}
 	/// <summary>
 	/// -273.15 ⁰C = absolute zero = 0 K
 	/// </summary>
@@ -87,15 +110,5 @@ public static class Calculations
 	public static TemperatureUnit CelciusToTemperature(DecimalNumber celcius)
 	{
 		return (TemperatureUnit)(celcius - AbsoluteZeroInCelcius);
-	}
-
-	// The code is not from here, however it's a good explaination: https://www.geeksforgeeks.org/runge-kutta-4th-order-method-solve-differential-equation/
-	public static DecimalNumber RungeKuttaStep(Func<DecimalNumber, DecimalNumber, DecimalNumber> f, DecimalNumber x0, DecimalNumber y0, DecimalNumber h)
-	{
-		DecimalNumber k1 = h * f(x0, y0);
-		DecimalNumber k2 = h * f(x0 + 0.5 * h, y0 + 0.5 * k1);
-		DecimalNumber k3 = h * f(x0 + 0.5 * h, y0 + 0.5 * k2);
-		DecimalNumber k4 = h * f(x0 + h, y0 + k3);
-		return y0 + (1.0 / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4);
 	}
 }

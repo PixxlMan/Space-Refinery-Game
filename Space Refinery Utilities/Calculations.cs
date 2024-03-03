@@ -54,10 +54,23 @@ public static class Calculations
 		temperature = initialTemperature;
 		pressure = initialPressure;
 
+		if (DN.Difference((DN)TemperatureIdealGasLaw(gasSubstanceAmount, initialPressure, volume), (DN)PressureIdealGasLaw(gasSubstanceAmount, initialTemperature, volume)) < 0.1)
+		{
+			return;
+		}
+
 		for (int i = 0; i < iterations; i++)
 		{
-			temperature = (TemperatureUnit)RungeKuttaStep((rkPressure, rkTemp) => (DecimalNumber)TemperatureIdealGasLaw(gasSubstanceAmount, (PressureUnit)rkPressure, volume), (DN)temperature, (DN)pressure, stepSize);
-			pressure = (PressureUnit)RungeKuttaStep((rkPressure, rkTemp) => (DecimalNumber)PressureIdealGasLaw(gasSubstanceAmount, (TemperatureUnit)rkTemp, volume), (DN)temperature, (DN)pressure, stepSize);
+			TemperatureUnit oldTemperature = temperature;
+			PressureUnit oldPressure = pressure;
+
+			// Update temperature based on pressure
+			temperature = (TemperatureUnit)RungeKuttaStep((P, T) => ((DN)gasSubstanceAmount * GasConstant * T - P * (DN)volume) / ((DN)volume * (DN)gasSubstanceAmount * GasConstant), (DN)pressure, (DN)temperature, stepSize);
+
+			// Update pressure based on temperature
+			pressure = (PressureUnit)RungeKuttaStep((T, P) => (P * (DN)volume - (DN)gasSubstanceAmount * GasConstant * T) / ((DN)gasSubstanceAmount * GasConstant * T), (DN)temperature, (DN)pressure, stepSize);
+
+			i++;
 		}
 	}
 

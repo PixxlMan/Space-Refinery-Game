@@ -54,7 +54,7 @@ public static class Calculations
 		temperature = initialTemperature;
 		pressure = initialPressure;
 
-		if (DN.Difference((DN)TemperatureIdealGasLaw(gasSubstanceAmount, initialPressure, volume), (DN)TemperatureIdealGasLaw(gasSubstanceAmount, PressureIdealGasLaw(gasSubstanceAmount, initialTemperature, volume), volume)) < 0.1)
+		if (DN.Difference((DN)TemperatureIdealGasLaw(gasSubstanceAmount, initialPressure, volume), (DN)TemperatureIdealGasLaw(gasSubstanceAmount, PressureIdealGasLaw(gasSubstanceAmount, initialTemperature, volume), volume)) < 0.001)
 		{
 			return;
 		}

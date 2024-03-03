@@ -155,9 +155,9 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 			Debug.Assert(value > 0, $"{nameof(VolumeCapacity)} cannot be negative.");
 			lock (SyncRoot)
 			{
-				InvalidateRecalculables();
-
 				volumeCapacity = value;
+
+				InvalidateRecalculables();
 			}
 		}
 	}

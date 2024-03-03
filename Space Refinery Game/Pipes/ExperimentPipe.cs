@@ -21,70 +21,76 @@ public sealed class ExperimentPipe : MachineryPipe
 
 	public override void Tick()
 	{
+		lock (SyncRoot)
+		{
 #if DEBUG
-		DebugStopPoints.TickStopPoint(SerializableReference);
+			DebugStopPoints.TickStopPoint(SerializableReference);
 #endif
 
-		ResourceContainer.Tick(Time.TickInterval);
+			ResourceContainer.Tick(Time.TickInterval);
 
-		if (Activated)
-		{
-			if (ResourceContainer.VolumeCapacity - 0.0001 <= 0)
+			if (Activated)
 			{
-				Activated = false;
-				return;
+				if (ResourceContainer.VolumeCapacity - 0.001 <= 0)
+				{
+					Activated = false;
+					return;
+				}
+
+				RecordedPressureAndTemp.Add(new((decimal)(DecimalNumber)ResourceContainer.Pressure, (decimal)(DecimalNumber)ResourceContainer.AverageTemperature));
+
+				ResourceContainer.VolumeCapacity -= 0.0001;
 			}
-
-			RecordedPressureAndTemp.Add(new((decimal)(DecimalNumber)ResourceContainer.Pressure, (decimal)(DecimalNumber)ResourceContainer.AverageTemperature));
-
-			ResourceContainer.VolumeCapacity -= 0.0001;
 		}
 	}
 
 	protected override void DoMenu()
 	{
-		if (ImGui.Button("Insert 1 kg air (0.77 m³ volume)"))
+		lock (SyncRoot)
 		{
-			TemperatureUnit temperature = Calculations.CelciusToTemperature(20);
+			if (ImGui.Button("Insert 1 kg air (0.77 m³ volume)"))
+			{
+				TemperatureUnit temperature = Calculations.CelciusToTemperature(20);
 
-			MassUnit totalMass = 1;
+				MassUnit totalMass = 1;
 
-			var nitrogen = ChemicalType.GetChemicalType("Nitrogen");
-			var nitrogenMass = (78.084 / 100) * totalMass;
-			MolesUnit nitrogenPart = ChemicalType.MassToMoles(nitrogen, nitrogenMass);
+				var nitrogen = ChemicalType.GetChemicalType("Nitrogen");
+				var nitrogenMass = (78.084 / 100) * totalMass;
+				MolesUnit nitrogenPart = ChemicalType.MassToMoles(nitrogen, nitrogenMass);
 
-			var oxygen = ChemicalType.Oxygen;
-			var oxygenMass = (20.948 / 100) * totalMass;
-			MolesUnit oxygenPart = ChemicalType.MassToMoles(oxygen, oxygenMass);
+				var oxygen = ChemicalType.Oxygen;
+				var oxygenMass = (20.948 / 100) * totalMass;
+				MolesUnit oxygenPart = ChemicalType.MassToMoles(oxygen, oxygenMass);
 
-			var water = ChemicalType.Water;
-			var waterMass = (1 / 100) * totalMass;
-			MolesUnit waterPart = ChemicalType.MassToMoles(water, waterMass);
+				var water = ChemicalType.Water;
+				var waterMass = (1 / 100) * totalMass;
+				MolesUnit waterPart = ChemicalType.MassToMoles(water, waterMass);
 
-			var argon = ChemicalType.GetChemicalType("Argon");
-			var argonMass = (0.934 / 100) * totalMass;
-			MolesUnit argonPart = ChemicalType.MassToMoles(argon, argonMass);
+				var argon = ChemicalType.GetChemicalType("Argon");
+				var argonMass = (0.934 / 100) * totalMass;
+				MolesUnit argonPart = ChemicalType.MassToMoles(argon, argonMass);
 
-			ResourceContainer.AddResource(new(nitrogen.GasPhaseType, nitrogenPart, ChemicalType.TemperatureToInternalEnergy(nitrogen.GasPhaseType, temperature, nitrogenMass)));
-			ResourceContainer.AddResource(new(oxygen.GasPhaseType, oxygenPart, ChemicalType.TemperatureToInternalEnergy(oxygen.GasPhaseType, temperature, oxygenMass)));
-			ResourceContainer.AddResource(new(water.GasPhaseType, waterPart, ChemicalType.TemperatureToInternalEnergy(water.GasPhaseType, temperature, waterMass)));
-			ResourceContainer.AddResource(new(argon.GasPhaseType, argonPart, ChemicalType.TemperatureToInternalEnergy(argon.GasPhaseType, temperature, argonMass)));
-		}
+				ResourceContainer.AddResource(new(nitrogen.GasPhaseType, nitrogenPart, ChemicalType.TemperatureToInternalEnergy(nitrogen.GasPhaseType, temperature, nitrogenMass)));
+				ResourceContainer.AddResource(new(oxygen.GasPhaseType, oxygenPart, ChemicalType.TemperatureToInternalEnergy(oxygen.GasPhaseType, temperature, oxygenMass)));
+				ResourceContainer.AddResource(new(water.GasPhaseType, waterPart, ChemicalType.TemperatureToInternalEnergy(water.GasPhaseType, temperature, waterMass)));
+				ResourceContainer.AddResource(new(argon.GasPhaseType, argonPart, ChemicalType.TemperatureToInternalEnergy(argon.GasPhaseType, temperature, argonMass)));
+			}
 
-		ImGui.Separator();
+			ImGui.Separator();
 
-		base.DoMenu();
+			base.DoMenu();
 
-		ImGui.Text($"{RecordedPressureAndTemp.Count} entries recorded");
+			ImGui.Text($"{RecordedPressureAndTemp.Count} entries recorded");
 
-		if (ImGui.Button("Save"))
-		{
-			SaveData();
-		}
+			if (ImGui.Button("Save"))
+			{
+				SaveData();
+			}
 
-		if (ImGui.Button("Clear"))
-		{
-			ClearData();
+			if (ImGui.Button("Clear"))
+			{
+				ClearData();
+			}
 		}
 	}
 
@@ -106,18 +112,24 @@ public sealed class ExperimentPipe : MachineryPipe
 
 	public void SaveData()
 	{
-		using CsvWriter writer = new(new StreamWriter(File.OpenWrite("R:\\pressure_temperature.csv")), CultureInfo.InvariantCulture, false);
+		lock (SyncRoot)
+		{
+			using CsvWriter writer = new(new StreamWriter(File.OpenWrite("R:\\pressure_temperature.csv")), CultureInfo.InvariantCulture, false);
 
-		writer.WriteRecords(RecordedPressureAndTemp);
+			writer.WriteRecords(RecordedPressureAndTemp);
 
-		writer.Flush();
+			writer.Flush();
 
-		writer.Dispose();
+			writer.Dispose();
+		}
 	}
 
 	public void ClearData()
 	{
-		RecordedPressureAndTemp.Clear();
+		lock (SyncRoot)
+		{
+			RecordedPressureAndTemp.Clear();
+		}
 	}
 
 	public override void TransferResourceFromConnector(ResourceContainer source, VolumeUnit volume, PipeConnector _)

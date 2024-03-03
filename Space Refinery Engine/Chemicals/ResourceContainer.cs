@@ -177,21 +177,15 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		{
 			lock (SyncRoot)
 			{
-				if (recalculatePressure)
+				if (recalculateIdealGasLaw)
 				{
-					pressure = RecalculatePressure();
+					RecalculateIdealGasLaw(out var gasTemperature, out var pressure);
+					this.gasTemperature = gasTemperature;
+					this.pressure = pressure;
 				}
 
 				return pressure;
 			}
-		}
-	}
-
-	private PressureUnit RecalculatePressure()
-	{
-		lock (SyncRoot)
-		{
-			return Calculations.PressureIdealGasLaw(GasSubstanceAmount, GasTemperature, NonCompressableUnoccupiedVolume);
 		}
 	}
 
@@ -250,9 +244,11 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		{
 			lock (SyncRoot)
 			{
-				if (recalculateGasTemperature)
+				if (recalculateIdealGasLaw)
 				{
-					gasTemperature = RecalculateGasTemperature();
+					RecalculateIdealGasLaw(out var gasTemperature, out var pressure);
+					this.gasTemperature = gasTemperature;
+					this.pressure = pressure;
 				}
 
 				return gasTemperature;
@@ -260,20 +256,26 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		}
 	}
 
-	private TemperatureUnit RecalculateGasTemperature()
+	private void RecalculateIdealGasLaw(out TemperatureUnit gasTemperature, out PressureUnit pressure)
 	{
 		lock (SyncRoot)
 		{
-			recalculateGasTemperature = false;
+			recalculateIdealGasLaw = false;
 
-			if (GasMass == 0 || GasSubstanceAmount == 0)
+			TemperatureUnit newTemperature = GasTemperature;
+			PressureUnit newPressure = Pressure;
+
+			if (Pressure == 0)
 			{
-				return 0;
+				newPressure = Calculations.PressureIdealGasLaw(GasSubstanceAmount, GasTemperature, NonCompressableUnoccupiedVolume);
 			}
-			else
+
+			if (GasTemperature == 0)
 			{
-				return Calculations.TemperatureIdealGasLaw(GasSubstanceAmount, Pressure, NonCompressableUnoccupiedVolume);
+				newTemperature = Calculations.TemperatureIdealGasLaw(GasSubstanceAmount, Pressure, NonCompressableUnoccupiedVolume);
 			}
+
+			Calculations.IdealGasLawSolveRungeKutta(GasSubstanceAmount, newTemperature, newPressure, NonCompressableUnoccupiedVolume, 0.001, 1, out gasTemperature, out pressure);
 		}
 	}
 
@@ -345,11 +347,9 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 
 	bool recalculateMass = false;
 
-	bool recalculatePressure = false;
+	bool recalculateIdealGasLaw = false;
 
 	bool recalculateAverageTemperature = false;
-
-	bool recalculateGasTemperature = false;
 
 	bool recalculateGasSubstanceAmountAndMass = false;
 
@@ -622,9 +622,8 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		{
 			recalculateVolume = true;
 			recalculateMass = true;
-			recalculatePressure = true;
+			recalculateIdealGasLaw = true;
 			recalculateAverageTemperature = true;
-			recalculateGasTemperature = true;
 			recalculateGasSubstanceAmountAndMass = true;
 		}
 	}

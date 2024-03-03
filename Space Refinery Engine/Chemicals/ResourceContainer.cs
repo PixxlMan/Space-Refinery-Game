@@ -275,7 +275,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 				newTemperature = Calculations.TemperatureIdealGasLaw(GasSubstanceAmount, Pressure, NonCompressableUnoccupiedVolume);
 			}
 
-			Calculations.IdealGasLawSolveRungeKutta(GasSubstanceAmount, newTemperature, newPressure, NonCompressableUnoccupiedVolume, 0.001, 1, out gasTemperature, out pressure);
+			Calculations.IdealGasLawSolveRungeKutta(GasSubstanceAmount, newTemperature, newPressure, NonCompressableUnoccupiedVolume, 0.001, 5, out gasTemperature, out pressure);
 		}
 	}
 

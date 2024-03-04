@@ -44,6 +44,8 @@ public sealed class ExperimentPipe : MachineryPipe
 		}
 	}
 
+	float energyToAdd = 10_000;
+
 	protected override void DoMenu()
 	{
 		lock (SyncRoot)
@@ -74,6 +76,18 @@ public sealed class ExperimentPipe : MachineryPipe
 				ResourceContainer.AddResource(new(oxygen.GasPhaseType, oxygenPart, ChemicalType.TemperatureToInternalEnergy(oxygen.GasPhaseType, temperature, oxygenMass)));
 				ResourceContainer.AddResource(new(water.GasPhaseType, waterPart, ChemicalType.TemperatureToInternalEnergy(water.GasPhaseType, temperature, waterMass)));
 				ResourceContainer.AddResource(new(argon.GasPhaseType, argonPart, ChemicalType.TemperatureToInternalEnergy(argon.GasPhaseType, temperature, argonMass)));
+			}
+
+			ImGui.SliderFloat("Heat energy to add (kJ)", ref energyToAdd, 1_000, 100_000);
+			if (ImGui.Button("Add heat"))
+			{
+				EnergyUnit energy = (EnergyUnit)(DN)energyToAdd;
+				EnergyUnit timeAdjustedEnergy = energy * Time.UpdateInterval;
+
+				foreach (var unitData in ResourceContainer.EnumerateResources())
+				{
+					ResourceContainer.AddResource(new(unitData.ResourceType, 0, energy * (Portion<EnergyUnit>)(DN)(unitData.Mass / ResourceContainer.Mass)));
+				}
 			}
 
 			ImGui.Separator();

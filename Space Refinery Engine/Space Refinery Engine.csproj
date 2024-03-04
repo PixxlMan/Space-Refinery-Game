@@ -10,7 +10,16 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
-  <ItemGroup>
+	<Target Name="SetSourceRevisionId" BeforeTargets="InitializeSourceControlInformation">
+		<Exec Command="git describe --long --always --dirty --exclude=* --abbrev=8" ConsoleToMSBuild="True" IgnoreExitCode="False">
+			<Output PropertyName="SourceRevisionId" TaskParameter="ConsoleOutput" />
+		</Exec>
+		<ItemGroup>
+			<AssemblyMetadata Include="SourceRevisionId" Value="$(SourceRevisionId)" />
+		</ItemGroup>
+	</Target>
+
+	<ItemGroup>
     <None Remove="Assets\DefaultPipeConnector.srh.xml" />
     <None Remove="Assets\EmptySRHFile.srh.xml" />
     <None Remove="Assets\Engine.manifest.srh.xml" />

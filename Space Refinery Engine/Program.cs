@@ -1,6 +1,7 @@
 ﻿using FXRenderer;
 using Space_Refinery_Utilities;
 using System.Globalization;
+using System.Reflection;
 using Veldrid;
 using Veldrid.StartupUtilities;
 using Veldrid.Utilities;
@@ -26,7 +27,7 @@ public static class Program
 		Logging.SetUp(logLevel);
 
 		Logging.LogDebug($"Logs from {nameof(Logging.LogDebug)} are included in this build.");
-		Logging.LogLegend($"Build version: {"haven't started with this yet"}");
+		Logging.LogLegend($"Commit hash: {Assembly.GetExecutingAssembly()!.GetCustomAttributes<AssemblyMetadataAttribute>().Where((a) => a.Key == "SourceRevisionId").Single().Value}");
 
 		CultureInfo.CurrentCulture = (System.Globalization.CultureInfo)CultureInfo.InvariantCulture.Clone();
 		CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator = " ";

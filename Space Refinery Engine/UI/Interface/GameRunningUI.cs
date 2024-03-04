@@ -69,7 +69,7 @@ partial class UI
 	private IInformationProvider? currentlySelectedInformationProvider;
 	// Magically set by Player.
 	internal IInformationProvider? CurrentlySelectedInformationProvider { get { lock (syncRoot) return currentlySelectedInformationProvider; } set { lock (syncRoot) currentlySelectedInformationProvider = value; } }
-	/*do locking on each individual objects themselves? and of course get rid of the field then - all accesses have to be locked! even from within this class*/
+	/*TODO: do locking on each individual objects themselves instead of using SyncRoot (performance, mainly)? and of course get rid of the field then - all accesses have to be locked! even from within this class*/
 
 	private void DoInformationPanel(DecimalNumber deltaTime)
 	{
@@ -100,7 +100,7 @@ partial class UI
 			}
 		}
 
-		// add if (looking at but not visible) -> place at middle! - to ensure visibility when inside object?)
+		// TODO: add if (looking at but not visible) -> place at middle! - to ensure visibility when inside object?)
 
 		ImGui.SetNextWindowBgAlpha((float)informationPanelFading);
 		ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoInputs);

@@ -219,7 +219,10 @@ namespace Space_Refinery_Engine
 				}
 				catch (ArgumentOutOfRangeException)
 				{
-					Logging.LogError("That weird argument out of range exception again... Oh well!");
+					Logging.LogError("That weird argument out of range exception again... Oh well! Skipping the UI this frame.");
+					return; // The error appears to be correlated with AccessViolationExceptions
+							// in ImGui (especially when dealing with windows).
+							// So it might be safer to skip drawing the ui when the error occurs.
 				}
 
 				BeforeUI();

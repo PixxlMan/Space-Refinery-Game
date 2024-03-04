@@ -163,13 +163,12 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 	}
 
 	/// <summary>
-	/// [m³] Volume which is not occupied by non compressable resources in cubic meters
+	/// [m³] Volume which is not occupied by non compressable resources in cubic meters.
 	/// </summary>
 	public VolumeUnit NonCompressableUnoccupiedVolume => VolumeCapacity - NonCompressableVolume;
 
-	private PressureUnit pressure;
 	/// <summary>
-	/// [N/m²]
+	/// [N/m²] Pressure within the container caused by gasses and liquids.
 	/// </summary>
 	public PressureUnit Pressure
 	{
@@ -177,21 +176,14 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		{
 			lock (SyncRoot)
 			{
-				if (recalculateIdealGasLaw)
-				{
-					RecalculateIdealGasLaw(out var gasTemperature, out var pressure);
-					this.gasTemperature = gasTemperature;
-					this.pressure = pressure;
-				}
-
-				return pressure;
+				return Calculations.PressureIdealGasLaw(GasMoles, AverageGasTemperature, NonCompressableUnoccupiedVolume);
 			}
 		}
 	}
 
 	private TemperatureUnit averageTemperature;
 	/// <summary>
-	/// [K] The average temperature of all resources in this container in kelvin
+	/// [K] The average temperature of all resources in this container in kelvin.
 	/// </summary>
 	public TemperatureUnit AverageTemperature
 	{
@@ -199,9 +191,11 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		{
 			lock (SyncRoot)
 			{
-				if (recalculateAverageTemperature)
+				if (recalculateAverageTemperatures)
 				{
-					averageTemperature = RecalculateAverageTemperature();
+					RecalculateAverageTemperatures(out var averageTemperature, out var averageGasTemperature);
+					this.averageTemperature = averageTemperature;
+					this.averageGasTemperature = averageGasTemperature;
 				}
 
 				return averageTemperature;
@@ -209,101 +203,74 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		}
 	}
 
-	private TemperatureUnit RecalculateAverageTemperature()
+	private TemperatureUnit averageGasTemperature;
+	/// <summary>
+	/// [K] The average temperature of gasses in this container in kelvin.
+	/// </summary>
+	public TemperatureUnit AverageGasTemperature
+	{
+		get
+		{
+			lock (SyncRoot)
+			{
+				if (recalculateAverageTemperatures)
+				{
+					RecalculateAverageTemperatures(out var averageTemperature, out var averageGasTemperature);
+					this.averageTemperature = averageTemperature;
+					this.averageGasTemperature = averageGasTemperature;
+				}
+
+				return averageTemperature;
+			}
+		}
+	}
+
+	private void RecalculateAverageTemperatures(out TemperatureUnit averageTemperature, out TemperatureUnit averageGasTemperature)
 	{
 		lock (SyncRoot)
 		{
-			recalculateAverageTemperature = false;
+			recalculateAverageTemperatures = false;
 
-			TemperatureUnit averageNonGasTemperature = 0;
+			averageTemperature = 0;
+			averageGasTemperature = 0;
 
 			foreach (var resourceUnit in resources.Values)
 			{
-				if (resourceUnit.ResourceType.ChemicalPhase != ChemicalPhase.Gas)
+				averageTemperature += (TemperatureUnit)((DN)resourceUnit.Temperature * (DN)(resourceUnit.Mass / Mass));
+
+				if (resourceUnit.ResourceType.ChemicalPhase == ChemicalPhase.Gas)
 				{
-					averageNonGasTemperature += (TemperatureUnit)((DN)resourceUnit.NonGasTemperature * (DN)(resourceUnit.Mass / Mass));
+					averageGasTemperature += (TemperatureUnit)((DN)resourceUnit.Temperature * (DN)(resourceUnit.Mass / GasMass));
 				}
 			}
-
-			if (GasMass != 0)
-			{
-				averageNonGasTemperature += (TemperatureUnit)((DN)GasTemperature * (DN)(GasMass / Mass));
-			}
-
-			return averageNonGasTemperature;
 		}
 	}
 
-	private TemperatureUnit gasTemperature;
+	private MolesUnit gasMoles;
 	/// <summary>
-	/// [K] The temperature of all gaseous resources in this container in kelvin
+	/// [mol] The substance amount of all gas resources in this container in moles.
 	/// </summary>
-	public TemperatureUnit GasTemperature
+	public MolesUnit GasMoles
 	{
 		get
 		{
 			lock (SyncRoot)
 			{
-				if (recalculateIdealGasLaw)
-				{
-					RecalculateIdealGasLaw(out var gasTemperature, out var pressure);
-					this.gasTemperature = gasTemperature;
-					this.pressure = pressure;
-				}
-
-				return gasTemperature;
-			}
-		}
-	}
-
-	private void RecalculateIdealGasLaw(out TemperatureUnit gasTemperature, out PressureUnit pressure)
-	{
-		lock (SyncRoot)
-		{
-			recalculateIdealGasLaw = false;
-
-			TemperatureUnit newTemperature = GasTemperature;
-			PressureUnit newPressure = Pressure;
-
-			if (Pressure == 0)
-			{
-				newPressure = Calculations.PressureIdealGasLaw(GasSubstanceAmount, GasTemperature, NonCompressableUnoccupiedVolume);
-			}
-
-			if (GasTemperature == 0)
-			{
-				newTemperature = Calculations.TemperatureIdealGasLaw(GasSubstanceAmount, Pressure, NonCompressableUnoccupiedVolume);
-			}
-
-			Calculations.IdealGasLawSolveRungeKutta(GasSubstanceAmount, newTemperature, newPressure, NonCompressableUnoccupiedVolume, 0.001, 5, out gasTemperature, out pressure);
-		}
-	}
-
-	private MolesUnit gasSubstanceAmount;
-	/// <summary>
-	/// The substance amount of all gas resources in this container in mols [mol]
-	/// </summary>
-	public MolesUnit GasSubstanceAmount // TODO: rename to GasMoles for constistency with Moles
-	{
-		get
-		{
-			lock (SyncRoot)
-			{
-				if (recalculateGasSubstanceAmountAndMass)
+				if (recalculateGasMoles)
 				{
 					RecalculateGasSubstanceAmountAndMass(out MolesUnit gasSubstanceAmount, out MassUnit gasMass);
-					this.gasSubstanceAmount = gasSubstanceAmount;
+					this.gasMoles = gasSubstanceAmount;
 					this.gasMass = gasMass;
 				}
 
-				return gasSubstanceAmount;
+				return gasMoles;
 			}
 		}
 	}
 
 	private MassUnit gasMass;
 	/// <summary>
-	/// 
+	/// [kg] The total mass of gas in this container in kilograms.
 	/// </summary>
 	public MassUnit GasMass
 	{
@@ -311,10 +278,10 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 		{
 			lock (SyncRoot)
 			{
-				if (recalculateGasSubstanceAmountAndMass)
+				if (recalculateGasMoles)
 				{
 					RecalculateGasSubstanceAmountAndMass(out MolesUnit gasSubstanceAmount, out MassUnit gasMass);
-					this.gasSubstanceAmount = gasSubstanceAmount;
+					this.gasMoles = gasSubstanceAmount;
 					this.gasMass = gasMass;
 				}
 
@@ -327,7 +294,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 	{
 		lock (SyncRoot)
 		{
-			recalculateGasSubstanceAmountAndMass = false;
+			recalculateGasMoles = false;
 
 			gasSubstanceAmount = 0;
 			gasMass = 0;
@@ -349,9 +316,9 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 
 	bool recalculateIdealGasLaw = false;
 
-	bool recalculateAverageTemperature = false;
+	bool recalculateAverageTemperatures = false;
 
-	bool recalculateGasSubstanceAmountAndMass = false;
+	bool recalculateGasMoles = false;
 
 	public object SyncRoot = new();
 
@@ -498,17 +465,23 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 
 	public void AddResources(IEnumerable<ResourceUnitData> resourceUnitDatas)
 	{
-		foreach (var resourceUnit in resourceUnitDatas)
+		lock (SyncRoot)
 		{
-			AddResource(resourceUnit);
+			foreach (var resourceUnit in resourceUnitDatas)
+			{
+				AddResource(resourceUnit);
+			}
 		}
 	}
 
 	public void AddResources(params ResourceUnitData[] resourceUnitDatas)
 	{
-		foreach (var resourceUnit in resourceUnitDatas)
+		lock (SyncRoot)
 		{
-			AddResource(resourceUnit);
+			foreach (var resourceUnit in resourceUnitDatas)
+			{
+				AddResource(resourceUnit);
+			}
 		}
 	}
 
@@ -528,35 +501,9 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 
 		lock (SyncRoot)
 		{
-			if (addedResourceUnitData.ResourceType.ChemicalPhase == ChemicalPhase.Gas)
-			{
-				if (GasSubstanceAmount == 0) // We only need to intialize gas temperature if this is the first gas added to the container.
-				{
-					// We need to bootstrap the ideal gas simulation system by providing an inital gas temperature
-					// Otherwise the temperature will remain zero, leading to the pressure remaing zero (leading to zero temp, leading to zero pressure etc)
-					InitialGasTemperature(addedResourceUnitData);
-				}
-			}
-
 			resourceUnit.Add(addedResourceUnitData);
-		}
 
-		InvalidateRecalculables();
-
-		/// <summary>
-		/// Initializes the gas temperature without using the ideal gas law calculations to bootstrap the ideal gas law simulation
-		/// </summary>
-		void InitialGasTemperature(ResourceUnitData gasUnitData)
-		{
-			lock (SyncRoot)
-			{
-				// Invalidate key recalculables to ensure data is correct since InvalidateRecalculables will not have been called yet
-				recalculateMass = true;
-				recalculateGasSubstanceAmountAndMass = true;
-				recalculateVolume = true;
-
-				gasTemperature = ChemicalType.InternalEnergyToTemperature(gasUnitData.ResourceType, gasUnitData.InternalEnergy, gasUnitData.Mass);
-			}
+			InvalidateRecalculables();
 		}
 	}
 
@@ -623,8 +570,8 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 			recalculateVolume = true;
 			recalculateMass = true;
 			recalculateIdealGasLaw = true;
-			recalculateAverageTemperature = true;
-			recalculateGasSubstanceAmountAndMass = true;
+			recalculateAverageTemperatures = true;
+			recalculateGasMoles = true;
 		}
 	}
 
@@ -779,7 +726,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 			ImGui.Text($"{nameof(CompressableOccupiedVolume)}: {CompressableOccupiedVolume.FormatVolume()}");
 			ImGui.Text($"{nameof(NonCompressableUnoccupiedVolume)}: {NonCompressableUnoccupiedVolume.FormatVolume()}");
 			ImGui.Text($"{nameof(AverageTemperature)}: {AverageTemperature.FormatTemperature()}");
-			ImGui.Text($"{nameof(GasTemperature)}: {GasTemperature.FormatTemperature()}");
+			ImGui.Text($"{nameof(AverageGasTemperature)}: {AverageGasTemperature.FormatTemperature()}");
 			ImGui.Text($"{nameof(Pressure)}: {Pressure.FormatPressure()}");
 			ImGui.Text($"Different types of resources: {resources.Count}");
 			ImGui.Separator();

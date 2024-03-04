@@ -3,6 +3,7 @@ using System.Diagnostics;
 
 namespace Space_Refinery_Engine;
 
+// TODO: ResourceUnit should just refer to an internal ResourceUnitData instead of having own fields here
 public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 {
 	public ResourceType ResourceType { get; private set; }
@@ -10,7 +11,6 @@ public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 	public ChemicalType ChemicalType => ResourceType.ChemicalType;
 
 	private MolesUnit moles;
-
 	/// <summary>
 	/// [mol] Substance amount.
 	/// </summary>
@@ -39,7 +39,6 @@ public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 
 	// TODO: rename to TemperatureEnergy
 	private EnergyUnit internalEnergy;
-
 	/// <summary>
 	/// [J] Internal energy directly affecting the temperature.
 	/// </summary>
@@ -66,23 +65,15 @@ public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 	}
 
 	/// <summary>
-	/// [K] The temperature of the resource if it is not a gas.
-	/// Gas temperature is a property of the resource container,
-	/// not the resource itself as it is dependent on the pressure and volume in the container.
+	/// [K] The temperature of the resource. Depends on the specific heat capacity of the material and the internal energy.
 	/// </summary>
 	/// <remarks>
 	/// If the substance amount or the mass is zero, the temperature will be considered to be zero
-	/// If the resource is a gas, this method will throw an exception.
 	/// </remarks>
-	public TemperatureUnit NonGasTemperature
+	public TemperatureUnit Temperature
 	{
 		get
 		{
-			if (ResourceType.ChemicalPhase == ChemicalPhase.Gas)
-			{
-				throw new Exception("A gaseous resource cannot return a non gas temperature.");
-			}
-
 			if (Moles != 0 && Mass != 0)
 			{
 				return ChemicalType.InternalEnergyToTemperature(ResourceType, InternalEnergy, Mass);
@@ -95,7 +86,7 @@ public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 	}
 
 	/// <summary>
-	/// [kg] Mass in kilograms
+	/// [kg] Mass in kilograms.
 	/// </summary>
 	public MassUnit Mass => ChemicalType.MolesToMass(ChemicalType, Moles);
 
@@ -195,10 +186,7 @@ public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 			ImGui.Text($"{nameof(UncompressedVolume)}: {UncompressedVolume.FormatVolume()}");
 			ImGui.Text($"{nameof(InternalEnergy)}: {InternalEnergy.FormatEnergy()}");
 			ImGui.Text($"{nameof(MolarEnergy)}: {MolarEnergy.FormatMolarEnergy()}");
-			if (ResourceType.ChemicalPhase != ChemicalPhase.Gas)
-			{
-				ImGui.Text($"{nameof(NonGasTemperature)}: {NonGasTemperature.FormatTemperature()}");
-			}
+			ImGui.Text($"{nameof(Temperature)}: {Temperature.FormatTemperature()}");
 		}
 		UIFunctions.EndSub();
 	}

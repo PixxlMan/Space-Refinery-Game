@@ -2,13 +2,13 @@
 
 namespace Space_Refinery_Game;
 
-public sealed class IdealGasLawReactionType : ReactionType
+public sealed class DebugRecalculableInvalidatorReactionType : ReactionType
 {
-	public override string Reaction => "P * V = n * k * T";
+	public override string Reaction => "N/A";
 
 	public override void Tick(IntervalUnit _, ResourceContainer resourceContainer, ILookup<Type, ReactionFactor> _2, ICollection<ReactionFactor> _3)
 	{
-		lock (resourceContainer.SyncRoot)
+		if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Always invalidate all recalculables"))
 		{
 			resourceContainer.InvalidateRecalculables();
 		}

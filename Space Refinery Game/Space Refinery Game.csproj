@@ -82,9 +82,9 @@
     <None Remove="_GameAssets\Models\Pipe\Textures\Rusty Metal Sheet\rusty_metal_sheet_2k.gltf" />
     <None Remove="_GameAssets\Models\Pipe\Textures\White.png" />
     <None Remove="_GameAssets\Models\SpaceDock.srh.xml" />
+    <None Remove="_GameAssets\Reaction Types\DebugRecalculableInvalidatorReactionType.srh.xml" />
     <None Remove="_GameAssets\Reaction Types\Electrolysis.srh.xml" />
     <None Remove="_GameAssets\Reaction Types\HydrogenOxygenCombustion.srh.xml" />
-    <None Remove="_GameAssets\Reaction Types\IdealGasLaw.srh.xml" />
     <None Remove="_GameAssets\Reaction Types\PhaseChange.srh.xml" />
     <None Remove="_GameAssets\Settings\Graphics\DisplaySettings.srh.xml" />
     <None Remove="_GameAssets\Settings\VolumeSettings.srh.xml" />
@@ -216,7 +216,7 @@
     <Content Include="_GameAssets\Models\Pipe\Textures\White.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="_GameAssets\Reaction Types\IdealGasLaw.srh.xml">
+    <Content Include="_GameAssets\Reaction Types\DebugRecalculableInvalidatorReactionType.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="_GameAssets\Reaction Types\PhaseChange.srh.xml">

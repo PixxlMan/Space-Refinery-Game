@@ -3,10 +3,10 @@
 	<Count>1</Count>
 	<Elements>
 		<IEntitySerializable>
-			<Type>Space_Refinery_Game.IdealGasLawReactionType</Type>
+			<Type>Space_Refinery_Game.DebugRecalculableInvalidatorReactionType</Type>
 			<ReactionType>
-				<Reference>Ideal Gas Law</Reference>
-				<ReactionName>Ideal Gas Law</ReactionName>
+				<Reference>Debug Recalculable Invalidator</Reference>
+				<ReactionName>Debug Recalculable Invalidator</ReactionName>
 				<CanOccurSpontaneously>True</CanOccurSpontaneously>
 				<NecessaryChemicals>
 					<Count>0</Count>

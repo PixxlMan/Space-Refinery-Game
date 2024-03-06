@@ -80,7 +80,7 @@
 
     <ItemGroup>
         <PackageReference Include="BepuPhysics" Version="2.4.0" />
-        <PackageReference Include="CsvHelper" Version="31.0.0" />
+        <PackageReference Include="CsvHelper" Version="31.0.2" />
         <PackageReference Include="SharpAudio" Version="1.0.65-beta" />
         <PackageReference Include="SharpAudio.ALBinding" Version="1.0.65-beta" />
         <PackageReference Include="SharpAudio.Codec" Version="1.0.65-beta" />

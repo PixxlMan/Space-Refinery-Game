@@ -1,5 +1,7 @@
-﻿using SixLabors.ImageSharp.Formats;
+﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
 using Space_Refinery_Utilities;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;

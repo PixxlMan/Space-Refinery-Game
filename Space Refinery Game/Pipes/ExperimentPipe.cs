@@ -31,7 +31,7 @@ public sealed class ExperimentPipe : MachineryPipe
 
 			if (Activated)
 			{
-				if (ResourceContainer.VolumeCapacity - 0.001 <= 0)
+				if (ResourceContainer.VolumeCapacity - 0.0001 <= 0)
 				{
 					Activated = false;
 					return;

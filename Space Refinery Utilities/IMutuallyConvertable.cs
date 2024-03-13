@@ -18,7 +18,7 @@ public interface IMutuallyConvertable<TSelf, TMutual>
 
 /// <summary>
 /// A type <typeparamref name="TSelf"/> implementing this interface will always be implicitly convertable to <typeparamref name="TMutual"/>.
-/// <typeparamref name="TMutual"/> will also always be implcitly convertable to <typeparamref name="TSelf"/>.
+/// <typeparamref name="TMutual"/> will also always be implicitly convertable to <typeparamref name="TSelf"/>.
 /// </summary>
 /// <remarks>
 /// Both <typeparamref name="TSelf"/> and <typeparamref name="TMutual"/> need to implement the <c>IInterchangeable</c> interface.

@@ -48,6 +48,21 @@ public struct DistanceUnit :
 		this.value = value;
 	}
 
+	public static DistanceUnit operator -(DistanceUnit a, DistanceUnit b)
+	{
+		return new(a.value - b.value);
+	}
+
+	public static DistanceUnit operator +(DistanceUnit a, DistanceUnit b)
+	{
+		return new(a.value + b.value);
+	}
+
+	public static AreaUnit operator *(DistanceUnit a, DistanceUnit b)
+	{
+		return new(a.value * b.value);
+	}
+	
 	#region Operators and boilerplate
 
 	public static explicit operator DecimalNumber(DistanceUnit unit) => unit.value;
@@ -119,6 +134,11 @@ public struct AreaUnit :
 	public AreaUnit(DecimalNumber value)
 	{
 		this.value = value;
+	}
+
+	public static VolumeUnit operator *(AreaUnit a, DistanceUnit b)
+	{
+		return new(a.value * b.value);
 	}
 
 	#region Operators and boilerplate
@@ -202,10 +222,21 @@ public struct ForceUnit :
 	/// </summary>
 	/// <param name="forceUnit">[N]</param>
 	/// <param name="gravitationalAccelerationUnit">g</param>
-	/// <returns></returns>
+	/// <returns>[kg]</returns>
 	public static MassUnit operator *(ForceUnit forceUnit, GravitationalAccelerationUnit gravitationalAccelerationUnit)
 	{
 		return new(forceUnit.value * GravitationalAccelerationUnit.Unit);
+	}
+
+	/// <summary>
+	/// [N] * [m] => [Nm]
+	/// </summary>
+	/// <param name="forceUnit">[N]</param>
+	/// <param name="distanceUnit">[m}</param>
+	/// <returns>[Nm]</returns>
+	public static WorkUnit operator *(ForceUnit forceUnit, DistanceUnit distanceUnit)
+	{
+		return new(forceUnit.value * distanceUnit.value);
 	}
 
 	#region Operators and boilerplate

@@ -16,7 +16,8 @@ public struct EnergyUnit :
 	ISubtractionOperators<EnergyUnit, EnergyUnit, EnergyUnit>,
 	IAdditionOperators<EnergyUnit, EnergyUnit, EnergyUnit>,
 	IPortionable<EnergyUnit>,
-	IIntervalSupport<EnergyUnit>
+	IIntervalSupport<EnergyUnit>,
+	IInterchangeable<EnergyUnit, WorkUnit>
 {
 	internal DecimalNumber value;
 
@@ -55,6 +56,16 @@ public struct EnergyUnit :
 	public static EnergyUnit operator -(EnergyUnit left, EnergyUnit right)
 	{
 		return new(left.value -right.value);
+	}
+
+	/// <summary>
+	/// [J] = [Nm]
+	/// </summary>
+	/// <param name="self">[J]</param>
+	/// <returns>[Nm]</returns>
+	public static implicit operator WorkUnit(EnergyUnit self)
+	{
+		return new(self.value);
 	}
 
 	#region Operators and boilerplate
@@ -103,6 +114,100 @@ public struct EnergyUnit :
 	}
 
 	public bool Equals(EnergyUnit other)
+	{
+		return value.Equals(other.value);
+	}
+
+	public override int GetHashCode()
+	{
+		return value.GetHashCode();
+	}
+
+	#endregion
+}
+
+/// <summary>
+/// [Nm]
+/// </summary>
+public struct WorkUnit :
+	IUnit<WorkUnit>,
+	ISubtractionOperators<WorkUnit, WorkUnit, WorkUnit>,
+	IAdditionOperators<WorkUnit, WorkUnit, WorkUnit>,
+	IInterchangeable<WorkUnit, EnergyUnit>
+{
+	internal DecimalNumber value;
+
+	public WorkUnit(DecimalNumber value)
+	{
+		this.value = value;
+	}
+	
+	public static WorkUnit operator +(WorkUnit left, WorkUnit right)
+	{
+		return new(left.value + right.value);
+	}
+
+	public static WorkUnit operator -(WorkUnit left, WorkUnit right)
+	{
+		return new(left.value -right.value);
+	}
+
+	/// <summary>
+	/// [Nm] = [J]
+	/// </summary>
+	/// <param name="self">[Nm]</param>
+	/// <returns>[J]</returns>
+	public static implicit operator EnergyUnit(WorkUnit self)
+	{
+		return new(self.value);
+	}
+
+	#region Operators and boilerplate
+
+	public static explicit operator DecimalNumber(WorkUnit unit) => unit.value;
+
+	public static explicit operator WorkUnit(DecimalNumber value) => new(value);
+
+	public static implicit operator WorkUnit(int value) => new(value);
+
+	public static implicit operator WorkUnit(double value) => new(value);
+
+	public static bool operator >(WorkUnit a, WorkUnit b) => a.value > b.value;
+
+	public static bool operator <(WorkUnit a, WorkUnit b) => a.value < b.value;
+
+	public static bool operator >=(WorkUnit a, WorkUnit b) => a.value >= b.value;
+
+	public static bool operator <=(WorkUnit a, WorkUnit b) => a.value <= b.value;
+
+	public static bool operator ==(WorkUnit a, WorkUnit b) => a.Equals(b);
+
+	public static bool operator !=(WorkUnit a, WorkUnit b) => !a.Equals(b);
+
+	public static WorkUnit operator -(WorkUnit value)
+	{
+		return new(-value.value);
+	}
+
+	public static Portion<WorkUnit> operator /(WorkUnit left, WorkUnit right)
+	{
+		return new(left.value / right.value);
+	}
+
+	public static WorkUnit operator *(IntervalUnit interval, WorkUnit unit)
+	{
+		return new(interval.value * unit.value);
+	}
+
+	public static WorkUnit operator *(WorkUnit unit, IntervalUnit interval)
+		=> interval * unit;
+
+	public override bool Equals(object? obj)
+	{
+		return obj is WorkUnit unit && Equals(unit);
+	}
+
+	public bool Equals(WorkUnit other)
 	{
 		return value.Equals(other.value);
 	}

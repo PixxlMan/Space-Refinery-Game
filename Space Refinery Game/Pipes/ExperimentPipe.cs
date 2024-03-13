@@ -2,10 +2,8 @@
 using CsvHelper.Configuration.Attributes;
 using ImGuiNET;
 using Space_Refinery_Engine;
-using System.Formats.Asn1;
 using System.Globalization;
 using System.Xml;
-using Veldrid;
 using static Space_Refinery_Utilities.DecimalNumber;
 
 namespace Space_Refinery_Game;
@@ -19,6 +17,16 @@ public sealed class ExperimentPipe : MachineryPipe
 
 	public ResourceContainer ResourceContainer;
 
+	private DistanceUnit pushDistance = 0;
+
+	private static readonly DistanceUnit boxEdge = double.Pow(0.0000625, 1.0/3.0); // Third root of 6.25 * 10⁻⁵ m³
+
+	private VolumeUnit BoxVolume => boxEdge * boxEdge * (boxEdge - pushDistance);
+
+	private ForceUnit ForceExertedOnPushingWall => ResourceContainer.Pressure * (boxEdge * boxEdge); // Minimum force required to push the wall.
+
+	private static DistanceUnit PushDistancePerSecond = 0.001;
+
 	public override void Tick()
 	{
 		lock (SyncRoot)
@@ -27,34 +35,40 @@ public sealed class ExperimentPipe : MachineryPipe
 			DebugStopPoints.TickStopPoint(SerializableReference);
 #endif
 
-			ResourceContainer.Tick(Time.TickInterval);
-
 			if (Activated)
 			{
-				if (ResourceContainer.VolumeCapacity - 0.0001 <= 0)
+				if (pushDistance + PushDistancePerSecond * Time.TickInterval >= boxEdge - 0.01)
 				{
 					Activated = false;
 					return;
 				}
 
-				RecordedPressureAndTemp.Add(new((decimal)(DecimalNumber)ResourceContainer.Pressure, (decimal)(DecimalNumber)ResourceContainer.AverageTemperature));
+				pushDistance += PushDistancePerSecond * Time.TickInterval;
 
-				ResourceContainer.VolumeCapacity -= 0.0001;
+				ResourceContainer.AddEnergy(ForceExertedOnPushingWall * PushDistancePerSecond * Time.TickInterval);
+
+				RecordedPressureAndTemp.Add(new((decimal)(DecimalNumber)(ResourceContainer.Pressure / (PressureUnit)(Kilo * Kilo)), (decimal)Calculations.TemperatureToCelcius(ResourceContainer.AverageTemperature)));
 			}
+
+			ResourceContainer.VolumeCapacity = BoxVolume;
+
+			ResourceContainer.Tick(Time.TickInterval);
 		}
 	}
 
-	float energyToAdd = 10_000;
+	private float energyToAdd = 10_000;
+
+	private float wallPosition;
 
 	protected override void DoMenu()
 	{
 		lock (SyncRoot)
 		{
-			if (ImGui.Button("Insert 1 kg air (0.77 m³ volume)"))
+			if (ImGui.Button("Fill air"))
 			{
 				TemperatureUnit temperature = Calculations.CelciusToTemperature(20);
 
-				MassUnit totalMass = 1;
+				MassUnit totalMass = 79.7 * (1.0/1000.0);
 
 				var nitrogen = ChemicalType.GetChemicalType("Nitrogen");
 				var nitrogenMass = (78.084 / 100) * totalMass;
@@ -84,11 +98,14 @@ public sealed class ExperimentPipe : MachineryPipe
 				EnergyUnit energy = (EnergyUnit)(DN)energyToAdd;
 				EnergyUnit timeAdjustedEnergy = energy * Time.UpdateInterval;
 
-				foreach (var unitData in ResourceContainer.EnumerateResources())
-				{
-					ResourceContainer.AddResource(new(unitData.ResourceType, 0, energy * (Portion<EnergyUnit>)(DN)(unitData.Mass / ResourceContainer.Mass)));
-				}
+				ResourceContainer.AddEnergy(energy);
 			}
+
+			wallPosition = (float)(DN)(boxEdge - pushDistance);
+
+			UIFunctions.PushDisabled();
+			ImGui.SliderFloat("Wall position", ref wallPosition, 0, (float)(DN)boxEdge);
+			UIFunctions.PopEnabledOrDisabledState();
 
 			ImGui.Separator();
 
@@ -115,10 +132,10 @@ public sealed class ExperimentPipe : MachineryPipe
 
 	public record struct PressureTempRecord(decimal pressure, decimal temp)
 	{
-		[Name("Pressure")]
+		[Name("Pressure(kPa)")]
 		public decimal Pressure = pressure;
 
-		[Name("Temperature")]
+		[Name("Temperature(℃)")]
 		public decimal Temperature = temp;
 	}
 
@@ -128,6 +145,11 @@ public sealed class ExperimentPipe : MachineryPipe
 	{
 		lock (SyncRoot)
 		{
+			if (File.Exists("R:\\pressure_temperature.csv"))
+			{
+				File.Delete("R:\\pressure_temperature.csv");
+			}
+
 			using CsvWriter writer = new(new StreamWriter(File.OpenWrite("R:\\pressure_temperature.csv")), CultureInfo.InvariantCulture, false);
 
 			writer.WriteRecords(RecordedPressureAndTemp);

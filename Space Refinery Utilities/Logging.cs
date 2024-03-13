@@ -90,6 +90,11 @@ public static class Logging
 			}
 		}
 
+		if (loggingFilterLevel >= LogLevel.Deep)
+		{
+			// TODO: print entire thread name instead of thread id
+		}
+
 		string timeStamp = $"@{stopwatch.Elapsed}:";
 
 		string formatText = string.Empty;

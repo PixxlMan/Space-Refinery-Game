@@ -760,4 +760,19 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 			}
 		}
 	}
+
+	/// <summary>
+	/// Adds and distributes a total amount of energy evenly among all resources.
+	/// </summary>
+	/// <param name="energyUnit">[J]</param>
+	public void AddEnergy(EnergyUnit energyUnit)
+	{
+		lock (SyncRoot)
+		{
+			foreach (var resource in resources.Values)
+			{
+				AddResource(new(resource.ResourceType, 0, energyUnit * (Portion<EnergyUnit>)(DN)(resource.Mass / Mass)));
+			}
+		}
+	}
 }

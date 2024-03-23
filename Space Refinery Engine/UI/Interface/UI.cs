@@ -114,6 +114,10 @@ namespace Space_Refinery_Engine
 				{
 					ConnectorSelection = null;
 				}
+				else if (ConnectorSelection is null && SelectedPipeType.ConnectorPlacements.Length > 0)
+				{
+					ConnectorSelection = 0;
+				}
 
 				ConnectorSelection += selectionDelta;
 

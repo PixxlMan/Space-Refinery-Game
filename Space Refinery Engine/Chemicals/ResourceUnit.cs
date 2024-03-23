@@ -122,7 +122,7 @@ public sealed class ResourceUnit : IUIInspectable, IEquatable<ResourceUnit>
 	/// </summary>
 	public MolarEnergyUnit MolarEnergy => InternalEnergy / Moles;
 
-	public event Action<ResourceUnit>? ResourceUnitChanged;
+	public WeakEvent<ResourceUnit> ResourceUnitChanged;
 
 	public ResourceUnitData ResourceUnitData => new(ResourceType, Moles, InternalEnergy); // Not using CreateNegativeResourceUnit here is fine because while ResourceUnitData can be allowed to be negative, a ResourceUnit should always represent a real resource amount.
 

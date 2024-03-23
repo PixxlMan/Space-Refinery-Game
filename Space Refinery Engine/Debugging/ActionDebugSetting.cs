@@ -7,7 +7,7 @@ namespace Space_Refinery_Engine
 		public ActionDebugSetting(Action action)
 		{
 			this.action = action;
-			SettingText = null;
+			SettingText = string.Empty;
 		}
 
 		public Action action;

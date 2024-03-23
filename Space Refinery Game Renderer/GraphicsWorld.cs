@@ -206,13 +206,13 @@ public sealed class GraphicsWorld
 
 	public bool ShouldLimitFramerate = true;
 
-	public event Action<CommandList>? CustomDrawOperations;
+	public WeakEvent<CommandList>? CustomDrawOperations;
 
-	public event Action? FrameRendered;
+	public WeakEvent? FrameRendered;
 
-	public event Action<IntervalUnit>? CollectRenderingPerformanceData;
+	public WeakEvent<IntervalUnit>? CollectRenderingPerformanceData;
 
-	public event Action<int, int>? WindowResized;
+	public WeakEvent<(int, int)>? WindowResized;
 
 	public void SetUp(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
@@ -276,7 +276,7 @@ public sealed class GraphicsWorld
 
 			GraphicsDevice.ResizeMainWindow(Window.Width, Window.Height);
 
-			WindowResized?.Invoke((int)Window.Width, (int)Window.Height);
+			WindowResized?.Invoke(((int)Window.Width, (int)Window.Height));
 		}
 	}
 

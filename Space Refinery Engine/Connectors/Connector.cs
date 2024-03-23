@@ -470,12 +470,6 @@ namespace Space_Refinery_Engine
 
 				Proxy.Destroy();
 
-				GameData.UI.SelectedEntityTypeChanged -= (_) => UpdateProxyOnSelectedEntityAffected();
-				GameData.UI.SelectedEntityRotated -= (_) => UpdateProxyOnSelectedEntityAffected();
-				GameData.UI.SelectedEntityConnectorChanged -= (_) => UpdateProxyOnSelectedEntityAffected();
-
-				MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
-
 				GameData.Game.GameReferenceHandler.RemoveReference(this);
 			}
 		}

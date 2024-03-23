@@ -392,8 +392,6 @@ namespace Space_Refinery_Engine
 				PhysicsObject.Destroy();
 				PipeType.BatchRenderable.RemoveBatchRenderableEntity(this);
 
-				MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
-
 				foreach (var connector in Connectors)
 				{
 					connector.Disconnect(this);

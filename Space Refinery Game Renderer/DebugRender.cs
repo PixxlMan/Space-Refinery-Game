@@ -1,5 +1,6 @@
 ﻿using FixedPrecision;
 using FXRenderer;
+using Space_Refinery_Utilities;
 using System.Numerics;
 using Veldrid;
 
@@ -25,7 +26,7 @@ namespace Space_Refinery_Game_Renderer
 
 		private List<DebugRenderable> persistentRenderables = new();
 
-		public event Action? AddDebugObjects;
+		public WeakEvent? AddDebugObjects;
 
 		private object sync = new();
 

@@ -21,7 +21,7 @@ public static class Time // https://fpstoms.com/
 
 	public static readonly IntervalUnit PhysicsInterval = IntervalRateConversionUnit.Unit / PhysicsRate;
 
-	public static long TicksElapsed = 0;
+	public static long TicksElapsed = 0; // TODO: Provide property that reads this using volatile or interlocked reads? That way the value might be outdated at worst, never corrupted.
 
 	public static DecimalNumber CurrentTickTime => TicksElapsed * (DecimalNumber)TickInterval;
 

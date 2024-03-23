@@ -45,7 +45,7 @@ public sealed class ExperimentPipe : MachineryPipe
 
 				pushDistance += PushDistancePerSecond * Time.TickInterval;
 
-				ResourceContainer.AddEnergy(ForceExertedOnPushingWall * PushDistancePerSecond * Time.TickInterval);
+				ResourceContainer.AddEnergy(/*TODO: speed and stuff */* PushDistancePerSecond * Time.TickInterval);
 
 				RecordedPressureAndTemp.Add(new((decimal)(DecimalNumber)(ResourceContainer.Pressure / (PressureUnit)(Kilo * Kilo)), (decimal)Calculations.TemperatureToCelcius(ResourceContainer.AverageTemperature)));
 			}

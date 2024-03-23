@@ -17,11 +17,11 @@ namespace Space_Refinery_Engine.Audio
 			{
 				masterVolume = FixedDecimalLong8.Clamp(value, 0, 1);
 
-				VolumeChanged?.Invoke(masterVolume);
+				VolumeChanged.InvokeAndPurge(masterVolume);
 			}
 		}
 
-		public event Action<FixedDecimalLong8> VolumeChanged;
+		public WeakEvent<FixedDecimalLong8> VolumeChanged = new();
 
 		public MusicSystem MusicSystem { get; private set; }
 

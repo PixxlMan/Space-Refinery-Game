@@ -168,9 +168,6 @@
     <Content Include="_GameAssets\Models\Pipe\PipeBend90.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="_GameAssets\Models\Pipe\Special\ExperimentPipe.srh.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="_GameAssets\Models\Pipe\Special\PipeSpecialPump.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

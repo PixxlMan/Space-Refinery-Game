@@ -87,6 +87,11 @@ public sealed class WeakEvent // Consider something like this: https://github.co
 
 	public static WeakEvent operator +(WeakEvent weakEvent, Action eventHandler)
 	{
+		if (weakEvent is null)
+		{
+			weakEvent = new();
+		}
+
 		weakEvent.Subscribe(eventHandler);
 
 		return weakEvent;
@@ -194,6 +199,11 @@ public sealed class WeakEvent<TParameter>
 	// although the reference is identical, so it might not matter anyways...
 	public static WeakEvent<TParameter> operator +(WeakEvent<TParameter> weakEvent, Action<TParameter> eventHandler)
 	{
+		if (weakEvent is null)
+		{
+			weakEvent = new();
+		}
+
 		weakEvent.Subscribe(eventHandler);
 
 		return weakEvent;

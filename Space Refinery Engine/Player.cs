@@ -73,9 +73,9 @@ namespace Space_Refinery_Engine
 
 			if (ShouldShowConstructionMarker(lookedAtPhysicsObject)) // An entity with no connectors will never return true and we can therefore safely assume there will always be a connector selection.
 			{
-				PipeConnector pipeConnector = (PipeConnector)lookedAtPhysicsObject.Entity;
+				PipeConnector pipeConnector = (PipeConnector)lookedAtPhysicsObject!.Entity;
 
-				constructionMarker.SetMesh(gameData.UI.SelectedPipeType.Mesh);
+				constructionMarker.SetMesh(gameData.UI.SelectedPipeType!.Mesh);
 
 				constructionMarker.SetTransform(Connector.GenerateTransformForConnector(gameData.UI.SelectedPipeType.ConnectorPlacements[gameData.UI.ConnectorSelection!.Value], pipeConnector, gameData.UI.RotationSnapped));
 
@@ -228,7 +228,7 @@ namespace Space_Refinery_Engine
 			//Transform.Rotation = QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(FixedDecimalInt4.Zero, LookPitch, FixedDecimalInt4.Zero), Transform.Rotation).NormalizeQuaternion();
 		}
 
-		private bool ShouldShowConstructionMarker(PhysicsObject lookedAtPhysicsObject)
+		private bool ShouldShowConstructionMarker(PhysicsObject? lookedAtPhysicsObject)
 		{
 			return lookedAtPhysicsObject is not null && (((lookedAtPhysicsObject.Entity is Connector connector && (connector).Vacant))) && gameData.UI.SelectedPipeType is not null;
 		}

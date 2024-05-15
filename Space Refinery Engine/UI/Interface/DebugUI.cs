@@ -1,6 +1,7 @@
 ﻿using FixedPrecision;
 using ImGuiNET;
 using Space_Refinery_Game_Renderer;
+using Space_Refinery_Utilities;
 using System.Numerics;
 using Veldrid;
 
@@ -8,7 +9,7 @@ namespace Space_Refinery_Engine;
 
 partial class UI
 {
-	public static WeakEvent DoDebugStatusUI;
+	public static Action DoDebugStatusUI;
 
 	private void DoStatus()
 	{

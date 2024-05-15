@@ -41,11 +41,17 @@ public sealed class PerformanceStatisticsCollector
 		{
 			case GameData.GameDataChange.PhysicsWorld:
 				if (gameData.PhysicsWorld is not null)
+					gameData.PhysicsWorld.CollectPhysicsPerformanceData -= PhysicsWorld_CollectPerformanceData;
+
+				if (gameData.PhysicsWorld is not null)
 				{
 					gameData.PhysicsWorld.CollectPhysicsPerformanceData += PhysicsWorld_CollectPerformanceData;
 				}
 				break;
 			case GameData.GameDataChange.GraphicsWorld:
+				if (gameData.GraphicsWorld is not null) // TODO: we need to either keep the old ones, or better yet, just replace the performance collector every time? why not.
+					gameData.GraphicsWorld.CollectRenderingPerformanceData -= GraphicsWorld_CollectPerformanceData;
+
 				if (gameData.GraphicsWorld is not null)
 				{
 					gameData.GraphicsWorld.CollectRenderingPerformanceData += GraphicsWorld_CollectPerformanceData;
@@ -53,11 +59,17 @@ public sealed class PerformanceStatisticsCollector
 				break;
 			case GameData.GameDataChange.Game:
 				if (gameData.Game is not null)
+					gameData.Game.GameWorld.CollectTickPerformanceData -= GameWorld_CollectPerformanceData;
+
+				if (gameData.Game is not null)
 				{
 					gameData.Game.GameWorld.CollectTickPerformanceData += GameWorld_CollectPerformanceData;
 				}
 				break;
 			case GameData.GameDataChange.MainGame:
+				if (gameData.MainGame is not null)
+					gameData.MainGame.CollectUpdatePerformanceData -= MainGame_CollectPerformanceData;
+
 				if (gameData.MainGame is not null)
 				{
 					gameData.MainGame.CollectUpdatePerformanceData += MainGame_CollectPerformanceData;

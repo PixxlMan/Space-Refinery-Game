@@ -557,6 +557,7 @@ public sealed class ResourceContainer : IUIInspectable // Thread safe? Seems lik
 			if (resources[changed.ResourceType].Moles == (MolesUnit)DN.Zero)
 			{
 				ResourceCountChanged();
+				changed.ResourceUnitChanged -= ResourceUnit_Changed;
 				resources.RemoveStrict(changed.ResourceType);
 			}
 		}

@@ -20,7 +20,7 @@ namespace Space_Refinery_Engine
 
 		public int EntitySelection;
 
-		public WeakEvent<IEntityType?> SelectedEntityTypeChanged;
+		public event Action<IEntityType?> SelectedEntityTypeChanged;
 
 		public bool Paused;
 
@@ -30,13 +30,13 @@ namespace Space_Refinery_Engine
 		
 		public FixedDecimalLong8 RotationSnapped => gameData.UI.RotationIndex * RotationSnapping;
 
-		public WeakEvent<FixedDecimalLong8> SelectedEntityRotated;
+		public event Action<FixedDecimalLong8> SelectedEntityRotated;
 
 		public int? ConnectorSelection;
 
-		public WeakEvent<int?> SelectedEntityConnectorChanged;
+		public event Action<int?> SelectedEntityConnectorChanged;
 
-		public WeakEvent<bool> PauseStateChanged;
+		public event Action<bool> PauseStateChanged;
 
 		private readonly object syncRoot = new();
 
@@ -148,19 +148,27 @@ namespace Space_Refinery_Engine
 			imGuiRenderer.CreateDeviceResources(gd, gd.MainSwapchain.Framebuffer.OutputDescription);
 		}
 
-		private void WindowResized((int width, int height) size)
+		private void WindowResized(int width, int height)
 		{
 			lock (syncRoot)
 			{
-				imGuiRenderer.WindowResized(size.width, size.height);
+				imGuiRenderer.WindowResized(width, height);
 
 				imGuiRenderer.DestroyDeviceObjects();
 
 				imGuiRenderer.CreateDeviceResources(gd, gameData.GraphicsWorld.Swapchain.Framebuffer.OutputDescription);
 
-				width = size.width;
+				this.width = width;
 
-				height = size.height;
+				this.height = height;
+
+				//imGuiRenderer.Dispose();
+
+				//imGuiRenderer = new(gd, gameData.GraphicsWorld.Swapchain.Framebuffer.OutputDescription, width, height);
+
+				//imGuiRenderer.CreateDeviceResources(gd, gameData.GraphicsWorld.Swapchain.Framebuffer.OutputDescription);				
+
+				//Style();
 			}
 		}
 

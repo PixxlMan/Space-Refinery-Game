@@ -37,7 +37,7 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 	public readonly object UpdateSyncObject = new();
 
 
-	public WeakEvent<IntervalUnit> CollectUpdatePerformanceData;
+	public event Action<IntervalUnit>? CollectUpdatePerformanceData;
 
 	private string responseSpinner = "_";
 	public string ResponseSpinner { get { lock (responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.

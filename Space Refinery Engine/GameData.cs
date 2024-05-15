@@ -24,7 +24,7 @@ namespace Space_Refinery_Engine
 		private Game game;
 		private UI uI;
 
-		public WeakEvent<GameDataChange> GameDataChangedEvent;
+		public event Action<GameDataChange> GameDataChangedEvent;
 
 		public GameData()
 		{

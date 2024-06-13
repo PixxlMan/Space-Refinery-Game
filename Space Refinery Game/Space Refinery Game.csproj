@@ -256,7 +256,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\FixedPrecision\FixedPrecision\FixedPrecision.csproj" />
-    <ProjectReference Include="..\..\FXPRenderer\FXRenderer\FXRenderer.csproj" />
     <ProjectReference Include="..\Space Refinery Engine\Space Refinery Engine.csproj" />
     <ProjectReference Include="..\Space Refinery Game Renderer\Space Refinery Game Renderer.csproj" />
     <ProjectReference Include="..\Space Refinery Utilities\Space Refinery Utilities.csproj" />

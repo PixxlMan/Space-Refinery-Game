@@ -23,7 +23,7 @@ public sealed class Attribution() : ISerializableReference
 
 	public string AttributionLink { get; private set; }
 
-	private Guid guid = Guid.NewGuid();
+	private readonly Guid guid = Guid.NewGuid();
 
 	public SerializableReference SerializableReference => guid;
 

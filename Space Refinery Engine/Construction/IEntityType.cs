@@ -1,6 +1,5 @@
-﻿namespace Space_Refinery_Engine
+﻿namespace Space_Refinery_Engine;
+
+public interface IEntityType
 {
-	public interface IEntityType
-	{
-	}
 }

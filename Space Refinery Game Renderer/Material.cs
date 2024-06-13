@@ -56,28 +56,19 @@ public sealed class Material
 	public static Material LoadMaterial(GraphicsDevice gd, ResourceFactory factory, string name, string diffuseTexturePath, string metallicTexturePath, string roughnessTexturePath, string ambientOcclusionTexturePath)
 	{
 		Logging.LogScopeStart($"Loading resources for material {name}");
-
 		Texture diffuseTexture, metallicTexture, roughnessTexture, ambientOcclusionTexture;
 
 		Logging.Log($"Loading diffuse texture at {diffuseTexturePath}");
-
 		diffuseTexture = CreateTextureFromImage(gd, factory, Image<Rgba32>.Load<Rgba32>(diffuseTexturePath));
 
-
 		Logging.Log($"Loading metallic texture at {metallicTexturePath}");
-
 		metallicTexture = CreateTextureFromImage(gd, factory, Image<Rgba32>.Load<Rgba32>(metallicTexturePath));
 
-
 		Logging.Log($"Loading roughness texture at {roughnessTexturePath}");
-
 		roughnessTexture = CreateTextureFromImage(gd, factory, Image<Rgba32>.Load<Rgba32>(roughnessTexturePath));
 
-
 		Logging.Log($"Loading ambient occlusion texture at {ambientOcclusionTexturePath}");
-
 		ambientOcclusionTexture = CreateTextureFromImage(gd, factory, Image<Rgba32>.Load<Rgba32>(ambientOcclusionTexturePath));
-
 
 		Material material = FromTextures(gd, factory, name, diffuseTexture, metallicTexture, roughnessTexture, ambientOcclusionTexture);
 

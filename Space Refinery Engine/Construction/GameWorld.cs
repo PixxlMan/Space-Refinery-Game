@@ -7,7 +7,6 @@ using System.Xml;
 
 namespace Space_Refinery_Engine;
 
-// TODO: only use AddEntity and make constructions automatically detected and added, or even treated as separate system without intervention from game world?
 public sealed class GameWorld : IEntitySerializable
 {
 	public object TickSyncObject = new();
@@ -118,13 +117,13 @@ public sealed class GameWorld : IEntitySerializable
 
 	public void SerializeState(XmlWriter writer)
 	{
-		writer.Serialize(entities, nameof(entities));
+		writer.Serialize(entities, "Entities");
 	}
 
 	public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
 	{
 		ConcurrentBag<Entity> entities = new();
 
-		reader.DeserializeReferenceCollection(entities, referenceHandler, nameof(entities));
+		reader.DeserializeReferenceCollection(entities, referenceHandler, "Entities");
 	}
 }

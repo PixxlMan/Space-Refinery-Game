@@ -37,4 +37,19 @@ public sealed record class Extension(
 			return new(manifest.ExtensionName, false, null, manifest, extensionDirectory, assetsAbsolutePath);
 		}
 	}
+
+	public void InvokeInitialize(GameData gameData)
+	{
+		if (!HasAssembly)
+			return;
+
+		var initializeMethod = HostAssembly!.GetType("InfiltrationGame.Initialization")?.GetMethod("Initialize", BindingFlags.Public | BindingFlags.Static);
+
+		if (initializeMethod is not null)
+		{
+			Logging.Log($"Initializing extension '{ExtensionName}'");
+
+			initializeMethod.Invoke(null, [gameData]);
+		}
+	}
 }

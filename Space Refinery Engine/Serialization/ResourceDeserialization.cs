@@ -80,6 +80,7 @@ public static class ResourceDeserialization
 		if (includeGameExtension)
 		{
 			manifestFilePaths.AddRange(Directory.GetFiles("../../../../../InfiltrationGame/bin/Debug/net8.0/_GameAssets", $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
+			//manifestFilePaths.AddRange(Directory.GetFiles("../../../../Space Refinery Game/bin/Debug/net8.0/_GameAssets", $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
 		}
 
 		// Find all extension manifest files and add them to manifestFilePaths,

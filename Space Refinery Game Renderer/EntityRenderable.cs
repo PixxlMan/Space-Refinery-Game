@@ -1,5 +1,4 @@
 ﻿using FixedPrecision;
-using FXRenderer;
 using System.Numerics;
 using Veldrid;
 using static Space_Refinery_Game_Renderer.RenderingResources;

@@ -1,7 +1,6 @@
 ﻿using BepuPhysics.Collidables;
-using FXRenderer;
-using Singulink.Reflection;
 using Space_Refinery_Game_Renderer;
+using Singulink.Reflection;
 using System.Xml;
 
 namespace Space_Refinery_Engine
@@ -84,7 +83,7 @@ namespace Space_Refinery_Engine
 			}
 		}
 
-		private static PhysicsObject CreatePhysicsObject(PhysicsWorld physWorld, Transform transform, LevelObject levelObject, FXRenderer.Mesh mesh)
+		private static PhysicsObject CreatePhysicsObject(PhysicsWorld physWorld, Transform transform, LevelObject levelObject, Space_Refinery_Game_Renderer.Mesh mesh)
 		{
 			PhysicsObjectDescription<ConvexHull> physicsObjectDescription = new(physWorld.GetConvexHullForMesh(mesh), transform, 0, true);
 

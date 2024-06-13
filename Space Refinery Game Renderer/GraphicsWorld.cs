@@ -1,5 +1,4 @@
 ﻿using FixedPrecision;
-using FXRenderer;
 using SixLabors.ImageSharp;
 using Space_Refinery_Utilities;
 using Space_Refinery_Utilities.Units;

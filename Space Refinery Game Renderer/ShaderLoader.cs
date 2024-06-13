@@ -1,5 +1,4 @@
-﻿using FXRenderer;
-using Veldrid;
+﻿using Veldrid;
 
 namespace Space_Refinery_Game_Renderer
 {

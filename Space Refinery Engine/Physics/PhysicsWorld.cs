@@ -3,7 +3,7 @@ using BepuPhysics.Collidables;
 using BepuUtilities;
 using BepuUtilities.Memory;
 using FixedPrecision;
-using FXRenderer;
+using Space_Refinery_Game_Renderer;
 using System.Diagnostics;
 using System.Numerics;
 
@@ -15,7 +15,7 @@ public sealed partial class PhysicsWorld
 
 	public object SyncRoot = new();
 
-	private Dictionary<FXRenderer.Mesh, ConvexHull> convexHulls = new();
+	private Dictionary<Space_Refinery_Game_Renderer.Mesh, ConvexHull> convexHulls = new();
 
 	private BufferPool bufferPool;
 
@@ -141,7 +141,7 @@ public sealed partial class PhysicsWorld
 		}
 	}
 
-	private ConvexHull AddConvexHullForMesh(FXRenderer.Mesh mesh)
+	private ConvexHull AddConvexHullForMesh(Space_Refinery_Game_Renderer.Mesh mesh)
 	{
 		lock (SyncRoot)
 		{
@@ -153,7 +153,7 @@ public sealed partial class PhysicsWorld
 		}
 	}
 
-	public ConvexHull GetConvexHullForMesh(FXRenderer.Mesh mesh)
+	public ConvexHull GetConvexHullForMesh(Space_Refinery_Game_Renderer.Mesh mesh)
 	{
 		lock (SyncRoot)
 		{

@@ -1,5 +1,4 @@
 ﻿using FixedPrecision;
-using FXRenderer;
 using Veldrid;
 
 namespace Space_Refinery_Game_Renderer

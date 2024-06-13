@@ -1,8 +1,7 @@
 ﻿using Veldrid;
 using ImGuiNET;
 using FixedPrecision;
-using FXRenderer;
-using Space_Refinery_Utilities;
+using Space_Refinery_Game_Renderer;
 
 namespace Space_Refinery_Engine
 {

@@ -86,6 +86,7 @@ partial class UI
 
 			if (ImGui.Button("Exit game"))
 			{
+				Logging.Log("Ciao!");
 				GC.WaitForPendingFinalizers();
 				Environment.Exit(69);
 			}

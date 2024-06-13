@@ -7,7 +7,7 @@ namespace Space_Refinery_Engine;
 
 public static class ResourceDeserialization
 {
-	public static void DeserializeIntoGlobalReferenceHandler(SerializationReferenceHandler globalReferenceHandler, GameData gameData, bool includeGameExtension = true)
+	public static void DeserializeIntoGlobalReferenceHandler(SerializationReferenceHandler globalReferenceHandler, GameData gameData, out ICollection<Extension> loadedExtensions, bool includeGameExtension = true)
 	{
 		Logging.LogScopeStart("Deserializing into global reference handler");
 
@@ -15,16 +15,16 @@ public static class ResourceDeserialization
 		SerializationExtensions.FindAndIndexSerializableTypes(new[] { Assembly.GetExecutingAssembly() });
 		Logging.LogScopeEnd();
 
-		var extensions = LoadExtensions(new(gameData, null), globalReferenceHandler, includeGameExtension);
+		loadedExtensions = LoadExtensions(new(gameData, null), globalReferenceHandler, includeGameExtension);
 
 		Logging.LogScopeStart("Indexing types in extensions");
-		SerializationExtensions.FindAndIndexSerializableTypes(extensions);
+		SerializationExtensions.FindAndIndexSerializableTypes(loadedExtensions);
 		Logging.LogScopeEnd();
 
 		Logging.LogScopeStart("Finding serializable reference files");
 		List<(Extension, string[] filePaths)> srhFiles = new();
 
-		foreach (var extension in extensions)
+		foreach (var extension in loadedExtensions)
 		{
 			srhFiles.Add((extension, Directory.GetFiles(Path.Combine(extension.ExtensionPath, extension.ExtensionManifest.AssetsPath), $"*{SerializableReferenceHandlerFileExtension}", SearchOption.AllDirectories)));
 		}
@@ -79,7 +79,7 @@ public static class ResourceDeserialization
 
 		if (includeGameExtension)
 		{
-			manifestFilePaths.AddRange(Directory.GetFiles("../../../../Space Refinery Game/bin/Debug/net8.0/_GameAssets", $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
+			manifestFilePaths.AddRange(Directory.GetFiles("../../../../../InfiltrationGame/bin/Debug/net8.0/_GameAssets", $"*{ExtensionManifestFileExtension}", SearchOption.AllDirectories));
 		}
 
 		// Find all extension manifest files and add them to manifestFilePaths,

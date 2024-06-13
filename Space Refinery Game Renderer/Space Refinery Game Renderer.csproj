@@ -20,6 +20,7 @@
   <ItemGroup>
     <None Remove="EntityRenderable-fragment.glsl" />
     <None Remove="EntityRenderable-vertex.glsl" />
+    <None Remove="FXRenderer\Starfield-fragment.glsl" />
     <None Remove="Shaders\ConstructionMarker-fragment.glsl" />
     <None Remove="Shaders\ConstructionMarker-vertex.glsl" />
     <None Remove="Shaders\DebugRenderable-fragment.glsl" />

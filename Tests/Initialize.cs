@@ -16,7 +16,7 @@ namespace Tests
 
 			ReferenceHandler.EnterAllowEventualReferenceMode(false);
 			{
-				ResourceDeserialization.DeserializeIntoGlobalReferenceHandler(ReferenceHandler, new(), includeGameExtension: false);
+				ResourceDeserialization.DeserializeIntoGlobalReferenceHandler(ReferenceHandler, new(), out _, includeGameExtension: false);
 			}
 			ReferenceHandler.ExitAllowEventualReferenceMode();
 		}

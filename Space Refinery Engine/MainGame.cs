@@ -47,6 +47,8 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 
 	public static Extension EngineExtension { get; internal set; }
 
+	public static ICollection<Extension> Extensions { get; internal set; }
+
 	public static DebugRender DebugRender;
 
 	public static DebugSettings DebugSettings = new();
@@ -83,7 +85,8 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 
 			DebugSettings.AccessSetting("Fill music queue", (ActionDebugSetting)GameData.AudioWorld.MusicSystem.FillQueue);
 
-			ResourceDeserialization.DeserializeIntoGlobalReferenceHandler(GlobalReferenceHandler, GameData);
+			ResourceDeserialization.DeserializeIntoGlobalReferenceHandler(GlobalReferenceHandler, GameData, out var extensions);
+			Extensions = extensions;
 
 			GameData.Settings.LoadSettingValuesFromSettingsFile();
 
@@ -100,13 +103,16 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 
 		GameData.UI.PauseStateChanged += UI_PauseStateChanged;
 
-		Starfield.CreateAndAdd(GameData.GraphicsWorld);
-
 		GameData.Game = Game.CreateGame(SerializableReference.NewReference(), GameData);
 
 		GameData.Game.GameWorld.StartTicking(this);
 
-		Pipe.Create(PipeType.PipeTypes["Straight Pipe"], new Transform(new(0, 0, 0), QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(0, 0, 0)), GameData, GameData.Game.GameReferenceHandler);
+		Logging.LogScopeStart("Initializing all extensions");
+		foreach (Extension extension in Extensions)
+		{
+			extension.InvokeInitialize(GameData);
+		}
+		Logging.LogScopeEnd();
 
 		InputTracker.IgnoreNextFrameMousePosition = true;
 
@@ -118,15 +124,7 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 
 		GameData.Settings.RegisterToSettingValue<SwitchSettingValue>("Limit FPS", (value) => GameData.GraphicsWorld.ShouldLimitFramerate = value.SwitchValue);
 
-		RegisterFormatToSettings(GameData.Settings);
-
 		Logging.LogScopeEnd();
-	}
-
-	public static void RegisterFormatToSettings(Settings settings)
-	{
-		settings.RegisterToSettingValue<SwitchSettingValue>("Use Celcius", (v) => FormatUnit.UseCelcius = v);
-		settings.RegisterToSettingValue<SwitchSettingValue>("Use Pascal", (v) => FormatUnit.UsePascal = v);
 	}
 
 	private void UI_PauseStateChanged(bool paused)

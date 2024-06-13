@@ -103,11 +103,11 @@ namespace Space_Refinery_Engine
 
 		public abstract ResourceContainer GetResourceContainerForConnector(PipeConnector pipeConnector);
 
-		private static PhysicsObject CreatePhysicsObject(PhysicsWorld physWorld, Transform transform, Pipe pipeStraight, FXRenderer.Mesh mesh)
+		private static PhysicsObject CreatePhysicsObject(PhysicsWorld physWorld, Transform transform, Pipe pipe, FXRenderer.Mesh mesh)
 		{
 			PhysicsObjectDescription<ConvexHull> physicsObjectDescription = new(physWorld.GetConvexHullForMesh(mesh), transform, 0, true);
 
-			PhysicsObject physObj = physWorld.AddPhysicsObject(physicsObjectDescription, pipeStraight);
+			PhysicsObject physObj = physWorld.AddPhysicsObject(physicsObjectDescription, pipe);
 			return physObj;
 		}
 
@@ -128,9 +128,9 @@ namespace Space_Refinery_Engine
 					);
 
 				// Connect with existing connector at this location - forgo creation of own connector.
-				if (gameData.PhysicsWorld.ApproxOverlapPoint<PipeConnector>(pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation), out PhysicsObject physicsObject))
+				if (gameData.PhysicsWorld.ApproxOverlapPoint<PipeConnector>(pipe.Transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation), out PhysicsObject? physicsObject))
 				{
-					PipeConnector pipeConnector = (PipeConnector)physicsObject.Entity;
+					PipeConnector pipeConnector = (PipeConnector)physicsObject!.Entity;
 
 					pipeConnector.Connect(pipe);
 

@@ -5,6 +5,7 @@ using BepuUtilities.Memory;
 using FixedPrecision;
 using FXRenderer;
 using System.Diagnostics;
+using System.Numerics;
 
 namespace Space_Refinery_Engine;
 
@@ -24,6 +25,12 @@ public sealed partial class PhysicsWorld
 
 	public event Action<IntervalUnit>? CollectPhysicsPerformanceData;
 
+	public Vector3 Gravity = new(0, -9.82f, 0);
+
+	public float LinearDamping = 0.1f;
+
+	public float AngularDamping = 0.01f;
+
 	private string responseSpinner = "_";
 	public string ResponseSpinner { get { lock (responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
 
@@ -36,7 +43,7 @@ public sealed partial class PhysicsWorld
 
 			//The following sets up a simulation with the callbacks defined above, and tells it to use 8 velocity iterations per substep and only one substep per solve.
 			//It uses the default SubsteppingTimestepper. You could use a custom ITimestepper implementation to customize when stages run relative to each other, or to insert more callbacks.         
-			simulation = Simulation.Create(bufferPool, new NarrowPhaseCallbacks(), new PoseIntegratorCallbacks(), new SolveDescription(8, 1));
+			simulation = Simulation.Create(bufferPool, new NarrowPhaseCallbacks(), new PoseIntegratorCallbacks(Gravity, LinearDamping, AngularDamping), new SolveDescription(8, 1));
 
 			//Any IThreadDispatcher implementation can be used for multithreading. Here, we use the BepuUtilities.ThreadDispatcher implementation.
 			threadDispatcher = new ThreadDispatcher(Environment.ProcessorCount);

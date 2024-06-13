@@ -19,6 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\FixedPrecision\FixedPrecision\FixedPrecision.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="FixedPrecision">
       <HintPath>..\..\FixedPrecision\FixedPrecision\bin\Debug\net7.0\FixedPrecision.dll</HintPath>
     </Reference>

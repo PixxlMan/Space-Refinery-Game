@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\FixedPrecision\FixedPrecision\FixedPrecision.csproj" />
     <ProjectReference Include="..\Space Refinery Engine\Space Refinery Engine.csproj" />
   </ItemGroup>
 

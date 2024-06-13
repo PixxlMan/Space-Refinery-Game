@@ -11,7 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Space Refinery Utilities", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Space Refinery Engine", "Space Refinery Engine\Space Refinery Engine.csproj", "{3C24C3A9-D749-4E03-BCD6-69B88C138A6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{83CEE590-471C-468F-9FF7-265013E71512}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{83CEE590-471C-468F-9FF7-265013E71512}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InfiltrationGame", "..\InfiltrationGame\InfiltrationGame.csproj", "{06AF5462-5A92-4506-976B-92D7DE3560CE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FXRenderer", "..\FXPRenderer\FXRenderer\FXRenderer.csproj", "{8932527F-A5D6-4520-BBC7-57DE25C80DDB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FixedPrecision", "..\FixedPrecision\FixedPrecision\FixedPrecision.csproj", "{23ADE55C-32B3-40BC-BD79-4B73D75FCEF6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +45,18 @@ Global
 		{83CEE590-471C-468F-9FF7-265013E71512}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83CEE590-471C-468F-9FF7-265013E71512}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83CEE590-471C-468F-9FF7-265013E71512}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06AF5462-5A92-4506-976B-92D7DE3560CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06AF5462-5A92-4506-976B-92D7DE3560CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06AF5462-5A92-4506-976B-92D7DE3560CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06AF5462-5A92-4506-976B-92D7DE3560CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8932527F-A5D6-4520-BBC7-57DE25C80DDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8932527F-A5D6-4520-BBC7-57DE25C80DDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8932527F-A5D6-4520-BBC7-57DE25C80DDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8932527F-A5D6-4520-BBC7-57DE25C80DDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23ADE55C-32B3-40BC-BD79-4B73D75FCEF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23ADE55C-32B3-40BC-BD79-4B73D75FCEF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23ADE55C-32B3-40BC-BD79-4B73D75FCEF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23ADE55C-32B3-40BC-BD79-4B73D75FCEF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

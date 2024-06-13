@@ -21,6 +21,7 @@
     <None Remove="EntityRenderable-fragment.glsl" />
     <None Remove="EntityRenderable-vertex.glsl" />
     <None Remove="FXRenderer\Starfield-fragment.glsl" />
+    <None Remove="FXRenderer\Starfield-vertex.glsl" />
     <None Remove="Shaders\ConstructionMarker-fragment.glsl" />
     <None Remove="Shaders\ConstructionMarker-vertex.glsl" />
     <None Remove="Shaders\DebugRenderable-fragment.glsl" />
@@ -57,24 +58,33 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="FXRenderer\Starfield-fragment.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FXRenderer\Starfield-vertex.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.3" />
     <PackageReference Include="Veldrid" Version="4.9.0" />
     <PackageReference Include="Veldrid.ImageSharp" Version="4.9.0" />
     <PackageReference Include="Veldrid.ImGui" Version="5.72.0" />
+    <PackageReference Include="Veldrid.SDL2" Version="4.9.0" />
+    <PackageReference Include="Veldrid.SPIRV" Version="1.0.15" />
+    <PackageReference Include="Veldrid.StartupUtilities" Version="4.9.0" />
+    <PackageReference Include="Veldrid.Utilities" Version="4.9.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\FixedPrecision\FixedPrecision\FixedPrecision.csproj" />
-    <ProjectReference Include="..\..\FXPRenderer\FXRenderer\FXRenderer.csproj" />
     <ProjectReference Include="..\Space Refinery Utilities\Space Refinery Utilities.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="FixedPrecision">
       <HintPath>..\..\FixedPrecision\FixedPrecision\bin\Debug\net7.0\FixedPrecision.dll</HintPath>
-    </Reference>
-    <Reference Include="FXRenderer">
-      <HintPath>..\..\FXPRenderer\FXRenderer\bin\Debug\net7.0\FXRenderer.dll</HintPath>
     </Reference>
   </ItemGroup>
 	

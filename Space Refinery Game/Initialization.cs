@@ -1,6 +1,7 @@
 ﻿using FixedPrecision;
 using FXRenderer;
 using Space_Refinery_Engine;
+using Space_Refinery_Game;
 using Space_Refinery_Utilities;
 
 namespace InfiltrationGame;
@@ -15,5 +16,7 @@ public static class Initialization
 
 		gameData.Settings.RegisterToSettingValue<SwitchSettingValue>("Use Celcius", (v) => FormatUnit.UseCelcius = v);
 		gameData.Settings.RegisterToSettingValue<SwitchSettingValue>("Use Pascal", (v) => FormatUnit.UsePascal = v);
+
+		Player.Create(gameData);
 	}
 }

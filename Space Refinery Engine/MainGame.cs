@@ -180,8 +180,6 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 		{
 			//InputTracker.DeferFurtherInputToNextFrame();
 
-			GameData.GraphicsWorld.Camera.Transform = GameData.Game.Player.CameraTransform;
-
 			GameData.UI.Update();
 
 			if (InputTracker.GetKeyDown(Key.P))
@@ -198,14 +196,13 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 				GameData.GraphicsWorld.Window.CaptureMouse = true;
 			}
 
-			if (!Paused && !GameData.UI.InMenu)
-			{
-				GameData.Game.Player.Update(deltaTime);
-			}
+			OnUpdate?.Invoke(deltaTime);
 
 			InputTracker.UpdateInputFrame();
 		}
 	}
+
+	public event Action<IntervalUnit> OnUpdate;
 
 	public void Serialize(string path)
 	{

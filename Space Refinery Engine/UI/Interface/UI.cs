@@ -486,5 +486,25 @@ namespace Space_Refinery_Engine
 			style.ScrollbarRounding = 2;
 			style.GrabRounding = 3;
 		}
+
+		public void SetTargetedPhysicsObject(PhysicsObject lookedAtPhysicsObject)
+		{
+			gameData.UI.CurrentlyLookedAtPhysicsObject = lookedAtPhysicsObject;
+		}
+
+		public void SetSelectedInformationProvider(IInformationProvider informationProvider)
+		{
+			gameData.UI.CurrentlySelectedInformationProvider = informationProvider;
+		}
+
+		public void ClearTargetedPhysicsObject()
+		{
+			gameData.UI.CurrentlyLookedAtPhysicsObject = null;
+		}
+
+		public void ClearSelectedInformationProvider()
+		{
+			gameData.UI.CurrentlySelectedInformationProvider = null;
+		}
 	}
 }

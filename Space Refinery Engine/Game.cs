@@ -34,8 +34,6 @@ public record Game : ISerializableReference
 
 	public Settings GameSettings { get; private set; }
 
-	public Player Player { get; private set; }
-
 	private object syncRoot = new();
 
 	public static Game CreateGame(SerializableReference gameName, GameData gameData)
@@ -46,7 +44,6 @@ public record Game : ISerializableReference
 			GameWorld = new(),
 			GameSettings = new(gameData),
 			GameReferenceHandler = new(),
-			Player = Player.Create(gameData),
 		};
 
 		return game;
@@ -65,8 +62,6 @@ public record Game : ISerializableReference
 				writer.SerializeWithoutEmbeddedType(GameWorld, nameof(GameWorld));
 
 				writer.SerializeWithoutEmbeddedType(GameSettings, nameof(GameSettings));
-
-				Player.Serialize(writer);
 			}
 			writer.WriteEndElement();
 		}
@@ -85,8 +80,6 @@ public record Game : ISerializableReference
 				GameWorld = reader.DeserializeEntitySerializableWithoutEmbeddedType<GameWorld>(serializationData, GameReferenceHandler, nameof(GameWorld));
 
 				GameSettings = reader.DeserializeEntitySerializableWithoutEmbeddedType<Settings>(serializationData, GameReferenceHandler, nameof(GameSettings));
-
-				Player = Player.Deserialize(reader, serializationData);
 
 				GameReferenceHandler.ExitAllowEventualReferenceMode();
 			}

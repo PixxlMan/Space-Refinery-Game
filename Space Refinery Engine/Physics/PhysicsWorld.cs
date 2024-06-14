@@ -27,7 +27,7 @@ public sealed partial class PhysicsWorld
 
 	public Vector3 Gravity = new(0, -9.82f, 0);
 
-	public float LinearDamping = 0.1f;
+	public float LinearDamping = 0.04f;
 
 	public float AngularDamping = 0.01f;
 

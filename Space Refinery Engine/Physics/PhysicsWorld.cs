@@ -217,6 +217,8 @@ public sealed partial class PhysicsWorld
 			pose.Position = transform.Position.ToVector3();
 
 			pose.Orientation = transform.Rotation.ToQuaternion();
+
+			simulation.Bodies[bodyHandle].Pose = pose;
 		}
 	}
 

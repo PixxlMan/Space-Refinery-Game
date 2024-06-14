@@ -168,7 +168,17 @@ public sealed partial class PhysicsWorld
 		}
 	}
 
-	public void ChangeShape(PhysicsObject physicsObject, ConvexHull shape)
+	public void AddImpulse(PhysicsObject physicsObject, Vector3FixedDecimalInt4 impulse)
+	{
+		lock (SyncRoot)
+		{
+			Vector3 floatImpulse = impulse.ToVector3();
+			Vector3 offset = physicsObject.Transform.Position.ToVector3();
+			new BodyReference(physicsObject.BodyHandle, simulation.Bodies).ApplyImpulse(in floatImpulse, in offset);
+		}
+	}
+
+	public void SetShape(PhysicsObject physicsObject, ConvexHull shape)
 	{ // OPTIMIZE: remove old shapes and don't always add the new ones if identical ones are already used (pass TypedIndex instead of TShape to the AddPhysicsObject method to accomodate more easily sharing the same shape between pipes of the same type)
 		lock (SyncRoot)
 		{

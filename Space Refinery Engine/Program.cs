@@ -1,5 +1,4 @@
 ﻿using Space_Refinery_Game_Renderer;
-using Space_Refinery_Utilities;
 using System.Globalization;
 using System.Reflection;
 using Veldrid;
@@ -35,7 +34,7 @@ public static class Program
 		//System.Globalization.CultureInfo.CurrentCulture.NumberFormat = DecimalNumber.NumberFormat;
 		// The previous line cannot be uncommented because the number format is not complete.
 
-		Window window = new("Space Refinery");
+		Window window = new("Loading...");
 
 		GraphicsDeviceOptions options = new GraphicsDeviceOptions(
 			debug: false,

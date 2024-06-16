@@ -25,12 +25,6 @@ public sealed partial class PhysicsWorld
 
 	public event Action<IntervalUnit>? CollectPhysicsPerformanceData;
 
-	public Vector3 Gravity = new(0, -9.82f, 0);
-
-	public float LinearDamping = 0.04f;
-
-	public float AngularDamping = 0.01f;
-
 	private string responseSpinner = "_";
 	public string ResponseSpinner { get { lock (responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
 

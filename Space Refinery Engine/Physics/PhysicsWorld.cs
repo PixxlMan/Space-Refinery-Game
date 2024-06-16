@@ -110,6 +110,22 @@ public sealed partial class PhysicsWorld
 		}
 	}
 
+	public PhysicsObject AddPhysicsObject(BodyDescription bodyDescription, Entity entity)
+	{
+		lock (SyncRoot)
+		{
+			BodyHandle bodyHandle;
+
+			bodyHandle = Simulation.Bodies.Add(bodyDescription);
+
+			PhysicsObject physicsObject = new PhysicsObject(this, bodyHandle, entity);
+
+			bodyHandleToPhysicsObject.Add(bodyHandle, physicsObject);
+
+			return physicsObject;
+		}
+	}
+
 	public void DestroyPhysicsObject(PhysicsObject physicsObject)
 	{
 		lock (SyncRoot)

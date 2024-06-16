@@ -1,13 +1,11 @@
-﻿using FixedPrecision;
-using Space_Refinery_Game_Renderer;
+﻿using Space_Refinery_Game_Renderer;
 using Space_Refinery_Engine.Audio;
-using Space_Refinery_Game_Renderer;
-using Space_Refinery_Utilities;
 using System.Diagnostics;
-using System.Reflection;
 using System.Xml;
 using Veldrid;
-using static Space_Refinery_Engine.SerializationPaths;
+using BepuPhysics;
+using BepuUtilities.Memory;
+using BepuUtilities;
 
 namespace Space_Refinery_Engine;
 
@@ -68,9 +66,7 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 		InputTracker.ListenToWindow(window);
 
 		GameData.GraphicsWorld = new();
-
 		GameData.GraphicsWorld.SetUp(window, gd, factory, swapchain);
-
 		DebugRender = DebugRender.Create(GameData.GraphicsWorld);
 
 		GlobalReferenceHandler = new();
@@ -90,12 +86,34 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 
 			GameData.Settings.LoadSettingValuesFromSettingsFile();
 
+			foreach (Extension extension in Extensions)
+			{
+				extension.ExtensionObject?.OnGlobalReferenceHandlerDeserialization(GlobalReferenceHandler, GameData);
+			}
+
+			Debug.Assert(GlobalReferenceHandler.AllowEventualReferences, $"{nameof(GlobalReferenceHandler.AllowEventualReferences)} mode was disabled at some point deserialization into {nameof(GlobalReferenceHandler)}. It should not be deactivated as that can cause issues with other initialization. Investigate.");
+
 		}
 		GlobalReferenceHandler.ExitAllowEventualReferenceMode();
 
 		GameData.PhysicsWorld = new();
+		foreach (Extension extension in Extensions)
+		{
+			bool alreadySetUp = false;
 
-		GameData.PhysicsWorld.SetUp();
+			if (extension.ExtensionObject is not null &&
+				extension.ExtensionObject.SetUpPhysics(out Simulation simulation, out BufferPool bufferPool, out IThreadDispatcher threadDispatcher))
+			{
+				if (alreadySetUp)
+				{
+					throw new Exception($"More than one extension attemped to set up the {nameof(PhysicsWorld)}!");
+				}
+
+				GameData.PhysicsWorld.SetUp(simulation, bufferPool, threadDispatcher);
+
+				alreadySetUp = true;
+			}
+		}
 
 		GameData.PhysicsWorld.Run();
 
@@ -107,10 +125,10 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 
 		GameData.Game.GameWorld.StartTicking(this);
 
-		Logging.LogScopeStart("Initializing all extensions");
+		Logging.LogScopeStart("Starting all extensions");
 		foreach (Extension extension in Extensions)
 		{
-			extension.InvokeInitialize(GameData);
+			extension.ExtensionObject?.Start(GameData);
 		}
 		Logging.LogScopeEnd();
 

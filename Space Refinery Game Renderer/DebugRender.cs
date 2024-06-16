@@ -222,12 +222,17 @@ namespace Space_Refinery_Game_Renderer
 			}
 		}
 
-		public void DrawRay(Vector3FixedDecimalInt4 origin, Vector3FixedDecimalInt4 direction, RgbaFloat color) => DrawRay(origin, direction, 1, color);
+		public void DrawRay(Vector3FixedDecimalInt4 origin, Vector3FixedDecimalInt4 ray, RgbaFloat color) => DrawRay(origin, ray, ray.Length(), color);
 
 		public void DrawRay(Vector3FixedDecimalInt4 origin, Vector3FixedDecimalInt4 direction, FixedDecimalInt4 length, RgbaFloat color)
 		{
 			lock (sync)
 			{
+				if (direction.LengthSquared() == 0) // Invert color to indicate that the vector has an invalid direction.
+				{
+					color = new(1 - color.R, 1 - color.G, 1 - color.B, 1 - color.A);
+				}
+
 				Transform transform = new(origin + (direction * length / 2), QuaternionFixedDecimalInt4.CreateLookingAt(direction, Vector3FixedDecimalInt4.UnitZ, Vector3FixedDecimalInt4.UnitY));
 
 				DeviceBuffer transformationBuffer, colorBuffer;
@@ -240,12 +245,17 @@ namespace Space_Refinery_Game_Renderer
 			}
 		}
 
-		public void PersistentRay(Vector3FixedDecimalInt4 origin, Vector3FixedDecimalInt4 direction, RgbaFloat color) => PersistentRay(origin, direction, 1, color);
+		public void PersistentRay(Vector3FixedDecimalInt4 origin, Vector3FixedDecimalInt4 ray, RgbaFloat color) => PersistentRay(origin, ray, ray.Length(), color);
 
 		public void PersistentRay(Vector3FixedDecimalInt4 origin, Vector3FixedDecimalInt4 direction, FixedDecimalInt4 length, RgbaFloat color)
 		{
 			lock (sync)
 			{
+				if (direction.LengthSquared() == 0) // Invert color to indicate that the vector has an invalid direction.
+				{
+					color = new(1 - color.R, 1 - color.G, 1 - color.B, 1 - color.A);
+				}
+
 				Transform transform = new(origin, QuaternionFixedDecimalInt4.CreateLookingAt(direction, Vector3FixedDecimalInt4.UnitZ, Vector3FixedDecimalInt4.UnitY));
 
 				DeviceBuffer transformationBuffer, colorBuffer;

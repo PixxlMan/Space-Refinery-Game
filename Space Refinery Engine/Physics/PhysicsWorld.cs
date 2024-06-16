@@ -34,19 +34,13 @@ public sealed partial class PhysicsWorld
 	private string responseSpinner = "_";
 	public string ResponseSpinner { get { lock (responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
 
-	public void SetUp()
+	public void SetUp(Simulation simulation, BufferPool bufferPool, IThreadDispatcher threadDispatcher)
 	{
 		lock (SyncRoot)
 		{
-			//The buffer pool is a source of raw memory blobs for the engine to use.
-			bufferPool = new BufferPool();
-
-			//The following sets up a simulation with the callbacks defined above, and tells it to use 8 velocity iterations per substep and only one substep per solve.
-			//It uses the default SubsteppingTimestepper. You could use a custom ITimestepper implementation to customize when stages run relative to each other, or to insert more callbacks.         
-			simulation = Simulation.Create(bufferPool, new NarrowPhaseCallbacks(), new PoseIntegratorCallbacks(Gravity, LinearDamping, AngularDamping), new SolveDescription(8, 1));
-
-			//Any IThreadDispatcher implementation can be used for multithreading. Here, we use the BepuUtilities.ThreadDispatcher implementation.
-			threadDispatcher = new ThreadDispatcher(Environment.ProcessorCount);
+			this.simulation = simulation;
+			this.bufferPool = bufferPool;
+			this.threadDispatcher = threadDispatcher;
 		}
 	}
 

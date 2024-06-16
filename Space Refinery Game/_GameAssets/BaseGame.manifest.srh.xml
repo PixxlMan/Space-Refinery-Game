@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <SerializationReferenceHandler>
-	<Count>1</Count>
+	<Count>2</Count>
 	<Elements>
 		<IEntitySerializable>
 			<Type>Space_Refinery_Engine.ExtensionManifest</Type>
@@ -9,6 +9,8 @@
 			<ExtensionVersion>1.0.0.0</ExtensionVersion>
 			<HasAssembly>True</HasAssembly>
 			<ExtensionAssemblyName>../Space Refinery Game</ExtensionAssemblyName>
+			<HasExtensionObject>True</HasExtensionObject>
+			<ExtensionObjectReference>SpaceRefineryGameExtension</ExtensionObjectReference>
 			<AssetsPath>../../../../../Space Refinery Game/bin/Debug/net8.0/_GameAssets</AssetsPath>
 			<Dependencies>
 				<Count>1</Count>

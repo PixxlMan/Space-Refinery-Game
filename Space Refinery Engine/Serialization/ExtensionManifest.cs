@@ -17,6 +17,8 @@ public sealed class ExtensionManifest : ISerializableReference
 
 	public string? ExtensionAssemblyName;
 
+	public SerializableReference? ExtensionObjectReference;
+
 	[NotNull]
 	public ICollection<ExtensionDependency>? Dependencies;
 
@@ -52,6 +54,13 @@ public sealed class ExtensionManifest : ISerializableReference
 			writer.Serialize(ExtensionAssemblyName!, nameof(ExtensionAssemblyName));
 		}
 
+		writer.Serialize(ExtensionObjectReference is not null, "HasExtensionObject");
+
+		if (ExtensionObjectReference is not null)
+		{
+			writer.WriteElementString(nameof(ExtensionObjectReference), ExtensionObjectReference.Value.ToString());
+		}
+
 		writer.Serialize(AssetsPath, nameof(AssetsPath));
 
 		writer.Serialize(Dependencies, (writer, extDep) => writer.SerializeWithoutEmbeddedType(extDep), nameof(Dependencies));
@@ -70,6 +79,13 @@ public sealed class ExtensionManifest : ISerializableReference
 		if (HasAssembly)
 		{
 			ExtensionAssemblyName = reader.ReadString(nameof(ExtensionAssemblyName));
+		}
+		
+		var hasExtensionObject = reader.DeserializeBoolean("HasExtensionObject");
+
+		if (hasExtensionObject)
+		{
+			ExtensionObjectReference = reader.ReadReference(nameof(ExtensionObjectReference));
 		}
 
 		AssetsPath = reader.ReadString(nameof(AssetsPath));
@@ -161,38 +177,40 @@ public sealed class ExtensionDependency : IEntitySerializable
 						);
 
 			case DependencyKind.DependLowerThan:
-				return (extensionDependency.DependencySpecificity.HasFlag(DependencySpecificity.DependBuildVersion)
-							&& version.Build < extensionDependency.ExtensionVersion.Build
-							&& version.Minor < extensionDependency.ExtensionVersion.Minor
-							&& version.Major < extensionDependency.ExtensionVersion.Major
-							) ||
-						(extensionDependency.DependencySpecificity.HasFlag(DependencySpecificity.DependMinorVersion)
-							&& version.Minor < extensionDependency.ExtensionVersion.Minor
-							&& version.Major < extensionDependency.ExtensionVersion.Major
-							) ||
-						(extensionDependency.DependencySpecificity.HasFlag(DependencySpecificity.DependMajorVersion)
-							&& version.Major < extensionDependency.ExtensionVersion.Major
-							) ||
-						(extensionDependency.DependencySpecificity.HasFlag(DependencySpecificity.DependExactVersion)
-							&& version < extensionDependency.ExtensionVersion
-							);
+				return
+					(extensionDependency.DependencySpecificity.HasFlag(DependencySpecificity.DependBuildVersion)
+						&& version.Build < extensionDependency.ExtensionVersion.Build
+						&& version.Minor < extensionDependency.ExtensionVersion.Minor
+						&& version.Major < extensionDependency.ExtensionVersion.Major
+						) ||
+					(extensionDependency.DependencySpecificity.HasFlag(DependencySpecificity.DependMinorVersion)
+						&& version.Minor < extensionDependency.ExtensionVersion.Minor
+						&& version.Major < extensionDependency.ExtensionVersion.Major
+						) ||
+					(extensionDependency.DependencySpecificity.HasFlag(DependencySpecificity.DependMajorVersion)
+						&& version.Major < extensionDependency.ExtensionVersion.Major
+						) ||
+					(extensionDependency.DependencySpecificity.HasFlag(DependencySpecificity.DependExactVersion)
+						&& version < extensionDependency.ExtensionVersion
+						);
 
 			case DependencyKind.DependGreaterThan:
-				return (extensionDependency.DependencySpecificity.HasFlag(DependencySpecificity.DependBuildVersion)
-							&& version.Build > extensionDependency.ExtensionVersion.Build
-							&& version.Minor > extensionDependency.ExtensionVersion.Minor
-							&& version.Major > extensionDependency.ExtensionVersion.Major
-							) ||
-						(extensionDependency.DependencySpecificity.HasFlag(DependencySpecificity.DependMinorVersion)
-							&& version.Minor > extensionDependency.ExtensionVersion.Minor
-							&& version.Major > extensionDependency.ExtensionVersion.Major
-							) ||
-						(extensionDependency.DependencySpecificity.HasFlag(DependencySpecificity.DependMajorVersion)
-							&& version.Major > extensionDependency.ExtensionVersion.Major
-							) ||
-						(extensionDependency.DependencySpecificity.HasFlag(DependencySpecificity.DependExactVersion)
-							&& version > extensionDependency.ExtensionVersion
-							);
+				return
+					(extensionDependency.DependencySpecificity.HasFlag(DependencySpecificity.DependBuildVersion)
+						&& version.Build > extensionDependency.ExtensionVersion.Build
+						&& version.Minor > extensionDependency.ExtensionVersion.Minor
+						&& version.Major > extensionDependency.ExtensionVersion.Major
+						) ||
+					(extensionDependency.DependencySpecificity.HasFlag(DependencySpecificity.DependMinorVersion)
+						&& version.Minor > extensionDependency.ExtensionVersion.Minor
+						&& version.Major > extensionDependency.ExtensionVersion.Major
+						) ||
+					(extensionDependency.DependencySpecificity.HasFlag(DependencySpecificity.DependMajorVersion)
+						&& version.Major > extensionDependency.ExtensionVersion.Major
+						) ||
+					(extensionDependency.DependencySpecificity.HasFlag(DependencySpecificity.DependExactVersion)
+						&& version > extensionDependency.ExtensionVersion
+						);
 		}
 
 		throw new GlitchInTheMatrixException();

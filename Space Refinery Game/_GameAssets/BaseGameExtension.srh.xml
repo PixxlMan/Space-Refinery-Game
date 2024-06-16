@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SerializationReferenceHandler>
+	<Count>1</Count>
+	<Elements>
+		<IEntitySerializable>
+			<Type>Space_Refinery_Game.SpaceRefineryGameExtension</Type>
+			<Reference>SpaceRefineryGameExtension</Reference>
+		</IEntitySerializable>
+	</Elements>
+</SerializationReferenceHandler>

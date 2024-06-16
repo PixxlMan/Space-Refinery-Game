@@ -11,45 +11,58 @@ namespace Space_Refinery_Engine;
 /// <param name="ExtensionManifest"></param>
 /// <param name="ExtensionPath"></param>
 /// <param name="AssetsPath">Absolute path to the assets of this extension.</param>
-public sealed record class Extension(
-	string ExtensionName,
-	bool HasAssembly,
-	Assembly? HostAssembly,
-	ExtensionManifest ExtensionManifest,
-	string ExtensionPath,
-	string AssetsPath)
+public sealed class Extension
 {
+	public string ExtensionName;
+
+	public bool HasAssembly;
+
+	public Assembly? HostAssembly;
+
+	public ExtensionManifest ExtensionManifest;
+
+	public IExtension? ExtensionObject;
+
+	public string ExtensionPath;
+
+	public string AssetsPath;
+
+	public Extension(string extensionName, bool hasAssembly, Assembly? hostAssembly, ExtensionManifest extensionManifest, IExtension? extensionObject, string extensionPath, string assetsPath)
+	{
+		ExtensionName = extensionName;
+		HasAssembly = hasAssembly;
+		HostAssembly = hostAssembly;
+		ExtensionManifest = extensionManifest;
+		ExtensionObject = extensionObject;
+		ExtensionPath = extensionPath;
+		AssetsPath = assetsPath;
+	}
+
 	// The reason ExtensionPath cannot be loaded from an ExtensionManifest is that the ExtensionManifest has no knowledge or power over it's containing
 	// directory. Therefore information must be gathered about where the ExtensionManifest was loaded from and then provided to the
 	// CreateAndLoadFromExtensionManifest method.
-	public static Extension CreateAndLoadFromExtensionManifest(ExtensionManifest manifest, string extensionDirectory)
+	public static Extension CreateAndLoadFromExtensionManifest(ExtensionManifest manifest, string extensionDirectory, SerializationReferenceHandler referenceHandler)
 	{
 		var assetsAbsolutePath = Path.GetFullPath(Path.Combine(extensionDirectory, manifest.AssetsPath));
+
+		Extension extension = null!;
+
+		if (manifest.ExtensionObjectReference is not null)
+		{
+			referenceHandler.GetEventualReference(manifest.ExtensionObjectReference.Value, (eo) => extension!.ExtensionObject = (IExtension?)eo);
+		}
 
 		if (manifest.HasAssembly)
 		{
 			Assembly hostAssembly = Assembly.LoadFile(Path.Combine(extensionDirectory, $"{manifest.ExtensionAssemblyName}.dll"));
 
-			return new(manifest.ExtensionName, true, hostAssembly, manifest, extensionDirectory, assetsAbsolutePath);
+			extension = new(manifest.ExtensionName, true, hostAssembly, manifest, null, extensionDirectory, assetsAbsolutePath);
 		}
 		else
 		{
-			return new(manifest.ExtensionName, false, null, manifest, extensionDirectory, assetsAbsolutePath);
+			extension = new(manifest.ExtensionName, false, null, manifest, null, extensionDirectory, assetsAbsolutePath);
 		}
-	}
 
-	public void InvokeInitialize(GameData gameData)
-	{
-		if (!HasAssembly)
-			return;
-
-		var initializeMethod = HostAssembly!.GetType("InfiltrationGame.Initialization")?.GetMethod("Initialize", BindingFlags.Public | BindingFlags.Static);
-
-		if (initializeMethod is not null)
-		{
-			Logging.Log($"Initializing extension '{ExtensionName}'");
-
-			initializeMethod.Invoke(null, [gameData]);
-		}
+		return extension;
 	}
 }

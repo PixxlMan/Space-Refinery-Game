@@ -9,6 +9,8 @@ public static class ResourceDeserialization
 {
 	public static void DeserializeIntoGlobalReferenceHandler(SerializationReferenceHandler globalReferenceHandler, GameData gameData, out ICollection<Extension> loadedExtensions, bool includeGameExtension = true)
 	{
+		Debug.Assert(globalReferenceHandler.AllowEventualReferences, $"{nameof(globalReferenceHandler.AllowEventualReferences)} mode must be enabled when calling {nameof(DeserializeIntoGlobalReferenceHandler)}");
+
 		Logging.LogScopeStart("Deserializing into global reference handler");
 
 		Logging.LogScopeStart("Finding types in main assembly");
@@ -107,25 +109,21 @@ public static class ResourceDeserialization
 
 		Logging.LogAll(manifestFilePaths, "Extension manifest files to be loaded");
 
-		Logging.LogAll(nameToExtensionManifest.Keys, "Additional extension manifest files generated");
+		Logging.LogAll(nameToExtensionManifest.Keys, "Additional extension manifests generated");
 
 		// Deserialize the manifests and add them to nameToExtensionManifest and extensionManifestToDirectoryName.
-		referenceHandler.EnterAllowEventualReferenceMode(allowUnresolvedEventualReferences: false);
+		foreach (var manifestFilePath in manifestFilePaths)
 		{
-			foreach (var manifestFilePath in manifestFilePaths)
+			using XmlReader reader = XmlReader.Create(manifestFilePath);
+
+			referenceHandler.DeserializeInto<ExtensionManifest>(reader, serializationData, out var extensionManifests, false);
+
+			foreach (var extensionManifest in extensionManifests)
 			{
-				using XmlReader reader = XmlReader.Create(manifestFilePath);
-
-				referenceHandler.DeserializeInto<ExtensionManifest>(reader, serializationData, out var extensionManifests);
-
-				foreach (var extensionManifest in extensionManifests)
-				{
-					nameToExtensionManifest.Add(extensionManifest.ExtensionName, extensionManifest);
-					extensionManifestToDirectoryName.Add(extensionManifest, Path.GetFullPath(Path.GetDirectoryName(manifestFilePath)!)!);
-				}
+				nameToExtensionManifest.Add(extensionManifest.ExtensionName, extensionManifest);
+				extensionManifestToDirectoryName.Add(extensionManifest, Path.GetFullPath(Path.GetDirectoryName(manifestFilePath)!)!);
 			}
 		}
-		referenceHandler.ExitAllowEventualReferenceMode();
 
 		// Check dependencies for extensions.
 		foreach (var extensionManifest in nameToExtensionManifest.Values)
@@ -143,7 +141,7 @@ public static class ResourceDeserialization
 		List<Extension> extensions = new();
 		foreach (var extensionManifest in nameToExtensionManifest.Values)
 		{
-			var extension = Extension.CreateAndLoadFromExtensionManifest(extensionManifest, extensionManifestToDirectoryName[extensionManifest]);
+			var extension = Extension.CreateAndLoadFromExtensionManifest(extensionManifest, extensionManifestToDirectoryName[extensionManifest], referenceHandler);
 
 			if (extension.ExtensionManifest.SerializableReference == "EngineManifest")
 			{

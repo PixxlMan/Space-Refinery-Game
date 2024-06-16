@@ -41,6 +41,7 @@
     <None Remove="_GameAssets\Audio\Music\Industrial Fumes - Whole - Export 1.wav" />
     <None Remove="_GameAssets\Audio\Music\Industrial Fumes.xml" />
     <None Remove="_GameAssets\BaseGame.manifest.srh.xml" />
+    <None Remove="_GameAssets\BaseGameExtension.srh.xml" />
     <None Remove="_GameAssets\Chemical types\Argon.srh.xml" />
     <None Remove="_GameAssets\Chemical types\Hydrogen.srh.xml" />
     <None Remove="_GameAssets\Chemical types\Nitrogen.srh.xml" />
@@ -109,6 +110,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="_GameAssets\Audio\Music\Ambient\Industrial Fumes\IndustrialFumes.srh.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_GameAssets\BaseGameExtension.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="_GameAssets\Chemical types\Argon.srh.xml">

@@ -66,9 +66,9 @@ public partial class PhysicsWorld // https://github.com/bepu/bepuphysics2/blob/m
 				{
 					var bodyHandle = new BodyHandle(manifold.GetFeatureId(i)); // this is gravely incorrect
 
-					if (PhysicsWorld.PhysicsObjectLookup.ContainsKey(bodyHandle))
+					if (PhysicsWorld.BodyHandleToPhysicsObject.ContainsKey(bodyHandle))
 					{
-						var physicsObject = PhysicsWorld.PhysicsObjectLookup[bodyHandle];
+						var physicsObject = PhysicsWorld.BodyHandleToPhysicsObject[bodyHandle];
 						if (physicsObject.Entity is T)
 						{
 							OverlappedObject = physicsObject;
@@ -102,13 +102,13 @@ public partial class PhysicsWorld // https://github.com/bepu/bepuphysics2/blob/m
 		//Collidables can be associated with either bodies or statics. We have to look in a different place depending on which it is.
 		if (reference.Mobility == CollidableMobility.Static)
 		{
-			var collidable = simulation.Statics[reference.StaticHandle];
+			var collidable = Simulation.Statics[reference.StaticHandle];
 			pose = collidable.Pose;
 			shapeIndex = collidable.Shape;
 		}
 		else
 		{
-			var bodyReference = simulation.Bodies[reference.BodyHandle];
+			var bodyReference = Simulation.Bodies[reference.BodyHandle];
 			pose = bodyReference.Pose;
 			shapeIndex = bodyReference.Collidable.Shape;
 		}
@@ -128,12 +128,12 @@ public partial class PhysicsWorld // https://github.com/bepu/bepuphysics2/blob/m
 	public unsafe void AddQueryToBatch<T>(int queryShapeType, void* queryShapeData, int queryShapeSize, in Vector3 queryBoundsMin, in Vector3 queryBoundsMax, in RigidPose queryPose, int queryId, ref CollisionBatcher<BatcherCallbacks<T>> batcher)
 		where T : Entity
 	{
-		var broadPhaseEnumerator = new BroadPhaseOverlapEnumerator { Pool = bufferPool, References = new QuickList<CollidableReference>(16, bufferPool) };
-		simulation.BroadPhase.GetOverlaps(queryBoundsMin, queryBoundsMax, ref broadPhaseEnumerator);
+		var broadPhaseEnumerator = new BroadPhaseOverlapEnumerator { Pool = BufferPool, References = new QuickList<CollidableReference>(16, BufferPool) };
+		Simulation.BroadPhase.GetOverlaps(queryBoundsMin, queryBoundsMax, ref broadPhaseEnumerator);
 		for (int overlapIndex = 0; overlapIndex < broadPhaseEnumerator.References.Count; ++overlapIndex)
 		{
 			GetPoseAndShape(broadPhaseEnumerator.References[overlapIndex], out var pose, out var shapeIndex);
-			simulation.Shapes[shapeIndex.Type].GetShapeData(shapeIndex.Index, out var shapeData, out _);
+			Simulation.Shapes[shapeIndex.Type].GetShapeData(shapeIndex.Index, out var shapeData, out _);
 			//In this path, we assume that the incoming shape data is ephemeral. The collision batcher may last longer than the data pointer.
 			//To avoid undefined access, we cache the query data into the collision batcher and use a pointer to the cache instead.
 			batcher.CacheShapeB(shapeIndex.Type, queryShapeType, queryShapeData, queryShapeSize, out var cachedQueryShapeData);
@@ -143,7 +143,7 @@ public partial class PhysicsWorld // https://github.com/bepu/bepuphysics2/blob/m
 				//Because we're using this as a boolean query, we use a speculative margin of 0. Don't care about negative depths.
 				queryPose.Position - pose.Position, queryPose.Orientation, pose.Orientation, 0, new PairContinuation(queryId));
 		}
-		broadPhaseEnumerator.References.Dispose(bufferPool);
+		broadPhaseEnumerator.References.Dispose(BufferPool);
 	}
 
 	/// <summary>
@@ -179,21 +179,21 @@ public partial class PhysicsWorld // https://github.com/bepu/bepuphysics2/blob/m
 	{
 		var shapeBatch = shapes[queryShapeIndex.Type];
 		shapeBatch.ComputeBounds(queryShapeIndex.Index, queryPose, out var queryBoundsMin, out var queryBoundsMax);
-		simulation.Shapes[queryShapeIndex.Type].GetShapeData(queryShapeIndex.Index, out var queryShapeData, out _);
-		var broadPhaseEnumerator = new BroadPhaseOverlapEnumerator { Pool = bufferPool, References = new QuickList<CollidableReference>(16, bufferPool) };
-		simulation.BroadPhase.GetOverlaps(queryBoundsMin, queryBoundsMax, ref broadPhaseEnumerator);
+		Simulation.Shapes[queryShapeIndex.Type].GetShapeData(queryShapeIndex.Index, out var queryShapeData, out _);
+		var broadPhaseEnumerator = new BroadPhaseOverlapEnumerator { Pool = BufferPool, References = new QuickList<CollidableReference>(16, BufferPool) };
+		Simulation.BroadPhase.GetOverlaps(queryBoundsMin, queryBoundsMax, ref broadPhaseEnumerator);
 		for (int overlapIndex = 0; overlapIndex < broadPhaseEnumerator.References.Count; ++overlapIndex)
 		{
 			GetPoseAndShape(broadPhaseEnumerator.References[overlapIndex], out var pose, out var shapeIndex);
 			//Since both involved shapes are from the simulation cache, we don't need to cache them ourselves.
-			simulation.Shapes[shapeIndex.Type].GetShapeData(shapeIndex.Index, out var shapeData, out _);
+			Simulation.Shapes[shapeIndex.Type].GetShapeData(shapeIndex.Index, out var shapeData, out _);
 			batcher.AddDirectly(
 				shapeIndex.Type, queryShapeIndex.Type,
 				shapeData, queryShapeData,
 				//Because we're using this as a boolean query, we use a speculative margin of 0. Don't care about negative depths.
 				queryPose.Position - pose.Position, queryPose.Orientation, pose.Orientation, 0, new PairContinuation(queryId));
 		}
-		broadPhaseEnumerator.References.Dispose(bufferPool);
+		broadPhaseEnumerator.References.Dispose(BufferPool);
 	}
 
 	struct Query
@@ -211,7 +211,7 @@ public partial class PhysicsWorld // https://github.com/bepu/bepuphysics2/blob/m
 
 		//simulation.Shapes.Add(box);
 
-		CollisionBatcher<BatcherCallbacks<T>> collisionBatcher = new(bufferPool, simulation.Shapes, simulation.NarrowPhase.CollisionTaskRegistry, (float)(DN)Time.PhysicsInterval, new BatcherCallbacks<T>(this));
+		CollisionBatcher<BatcherCallbacks<T>> collisionBatcher = new(BufferPool, Simulation.Shapes, Simulation.NarrowPhase.CollisionTaskRegistry, (float)(DN)Time.PhysicsInterval, new BatcherCallbacks<T>(this));
 
 		RigidPose rigidPose = new(transform.Position.ToVector3(), transform.Rotation.ToQuaternion());
 

@@ -4,6 +4,7 @@ using BepuUtilities;
 using BepuUtilities.Memory;
 using FixedPrecision;
 using Space_Refinery_Game_Renderer;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Numerics;
 
@@ -11,30 +12,36 @@ namespace Space_Refinery_Engine;
 
 public sealed partial class PhysicsWorld
 {
-	public Dictionary<BodyHandle, PhysicsObject> PhysicsObjectLookup = new();
+	private Dictionary<BodyHandle, PhysicsObject> bodyHandleToPhysicsObject = new();
+	public ReadOnlyDictionary<BodyHandle, PhysicsObject> BodyHandleToPhysicsObject { get; private set; }
 
 	public object SyncRoot = new();
 
-	private Dictionary<Space_Refinery_Game_Renderer.Mesh, ConvexHull> convexHulls = new();
+	public BufferPool BufferPool { get; private set; }
 
-	private BufferPool bufferPool;
+	public Simulation Simulation { get; private set; }
 
-	private Simulation simulation;
-
-	private IThreadDispatcher threadDispatcher;
+	public IThreadDispatcher ThreadDispatcher { get; private set; }
 
 	public event Action<IntervalUnit>? CollectPhysicsPerformanceData;
 
 	private string responseSpinner = "_";
 	public string ResponseSpinner { get { lock (responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
 
+	private Dictionary<Space_Refinery_Game_Renderer.Mesh, ConvexHull> convexHulls = new();
+
+	public PhysicsWorld()
+	{
+		BodyHandleToPhysicsObject = bodyHandleToPhysicsObject.AsReadOnly();
+	}
+
 	public void SetUp(Simulation simulation, BufferPool bufferPool, IThreadDispatcher threadDispatcher)
 	{
 		lock (SyncRoot)
 		{
-			this.simulation = simulation;
-			this.bufferPool = bufferPool;
-			this.threadDispatcher = threadDispatcher;
+			Simulation = simulation;
+			BufferPool = bufferPool;
+			ThreadDispatcher = threadDispatcher;
 		}
 	}
 
@@ -58,7 +65,7 @@ public sealed partial class PhysicsWorld
 
 				lock (SyncRoot)
 				{
-					simulation.Timestep((float)(DecimalNumber)Time.PhysicsInterval, threadDispatcher);
+					Simulation.Timestep((float)(DecimalNumber)Time.PhysicsInterval, ThreadDispatcher);
 				}
 
 				Time.ResponseSpinner(time, ref responseSpinner);
@@ -75,7 +82,7 @@ public sealed partial class PhysicsWorld
 
 	public bool HasHandle(BodyHandle bodyHandle)
 	{
-		return PhysicsObjectLookup.ContainsKey(bodyHandle);
+		return BodyHandleToPhysicsObject.ContainsKey(bodyHandle);
 	}
 
 	public PhysicsObject AddPhysicsObject<TShape>(PhysicsObjectDescription<TShape> physicsObjectDescription, Entity entity) where TShape : unmanaged, IConvexShape
@@ -88,16 +95,16 @@ public sealed partial class PhysicsWorld
 
 			if (!physicsObjectDescription.Kinematic)
 			{
-				bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(new RigidPose(physicsObjectDescription.InitialTransform.Position.ToVector3(), physicsObjectDescription.InitialTransform.Rotation.ToQuaternion()), inertia, simulation.Shapes.Add(physicsObjectDescription.Shape), 0.01f));
+				bodyHandle = Simulation.Bodies.Add(BodyDescription.CreateDynamic(new RigidPose(physicsObjectDescription.InitialTransform.Position.ToVector3(), physicsObjectDescription.InitialTransform.Rotation.ToQuaternion()), inertia, Simulation.Shapes.Add(physicsObjectDescription.Shape), 0.01f));
 			}
 			else
 			{
-				bodyHandle = simulation.Bodies.Add(BodyDescription.CreateKinematic(new RigidPose(physicsObjectDescription.InitialTransform.Position.ToVector3(), physicsObjectDescription.InitialTransform.Rotation.ToQuaternion()), simulation.Shapes.Add(physicsObjectDescription.Shape), 0.01f));
+				bodyHandle = Simulation.Bodies.Add(BodyDescription.CreateKinematic(new RigidPose(physicsObjectDescription.InitialTransform.Position.ToVector3(), physicsObjectDescription.InitialTransform.Rotation.ToQuaternion()), Simulation.Shapes.Add(physicsObjectDescription.Shape), 0.01f));
 			}
 
 			PhysicsObject physicsObject = new PhysicsObject(this, bodyHandle, entity);
 
-			PhysicsObjectLookup.Add(bodyHandle, physicsObject);
+			bodyHandleToPhysicsObject.Add(bodyHandle, physicsObject);
 
 			return physicsObject;
 		}
@@ -109,9 +116,9 @@ public sealed partial class PhysicsWorld
 		{
 			HandleExistsSafetyCheck(physicsObject.BodyHandle);
 
-			PhysicsObjectLookup.Remove(physicsObject.BodyHandle);
+			bodyHandleToPhysicsObject.Remove(physicsObject.BodyHandle);
 
-			simulation.Bodies.Remove(physicsObject.BodyHandle);
+			Simulation.Bodies.Remove(physicsObject.BodyHandle);
 		}
 	}
 
@@ -122,10 +129,10 @@ public sealed partial class PhysicsWorld
 	{
 		lock (SyncRoot)
 		{
-			PhysicsObjectLookup.Clear();
+			bodyHandleToPhysicsObject.Clear();
 			convexHulls.Clear(); // When the simulation is cleared, this will be outdated, so it must too be cleared.
-			simulation.Clear();
-			simulation.Bodies.Clear();
+			Simulation.Clear();
+			Simulation.Bodies.Clear();
 		}
 	}
 
@@ -133,7 +140,7 @@ public sealed partial class PhysicsWorld
 	{
 		lock (SyncRoot)
 		{
-			ConvexHull convexHull = new(mesh.Points.AsSpan(), bufferPool, out _);
+			ConvexHull convexHull = new(mesh.Points.AsSpan(), BufferPool, out _);
 
 			convexHulls.Add(mesh, convexHull);
 
@@ -162,7 +169,7 @@ public sealed partial class PhysicsWorld
 		{
 			Vector3 floatImpulse = impulse.ToVector3();
 			Vector3 offset = physicsObject.Transform.Position.ToVector3();
-			new BodyReference(physicsObject.BodyHandle, simulation.Bodies).ApplyImpulse(in floatImpulse, in offset);
+			new BodyReference(physicsObject.BodyHandle, Simulation.Bodies).ApplyImpulse(in floatImpulse, in offset);
 		}
 	}
 
@@ -174,8 +181,8 @@ public sealed partial class PhysicsWorld
 			HandleExistsSafetyCheck(physicsObject.BodyHandle);
 
 			// Something here causes bepu physics to get unstable.
-			var oldShape = simulation.Bodies[physicsObject.BodyHandle].Collidable.Shape;
-			simulation.Bodies[physicsObject.BodyHandle].SetShape(simulation.Shapes.Add(shape));
+			var oldShape = Simulation.Bodies[physicsObject.BodyHandle].Collidable.Shape;
+			Simulation.Bodies[physicsObject.BodyHandle].SetShape(Simulation.Shapes.Add(shape));
 			//simulation.Shapes.RecursivelyRemoveAndDispose(oldShape, bufferPool);
 			//simulation.Shapes.RemoveAndDispose(oldShape, bufferPool);
 			//simulation.Shapes.Remove(oldShape); // Least broken option
@@ -188,7 +195,7 @@ public sealed partial class PhysicsWorld
 		{
 			HandleExistsSafetyCheck(bodyHandle);
 
-			RigidPose pose = simulation.Bodies[bodyHandle].Pose;
+			RigidPose pose = Simulation.Bodies[bodyHandle].Pose;
 
 			return new(pose.Position.ToFixed<Vector3FixedDecimalInt4>(), pose.Orientation.ToFixed<QuaternionFixedDecimalInt4>());
 		}
@@ -200,19 +207,19 @@ public sealed partial class PhysicsWorld
 		{
 			HandleExistsSafetyCheck(bodyHandle);
 
-			RigidPose pose = simulation.Bodies[bodyHandle].Pose;
+			RigidPose pose = Simulation.Bodies[bodyHandle].Pose;
 
 			pose.Position = transform.Position.ToVector3();
 
 			pose.Orientation = transform.Rotation.ToQuaternion();
 
-			simulation.Bodies[bodyHandle].Pose = pose;
+			Simulation.Bodies[bodyHandle].Pose = pose;
 		}
 	}
 
 	private void HandleExistsSafetyCheck(BodyHandle bodyHandle)
 	{
-		if (!PhysicsObjectLookup.ContainsKey(bodyHandle))
+		if (!BodyHandleToPhysicsObject.ContainsKey(bodyHandle))
 		{
 			throw new ArgumentException($"{nameof(BodyHandle)} is either invalid or the corresponding object is destroyed!", nameof(bodyHandle));
 		}

@@ -23,7 +23,7 @@ namespace Space_Refinery_Engine
 			{
 				var raycastHitHandler = new RaycastHitHandler<T>(this);
 
-				simulation.RayCast(start.ToVector3(), direction.ToVector3(), maxDistance.ToFloat(), ref raycastHitHandler);
+				Simulation.RayCast(start.ToVector3(), direction.ToVector3(), maxDistance.ToFloat(), ref raycastHitHandler);
 
 				if (raycastHitHandler.PhysicsObject is null)
 				{
@@ -63,11 +63,11 @@ namespace Space_Refinery_Engine
 					return;
 				}
 
-				var physicsObject = physicsWorld.PhysicsObjectLookup[collidable.BodyHandle];
+				var physicsObject = physicsWorld.BodyHandleToPhysicsObject[collidable.BodyHandle];
 
 				if (physicsObject.Entity is T && physicsObject.Enabled)
 				{
-					PhysicsObject = physicsWorld.PhysicsObjectLookup[collidable.BodyHandle];
+					PhysicsObject = physicsWorld.BodyHandleToPhysicsObject[collidable.BodyHandle];
 				}
 			}
 		}

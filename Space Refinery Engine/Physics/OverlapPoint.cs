@@ -72,13 +72,13 @@ public partial class PhysicsWorld
 	{
 		physicsObject = null;
 
-		OverlapPointBroadPhaseOverlapEnumerator overlapEnumerator = new(bufferPool);
+		OverlapPointBroadPhaseOverlapEnumerator overlapEnumerator = new(BufferPool);
 
-		simulation.BroadPhase.GetOverlaps(point.ToVector3(), point.ToVector3(), ref overlapEnumerator);
+		Simulation.BroadPhase.GetOverlaps(point.ToVector3(), point.ToVector3(), ref overlapEnumerator);
 
 		foreach (var reference in overlapEnumerator.References)
 		{
-			var referencedPhysicsObject = PhysicsObjectLookup[reference.BodyHandle];
+			var referencedPhysicsObject = BodyHandleToPhysicsObject[reference.BodyHandle];
 			if (referencedPhysicsObject.Entity is T)
 			{
 				physicsObject = referencedPhysicsObject;

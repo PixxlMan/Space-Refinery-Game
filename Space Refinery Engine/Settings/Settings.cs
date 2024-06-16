@@ -187,7 +187,7 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 		// Todo: make static loader method?
 		public void LoadSettingValuesFromSettingsFile()
 		{
-			Logging.Log("Loading setting values");
+			Logging.LogScopeStart("Loading setting values");
 
 			if (File.Exists(settingValuesPath))
 			{
@@ -203,6 +203,8 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 			EndDeserialization();
 
 			AcceptAllSettings();
+
+			Logging.LogScopeEnd();
 		}
 
 		private void SerializeSettingValues(XmlWriter writer)

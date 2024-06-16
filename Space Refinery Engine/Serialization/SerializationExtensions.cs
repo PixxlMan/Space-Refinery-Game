@@ -292,7 +292,7 @@ public static class SerializationExtensions
 	
 	public static bool DeserializeBoolean(this XmlReader reader, string? name = null)
 	{
-		reader.ReadStartElement(name ?? nameof(DecimalNumber));
+		reader.ReadStartElement(name ?? nameof(Boolean));
 		{
 			bool boolean = bool.Parse(reader.ReadContentAsString());
 

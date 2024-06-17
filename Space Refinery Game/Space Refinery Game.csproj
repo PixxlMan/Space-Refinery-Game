@@ -87,7 +87,6 @@
     <None Remove="_GameAssets\Reaction Types\Electrolysis.srh.xml" />
     <None Remove="_GameAssets\Reaction Types\HydrogenOxygenCombustion.srh.xml" />
     <None Remove="_GameAssets\Reaction Types\PhaseChange.srh.xml" />
-    <None Remove="_GameAssets\Settings\Graphics\DisplaySettings.srh.xml" />
     <None Remove="_GameAssets\Settings\VolumeSettings.srh.xml" />
     <None Remove="OpenAL32.dll" />
     <None Remove="Pipe_1mx1m_Straight.obj" />
@@ -229,13 +228,7 @@
     <Content Include="_GameAssets\Reaction Types\Electrolysis.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="_GameAssets\Settings\Audio\VolumeSettings.srh.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="_GameAssets\Settings\Units\UnitSettings.srh.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="_GameAssets\Settings\Graphics\DisplaySettings.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

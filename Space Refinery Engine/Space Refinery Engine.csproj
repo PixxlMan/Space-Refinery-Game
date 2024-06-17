@@ -27,6 +27,8 @@
     <None Remove="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Bold.ttf" />
     <None Remove="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Light.ttf" />
     <None Remove="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Regular.ttf" />
+    <None Remove="Assets\Settings\Audio\VolumeSettings.srh.xml" />
+    <None Remove="Assets\Settings\Graphics\DisplaySettings.srh.xml" />
     <None Remove="Mods\MyAwesomeMod\Assets\PipeStraightCool.obj" />
     <None Remove="Mods\MyAwesomeMod\Assets\PipeStraightCOOL.srh.xml.nah" />
     <None Remove="Mods\MyAwesomeMod\MyAwesomeMod.manifest.srh.xml.nah" />
@@ -59,6 +61,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Settings\Audio\VolumeSettings.srh.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Settings\Graphics\DisplaySettings.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Mods\MyAwesomeMod\Assets\PipeStraightCool.obj">

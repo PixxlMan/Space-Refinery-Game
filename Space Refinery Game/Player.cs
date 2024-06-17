@@ -90,19 +90,21 @@ public sealed class Player : ISerializableReference
 		{
 			PipeConnector pipeConnector = (PipeConnector)lookedAtPhysicsObject!.Entity;
 
-			constructionMarker.SetMesh(gameData.UI.SelectedPipeType!.Mesh);
+			var selectedEntityType = (PipeType)gameData.UI.SelectedEntityType;
 
-			constructionMarker.SetTransform(Connector.GenerateTransformForConnector(gameData.UI.SelectedPipeType.ConnectorPlacements[gameData.UI.ConnectorSelection!.Value], pipeConnector, gameData.UI.RotationSnapped));
+			constructionMarker.SetMesh(selectedEntityType!.Mesh);
+
+			constructionMarker.SetTransform(Connector.GenerateTransformForConnector(selectedEntityType.ConnectorPlacements[gameData.UI.ConnectorSelection!.Value], pipeConnector, gameData.UI.RotationSnapped));
 
 			constructionMarker.ShouldDraw = true;
 
-			if (Pipe.ValidateBuild(pipeConnector, gameData.UI.SelectedPipeType, gameData.UI.ConnectorSelection!.Value, gameData.UI.RotationSnapped, gameData))
+			if (Pipe.ValidateBuild(pipeConnector, selectedEntityType, gameData.UI.ConnectorSelection!.Value, gameData.UI.RotationSnapped, gameData))
 			{
 				constructionMarker.State = ConstructionMarker.ConstructionMarkerState.LegalBuild;
 
 				if (InputTracker.GetMouseButton(MouseButton.Left))
 				{
-					Pipe.Build(pipeConnector, gameData.UI.SelectedPipeType, gameData.UI.ConnectorSelection!.Value, gameData.UI.RotationSnapped, gameData, gameData.Game.GameReferenceHandler);
+					Pipe.Build(pipeConnector, selectedEntityType, gameData.UI.ConnectorSelection!.Value, gameData.UI.RotationSnapped, gameData, gameData.Game.GameReferenceHandler);
 
 					constructionMarker.ShouldDraw = false;
 				}
@@ -245,7 +247,7 @@ public sealed class Player : ISerializableReference
 
 	private bool ShouldShowConstructionMarker(PhysicsObject? lookedAtPhysicsObject)
 	{
-		return lookedAtPhysicsObject is not null && (((lookedAtPhysicsObject.Entity is Connector connector && (connector).Vacant))) && gameData.UI.SelectedPipeType is not null;
+		return lookedAtPhysicsObject is not null && (((lookedAtPhysicsObject.Entity is Connector connector && (connector).Vacant))) && gameData.UI.SelectedEntityType is PipeType;
 	}
 
 	public bool Destroyed = false;

@@ -25,7 +25,7 @@ namespace Space_Refinery_Engine
 
 				ImGui.Text("Orientation: " + LevelObject.Transform.Rotation.ToString());
 
-				ImGui.Text("Pipe Type: " + LevelObject.LevelObjectType.Name);
+				ImGui.Text("LevelObject type: " + LevelObject.LevelObjectType.Name);
 
 				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show rendering debug information in information provider"))
 				{

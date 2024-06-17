@@ -2,4 +2,5 @@
 
 public interface IEntityType
 {
+	public string Name { get; }
 }

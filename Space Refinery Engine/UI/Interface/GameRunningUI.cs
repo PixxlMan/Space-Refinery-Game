@@ -157,7 +157,7 @@ partial class UI
 
 				if (EntitySelection == i)
 				{
-					ImGui.TextColored(RgbaFloat.CornflowerBlue.ToVector4(), (hotbarItems[i].Name));
+					ImGui.TextColored(RgbaFloat.CornflowerBlue.ToVector4(), (hotbarItems[i]!.Name));
 				}
 				else
 				{

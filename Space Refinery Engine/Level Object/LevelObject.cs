@@ -32,8 +32,6 @@ namespace Space_Refinery_Engine
 
 		public SerializationReferenceHandler ReferenceHandler { get; private set; }
 
-		protected Dictionary<string, PipeConnector> NamedConnectors = new();
-
 		private bool destroyed;
 		public bool Destroyed
 		{
@@ -53,7 +51,7 @@ namespace Space_Refinery_Engine
 
 		public virtual void AddDebugObjects()
 		{
-			if (!MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>($"{nameof(Pipe)} debug objects"))
+			if (!MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>($"{nameof(LevelObject)} debug orientation marks"))
 				return;
 
 			MainGame.DebugRender.DrawOrientationMarks(Transform);
@@ -63,7 +61,7 @@ namespace Space_Refinery_Engine
 		{
 			lock (gameData.Game.GameWorld.TickSyncObject)
 			{
-				LevelObject levelObject = (LevelObject)ObjectFactory.CreateInstance(levelObjectType.TypeOfPipe, true);
+				LevelObject levelObject = (LevelObject)ObjectFactory.CreateInstance(levelObjectType.TypeOfLevelObject, true);
 
 				levelObject.Transform = transform;
 
@@ -149,7 +147,7 @@ namespace Space_Refinery_Engine
 		{
 			lock (SyncRoot)
 			{
-				writer.WriteStartElement(nameof(Pipe));
+				writer.WriteStartElement(nameof(LevelObject));
 				{
 					writer.SerializeReference(this);
 
@@ -165,7 +163,7 @@ namespace Space_Refinery_Engine
 		{
 			lock (SyncRoot)
 			{
-				reader.ReadStartElement(nameof(Pipe));
+				reader.ReadStartElement(nameof(LevelObject));
 				{
 					SerializableReference = reader.ReadReference();
 

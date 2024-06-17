@@ -68,11 +68,7 @@ namespace Space_Refinery_Engine
 		/// </summary>
 		private void InvalidateAndUpdateProxy()
 		{
-			if (GameData.UI.SelectedPipeType is null)
-			{
-				Proxy.Disable();
-			}
-			else
+			if (GameData.UI.SelectedEntityType is PipeType pipeType)
 			{
 				if (GameData.UI.ConnectorSelection is null)
 				{
@@ -81,13 +77,17 @@ namespace Space_Refinery_Engine
 
 				SetProxyState(Vacant);
 
-				var shape = GameData.PhysicsWorld.GetConvexHullForMesh(GameData.UI.SelectedPipeType.Mesh);
+				var shape = GameData.PhysicsWorld.GetConvexHullForMesh(pipeType.Mesh);
 
 				var transform = GenerateTransformForConnector(
-							GameData.UI.SelectedPipeType.ConnectorPlacements[GameData.UI.ConnectorSelection.Value],
+							pipeType.ConnectorPlacements[GameData.UI.ConnectorSelection.Value],
 							this, GameData.UI.RotationSnapped);
 
 				Proxy.SetPhysicsObjectState(transform, shape, GameData.PhysicsWorld);
+			}
+			else
+			{
+				Proxy.Disable();
 			}
 		}
 

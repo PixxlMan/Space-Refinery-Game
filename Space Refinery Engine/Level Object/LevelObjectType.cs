@@ -16,7 +16,7 @@ namespace Space_Refinery_Engine
 
 		public Material Material { get; private set; }
 
-		public Type TypeOfPipe { get; private set; }
+		public Type TypeOfLevelObject { get; private set; }
 
 		public Collider Collider { get; private set; }
 
@@ -31,13 +31,13 @@ namespace Space_Refinery_Engine
 			Name = name;
 			ModelPath = modelPath;
 			Mesh = mesh;
-			TypeOfPipe = typeOfPipe;
+			TypeOfLevelObject = typeOfPipe;
 
 			SerializableReference = Guid.NewGuid();
 
 			if (!LevelObjectTypes.TryAdd(Name, this))
 			{
-				throw new Exception($"Couldn't add {nameof(PipeType)} '{Name}' to dictionary of all available LevelObjectTypes as another pipe type with the same name already exists.");
+				throw new Exception($"Couldn't add {nameof(LevelObject)} '{Name}' to dictionary of all available LevelObjectTypes as another pipe type with the same name already exists.");
 			}
 		}
 
@@ -56,7 +56,7 @@ namespace Space_Refinery_Engine
 
 			writer.SerializeReference(MaterialInfo, nameof(MaterialInfo));
 
-			writer.Serialize(TypeOfPipe);
+			writer.Serialize(TypeOfLevelObject);
 		}
 
 		public void DeserializeState(XmlReader reader, SerializationData serializationData, SerializationReferenceHandler referenceHandler)
@@ -73,16 +73,16 @@ namespace Space_Refinery_Engine
 
 			reader.DeserializeReference<MaterialInfo>(referenceHandler, (mI) => MaterialInfo = mI, nameof(MaterialInfo));
 
-			TypeOfPipe = reader.DeserializeSerializableType();
+			TypeOfLevelObject = reader.DeserializeSerializableType();
 
 			if (!LevelObjectTypes.TryAdd(Name, this))
 			{
-				throw new Exception($"Couldn't add {nameof(PipeType)} '{Name}' to dictionary of all available LevelObjectTypes as another pipe type with the same name already exists.");
+				throw new Exception($"Couldn't add {nameof(LevelObject)} '{Name}' to dictionary of all available LevelObjectTypes as another pipe type with the same name already exists.");
 			}
 
 			serializationData.DeserializationCompleteEvent += () =>
 			{
-				BatchRenderable = BatchRenderable.CreateAndAdd($"{Name} Pipe Type Batch Renderable", serializationData.GameData.GraphicsWorld, Mesh, serializationData.GameData.GraphicsWorld.MaterialLoader.LoadCached(MaterialInfo.MaterialTexturePaths), serializationData.GameData.GraphicsWorld.CameraProjViewBuffer, serializationData.GameData.GraphicsWorld.LightInfoBuffer);
+				BatchRenderable = BatchRenderable.CreateAndAdd($"{Name} LevelObject Type Batch Renderable", serializationData.GameData.GraphicsWorld, Mesh, serializationData.GameData.GraphicsWorld.MaterialLoader.LoadCached(MaterialInfo.MaterialTexturePaths), serializationData.GameData.GraphicsWorld.CameraProjViewBuffer, serializationData.GameData.GraphicsWorld.LightInfoBuffer);
 
 				serializationData.GameData.GraphicsWorld.AddRenderable(BatchRenderable);
 			};

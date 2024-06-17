@@ -13,9 +13,9 @@ namespace Space_Refinery_Engine
 
 		private GameData gameData;
 
-		private List<PipeType?> hotbarItems = new();
+		private List<IEntityType?> hotbarItems = new();
 
-		public PipeType? SelectedPipeType { get { lock (syncRoot) return hotbarItems[EntitySelection]; } }
+		public IEntityType? SelectedEntityType { get { lock (syncRoot) return hotbarItems[EntitySelection]; } }
 
 		public int EntitySelection;
 
@@ -77,7 +77,7 @@ namespace Space_Refinery_Engine
 
 				ChangeConnectorSelection(0);
 
-				SelectedEntityTypeChanged?.Invoke(SelectedPipeType);
+				SelectedEntityTypeChanged?.Invoke(SelectedEntityType);
 			}
 		}
 
@@ -85,7 +85,7 @@ namespace Space_Refinery_Engine
 		{
 			lock (syncRoot)
 			{
-				if (EntitySelection > hotbarItems.Count || EntitySelection < 0)
+				if (selection > hotbarItems.Count - 1 || selection < 0)
 				{
 					return;
 				}
@@ -96,7 +96,7 @@ namespace Space_Refinery_Engine
 
 				ChangeConnectorSelection(0);
 
-				SelectedEntityTypeChanged?.Invoke(SelectedPipeType);
+				SelectedEntityTypeChanged?.Invoke(SelectedEntityType);
 			}
 		}
 
@@ -104,31 +104,33 @@ namespace Space_Refinery_Engine
 		{
 			lock (syncRoot)
 			{
-				if (SelectedPipeType is null)
+				if (SelectedEntityType is null && SelectedEntityType is not PipeType)
 				{
 					return;
 				}
 
-				if (SelectedPipeType.ConnectorPlacements.Length == 0)
+				var selectedPipeType = (PipeType)SelectedEntityType;
+
+				if (selectedPipeType.ConnectorPlacements.Length == 0)
 				{
 					ConnectorSelection = null;
 				}
-				else if (ConnectorSelection is null && SelectedPipeType.ConnectorPlacements.Length > 0)
+				else if (ConnectorSelection is null && selectedPipeType.ConnectorPlacements.Length > 0)
 				{
 					ConnectorSelection = 0;
 				}
 
 				ConnectorSelection += selectionDelta;
 
-				while (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length || ConnectorSelection < 0)
+				while (ConnectorSelection >= selectedPipeType.ConnectorPlacements.Length || ConnectorSelection < 0)
 				{
 					if (ConnectorSelection < 0)
 					{
-						ConnectorSelection += SelectedPipeType.ConnectorPlacements.Length;
+						ConnectorSelection += selectedPipeType.ConnectorPlacements.Length;
 					}
-					else if (ConnectorSelection >= SelectedPipeType.ConnectorPlacements.Length)
+					else if (ConnectorSelection >= selectedPipeType.ConnectorPlacements.Length)
 					{
-						ConnectorSelection -= SelectedPipeType.ConnectorPlacements.Length;
+						ConnectorSelection -= selectedPipeType.ConnectorPlacements.Length;
 					}
 				}
 			}

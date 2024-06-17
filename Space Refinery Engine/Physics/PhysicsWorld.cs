@@ -65,6 +65,7 @@ public sealed partial class PhysicsWorld
 
 				lock (SyncRoot)
 				{
+						OnPhysicsUpdate?.Invoke(Time.PhysicsInterval);
 					Simulation.Timestep((float)(DecimalNumber)Time.PhysicsInterval, ThreadDispatcher);
 				}
 
@@ -79,6 +80,8 @@ public sealed partial class PhysicsWorld
 
 		thread.Start();
 	}
+
+	public Action<IntervalUnit> OnPhysicsUpdate;
 
 	public bool HasHandle(BodyHandle bodyHandle)
 	{

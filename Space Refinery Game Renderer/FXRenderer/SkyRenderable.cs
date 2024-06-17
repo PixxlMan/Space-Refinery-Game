@@ -4,21 +4,21 @@ using Veldrid;
 
 namespace Space_Refinery_Game_Renderer;
 
-public class StarfieldRenderable : IRenderable
+public class SkyRenderable : IRenderable
 {
 	private ResourceSet viewInfoSet;
 	private Pipeline starfieldPipeline;
 
-	public static StarfieldRenderable Create(DeviceBuffer viewInfoBuffer, GraphicsDevice gd, ResourceFactory factory)
+	public static SkyRenderable Create(DeviceBuffer viewInfoBuffer, GraphicsDevice gd, ResourceFactory factory)
 	{
-		StarfieldRenderable starfieldRenderable = new();
+		SkyRenderable skyRenderable = new();
 
-		starfieldRenderable.CreateDeviceObjects(viewInfoBuffer, gd, factory);
+		skyRenderable.CreateDeviceObjects(viewInfoBuffer, gd, factory);
 
-		return starfieldRenderable;
+		return skyRenderable;
 	}
 
-	private StarfieldRenderable()
+	private SkyRenderable()
 	{ }
 
 	public void CreateDeviceObjects(DeviceBuffer viewInfoBuffer, GraphicsDevice gd, ResourceFactory factory)
@@ -28,9 +28,9 @@ public class StarfieldRenderable : IRenderable
 
 		viewInfoSet = factory.CreateResourceSet(new ResourceSetDescription(invCameraInfoLayout, viewInfoBuffer));
 
-		ShaderSetDescription starfieldShaders = new ShaderSetDescription(
-			Array.Empty<VertexLayoutDescription>(),
-			Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), "Starfield", factory));
+		ShaderSetDescription starfieldShaders = new(
+			[],
+			Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), "Sky", factory));
 
 		starfieldPipeline = factory.CreateGraphicsPipeline(new GraphicsPipelineDescription(
 			BlendStateDescription.SingleOverrideBlend,
@@ -47,17 +47,5 @@ public class StarfieldRenderable : IRenderable
 		commandList.SetPipeline(starfieldPipeline);
 		commandList.SetGraphicsResourceSet(0, viewInfoSet);
 		commandList.Draw(4);
-	}
-}
-
-public struct MatrixPair
-{
-	public Matrix4x4 First;
-	public Matrix4x4 Second;
-
-	public MatrixPair(Matrix4x4 first, Matrix4x4 second)
-	{
-		First = first;
-		Second = second;
 	}
 }

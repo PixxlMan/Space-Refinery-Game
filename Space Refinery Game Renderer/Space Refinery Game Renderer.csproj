@@ -20,12 +20,12 @@
   <ItemGroup>
     <None Remove="EntityRenderable-fragment.glsl" />
     <None Remove="EntityRenderable-vertex.glsl" />
-    <None Remove="FXRenderer\Starfield-fragment.glsl" />
-    <None Remove="FXRenderer\Starfield-vertex.glsl" />
     <None Remove="Shaders\ConstructionMarker-fragment.glsl" />
     <None Remove="Shaders\ConstructionMarker-vertex.glsl" />
     <None Remove="Shaders\DebugRenderable-fragment.glsl" />
     <None Remove="Shaders\DebugRenderable-vertex.glsl" />
+    <None Remove="Shaders\Sky-fragment.glsl" />
+    <None Remove="Shaders\Sky-vertex.glsl" />
     <None Remove="Starfield-fragment.glsl" />
     <None Remove="Starfield-vertex.glsl" />
   </ItemGroup>
@@ -49,21 +49,18 @@
     <Content Include="Shaders\EntityRenderable-vertex.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Shaders\Sky-fragment.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Shaders\Starfield-fragment.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\Sky-vertex.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\Starfield-vertex.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="FXRenderer\Starfield-fragment.glsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FXRenderer\Starfield-vertex.glsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

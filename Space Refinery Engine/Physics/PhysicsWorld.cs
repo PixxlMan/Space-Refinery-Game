@@ -30,18 +30,21 @@ public sealed partial class PhysicsWorld
 
 	private Dictionary<Space_Refinery_Game_Renderer.Mesh, ConvexHull> convexHulls = new();
 
+	private GameData gameData;
+
 	public PhysicsWorld()
 	{
 		BodyHandleToPhysicsObject = bodyHandleToPhysicsObject.AsReadOnly();
 	}
 
-	public void SetUp(Simulation simulation, BufferPool bufferPool, IThreadDispatcher threadDispatcher)
+	public void SetUp(Simulation simulation, BufferPool bufferPool, IThreadDispatcher threadDispatcher, GameData gameData)
 	{
 		lock (SyncRoot)
 		{
 			Simulation = simulation;
 			BufferPool = bufferPool;
 			ThreadDispatcher = threadDispatcher;
+			this.gameData = gameData;
 		}
 	}
 
@@ -57,23 +60,26 @@ public sealed partial class PhysicsWorld
 			IntervalUnit deltaTime;
 			while (true)
 			{
-				time = stopwatch.Elapsed.TotalSeconds;
-
-				deltaTime = time - timeLastUpdate;
-
-				CollectPhysicsPerformanceData?.Invoke(deltaTime);				
-
-				lock (SyncRoot)
+				if (!gameData.MainGame.Paused)
 				{
+					time = stopwatch.Elapsed.TotalSeconds;
+
+					deltaTime = time - timeLastUpdate;
+
+					CollectPhysicsPerformanceData?.Invoke(deltaTime);
+
+					lock (SyncRoot)
+					{
 						OnPhysicsUpdate?.Invoke(Time.PhysicsInterval);
-					Simulation.Timestep((float)(DecimalNumber)Time.PhysicsInterval, ThreadDispatcher);
+						Simulation.Timestep((float)(DecimalNumber)Time.PhysicsInterval, ThreadDispatcher);
+					}
+
+					Time.ResponseSpinner(time, ref responseSpinner);
+
+					Time.WaitIntervalLimit(Time.PhysicsInterval, time, stopwatch, out var timeOfContinuation);
+
+					timeLastUpdate = timeOfContinuation;
 				}
-
-				Time.ResponseSpinner(time, ref responseSpinner);
-
-				Time.WaitIntervalLimit(Time.PhysicsInterval, time, stopwatch, out var timeOfContinuation);
-
-				timeLastUpdate = timeOfContinuation;
 			}
 		}))
 		{ Name = "Physics Update Thread" };

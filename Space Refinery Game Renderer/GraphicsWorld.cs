@@ -201,7 +201,7 @@ public sealed class GraphicsWorld
 		}
 	}
 
-	public IntervalUnit FrametimeLowerLimit = 0.001;
+	public IntervalUnit FrametimeLowerLimit { get; set; } = 0.001;
 
 	public bool ShouldLimitFramerate = true;
 
@@ -216,8 +216,6 @@ public sealed class GraphicsWorld
 	public void SetUp(Window window, GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
 	{
 		Debug.Assert(!setUp, "The GraphicsWorld has already been set up!");
-
-		setUp = true;
 
 		Logging.LogScopeStart("Setting up GraphicsWorld");
 
@@ -258,6 +256,8 @@ public sealed class GraphicsWorld
 		
 		// This depends on using contigous image buffers.
 		MaterialLoader = new(this);
+
+		setUp = true;
 
 		Logging.LogScopeEnd();
 	}

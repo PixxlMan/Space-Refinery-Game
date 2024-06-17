@@ -1,30 +1,29 @@
 ﻿using Veldrid;
 
-namespace Space_Refinery_Game_Renderer
+namespace Space_Refinery_Game_Renderer;
+
+public sealed class ShaderLoader
 {
-	public sealed class ShaderLoader
+	private Dictionary<string, Shader[]> shaderCache = new();
+
+	private GraphicsWorld graphicsWorld;
+
+	public ShaderLoader(GraphicsWorld graphicsWorld)
 	{
-		private Dictionary<string, Shader[]> shaderCache = new();
+		this.graphicsWorld = graphicsWorld;
+	}
 
-		private GraphicsWorld graphicsWorld;
-
-		public ShaderLoader(GraphicsWorld graphicsWorld)
+	public Shader[] LoadCached(string shaderName)
+	{
+		if (shaderCache.ContainsKey(shaderName))
 		{
-			this.graphicsWorld = graphicsWorld;
+			return shaderCache[shaderName];
 		}
 
-		public Shader[] LoadCached(string shaderName)
-		{
-			if (shaderCache.ContainsKey(shaderName))
-			{
-				return shaderCache[shaderName];
-			}
+		var shader = Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), shaderName, graphicsWorld.Factory);
 
-			var shader = Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), shaderName, graphicsWorld.Factory);
+		shaderCache.Add(shaderName, shader);
 
-			shaderCache.Add(shaderName, shader);
-
-			return shader;
-		}
+		return shader;
 	}
 }

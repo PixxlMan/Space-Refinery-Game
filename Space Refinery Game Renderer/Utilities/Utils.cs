@@ -78,8 +78,8 @@ public static class Utils
 
 	public static VertexPositionTexture[] GetCubeVertexPositionTexture(Vector3 scale)
 	{
-		VertexPositionTexture[] vertices = new VertexPositionTexture[]
-		{
+		VertexPositionTexture[] vertices =
+		[
 			// Top
 			new VertexPositionTexture(new Vector3(-0.5f, +0.5f, -0.5f) * scale, new Vector3(0.5f, 0.5f, 1f), new Vector2(0, 0)),
 			new VertexPositionTexture(new Vector3(+0.5f, +0.5f, -0.5f) * scale, new Vector3(0.5f, 0.5f, 1f), new Vector2(1, 0)),
@@ -110,7 +110,7 @@ public static class Utils
 			new VertexPositionTexture(new Vector3(+0.5f, +0.5f, +0.5f) * scale, new Vector3(0.5f, 0.5f, 1f), new Vector2(1, 0)),
 			new VertexPositionTexture(new Vector3(+0.5f, -0.5f, +0.5f) * scale, new Vector3(0.5f, 0.5f, 1f), new Vector2(1, 1)),
 			new VertexPositionTexture(new Vector3(-0.5f, -0.5f, +0.5f) * scale, new Vector3(0.5f, 0.5f, 1f), new Vector2(0, 1)),
-		};
+		];
 
 		return vertices;
 	}

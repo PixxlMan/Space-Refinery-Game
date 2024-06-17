@@ -1,14 +1,10 @@
-﻿using System;
-using System.Diagnostics;
-using Veldrid;
+﻿using Veldrid;
 using Veldrid.Sdl2;
 using Veldrid.StartupUtilities;
-using Veldrid.Utilities;
-using FixedPrecision;
 
 namespace Space_Refinery_Game_Renderer;
 
-public class Window : IDisposable
+public sealed class Window : IDisposable
 {
 	/// <summary>
 	/// Must synchronize access with lock (SdlWindow).

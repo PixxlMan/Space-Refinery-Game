@@ -9,7 +9,7 @@ using Veldrid.Utilities;
 
 namespace Space_Refinery_Game_Renderer;
 
-public class Mesh
+public sealed class Mesh
 {
 	private Mesh()
 	{ }
@@ -22,15 +22,15 @@ public class Mesh
 		IndexCount = indexCount;
 	}
 
-	public Vector3[] Points;
+	public Vector3[] Points { get; private set; }
 
-	public DeviceBuffer VertexBuffer;
+	public DeviceBuffer VertexBuffer { get; private set; }
 
-	public DeviceBuffer IndexBuffer;
+	public DeviceBuffer IndexBuffer { get; private set; }
 
-	public IndexFormat IndexFormat;
+	public IndexFormat IndexFormat { get; private set; }
 
-	public uint IndexCount;
+	public uint IndexCount { get; private set; }
 
 	public static Mesh LoadMesh(GraphicsDevice gd, ResourceFactory factory, string path)
 	{

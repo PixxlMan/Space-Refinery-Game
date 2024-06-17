@@ -4,7 +4,7 @@ using FixedPrecision;
 namespace Space_Refinery_Game_Renderer;
 
 // TODO: thread safety?
-public class Camera
+public sealed class Camera
 {
 	private FixedDecimalInt4 _fov = 1;
 	private FixedDecimalInt4 _near = (FixedDecimalInt4)0.1;
@@ -22,8 +22,8 @@ public class Camera
 	private FixedDecimalInt4 _windowWidth;
 	private FixedDecimalInt4 _windowHeight;
 
-	public event Action<Matrix4x4FixedDecimalInt4> ProjectionChanged;
-	public event Action<Matrix4x4FixedDecimalInt4> ViewChanged;
+	public event Action<Matrix4x4FixedDecimalInt4>? ProjectionChanged;
+	public event Action<Matrix4x4FixedDecimalInt4>? ViewChanged;
 
 	public Camera(FixedDecimalInt4 width, FixedDecimalInt4 height, Perspective perspective)
 	{

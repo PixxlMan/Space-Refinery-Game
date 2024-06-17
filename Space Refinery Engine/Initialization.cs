@@ -15,7 +15,7 @@ public sealed class Initialization
 	{
 		// TODO: explain initialization dependencies here!
 
-		Logging.LogScopeStart("Game initialization");
+		Logging.LogScopeStart("Game initializing");
 
 		GameData gameData = new();
 
@@ -24,6 +24,8 @@ public sealed class Initialization
 		gameData.GraphicsWorld = new();
 		gameData.GraphicsWorld.SetUp(window, gd, factory, swapchain);
 		GameData.DebugRender = DebugRender.Create(gameData.GraphicsWorld);
+
+		gameData.InputUpdate = new(gameData);
 
 		GameData.GlobalReferenceHandler = new();
 		GameData.GlobalReferenceHandler.EnterAllowEventualReferenceMode(false);
@@ -87,8 +89,7 @@ public sealed class Initialization
 
 		InputTracker.IgnoreNextFrameMousePosition = true;
 
-		InputUpdate inputUpdate = new(gameData);
-		inputUpdate.StartUpdating();
+		gameData.InputUpdate.StartUpdating();
 
 		gameData.Settings.RegisterToSettingValue<SliderSettingValue>("FoV", (value) => gameData.GraphicsWorld.Camera.FieldOfView = value * DecimalNumber.DegreesToRadians);
 		gameData.Settings.RegisterToSettingValue<SliderSettingValue>("Max FPS", (value) => gameData.GraphicsWorld.FrametimeLowerLimit = IntervalRateConversionUnit.Unit / (RateUnit)value.SliderValue);

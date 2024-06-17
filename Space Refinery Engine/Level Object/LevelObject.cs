@@ -8,7 +8,7 @@ namespace Space_Refinery_Engine
 	// TODO: make thread safe.
 	public abstract class LevelObject : Entity
 	{
-		public PhysicsObject PhysicsObject { get; private set; }
+		public PhysicsObject? PhysicsObject { get; private set; }
 
 		private Transform transform;
 		public Transform Transform
@@ -16,7 +16,10 @@ namespace Space_Refinery_Engine
 			get => transform;
 			set
 			{
-				PhysicsObject.Transform = value;
+				if (PhysicsObject is not null)
+				{
+					PhysicsObject.Transform = value;
+				}
 				transform = value;
 			}
 		}

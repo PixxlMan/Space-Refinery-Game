@@ -10,7 +10,7 @@ namespace Space_Refinery_Engine;
 // TODO: make thread safe.
 public abstract class Pipe : Entity, IConstruction, IConnectable
 {
-	public PhysicsObject PhysicsObject { get; private set; }
+	public PhysicsObject? PhysicsObject { get; private set; }
 
 	private Transform transform;
 	public Transform Transform
@@ -18,7 +18,10 @@ public abstract class Pipe : Entity, IConstruction, IConnectable
 		get => transform;
 		set
 		{
-			PhysicsObject.Transform = value;
+			if (PhysicsObject is not null)
+			{
+				PhysicsObject.Transform = value;
+			}
 			transform = value;
 		}
 	}

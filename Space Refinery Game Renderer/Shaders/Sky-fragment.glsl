@@ -13,7 +13,7 @@ layout(location = 0) out vec4 outputColor;
 
 vec3 starField(vec3 pos)
 {
-    vec3 color = vec3(0.3, 0.45, max(pos.y + 0.7, 0.7));
+    vec3 color = vec3(max(min(0.7 - pos.y * 2, 0.5), 0.25), 0.6, max(pos.y + 0.5, 0.8));
 
 
 

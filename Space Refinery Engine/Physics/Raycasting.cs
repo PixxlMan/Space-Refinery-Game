@@ -65,7 +65,7 @@ namespace Space_Refinery_Engine
 
 				var physicsObject = physicsWorld.BodyHandleToPhysicsObject[collidable.BodyHandle];
 
-				if (physicsObject.Entity is T && physicsObject.Enabled)
+				if (physicsObject.Entity is T && physicsObject.Enabled && physicsObject.RecievesRaycasts)
 				{
 					PhysicsObject = physicsWorld.BodyHandleToPhysicsObject[collidable.BodyHandle];
 				}

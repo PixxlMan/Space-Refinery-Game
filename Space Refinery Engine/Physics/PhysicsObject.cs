@@ -31,6 +31,25 @@ public sealed class PhysicsObject
 		}
 	}
 
+	private bool recievesRaycasts = true;
+	public bool RecievesRaycasts
+	{
+		get
+		{
+			lock (syncRoot)
+			{
+				return recievesRaycasts;
+			}
+		}
+		set
+		{
+			lock (syncRoot)
+			{
+				recievesRaycasts = value;
+			}
+		}
+	}
+
 	public readonly PhysicsWorld World;
 
 	public Transform Transform { get => World.GetTransform(BodyHandle); set { World.SetTransform(BodyHandle, value); } }

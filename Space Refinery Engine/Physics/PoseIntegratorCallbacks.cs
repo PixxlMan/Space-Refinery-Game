@@ -4,6 +4,8 @@ using System.Numerics;
 
 namespace Space_Refinery_Engine;
 
+// CREDIT: NORBO, MIT, Modified for engine
+
 public partial class PhysicsWorld
 {
 	//Note that the engine does not require any particular form of gravity- it, like all the contact callbacks, is managed by a callback.
@@ -21,7 +23,7 @@ public partial class PhysicsWorld
 		{
 			this.gravity = gravity;
 			this.linearDamping = linearDamping;
-			angularDamping = angularDamping;
+			this.angularDamping = angularDamping;
 		}
 
 		/// <summary>

@@ -13,22 +13,19 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 {
 	public GameData GameData { get; private set; }
 
-	private bool paused;
+	private const long TRUE = long.MaxValue;
+	private const long FALSE = 0;
+
+	private long paused;
 	public bool Paused
 	{
 		get
 		{
-			lock (UpdateSyncObject)
-			{
-				return paused;
-			}
+			return Interlocked.Read(ref paused) == TRUE;
 		}
 		private set
 		{
-			lock (UpdateSyncObject)
-			{
-				paused = value;
-			}
+			Interlocked.Exchange(ref paused, value ? TRUE : FALSE);
 		}
 	}
 
@@ -109,20 +106,17 @@ public sealed class MainGame // TODO: make everything thread safe! or is it alre
 					throw new Exception($"More than one extension attemped to set up the {nameof(PhysicsWorld)}!");
 				}
 
-				GameData.PhysicsWorld.SetUp(simulation, bufferPool, threadDispatcher);
+				GameData.PhysicsWorld.SetUp(simulation, bufferPool, threadDispatcher, GameData);
 
 				alreadySetUp = true;
 			}
 		}
-
 		GameData.PhysicsWorld.Run();
 
 		GameData.UI = UI.CreateAndAdd(GameData);
-
 		GameData.UI.PauseStateChanged += UI_PauseStateChanged;
 
 		GameData.Game = Game.CreateGame(SerializableReference.NewReference(), GameData);
-
 		GameData.Game.GameWorld.StartTicking(this);
 
 		Logging.LogScopeStart("Starting all extensions");

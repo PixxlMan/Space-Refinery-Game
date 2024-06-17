@@ -145,13 +145,13 @@ public static class ResourceDeserialization
 
 			if (extension.ExtensionManifest.SerializableReference == "EngineManifest")
 			{
-				Debug.Assert(MainGame.EngineExtension is null);
-				MainGame.EngineExtension = extension;
+				Debug.Assert(serializationData.GameData.EngineExtension is null);
+				serializationData.GameData.EngineExtension = extension;
 			}
 
 			extensions.Add(extension);
 		}
-		Debug.Assert(MainGame.EngineExtension is not null);
+		Debug.Assert(serializationData.GameData.EngineExtension is not null);
 
 		Logging.LogScopeEnd();
 

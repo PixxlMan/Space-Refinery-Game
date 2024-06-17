@@ -8,7 +8,7 @@ public sealed class DebugRecalculableInvalidatorReactionType : ReactionType
 
 	public override void Tick(IntervalUnit _, ResourceContainer resourceContainer, ILookup<Type, ReactionFactor> _2, ICollection<ReactionFactor> _3)
 	{
-		if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Always invalidate all recalculables"))
+		if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Always invalidate all recalculables"))
 		{
 			resourceContainer.InvalidateRecalculables();
 		}

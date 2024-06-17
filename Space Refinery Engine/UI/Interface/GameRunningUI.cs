@@ -34,7 +34,7 @@ partial class UI
 
 		DoInformationPanel(deltaTime);
 
-		if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show miscellaneous debugging menus") && MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show miscellaneous debugging menus in game"))
+		if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Show miscellaneous debugging menus") && GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Show miscellaneous debugging menus in game"))
 		{
 			DoUIOfDisparateDebuggingMenus();
 		}
@@ -107,7 +107,7 @@ partial class UI
 		ImGui.SetWindowPos(panelLocation.ToVector2(), ImGuiCond.Always);
 		//ImGui.SetWindowSize();
 		{
-			if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show player info"))
+			if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Show player info"))
 			{
 				ImGui.TextDisabled("Information for: Player");
 				ImGui.Text("Connector: " + ConnectorSelection);

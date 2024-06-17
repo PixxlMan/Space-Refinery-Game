@@ -1,5 +1,4 @@
 ﻿using ImGuiNET;
-using Space_Refinery_Engine;
 
 namespace Space_Refinery_Engine
 {
@@ -18,8 +17,6 @@ namespace Space_Refinery_Engine
 			ImGui.Text($"{nameof(ResourceContainer)}:");
 
 			ordinaryPipe.ResourceContainer.DoUIInspectorReadonly();
-
-			//ImGui.Text("Statistics:");
 		}
 	}
 }

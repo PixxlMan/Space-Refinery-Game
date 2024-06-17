@@ -1,7 +1,6 @@
 ﻿using FixedPrecision;
 using ImGuiNET;
 using Space_Refinery_Game_Renderer;
-using Space_Refinery_Utilities;
 using System.Numerics;
 using Veldrid;
 
@@ -9,7 +8,7 @@ namespace Space_Refinery_Engine;
 
 partial class UI
 {
-	public static Action DoDebugStatusUI;
+	public static Action? DoDebugStatusUI;
 
 	private void DoStatus()
 	{
@@ -17,21 +16,21 @@ partial class UI
 		ImGui.SetWindowPos(new Vector2(0, 0), ImGuiCond.Always);
 		ImGui.SetWindowSize(new Vector2(width, height));
 		{
-			if (MainGame.DebugRender.ShouldRender)
+			if (GameData.DebugRender.ShouldRender)
 			{
 				ImGui.TextColored(RgbaFloat.Red.ToVector4(), "Debug drawing");
 			}
 
-			if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Display performance information"))
+			if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Display performance information"))
 			{
 				DoPerformanceInfo();
 			}
-			else if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("System response spinners", true))
+			else if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("System response spinners", true))
 			{
 				ImGui.TextUnformatted(gameData.GraphicsWorld.ResponseSpinner.ToString());
 			}
 
-			if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Display elapsed time and ticks", false))
+			if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Display elapsed time and ticks", false))
 			{
 				ImGui.Text($"Tick time: {Time.CurrentTickTime}");
 				ImGui.Text($"Tick: {Time.TicksElapsed}");
@@ -106,7 +105,7 @@ partial class UI
 		{
 			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"({gameData.PerformanceStatisticsCollector.RendererFramerate} FPS) {gameData.GraphicsWorld.ResponseSpinner}");
 			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"({gameData.PerformanceStatisticsCollector.TicksPerSecond} TPS) {gameData.Game.GameWorld.ResponseSpinner}");
-			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"({gameData.PerformanceStatisticsCollector.UpdatesPerSecond} UPS) {gameData.MainGame.ResponseSpinner}");
+			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"({gameData.PerformanceStatisticsCollector.UpdatesPerSecond} UPS) {gameData.InputUpdate.ResponseSpinner}");
 			ImGui.TextColored(RgbaFloat.White.ToVector4(), $"({gameData.PerformanceStatisticsCollector.PhysicsUpdatesPerSecond} PUPS) {gameData.PhysicsWorld.ResponseSpinner}");
 		}
 		ImGui.NextColumn();
@@ -114,14 +113,14 @@ partial class UI
 
 	private void DoUIOfDisparateDebuggingMenus()
 	{
-		if (!MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show miscellaneous debugging menus"))
+		if (!GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Show miscellaneous debugging menus"))
 			return;
 
 		BatchRenderable.DoDebugUI();
 
 		gameData.Game.GameWorld.DoDebugUI();
 
-		if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show dot at {0, 0, 0}"))
+		if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Show dot at {0, 0, 0}"))
 		{
 			var pos = gameData.GraphicsWorld.Camera.WorldPointToScreenPoint(Vector3FixedDecimalInt4.UnitY, Size, out var visible).ToVector2();
 

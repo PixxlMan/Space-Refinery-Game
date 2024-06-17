@@ -10,7 +10,7 @@ public sealed class PhysicsObject
 {
 	public IInformationProvider InformationProvider => Entity.InformationProvider;
 
-	public readonly Entity Entity;
+	public Entity Entity { get; private set; }
 
 	private bool enabled = true;
 	public bool Enabled
@@ -50,11 +50,11 @@ public sealed class PhysicsObject
 		}
 	}
 
-	public readonly PhysicsWorld World;
+	public PhysicsWorld World { get; private set; }
 
 	public Transform Transform { get => World.GetTransform(BodyHandle); set { World.SetTransform(BodyHandle, value); } }
 
-	public readonly BodyHandle BodyHandle;
+	public BodyHandle BodyHandle { get; private set; }
 
 	private readonly object syncRoot = new();
 

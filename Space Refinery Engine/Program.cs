@@ -28,7 +28,7 @@ public static class Program
 		Logging.LogDebug($"Logs from {nameof(Logging.LogDebug)} are included in this build.");
 		Logging.LogLegend($"Commit hash: {Assembly.GetExecutingAssembly()!.GetCustomAttributes<AssemblyMetadataAttribute>().Where((a) => a.Key == "SourceRevisionId").Single().Value}");
 
-		CultureInfo.CurrentCulture = (System.Globalization.CultureInfo)CultureInfo.InvariantCulture.Clone();
+		CultureInfo.CurrentCulture = (CultureInfo)CultureInfo.InvariantCulture.Clone();
 		CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator = " ";
 		CultureInfo.CurrentCulture.NumberFormat.NumberGroupSizes = CultureInfo.GetCultureInfo("se-SE").NumberFormat.NumberGroupSizes;
 		//System.Globalization.CultureInfo.CurrentCulture.NumberFormat = DecimalNumber.NumberFormat;
@@ -53,8 +53,8 @@ public static class Program
 
 		window.CaptureMouse = true;
 
-		MainGame mainGame = new();
+		Initialization initialization = new();
 
-		mainGame.Start(window, graphicsDevice, factory, window.CreateSwapchain());
+		initialization.Start(window, graphicsDevice, factory, window.CreateSwapchain());
 	}
 }

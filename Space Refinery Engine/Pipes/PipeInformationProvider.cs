@@ -17,7 +17,7 @@ namespace Space_Refinery_Engine
 		{
 			ImGui.Spacing();
 
-			if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show debug information in information provider"))
+			if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Show debug information in information provider"))
 			{
 				ImGui.Text("GUID: " + Pipe.SerializableReference.ToString());
 
@@ -27,7 +27,7 @@ namespace Space_Refinery_Engine
 
 				ImGui.Text("Pipe Type: " + Pipe.PipeType.Name);
 
-				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show rendering debug information in information provider"))
+				if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Show rendering debug information in information provider"))
 				{
 					ImGui.Text("Batch renderer: " + Pipe.PipeType.BatchRenderable.Name);
 

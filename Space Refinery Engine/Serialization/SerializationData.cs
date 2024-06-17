@@ -5,8 +5,8 @@ namespace Space_Refinery_Engine;
 
 public sealed record class SerializationData(GameData GameData, string? BasePathForAssetDeserialization = null)
 {
-	public SerializationData(GraphicsWorld graphicsWorld, PhysicsWorld physicsWorld, AudioWorld audioWorld, MainGame mainGame, Settings settings, Game game, UI ui, string? basePathForAssetDeserialization)
-		: this(new GameData(graphicsWorld, physicsWorld, audioWorld, mainGame, settings, game, ui), basePathForAssetDeserialization)
+	public SerializationData(GraphicsWorld graphicsWorld, PhysicsWorld physicsWorld, InputUpdate inputUpdate, AudioWorld audioWorld, Settings settings, Game game, UI ui, string? basePathForAssetDeserialization)
+		: this(new GameData(graphicsWorld, physicsWorld, inputUpdate, audioWorld, settings, game, ui), basePathForAssetDeserialization)
 	{ }
 
 	public event Action? DeserializationCompleteEvent;

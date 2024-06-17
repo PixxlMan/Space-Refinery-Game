@@ -41,7 +41,7 @@ public sealed class GameWorld : IEntitySerializable
 		}
 	}
 
-	public void StartTicking(MainGame mainGame) // TODO: add new game status type from which pause information could be derived instead of this?
+	public void StartTicking(GameData gameData) // TODO: add new game status type from which pause information could be derived instead of this?
 	{
 		Thread thread = new Thread(new ThreadStart(() =>
 		{
@@ -53,7 +53,7 @@ public sealed class GameWorld : IEntitySerializable
 			IntervalUnit deltaTime;
 			while (true)
 			{
-				if (!mainGame.Paused)
+				if (!gameData.Paused)
 				{
 					time = stopwatch.Elapsed;
 

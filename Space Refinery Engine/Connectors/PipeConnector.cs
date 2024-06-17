@@ -81,7 +81,7 @@ namespace Space_Refinery_Engine
 		{
 			base.DeserializeState(reader, serializationData, referenceHandler);
 
-			reader.DeserializeReference<PipeConnectorProperties>(MainGame.GlobalReferenceHandler, (p) => PipeConnectorProperties = p, nameof(PipeConnectorProperties));
+			reader.DeserializeReference<PipeConnectorProperties>(GameData.GlobalReferenceHandler, (p) => PipeConnectorProperties = p, nameof(PipeConnectorProperties));
 		}
 	}
 }

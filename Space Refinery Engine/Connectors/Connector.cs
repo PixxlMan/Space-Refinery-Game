@@ -37,7 +37,7 @@ namespace Space_Refinery_Engine
 		/// </summary>
 		protected virtual void SetUp()
 		{
-			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
+			GameData.DebugRender.AddDebugObjects += AddDebugObjects;
 
 			GameData.UI.SelectedEntityTypeChanged += (_) => UpdateProxyOnSelectedEntityAffected();
 
@@ -370,12 +370,12 @@ namespace Space_Refinery_Engine
 				if (Destroyed)
 					return;
 
-				if (!MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>($"{nameof(Connector)} debug objects"))
+				if (!GameData.DebugSettings.AccessSetting<BooleanDebugSetting>($"{nameof(Connector)} debug objects"))
 					return;
 
-				MainGame.DebugRender.DrawOrientationMarks(Transform);
+				GameData.DebugRender.DrawOrientationMarks(Transform);
 
-				MainGame.DebugRender.DrawCube(new Transform(PhysicsObject.Transform), VacantSide is null ? RgbaFloat.Green : RgbaFloat.Cyan, new((FixedDecimalInt4).4f, (FixedDecimalInt4).4f, (FixedDecimalInt4).25f));
+				GameData.DebugRender.DrawCube(new Transform(PhysicsObject.Transform), VacantSide is null ? RgbaFloat.Green : RgbaFloat.Cyan, new((FixedDecimalInt4).4f, (FixedDecimalInt4).4f, (FixedDecimalInt4).25f));
 			}
 		}
 
@@ -474,7 +474,7 @@ namespace Space_Refinery_Engine
 				GameData.UI.SelectedEntityRotated -= (_) => UpdateProxyOnSelectedEntityAffected();
 				GameData.UI.SelectedEntityConnectorChanged -= (_) => UpdateProxyOnSelectedEntityAffected();
 
-				MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
+				GameData.DebugRender.AddDebugObjects -= AddDebugObjects;
 
 				GameData.Game.GameReferenceHandler.RemoveReference(this);
 			}

@@ -17,7 +17,7 @@ public sealed class EntityRenderable : IRenderable
 
 	private GraphicsWorld graphicsWorld;
 
-	private object SyncRoot = new();
+	private readonly object SyncRoot = new();
 
 	private bool shouldDraw = true;
 	public bool ShouldDraw
@@ -53,9 +53,7 @@ public sealed class EntityRenderable : IRenderable
 		EntityRenderable entityRenderable = new(transform);
 
 		entityRenderable.mesh = mesh;
-
 		entityRenderable.material = material;
-
 		entityRenderable.transformationBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes, BufferUsage.VertexBuffer));
 
 		graphicsWorld.GraphicsDevice.UpdateBuffer(entityRenderable.transformationBuffer, 0, entityRenderable.Transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero));

@@ -68,7 +68,7 @@ namespace Space_Refinery_Game
 
 		protected override void Interacted()
 		{
-			UI.EnterMenu(DoMenu, "Space Dock");
+			gameData.UI.EnterMenu(DoMenu, "Space Dock");
 		}
 
 		int selection = -1;

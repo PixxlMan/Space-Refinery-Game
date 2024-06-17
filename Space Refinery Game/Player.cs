@@ -53,14 +53,14 @@ public sealed class Player : ISerializableReference
 
 		gameData.Game.GameReferenceHandler.RegisterReference(player);
 
-		gameData.MainGame.OnUpdate += player.Update;
+		gameData.InputUpdate.OnUpdate += player.Update;
 
 		return player;
 	}
 
 	public void Update(IntervalUnit deltaTime)
 	{
-		if (gameData.MainGame.Paused || gameData.UI.InMenu)
+		if (gameData.Paused || gameData.UI.InMenu)
 			return;
 
 		gameData.GraphicsWorld.Camera.Transform = CameraTransform;
@@ -123,15 +123,15 @@ public sealed class Player : ISerializableReference
 
 			if (construction is OrdinaryPipe pipe)
 			{
-				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Insert resource with button"))
+				if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Insert resource with button"))
 				{
-					ChemicalType chemicalType = MainGame.DebugSettings.AccessSetting<ComboDebugSetting<ChemicalType>>("Chemical type to insert with button", new(ChemicalType.ChemicalTypes.ToArray(), ChemicalType.Water));
+					ChemicalType chemicalType = GameData.DebugSettings.AccessSetting<ComboDebugSetting<ChemicalType>>("Chemical type to insert with button", new(ChemicalType.ChemicalTypes.ToArray(), ChemicalType.Water));
 
-					TemperatureUnit temperatureUnit = (TemperatureUnit)(DecimalNumber)MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Temperature of resource to insert with button", new(10, 0, 1_000));
+					TemperatureUnit temperatureUnit = (TemperatureUnit)(DecimalNumber)GameData.DebugSettings.AccessSetting<SliderDebugSetting>("Temperature of resource to insert with button", new(10, 0, 1_000));
 
 					ChemicalPhase chemicalPhase = chemicalType.GetChemicalPhaseForTemperature(temperatureUnit);
 
-					MassUnit mass = (MassUnit)(DecimalNumber)MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Mass to insert with button", new(10, 0, 1_000));
+					MassUnit mass = (MassUnit)(DecimalNumber)GameData.DebugSettings.AccessSetting<SliderDebugSetting>("Mass to insert with button", new(10, 0, 1_000));
 
 					ResourceType resourceType = chemicalType.GetResourceTypeForPhase(chemicalPhase);
 
@@ -145,13 +145,13 @@ public sealed class Player : ISerializableReference
 					}
 				}
 
-				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Modify heat with buttons"))
+				if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Modify heat with buttons"))
 				{
-					ChemicalType chemicalType = MainGame.DebugSettings.AccessSetting<ComboDebugSetting<ChemicalType>>("Chemical type to modify heat of with button", new(ChemicalType.ChemicalTypes.ToArray(), ChemicalType.Water));
-					ChemicalPhase chemicalPhase = MainGame.DebugSettings.AccessSetting<EnumDebugSetting<ChemicalPhase>>("Chemical phase to modify heat of with button", ChemicalPhase.Liquid);
+					ChemicalType chemicalType = GameData.DebugSettings.AccessSetting<ComboDebugSetting<ChemicalType>>("Chemical type to modify heat of with button", new(ChemicalType.ChemicalTypes.ToArray(), ChemicalType.Water));
+					ChemicalPhase chemicalPhase = GameData.DebugSettings.AccessSetting<EnumDebugSetting<ChemicalPhase>>("Chemical phase to modify heat of with button", ChemicalPhase.Liquid);
 					ResourceType resourceType = chemicalType.GetResourceTypeForPhase(chemicalPhase);
 
-					EnergyUnit energy = (EnergyUnit)(DN)MainGame.DebugSettings.AccessSetting<SliderDebugSetting>("Internal energy to modify per unit", new(1_000, 0, 10_000_000));
+					EnergyUnit energy = (EnergyUnit)(DN)GameData.DebugSettings.AccessSetting<SliderDebugSetting>("Internal energy to modify per unit", new(1_000, 0, 10_000_000));
 					EnergyUnit timeAdjustedEnergy = energy * deltaTime;
 
 					/*if (InputTracker.GetKeyDown(Key.H))

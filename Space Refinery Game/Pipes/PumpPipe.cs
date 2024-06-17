@@ -84,7 +84,7 @@ namespace Space_Refinery_Game
 		{
 			base.Interacted();
 
-			UI.EnterMenu(DoMenu, "Pump");
+			gameData.UI.EnterMenu(DoMenu, "Pump");
 		}
 
 		protected override void DisplaceContents()

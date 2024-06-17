@@ -6,7 +6,7 @@ namespace Space_Refinery_Engine
 {
 	public sealed class LevelObjectType : IEntityType, ISerializableReference
 	{
-		public static ConcurrentDictionary<string, LevelObjectType> LevelObjectTypes = new();
+		public static ConcurrentDictionary<string, LevelObjectType> LevelObjectTypes { get; private set; } = new();
 
 		public string ModelPath { get; private set; }
 

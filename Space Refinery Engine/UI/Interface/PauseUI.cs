@@ -17,7 +17,7 @@ partial class UI
 				ImGui.SetWindowSize(debugSettingsMenuSize, ImGuiCond.Always);
 				ImGui.SetWindowPos(new Vector2((width / 2 - pauseMenuSize.X / 2) + pauseMenuSize.X, height / 2 - debugSettingsMenuSize.Y / 2), ImGuiCond.Always);
 
-				MainGame.DebugSettings.DoDebugSettingsUI();
+				GameData.DebugSettings.DoDebugSettingsUI();
 
 				ImGui.End();
 
@@ -51,7 +51,7 @@ partial class UI
 				{
 					lock (gameData.Game.GameWorld.TickSyncObject)
 					{
-						gameData.MainGame.Serialize($@"{Environment.CurrentDirectory}\save.xml");
+						gameData.Serialize($@"{Environment.CurrentDirectory}\save.xml");
 					}
 				});
 			}
@@ -60,9 +60,9 @@ partial class UI
 			{
 				Task.Run(() =>
 				{
-					lock (gameData.Game.GameWorld.TickSyncObject)// lock (gameData.Game.GameWorld.SynchronizationObject)
+					lock (gameData.Game.GameWorld.TickSyncObject)
 					{
-						gameData.MainGame.Deserialize($@"{Environment.CurrentDirectory}\save.xml");
+						gameData.Deserialize($@"{Environment.CurrentDirectory}\save.xml");
 					}
 				});
 			}

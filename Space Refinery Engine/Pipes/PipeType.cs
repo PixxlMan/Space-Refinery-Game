@@ -6,7 +6,7 @@ namespace Space_Refinery_Engine;
 
 public sealed class PipeType : IEntityType, ISerializableReference
 {
-	public static ConcurrentDictionary<string, PipeType> PipeTypes = new();
+	public static ConcurrentDictionary<string, PipeType> PipeTypes { get; private set; } = new();
 
 	public PositionAndDirection[] ConnectorPlacements { get; private set; }
 
@@ -18,13 +18,13 @@ public sealed class PipeType : IEntityType, ISerializableReference
 
 	public Mesh Mesh { get; private set; }
 
-	public MaterialInfo MaterialInfo;
+	public MaterialInfo MaterialInfo { get; private set; }
 
 	public Material Material { get; private set; }
 
-	public PipeProperties PipeProperties;
+	public PipeProperties PipeProperties { get; private set; }
 
-	public Type TypeOfPipe;
+	public Type TypeOfPipe { get; private set; }
 
 	public BatchRenderable BatchRenderable { get; private set; }
 
@@ -39,7 +39,7 @@ public sealed class PipeType : IEntityType, ISerializableReference
 		{
 			if (standardPipeConnectorProperties is null)
 			{
-				standardPipeConnectorProperties = (PipeConnectorProperties)MainGame.GlobalReferenceHandler[Guid.Parse(/*Reference to standard pipe connector properties.*/"a2f1a2e0-529e-41e3-bb90-544104b85d2a")];
+				standardPipeConnectorProperties = (PipeConnectorProperties)GameData.GlobalReferenceHandler[Guid.Parse(/*Reference to standard pipe connector properties.*/"a2f1a2e0-529e-41e3-bb90-544104b85d2a")];
 			}
 
 			return standardPipeConnectorProperties;
@@ -66,9 +66,7 @@ public sealed class PipeType : IEntityType, ISerializableReference
 	}
 
 	private PipeType()
-	{
-
-	}
+	{ }
 
 	public void SerializeState(XmlWriter writer)
 	{

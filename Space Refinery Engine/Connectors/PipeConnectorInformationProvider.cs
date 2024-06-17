@@ -15,7 +15,7 @@ namespace Space_Refinery_Engine
 
 		public void InformationUI()
 		{
-			if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show debug information in information provider"))
+			if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Show debug information in information provider"))
 			{
 				ImGui.Text($"Vacant side: {PipeConnector.VacantSide}");
 

@@ -37,10 +37,10 @@ namespace Space_Refinery_Game
 			{
 				if (InternalBlockerModel is null)
 				{
-					InternalBlockerModel = GraphicsWorld.MeshLoader.LoadCached(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe", "Special", "PipeSpecialValveInternalBlocker.obj"));
+					InternalBlockerModel = gameData.GraphicsWorld.MeshLoader.LoadCached(Path.Combine(Environment.CurrentDirectory, "Assets", "Models", "Pipe", "Special", "PipeSpecialValveInternalBlocker.obj"));
 				}
 
-				InternalBlockerRenderable = EntityRenderable.CreateAndAdd(GraphicsWorld, Transform, InternalBlockerModel, GraphicsWorld.MaterialLoader.LoadCached(((MaterialInfo)ReferenceHandler["Rusty Metal Sheet"]).MaterialTexturePaths), GraphicsWorld.CameraProjViewBuffer, GraphicsWorld.LightInfoBuffer);
+				InternalBlockerRenderable = EntityRenderable.CreateAndAdd(gameData.GraphicsWorld, Transform, InternalBlockerModel, gameData.GraphicsWorld.MaterialLoader.LoadCached(((MaterialInfo)ReferenceHandler["Rusty Metal Sheet"]).MaterialTexturePaths), gameData.GraphicsWorld.CameraProjViewBuffer, gameData.GraphicsWorld.LightInfoBuffer);
 
 				foreach (var connector in Connectors)
 				{
@@ -89,7 +89,7 @@ namespace Space_Refinery_Game
 
 		protected override void Interacted()
 		{
-			UI.EnterMenu(DoMenu, "Valve controls");
+			gameData.UI.EnterMenu(DoMenu, "Valve controls");
 		}
 
 		protected override void DisplaceContents()

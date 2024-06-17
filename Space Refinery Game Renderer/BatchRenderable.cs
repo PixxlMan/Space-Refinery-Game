@@ -19,7 +19,7 @@ public sealed partial class BatchRenderable : IRenderable
 
 	private readonly object syncRoot = new();
 
-	public string Name;
+	public string Name { get; private set; }
 
 	private bool shouldDraw = true;
 	public bool ShouldDraw
@@ -57,26 +57,6 @@ public sealed partial class BatchRenderable : IRenderable
 	private uint currentCapacity;
 
 	private const uint initialCapacity = 128;
-
-
-	/// <summary>
-	/// Returns the internal batch renderer index associated with an object, or -1 if the object is not associated with any index.
-	/// </summary>
-	/// <remarks>Used for debugging purposes only, do not rely on this method's behaviour or results.</remarks>
-	/// <returns>The internal renderer index associated with the object, or -1 if there is no index associated with the object.</returns>
-	[Obsolete("This method is intended for debugging purposes only!")]
-	public int DebugGetRenderableIndex(object associatedObject)
-	{
-		lock (syncRoot)
-		{
-			if (!transformsDictionary.TryGetValue(associatedObject, out var index))
-			{
-				index = -1;
-			}
-
-			return index;
-		}
-	}
 
 
 	public void CreateBatchRenderableEntity(Transform transform, object associatedObject)

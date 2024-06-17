@@ -193,7 +193,7 @@ namespace Space_Refinery_Engine // Is this really thread safe? It's accessed sta
 			{
 				using var reader = XmlReader.Create(settingValuesPath, new XmlReaderSettings() { ConformanceLevel = ConformanceLevel.Document });
 
-				DeserializeSettingValues(reader, new(gameData, MainGame.EngineExtension.AssetsPath));
+				DeserializeSettingValues(reader, new(gameData, gameData.EngineExtension.AssetsPath));
 			}
 			else
 			{

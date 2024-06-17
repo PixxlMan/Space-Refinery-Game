@@ -60,7 +60,7 @@ public sealed partial class PhysicsWorld
 			IntervalUnit deltaTime;
 			while (true)
 			{
-				if (!gameData.MainGame.Paused)
+				if (!gameData.Paused)
 				{
 					time = stopwatch.Elapsed.TotalSeconds;
 

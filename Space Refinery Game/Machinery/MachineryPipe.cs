@@ -45,7 +45,7 @@ namespace Space_Refinery_Game
 
 		protected override void Interacted()
 		{
-			UI.EnterMenu(DoMenu, "Machinery");
+			gameData.UI.EnterMenu(DoMenu, "Machinery");
 		}
 
 		protected virtual void DoMenu()

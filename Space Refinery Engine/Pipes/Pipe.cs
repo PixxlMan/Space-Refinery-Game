@@ -10,31 +10,30 @@ namespace Space_Refinery_Engine;
 // TODO: make thread safe.
 public abstract class Pipe : Entity, IConstruction, IConnectable
 {
-	public PhysicsWorld PhysicsWorld;
+	public PhysicsObject PhysicsObject { get; private set; }
 
-	public PhysicsObject PhysicsObject;
+	private Transform transform;
+	public Transform Transform
+	{
+		get => transform;
+		set
+		{
+			PhysicsObject.Transform = value;
+			transform = value;
+		}
+	}
 
-	public Transform Transform { get; set; }
-
-	public GraphicsWorld GraphicsWorld;
-
-	public GameWorld GameWorld;
-
-	public MainGame MainGame;
-
-	public PipeConnector[] Connectors;
+	public PipeConnector[] Connectors { get; private set; }
 
 	protected IInformationProvider informationProvider;
 
 	public IInformationProvider InformationProvider => informationProvider;
 
-	public PipeType PipeType;
-
-	protected UI UI;
+	public PipeType PipeType { get; private set; }
 
 	Connector[] IConnectable.Connectors => Connectors;
 
-	public bool Created;
+	public bool Created { get; private set; }
 
 	public bool Constructed => !Created;
 
@@ -42,7 +41,9 @@ public abstract class Pipe : Entity, IConstruction, IConnectable
 
 	public SerializationReferenceHandler ReferenceHandler { get; private set; }
 
-	protected Dictionary<string, PipeConnector> NamedConnectors = new();
+	protected Dictionary<string, PipeConnector> NamedConnectors { get; private set; } = new();
+
+	protected GameData gameData { get; private set; }
 
 	private bool destroyed;
 	public bool Destroyed
@@ -65,10 +66,10 @@ public abstract class Pipe : Entity, IConstruction, IConnectable
 
 	public virtual void AddDebugObjects()
 	{
-		if (!MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>($"{nameof(Pipe)} debug objects"))
+		if (!GameData.DebugSettings.AccessSetting<BooleanDebugSetting>($"{nameof(Pipe)} debug objects"))
 			return;
 
-		MainGame.DebugRender.DrawOrientationMarks(Transform);
+		GameData.DebugRender.DrawOrientationMarks(Transform);
 	}
 
 	public static Pipe Create(PipeType pipeType, Transform transform, GameData gameData, SerializationReferenceHandler referenceHandler)
@@ -79,7 +80,9 @@ public abstract class Pipe : Entity, IConstruction, IConnectable
 
 			pipe.Transform = transform;
 
-			MainGame.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
+			pipe.gameData = gameData;
+
+			GameData.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
 
 			pipeType.BatchRenderable.CreateBatchRenderableEntity(transform, pipe);
 
@@ -115,7 +118,7 @@ public abstract class Pipe : Entity, IConstruction, IConnectable
 
 		for (int i = 0; i < pipeType.ConnectorPlacements.Length; i++)
 		{
-			MainGame.DebugRender.PersistentCube(
+			GameData.DebugRender.PersistentCube(
 				new(
 					pipe.Transform.Position +
 					Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, pipe.Transform.Rotation)
@@ -184,7 +187,7 @@ public abstract class Pipe : Entity, IConstruction, IConnectable
 	{
 		for (int i = 0; i < pipeType.ConnectorPlacements.Length; i++)
 		{
-			//MainGame.DebugRender.PersistentCube(new (transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, transform.Rotation), transform.Rotation, new((DecimalNumber).125, (DecimalNumber).125, (DecimalNumber).125)), new RgbaFloat((float)i / (float)pipeType.ConnectorPlacements.Length, (float)i / 10f + .1f, 0, 1));
+			//GameData.DebugRender.PersistentCube(new (transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, transform.Rotation), transform.Rotation, new((DecimalNumber).125, (DecimalNumber).125, (DecimalNumber).125)), new RgbaFloat((float)i / (float)pipeType.ConnectorPlacements.Length, (float)i / 10f + .1f, 0, 1));
 
 			if (gameData.PhysicsWorld.ApproxOverlapPoint<PipeConnector>(transform.Position + Vector3FixedDecimalInt4.Transform(pipeType.ConnectorPlacements[i].Position, transform.Rotation), out PhysicsObject physicsObject))
 			{
@@ -232,7 +235,7 @@ public abstract class Pipe : Entity, IConstruction, IConnectable
 
 			pipe.Transform = transform;
 
-			MainGame.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
+			GameData.DebugRender.AddDebugObjects += pipe.AddDebugObjects;
 
 			pipeType.BatchRenderable.CreateBatchRenderableEntity(transform, pipe);
 
@@ -257,13 +260,8 @@ public abstract class Pipe : Entity, IConstruction, IConnectable
 		lock (SyncRoot)
 		{
 			PipeType = pipeType;
-			UI = gameData.UI;
-			PhysicsWorld = gameData.PhysicsWorld;
 			PhysicsObject = physicsObject;
 			Connectors = connectors;
-			GraphicsWorld = gameData.GraphicsWorld;
-			GameWorld = gameData.Game.GameWorld;
-			MainGame = gameData.MainGame;
 			ReferenceHandler = gameData.Game.GameReferenceHandler;
 
 			SetUp();
@@ -346,7 +344,7 @@ public abstract class Pipe : Entity, IConstruction, IConnectable
 		{
 			Transform = transform;
 
-			MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
+			GameData.DebugRender.AddDebugObjects += AddDebugObjects;
 
 			pipeType.BatchRenderable.CreateBatchRenderableEntity(transform, this);
 
@@ -390,7 +388,7 @@ public abstract class Pipe : Entity, IConstruction, IConnectable
 			PhysicsObject.Destroy();
 			PipeType.BatchRenderable.RemoveBatchRenderableEntity(this);
 
-			MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
+			GameData.DebugRender.AddDebugObjects -= AddDebugObjects;
 
 			foreach (var connector in Connectors)
 			{

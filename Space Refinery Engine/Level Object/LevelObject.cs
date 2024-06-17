@@ -8,29 +8,30 @@ namespace Space_Refinery_Engine
 	// TODO: make thread safe.
 	public abstract class LevelObject : Entity
 	{
-		public PhysicsWorld PhysicsWorld;
+		public PhysicsObject PhysicsObject { get; private set; }
 
-		public PhysicsObject PhysicsObject;
-
-		public Transform Transform { get; set; }
-
-		public GraphicsWorld GraphicsWorld;
-
-		public GameWorld GameWorld;
-
-		public MainGame MainGame;
+		private Transform transform;
+		public Transform Transform
+		{
+			get => transform;
+			set
+			{
+				PhysicsObject.Transform = value;
+				transform = value;
+			}
+		}
 
 		protected IInformationProvider informationProvider;
 
 		public IInformationProvider InformationProvider => informationProvider;
 
-		public LevelObjectType LevelObjectType;
-
-		protected UI UI;
+		public LevelObjectType LevelObjectType { get; private set; }
 
 		public SerializableReference SerializableReference { get; private set; } = Guid.NewGuid();
 
 		public SerializationReferenceHandler ReferenceHandler { get; private set; }
+
+		protected GameData gameData;
 
 		private bool destroyed;
 		public bool Destroyed
@@ -51,10 +52,10 @@ namespace Space_Refinery_Engine
 
 		public virtual void AddDebugObjects()
 		{
-			if (!MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>($"{nameof(LevelObject)} debug orientation marks"))
+			if (!GameData.DebugSettings.AccessSetting<BooleanDebugSetting>($"{nameof(LevelObject)} debug orientation marks"))
 				return;
 
-			MainGame.DebugRender.DrawOrientationMarks(Transform);
+			GameData.DebugRender.DrawOrientationMarks(Transform);
 		}
 
 		public static LevelObject Create(LevelObjectType levelObjectType, Transform transform, GameData gameData, SerializationReferenceHandler referenceHandler)
@@ -65,7 +66,9 @@ namespace Space_Refinery_Engine
 
 				levelObject.Transform = transform;
 
-				MainGame.DebugRender.AddDebugObjects += levelObject.AddDebugObjects;
+				levelObject.gameData = gameData;
+
+				GameData.DebugRender.AddDebugObjects += levelObject.AddDebugObjects;
 
 				levelObjectType.BatchRenderable.CreateBatchRenderableEntity(transform, levelObject);
 
@@ -93,12 +96,7 @@ namespace Space_Refinery_Engine
 		{
 			lock (SyncRoot)
 			{
-				UI = gameData.UI;
-				PhysicsWorld = gameData.PhysicsWorld;
 				PhysicsObject = physicsObject;
-				GraphicsWorld = gameData.GraphicsWorld;
-				GameWorld = gameData.Game.GameWorld;
-				MainGame = gameData.MainGame;
 				LevelObjectType = levelObjectType;
 				ReferenceHandler = gameData.Game.GameReferenceHandler;
 
@@ -108,7 +106,6 @@ namespace Space_Refinery_Engine
 
 		protected virtual void SetUp()
 		{
-
 		}
 
 		public virtual void Deconstruct()
@@ -180,7 +177,7 @@ namespace Space_Refinery_Engine
 			{
 				Transform = transform;
 
-				MainGame.DebugRender.AddDebugObjects += AddDebugObjects;
+				GameData.DebugRender.AddDebugObjects += AddDebugObjects;
 
 				levelObjectType.BatchRenderable.CreateBatchRenderableEntity(transform, this);
 
@@ -212,7 +209,7 @@ namespace Space_Refinery_Engine
 
 				LevelObjectType.BatchRenderable.RemoveBatchRenderableEntity(this);
 
-				MainGame.DebugRender.AddDebugObjects -= AddDebugObjects;
+				GameData.DebugRender.AddDebugObjects -= AddDebugObjects;
 
 				ReferenceHandler.RemoveReference(this);
 			}

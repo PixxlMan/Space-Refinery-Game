@@ -27,7 +27,7 @@ public sealed class PerformanceStatisticsCollector
 		GameDataChanged(GameData.GameDataChange.PhysicsWorld);
 		GameDataChanged(GameData.GameDataChange.GraphicsWorld);
 		GameDataChanged(GameData.GameDataChange.Game);
-		GameDataChanged(GameData.GameDataChange.MainGame);
+		GameDataChanged(GameData.GameDataChange.InputUpdate);
 	}
 
 	public void Restore()
@@ -66,13 +66,13 @@ public sealed class PerformanceStatisticsCollector
 					gameData.Game.GameWorld.CollectTickPerformanceData += GameWorld_CollectPerformanceData;
 				}
 				break;
-			case GameData.GameDataChange.MainGame:
-				if (gameData.MainGame is not null)
-					gameData.MainGame.CollectUpdatePerformanceData -= MainGame_CollectPerformanceData;
+			case GameData.GameDataChange.InputUpdate:
+				if (gameData.InputUpdate is not null)
+					gameData.InputUpdate.CollectUpdatePerformanceData -= InputUpdate_CollectPerformanceData;
 
-				if (gameData.MainGame is not null)
+				if (gameData.InputUpdate is not null)
 				{
-					gameData.MainGame.CollectUpdatePerformanceData += MainGame_CollectPerformanceData;
+					gameData.InputUpdate.CollectUpdatePerformanceData += InputUpdate_CollectPerformanceData;
 				}
 				break;
 		}
@@ -106,9 +106,9 @@ public sealed class PerformanceStatisticsCollector
 		}
 	}
 
-	private void MainGame_CollectPerformanceData(IntervalUnit deltaTime)
+	private void InputUpdate_CollectPerformanceData(IntervalUnit deltaTime)
 	{
-		DebugPerfWarn(deltaTime, nameof(MainGame));
+		DebugPerfWarn(deltaTime, nameof(Initialization));
 
 		switch (Mode)
 		{

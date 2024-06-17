@@ -61,7 +61,7 @@ namespace Space_Refinery_Engine.Audio
 
 			UI.DoDebugStatusUI += () =>
 			{
-				if (MainGame.DebugSettings.AccessSetting<BooleanDebugSetting>("Show music system debug status"))
+				if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Show music system debug status"))
 				{
 					ImGui.Separator();
 					if (currentMusic is null)

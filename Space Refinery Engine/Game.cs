@@ -1,5 +1,4 @@
-﻿using Microsoft.Toolkit.HighPerformance;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 
 namespace Space_Refinery_Engine;

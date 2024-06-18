@@ -87,7 +87,7 @@ public sealed partial class PhysicsWorld
 		thread.Start();
 	}
 
-	public Action<IntervalUnit> OnPhysicsUpdate;
+	public Action<IntervalUnit>? OnPhysicsUpdate;
 
 	public bool HasHandle(BodyHandle bodyHandle)
 	{

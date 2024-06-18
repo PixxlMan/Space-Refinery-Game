@@ -20,7 +20,9 @@ public static class RenderingResources
 
 	public static VertexLayoutDescription VertexLayout { get; private set; }
 
-	public static Pipeline PipelineResource { get; private set; }
+	public static Pipeline ClockwisePipelineResource { get; private set; }
+
+	public static Pipeline CounterClockwisePipelineResource { get; private set; }
 
 	public static void CreateStaticDeviceResources(GraphicsWorld graphicsWorld)
 	{
@@ -73,7 +75,7 @@ public static class RenderingResources
 			new VertexElementDescription("Normal", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3),
 			new VertexElementDescription("TexCoord", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float2));
 
-		GraphicsPipelineDescription pipelineDescription = new GraphicsPipelineDescription()
+		GraphicsPipelineDescription clockwisePipelineDescription = new()
 		{
 			BlendState = BlendStateDescription.SingleOverrideBlend,
 			DepthStencilState = new DepthStencilStateDescription(
@@ -88,7 +90,7 @@ public static class RenderingResources
 			scissorTestEnabled: false
 			),
 			PrimitiveTopology = PrimitiveTopology.TriangleList,
-			ResourceLayouts = new ResourceLayout[] { SharedLayout, MaterialLayout },
+			ResourceLayouts = [SharedLayout, MaterialLayout],
 			ShaderSet = new ShaderSetDescription(
 				vertexLayouts: [VertexLayout, TransformationVertexShaderParameterLayout],
 				shaders: graphicsWorld.ShaderLoader.LoadCached("EntityRenderable")
@@ -96,7 +98,32 @@ public static class RenderingResources
 			Outputs = graphicsWorld.GraphicsDevice.MainSwapchain.Framebuffer.OutputDescription
 		};
 
-		PipelineResource = graphicsWorld.Factory.CreateGraphicsPipeline(pipelineDescription);
+		ClockwisePipelineResource = graphicsWorld.Factory.CreateGraphicsPipeline(clockwisePipelineDescription);
+
+		GraphicsPipelineDescription counterClockwisePipelineDescription = new()
+		{
+			BlendState = BlendStateDescription.SingleOverrideBlend,
+			DepthStencilState = new DepthStencilStateDescription(
+			depthTestEnabled: true,
+			depthWriteEnabled: true,
+			comparisonKind: ComparisonKind.LessEqual),
+			RasterizerState = new RasterizerStateDescription(
+			cullMode: FaceCullMode.Back,
+			fillMode: PolygonFillMode.Solid,
+			frontFace: FrontFace.CounterClockwise,
+			depthClipEnabled: true,
+			scissorTestEnabled: false
+			),
+			PrimitiveTopology = PrimitiveTopology.TriangleList,
+			ResourceLayouts = [SharedLayout, MaterialLayout],
+			ShaderSet = new ShaderSetDescription(
+				vertexLayouts: [VertexLayout, TransformationVertexShaderParameterLayout],
+				shaders: graphicsWorld.ShaderLoader.LoadCached("EntityRenderable")
+			),
+			Outputs = graphicsWorld.GraphicsDevice.MainSwapchain.Framebuffer.OutputDescription
+		};
+
+		CounterClockwisePipelineResource = graphicsWorld.Factory.CreateGraphicsPipeline(counterClockwisePipelineDescription);
 
 		DefaultTexture = Utils.GetSolidColoredTexture(RgbaByte.LightGrey, graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
 		DefaultMaterial = Material.FromTextures(graphicsWorld.GraphicsDevice, graphicsWorld.Factory, "Default Material", DefaultTexture, DefaultTexture, DefaultTexture, DefaultTexture);

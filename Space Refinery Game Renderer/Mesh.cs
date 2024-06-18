@@ -32,6 +32,8 @@ public sealed class Mesh
 
 	public uint IndexCount { get; private set; }
 
+	public FrontFace WindingOrder { get; private set; }
+
 	public static Mesh LoadMesh(GraphicsDevice gd, ResourceFactory factory, string path)
 	{
 		ObjParser objParser = new();
@@ -50,15 +52,14 @@ public sealed class Mesh
 		gd.UpdateBuffer(mesh.VertexBuffer, 0u, meshInfo.Vertices);
 
 		mesh.IndexFormat = IndexFormat.UInt16;
-
-		mesh.Points = meshInfo.GetVertexPositions();
+		mesh.WindingOrder = FrontFace.Clockwise;
 
 		return mesh;
 	}
 
-	public static Mesh CreateMesh(ushort[] indicies, VertexPositionNormalTexture[] verticies, GraphicsDevice gd, ResourceFactory factory)
+	public static Mesh CreateMesh(ushort[] indicies, VertexPositionNormalTexture[] verticies, FrontFace windingOrder, GraphicsDevice gd, ResourceFactory factory)
 	{
-		Mesh mesh = new Mesh();
+		Mesh mesh = new();
 
 		mesh.IndexBuffer = factory.CreateBuffer(new BufferDescription((uint)(indicies.Length * 4), BufferUsage.IndexBuffer));
 		gd.UpdateBuffer(mesh.IndexBuffer, 0u, indicies);
@@ -67,9 +68,10 @@ public sealed class Mesh
 		mesh.VertexBuffer = factory.CreateBuffer(new BufferDescription((uint)(verticies.Length * 32), BufferUsage.VertexBuffer));
 		gd.UpdateBuffer(mesh.VertexBuffer, 0u, verticies);
 
-		mesh.IndexFormat = IndexFormat.UInt16;
-
 		mesh.Points = GetVertexPositions(verticies);
+
+		mesh.IndexFormat = IndexFormat.UInt16;
+		mesh.WindingOrder = windingOrder;
 
 		return mesh;
 	}

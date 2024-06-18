@@ -162,22 +162,13 @@ namespace Space_Refinery_Engine
 				this.width = width;
 
 				this.height = height;
-
-				//imGuiRenderer.Dispose();
-
-				//imGuiRenderer = new(gd, gameData.GraphicsWorld.Swapchain.Framebuffer.OutputDescription, width, height);
-
-				//imGuiRenderer.CreateDeviceResources(gd, gameData.GraphicsWorld.Swapchain.Framebuffer.OutputDescription);				
-
-				//Style();
 			}
 		}
 
-		public bool InMenu;
-
 		private Action doMenu;
 
-		public string MenuTitle;
+		public bool InMenu { get; private set; }
+		public string MenuTitle { get; private set; }
 
 		public void EnterMenu(Action doMenu, string title)
 		{
@@ -227,7 +218,7 @@ namespace Space_Refinery_Engine
 					Logging.LogError("That weird argument out of range exception again... Oh well! Skipping the UI this frame.");
 					return; // The error appears to be correlated with AccessViolationExceptions
 							// in ImGui (especially when dealing with windows).
-							// So it might be safer to skip drawing the ui when the error occurs.
+							// So it might be safest to skip drawing the ui when the error occurs.
 				}
 
 				BeforeUI();

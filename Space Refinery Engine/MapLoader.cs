@@ -1,7 +1,10 @@
 ﻿using FixedPrecision;
 using Space_Refinery_Game_Renderer;
 using System.Xml;
+using SharpGLTF;
+using SharpGLTF.Scenes;
 using Veldrid.Utilities;
+using System.Numerics;
 
 namespace Space_Refinery_Engine;
 
@@ -11,39 +14,76 @@ public static class MapLoader
 	{
 		Logging.LogScopeStart($"Loading map '{mapInfo.SerializableReference}' at {mapInfo.MapPath}");
 
-		ObjParser objParser = new();
+		var scene = SceneBuilder.LoadDefaultScene(mapInfo.MapPath);
 
-		ObjFile objFile = objParser.Parse(File.ReadAllLines(mapInfo.MapPath));
-
-		foreach (var meshGroup in objFile.MeshGroups)
+		foreach (var instance in scene.Instances)
 		{
-			Logging.LogScopeStart($"Creating '{meshGroup.Name}'");
+			Logging.LogScopeStart($"Creating '{instance.Name}'");
 
-			ConstructedMeshInfo meshInfo = objFile.GetMesh(meshGroup);
-			Transform transform = new(Vector3FixedDecimalInt4.Zero, QuaternionFixedDecimalInt4.Identity);
+			var gltfTransform = ((RigidTransformer)instance.Content).Transform;
 
-			Logging.Log(transform.ToString()!);
-
-			if (!gameData.GraphicsWorld.MeshLoader.TryGetCached(meshGroup.Name, out var mesh))
+			QuaternionFixedDecimalInt4 rotation;
+			if (gltfTransform.Rotation is null)
 			{
-				mesh = Mesh.CreateMesh(meshInfo.GetIndices(), meshInfo.Vertices, gameData.GraphicsWorld.GraphicsDevice, gameData.GraphicsWorld.Factory);
-				gameData.GraphicsWorld.MeshLoader.AddCache(meshGroup.Name, mesh);
-			}
-
-			LevelObjectType levelObjectType;
-			if (meshGroup.Material != "(null)")
-			{
-				levelObjectType = (LevelObjectType)referenceHandler[meshGroup.Material];
+				rotation = QuaternionFixedDecimalInt4.Identity;
 			}
 			else
 			{
-				if (LevelObjectType.LevelObjectTypes.TryGetValue(meshGroup.Material, out LevelObjectType? value))
+				rotation = gltfTransform.Rotation.Value.ToFixed<QuaternionFixedDecimalInt4>();
+			}
+
+			Transform transform = new(gltfTransform.Translation.Value.ToFixed<Vector3FixedDecimalInt4>(), rotation);
+
+			Logging.Log(transform.ToString()!);
+
+			Vector3 scale;
+			if (gltfTransform.Scale is null)
+			{
+				scale = Vector3.One;
+			}
+			else
+			{
+				scale = gltfTransform.Scale.Value;
+			}
+
+			Logging.Log($"Scale = {scale}");
+
+			var meshInfo = instance.Content.GetGeometryAsset().Primitives.First();
+
+			if (!gameData.GraphicsWorld.MeshLoader.TryGetCached(instance.Name, out var mesh))
+			{
+				var verticies = new VertexPositionNormalTexture[meshInfo.Vertices.Count];
+
+				for (int i = 0; i < meshInfo.Vertices.Count; i++)
+				{
+					SharpGLTF.Geometry.IVertexBuilder? vertexBuilder = meshInfo.Vertices[i];
+					var geometry = vertexBuilder.GetGeometry();
+
+					var position = geometry.GetPosition() * scale;
+					geometry.TryGetNormal(out var normal);
+					var texCoords = vertexBuilder.GetMaterial().GetTexCoord(0);
+
+					verticies[i] = new(position, normal, texCoords);
+				}
+
+				mesh = Mesh.CreateMesh(meshInfo.GetIndices().Select((i) => (ushort)i).ToArray(), verticies, Veldrid.FrontFace.CounterClockwise, gameData.GraphicsWorld.GraphicsDevice, gameData.GraphicsWorld.Factory);
+				gameData.GraphicsWorld.MeshLoader.AddCache(instance.Name, mesh);
+			}
+
+			LevelObjectType levelObjectType;
+			if (meshInfo.Material.Name != "Default")
+			{
+				levelObjectType = (LevelObjectType)referenceHandler[meshInfo.Material.Name];
+			}
+			else
+			{
+				if (LevelObjectType.LevelObjectTypes.TryGetValue(meshInfo.Material.Name, out LevelObjectType? value))
 				{
 					levelObjectType = value;
 				}
 				else
 				{
-					levelObjectType = new(meshGroup.Name, mesh!, gameData.GraphicsWorld.MaterialLoader.LoadCached(((MaterialInfo)referenceHandler["Rusty Metal Sheet"]).MaterialTexturePaths), typeof(OrdinaryLevelObject));
+					levelObjectType = new(instance.Name, mesh!, gameData.GraphicsWorld.MaterialLoader.LoadCached(((MaterialInfo)referenceHandler["Rusty Metal Sheet"]).MaterialTexturePaths), typeof(OrdinaryLevelObject));
 
 					levelObjectType.SetUp(gameData);
 				}

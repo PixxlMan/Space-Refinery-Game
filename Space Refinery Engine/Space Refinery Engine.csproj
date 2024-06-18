@@ -79,6 +79,8 @@
         <PackageReference Include="SharpAudio" Version="1.0.65-beta" />
         <PackageReference Include="SharpAudio.ALBinding" Version="1.0.65-beta" />
         <PackageReference Include="SharpAudio.Codec" Version="1.0.65-beta" />
+        <PackageReference Include="SharpGLTF.Core" Version="1.0.0" />
+        <PackageReference Include="SharpGLTF.Toolkit" Version="1.0.0" />
         <PackageReference Include="Singulink.Reflection.ObjectFactory" Version="1.0.0" />
         <PackageReference Include="Veldrid" Version="4.9.0" />
         <PackageReference Include="Veldrid.ImGui" Version="5.72.0" />

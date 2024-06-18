@@ -34,13 +34,13 @@ public sealed class Mesh
 
 	public static Mesh LoadMesh(GraphicsDevice gd, ResourceFactory factory, string path)
 	{
-		ObjParser objParser = new ObjParser();
+		ObjParser objParser = new();
 
 		ObjFile objFile = objParser.Parse(File.ReadAllLines(path));
 
 		ConstructedMeshInfo meshInfo = objFile.GetFirstMesh();
 
-		Mesh mesh = new Mesh();
+		Mesh mesh = new();
 
 		mesh.IndexBuffer = factory.CreateBuffer(new BufferDescription((uint)(meshInfo.Indices.Length * 4), BufferUsage.IndexBuffer));
 		gd.UpdateBuffer(mesh.IndexBuffer, 0u, meshInfo.Indices);
@@ -54,5 +54,28 @@ public sealed class Mesh
 		mesh.Points = meshInfo.GetVertexPositions();
 
 		return mesh;
+	}
+
+	public static Mesh CreateMesh(ushort[] indicies, VertexPositionNormalTexture[] verticies, GraphicsDevice gd, ResourceFactory factory)
+	{
+		Mesh mesh = new Mesh();
+
+		mesh.IndexBuffer = factory.CreateBuffer(new BufferDescription((uint)(indicies.Length * 4), BufferUsage.IndexBuffer));
+		gd.UpdateBuffer(mesh.IndexBuffer, 0u, indicies);
+		mesh.IndexCount = (uint)indicies.Length;
+
+		mesh.VertexBuffer = factory.CreateBuffer(new BufferDescription((uint)(verticies.Length * 32), BufferUsage.VertexBuffer));
+		gd.UpdateBuffer(mesh.VertexBuffer, 0u, verticies);
+
+		mesh.IndexFormat = IndexFormat.UInt16;
+
+		mesh.Points = GetVertexPositions(verticies);
+
+		return mesh;
+	}
+
+	private static Vector3[] GetVertexPositions(VertexPositionNormalTexture[] verticies)
+	{
+		return verticies.Select(vpnt => vpnt.Position).ToArray();
 	}
 }

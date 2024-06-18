@@ -1,13 +1,8 @@
 ﻿using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats;
-using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using Space_Refinery_Utilities;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 using Veldrid;
-using Veldrid.ImageSharp;
 using static Space_Refinery_Game_Renderer.RenderingResources;
 
 namespace Space_Refinery_Game_Renderer;

@@ -50,7 +50,7 @@ namespace Space_Refinery_Engine
 
 		public void Restore()
 		{
-			gameData.GraphicsWorld.AddRenderable(this, 1);
+			gameData.GraphicsWorld.AddRenderable(this, 10_000);
 
 			gameData.GraphicsWorld.WindowResized += WindowResized;
 		}

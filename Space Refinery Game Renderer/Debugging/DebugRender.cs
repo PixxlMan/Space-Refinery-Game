@@ -32,7 +32,7 @@ public sealed class DebugRender : IRenderable
 	{
 		DebugRender debugRender = new(graphicsWorld);
 
-		graphicsWorld.AddRenderable(debugRender, 0);
+		graphicsWorld.AddRenderable(debugRender, 9_000);
 
 		debugRender.CreateDeviceObjects(graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
 
@@ -71,7 +71,7 @@ public sealed class DebugRender : IRenderable
 		{
 			BlendState = BlendStateDescription.SingleOverrideBlend,
 			DepthStencilState = new DepthStencilStateDescription(
-			depthTestEnabled: true,
+			depthTestEnabled: false,
 			depthWriteEnabled: true,
 			comparisonKind: ComparisonKind.LessEqual),
 			RasterizerState = new RasterizerStateDescription(

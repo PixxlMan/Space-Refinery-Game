@@ -58,7 +58,7 @@ public sealed class ExtensionManifest : ISerializableReference
 
 		if (ExtensionObjectReference is not null)
 		{
-			writer.WriteElementString(nameof(ExtensionObjectReference), ExtensionObjectReference.Value.ToString());
+			writer.Serialize(ExtensionObjectReference.Value.ToString(), nameof(ExtensionObjectReference));
 		}
 
 		writer.Serialize(AssetsPath, nameof(AssetsPath));

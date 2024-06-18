@@ -22,8 +22,27 @@ public sealed class MeshLoader
 
 		var mesh = Mesh.LoadMesh(graphicsWorld.GraphicsDevice, graphicsWorld.Factory, path);
 
-		meshCache.Add(path, mesh);
+		AddCache(path, mesh);
 
 		return mesh;
+	}
+
+	public void AddCache(string name, Mesh mesh)
+	{
+		meshCache.Add(name, mesh);
+	}
+
+	public bool TryGetCached(string name, out Mesh? mesh)
+	{
+		if (meshCache.ContainsKey(name))
+		{
+			mesh = meshCache[name];
+
+			return true;
+		}
+
+		mesh = null;
+
+		return false;
 	}
 }

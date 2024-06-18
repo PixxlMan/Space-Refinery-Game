@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Space_Refinery_Utilities; // move to utilities?
+namespace Space_Refinery_Utilities;
 
 public static class Time // https://fpstoms.com/
 {
@@ -17,7 +17,7 @@ public static class Time // https://fpstoms.com/
 
 	public static readonly IntervalUnit UpdateInterval = IntervalRateConversionUnit.Unit / UpdateRate;
 
-	public static readonly RateUnit PhysicsRate = 60; // 60 pups
+	public static readonly RateUnit PhysicsRate = 150; // 150 pups
 
 	public static readonly IntervalUnit PhysicsInterval = IntervalRateConversionUnit.Unit / PhysicsRate;
 

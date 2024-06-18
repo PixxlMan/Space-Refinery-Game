@@ -201,7 +201,7 @@ public sealed class Player : ISerializableReference
 
 		FixedDecimalInt4 sprintFactor = InputTracker.GetKey(Key.ShiftLeft)
 							? 3
-							: (FixedDecimalInt4)0.5f;
+							: 0.5;
 		Vector3FixedDecimalInt4 motionDir = Vector3FixedDecimalInt4.Zero;
 		if (InputTracker.GetKey(Key.A))
 		{
@@ -242,7 +242,6 @@ public sealed class Player : ISerializableReference
 		LookPitch = FixedDecimalInt4.Clamp(LookPitch, -80 * FixedDecimalInt4.DegreesToRadians, 80 * FixedDecimalInt4.DegreesToRadians);
 
 		Transform.Rotation = QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(yawDelta, FixedDecimalInt4.Zero, FixedDecimalInt4.Zero), Transform.Rotation).NormalizeQuaternion();
-		//Transform.Rotation = QuaternionFixedDecimalInt4.Concatenate(QuaternionFixedDecimalInt4.CreateFromYawPitchRoll(FixedDecimalInt4.Zero, LookPitch, FixedDecimalInt4.Zero), Transform.Rotation).NormalizeQuaternion();
 	}
 
 	private bool ShouldShowConstructionMarker(PhysicsObject? lookedAtPhysicsObject)

@@ -17,6 +17,8 @@ public sealed class EntityRenderable : IRenderable
 
 	private GraphicsWorld graphicsWorld;
 
+	private Pipeline pipeline;
+
 	private readonly object SyncRoot = new();
 
 	private bool shouldDraw = true;
@@ -66,6 +68,16 @@ public sealed class EntityRenderable : IRenderable
 
 		graphicsWorld.AddRenderable(entityRenderable);
 
+		switch (mesh.WindingOrder)
+		{
+			case FrontFace.Clockwise:
+				entityRenderable.pipeline = ClockwisePipelineResource;
+				break;
+			case FrontFace.CounterClockwise:
+				entityRenderable.pipeline = CounterClockwisePipelineResource;
+				break;
+		}
+
 		return entityRenderable;
 	}
 
@@ -73,7 +85,7 @@ public sealed class EntityRenderable : IRenderable
 	{
 		commandList.UpdateBuffer(transformationBuffer, 0, Transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
 
-		commandList.SetPipeline(PipelineResource);
+		commandList.SetPipeline(ClockwisePipelineResource);
 		commandList.SetGraphicsResourceSet(0, resourceSet);
 		material.AddSetCommands(commandList);
 		commandList.SetVertexBuffer(0, mesh.VertexBuffer);

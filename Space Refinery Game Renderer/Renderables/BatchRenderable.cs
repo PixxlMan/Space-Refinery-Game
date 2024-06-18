@@ -17,6 +17,8 @@ public sealed partial class BatchRenderable : IRenderable
 
 	private GraphicsWorld graphicsWorld;
 
+	private Pipeline pipeline;
+
 	private readonly object syncRoot = new();
 
 	public string Name { get; private set; }
@@ -72,6 +74,16 @@ public sealed partial class BatchRenderable : IRenderable
 			ManageTransformsBuffer();
 
 			UpdateTransform(associatedObject, transform);
+
+			switch (mesh.WindingOrder)
+			{
+				case FrontFace.Clockwise:
+					pipeline = ClockwisePipelineResource;
+					break;
+				case FrontFace.CounterClockwise:
+					pipeline = CounterClockwisePipelineResource;
+					break;
+			}
 		}
 	}
 
@@ -276,7 +288,7 @@ public sealed partial class BatchRenderable : IRenderable
 				return;
 			}
 
-			commandList.SetPipeline(PipelineResource);
+			commandList.SetPipeline(pipeline);
 			commandList.SetGraphicsResourceSet(0, resourceSet);
 			material.AddSetCommands(commandList);
 			commandList.SetVertexBuffer(0, mesh.VertexBuffer);

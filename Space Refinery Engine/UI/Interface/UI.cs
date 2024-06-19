@@ -75,8 +75,6 @@ namespace Space_Refinery_Engine
 
 				hotbarFading = 1;
 
-				ChangeConnectorSelection(0);
-
 				SelectedEntityTypeChanged?.Invoke(SelectedEntityType);
 			}
 		}
@@ -94,48 +92,8 @@ namespace Space_Refinery_Engine
 
 				hotbarFading = 1;
 
-				ChangeConnectorSelection(0);
-
 				SelectedEntityTypeChanged?.Invoke(SelectedEntityType);
 			}
-		}
-
-		public void ChangeConnectorSelection(int selectionDelta)
-		{
-			lock (syncRoot)
-			{
-				if (SelectedEntityType is null && SelectedEntityType is not PipeType)
-				{
-					return;
-				}
-
-				var selectedPipeType = (PipeType)SelectedEntityType;
-
-				if (selectedPipeType.ConnectorPlacements.Length == 0)
-				{
-					ConnectorSelection = null;
-				}
-				else if (ConnectorSelection is null && selectedPipeType.ConnectorPlacements.Length > 0)
-				{
-					ConnectorSelection = 0;
-				}
-
-				ConnectorSelection += selectionDelta;
-
-				while (ConnectorSelection >= selectedPipeType.ConnectorPlacements.Length || ConnectorSelection < 0)
-				{
-					if (ConnectorSelection < 0)
-					{
-						ConnectorSelection += selectedPipeType.ConnectorPlacements.Length;
-					}
-					else if (ConnectorSelection >= selectedPipeType.ConnectorPlacements.Length)
-					{
-						ConnectorSelection -= selectedPipeType.ConnectorPlacements.Length;
-					}
-				}
-			}
-
-			SelectedEntityConnectorChanged?.Invoke(ConnectorSelection);
 		}
 
 		private UI(GameData gameData)
@@ -197,7 +155,6 @@ namespace Space_Refinery_Engine
 			UI ui = new(gameData);
 
 			ui.hotbarItems.Add(null); // Add empty slot
-			ui.hotbarItems.AddRange(PipeType.PipeTypes.Values);
 
 			ui.Style();
 
@@ -249,15 +206,6 @@ namespace Space_Refinery_Engine
 		{
 			if (!InMenu && !Paused)
 			{
-				if (InputTracker.GetKeyDown(Key.C) && InputTracker.GetKey(Key.ShiftLeft))
-				{
-					ChangeConnectorSelection(-1);
-				}
-				else if (InputTracker.GetKeyDown(Key.C))
-				{
-					ChangeConnectorSelection(1);
-				}
-
 				if (InputTracker.GetKeyDown(Key.R) && InputTracker.GetKey(Key.ShiftLeft))
 				{
 					Interlocked.Decrement(ref RotationIndex);

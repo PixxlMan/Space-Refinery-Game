@@ -1,10 +1,9 @@
 ﻿using FixedPrecision;
-using Space_Refinery_Game_Renderer;
-using System.Xml;
-using SharpGLTF;
 using SharpGLTF.Scenes;
-using Veldrid.Utilities;
+using Space_Refinery_Game_Renderer;
 using System.Numerics;
+using System.Xml;
+using Veldrid.Utilities;
 
 namespace Space_Refinery_Engine;
 
@@ -18,7 +17,7 @@ public static class MapLoader
 
 		foreach (var instance in scene.Instances)
 		{
-			Logging.LogScopeStart($"Creating '{instance.Name}'");
+			string name = instance.Name.Split('.')[0];
 
 			Logging.LogScopeStart($"Creating '{name}'");
 
@@ -35,7 +34,6 @@ public static class MapLoader
 			}
 
 			Transform transform = new(gltfTransform.Translation.Value.ToFixed<Vector3FixedDecimalInt4>(), rotation);
-
 			Logging.Log(transform.ToString()!);
 
 			Vector3 scale;
@@ -47,12 +45,11 @@ public static class MapLoader
 			{
 				scale = gltfTransform.Scale.Value;
 			}
-
 			Logging.Log($"Scale = {scale}");
 
 			var meshInfo = instance.Content.GetGeometryAsset().Primitives.First();
 
-			if (!gameData.GraphicsWorld.MeshLoader.TryGetCached(instance.Name, out var mesh))
+			if (!gameData.GraphicsWorld.MeshLoader.TryGetCached(name, out var mesh))
 			{
 				var verticies = new VertexPositionNormalTexture[meshInfo.Vertices.Count];
 
@@ -69,13 +66,22 @@ public static class MapLoader
 				}
 
 				mesh = Mesh.CreateMesh(meshInfo.GetIndices().Select((i) => (ushort)i).ToArray(), verticies, Veldrid.FrontFace.CounterClockwise, gameData.GraphicsWorld.GraphicsDevice, gameData.GraphicsWorld.Factory);
-				gameData.GraphicsWorld.MeshLoader.AddCache(instance.Name, mesh);
+				gameData.GraphicsWorld.MeshLoader.AddCache(name, mesh);
 			}
 
 			LevelObjectType levelObjectType;
-			if (meshInfo.Material.Name != "Default")
+			if (meshInfo.Material.Name == "Default")
 			{
-				levelObjectType = (LevelObjectType)referenceHandler[meshInfo.Material.Name];
+				if (LevelObjectType.LevelObjectTypes.TryGetValue(name, out LevelObjectType? value))
+				{
+					levelObjectType = value;
+				}
+				else
+				{
+					levelObjectType = new(name, mesh!, gameData.GraphicsWorld.MaterialLoader.LoadCached(((MaterialInfo)referenceHandler["Rusty Metal Sheet"]).MaterialTexturePaths), typeof(OrdinaryLevelObject));
+
+					levelObjectType.SetUp(gameData);
+				}
 			}
 			else
 			{
@@ -85,9 +91,7 @@ public static class MapLoader
 				}
 				else
 				{
-					levelObjectType = new(instance.Name, mesh!, gameData.GraphicsWorld.MaterialLoader.LoadCached(((MaterialInfo)referenceHandler["Rusty Metal Sheet"]).MaterialTexturePaths), typeof(OrdinaryLevelObject));
-
-					levelObjectType.SetUp(gameData);
+					throw new Exception($"No {nameof(LevelObjectType)} exists with the name '{meshInfo.Material.Name}'");
 				}
 			}
 

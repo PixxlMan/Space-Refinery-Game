@@ -54,6 +54,7 @@ public sealed class Initialization
 		}
 		GameData.GlobalReferenceHandler.ExitAllowEventualReferenceMode();
 
+		Logging.LogScopeStart("Creating PhysicsWorld");
 		gameData.PhysicsWorld = new();
 		foreach (Extension extension in gameData.Extensions)
 		{
@@ -72,13 +73,12 @@ public sealed class Initialization
 				alreadySetUp = true;
 			}
 		}
-		gameData.PhysicsWorld.Run();
+		Logging.LogScopeEnd();
 
 		gameData.UI = UI.CreateAndAdd(gameData);
 		gameData.UI.PauseStateChanged += gameData.ChangePauseState;
 
 		gameData.Game = Game.CreateGame(SerializableReference.NewReference(), gameData);
-		gameData.Game.GameWorld.StartTicking(gameData);
 
 		Logging.LogScopeStart("Starting all extensions");
 		foreach (Extension extension in gameData.Extensions)
@@ -89,11 +89,16 @@ public sealed class Initialization
 
 		InputTracker.IgnoreNextFrameMousePosition = true;
 
-		gameData.InputUpdate.StartUpdating();
-
 		gameData.Settings.RegisterToSettingValue<SliderSettingValue>("FoV", (value) => gameData.GraphicsWorld.Camera.FieldOfView = value * DecimalNumber.DegreesToRadians);
 		gameData.Settings.RegisterToSettingValue<SliderSettingValue>("Max FPS", (value) => gameData.GraphicsWorld.FrametimeLowerLimit = IntervalRateConversionUnit.Unit / (RateUnit)value.SliderValue);
 		gameData.Settings.RegisterToSettingValue<SwitchSettingValue>("Limit FPS", (value) => gameData.GraphicsWorld.ShouldLimitFramerate = value.SwitchValue);
+
+		Logging.LogScopeStart("Starting systems");
+		gameData.Game.GameWorld.StartTicking(gameData);
+		gameData.PhysicsWorld.Run();
+		gameData.GraphicsWorld.Run();
+		gameData.InputUpdate.StartUpdating();
+		Logging.LogScopeEnd();
 
 		Logging.LogScopeEnd();
 	}

@@ -27,7 +27,6 @@ public sealed class InputUpdate
 		{
 			Stopwatch stopwatch = new();
 
-			gameData.GraphicsWorld.Run();
 			stopwatch.Start();
 
 			TimeUnit timeLastUpdate = stopwatch.Elapsed.TotalSeconds;

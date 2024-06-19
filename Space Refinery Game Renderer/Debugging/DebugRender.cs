@@ -30,12 +30,15 @@ public sealed class DebugRender : IRenderable
 
 	public static DebugRender Create(GraphicsWorld graphicsWorld)
 	{
+		Logging.LogScopeStart("Creating DebugRender");
+
 		DebugRender debugRender = new(graphicsWorld);
 
 		graphicsWorld.AddRenderable(debugRender, 9_000);
 
 		debugRender.CreateDeviceObjects(graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
 
+		Logging.LogScopeEnd();
 		return debugRender;
 	}
 

@@ -190,6 +190,8 @@ namespace Space_Refinery_Engine
 
 		public static UI CreateAndAdd(GameData gameData)
 		{
+			Logging.LogScopeStart("Creating UI");
+
 			ImGui.CreateContext();
 
 			UI ui = new(gameData);
@@ -200,6 +202,8 @@ namespace Space_Refinery_Engine
 			ui.Style();
 
 			ui.Restore();
+
+			Logging.LogScopeEnd();
 
 			return ui;
 		}

@@ -32,6 +32,8 @@ namespace Space_Refinery_Engine.Audio
 
 		public static AudioWorld Create(GameData gameData)
 		{
+			Logging.LogScopeStart("Creating AudioWorld");
+
 			AudioWorld audioWorld = new();
 
 			audioWorld.AudioEngine = AudioEngine.CreateOpenAL();
@@ -44,6 +46,8 @@ namespace Space_Refinery_Engine.Audio
 			audioWorld.MusicSystem = new(gameData, audioWorld);
 
 			gameData.Settings.RegisterToSettingValue<SliderSettingValue>("Main Volume", (value) => audioWorld.MasterVolume = value.SliderValue / 100);
+
+			Logging.LogScopeEnd();
 
 			return audioWorld;
 		}

@@ -20,6 +20,8 @@ public static class MapLoader
 		{
 			Logging.LogScopeStart($"Creating '{instance.Name}'");
 
+			Logging.LogScopeStart($"Creating '{name}'");
+
 			var gltfTransform = ((RigidTransformer)instance.Content).Transform;
 
 			QuaternionFixedDecimalInt4 rotation;
@@ -88,6 +90,8 @@ public static class MapLoader
 					levelObjectType.SetUp(gameData);
 				}
 			}
+
+			Logging.Log($"LevelObjectType = {levelObjectType.Name}");
 
 			LevelObject.Create(levelObjectType, transform, gameData, referenceHandler);
 

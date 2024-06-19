@@ -161,18 +161,6 @@ public sealed partial class PhysicsWorld
 		}
 	}
 
-	private ConvexHull AddConvexHullForMesh(Space_Refinery_Game_Renderer.Mesh mesh)
-	{
-		lock (SyncRoot)
-		{
-			ConvexHull convexHull = new(mesh.Points.AsSpan(), BufferPool, out _);
-
-			convexHulls.Add(mesh, convexHull);
-
-			return convexHull;
-		}
-	}
-
 	public ConvexHull GetConvexHullForMesh(Space_Refinery_Game_Renderer.Mesh mesh)
 	{
 		lock (SyncRoot)
@@ -185,6 +173,20 @@ public sealed partial class PhysicsWorld
 			{
 				return AddConvexHullForMesh(mesh);
 			}
+		}
+	}
+
+	private ConvexHull AddConvexHullForMesh(Space_Refinery_Game_Renderer.Mesh mesh)
+	{
+		lock (SyncRoot)
+		{
+			ConvexHull convexHull = new(mesh.Points.AsSpan(), BufferPool, out _);
+
+			//ConvexHullHelper.ComputeHull(mesh.Points.AsSpan(), BufferPool, out var hullData);
+
+			convexHulls.Add(mesh, convexHull);
+
+			return convexHull;
 		}
 	}
 

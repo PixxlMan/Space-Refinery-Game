@@ -10,7 +10,7 @@ namespace Space_Refinery_Engine
 		private object syncRoot = new();
 
 		public TSetting AccessSetting<TSetting>(string name)
-			where TSetting : IDebugSetting
+			where TSetting : struct, IDebugSetting
 		{
 			lock (syncRoot)
 			{

@@ -134,7 +134,7 @@ public static class Logging
 			scopeDepth = value.Count;
 		}
 
-		Console.SetCursorPosition((scopeIndentation * scopeDepth) + (formatText.Length + Math.Max(2 - (formatText.Length - 23), 1)), Console.GetCursorPosition().Top);
+		Console.SetCursorPosition((scopeIndentation * scopeDepth) + (formatText.Length + Math.Max(4 - (formatText.Length - 23), 1)), Console.GetCursorPosition().Top);
 	}
 
 	[DebuggerHidden]

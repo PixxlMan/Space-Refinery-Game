@@ -15,9 +15,9 @@ public sealed class MeshLoader
 	{
 		path = Path.GetFullPath(path);
 
-		if (meshCache.ContainsKey(path))
+		if (meshCache.TryGetValue(path, out Mesh? value))
 		{
-			return meshCache[path];
+			return value;
 		}
 
 		var mesh = Mesh.LoadMesh(graphicsWorld.GraphicsDevice, graphicsWorld.Factory, path);

@@ -95,7 +95,7 @@ public static class Logging
 			// TODO: print entire thread name instead of thread id
 		}
 
-		string timeStamp = $"@{stopwatch.Elapsed}:";
+		string timeStamp = $"@{stopwatch.Elapsed:mm\\:ss\\.fffffff}:";
 
 		string formatText = string.Empty;
 
@@ -134,7 +134,7 @@ public static class Logging
 			scopeDepth = value.Count;
 		}
 
-		Console.SetCursorPosition((scopeIndentation * scopeDepth) + (formatText.Length + 1), Console.GetCursorPosition().Top);
+		Console.SetCursorPosition((scopeIndentation * scopeDepth) + (formatText.Length + Math.Max(2 - (formatText.Length - 23), 1)), Console.GetCursorPosition().Top);
 	}
 
 	[DebuggerHidden]

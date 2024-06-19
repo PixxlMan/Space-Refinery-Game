@@ -20,7 +20,6 @@
 	</Target>
 
 	<ItemGroup>
-    <None Remove="Assets\DefaultPipeConnector.srh.xml" />
     <None Remove="Assets\EmptySRHFile.srh.xml" />
     <None Remove="Assets\Engine.manifest.srh.xml" />
     <None Remove="Assets\External\Fonts\OpenSans\LICENSE.txt" />
@@ -40,9 +39,6 @@
 
   <ItemGroup>
     <Content Include="Assets\Engine.manifest.srh.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\DefaultPipeConnector.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\EmptySRHFile.srh.xml">

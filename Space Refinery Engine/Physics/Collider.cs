@@ -11,13 +11,13 @@ public record struct Collider : IEntitySerializable
 {
 	public ColliderShapes Shape;
 	public Vector3FixedDecimalInt4? Scale;
-	public Transform? Offset;
+	public Transform Offset;
 	public string? MeshPath;
 	public Mesh? Mesh;
 
 	private static ConcurrentDictionary<Mesh, ConvexHull> convexHulls = new();
 
-	public Collider(ColliderShapes shape, Transform? offset = null, Vector3FixedDecimalInt4? scale = null, Mesh? mesh = null) : this()
+	public Collider(ColliderShapes shape, Transform offset, Vector3FixedDecimalInt4? scale = null, Mesh? mesh = null) : this()
 	{
 		Shape = shape;
 		Offset = offset;
@@ -31,12 +31,12 @@ public record struct Collider : IEntitySerializable
 		if (Shape is ColliderShapes.Box || Shape is ColliderShapes.Cylinder)
 		{
 			Scale = reader.DeserializeVector3FixedDecimalInt4(nameof(Scale));
-			Offset = reader.DeserializeTransform(nameof(Offset));
 		}
 		else
 		{
 			MeshPath = reader.ReadString(nameof(MeshPath));
 		}
+		Offset = reader.DeserializeTransform(nameof(Offset));
 	}
 
 	public void SerializeState(XmlWriter writer)
@@ -45,22 +45,23 @@ public record struct Collider : IEntitySerializable
 		if (Shape is ColliderShapes.Box || Shape is ColliderShapes.Cylinder)
 		{
 			writer.Serialize(Scale!.Value, nameof(Scale));
-			writer.Serialize(Offset!.Value, nameof(Offset));
 		}
 		else
 		{
 			writer.Serialize(MeshPath!, nameof(MeshPath));
 		}
+		writer.Serialize(Offset, nameof(Offset));
 	}
 
-	public readonly TypedIndex CreateShape(GameData gameData)
+	public readonly TypedIndex CreateShape(GameData gameData, out Transform offset)
 	{
+		offset = Offset;
 		switch (Shape)
 		{
 			case ColliderShapes.Box:
-				return gameData.PhysicsWorld.Simulation.Shapes.Add(new Box((float)Scale.Value.X, (float)Scale.Value.Y, (float)Scale.Value.Z));
+				return gameData.PhysicsWorld.Simulation.Shapes.Add(new Box((float)Scale!.Value.X, (float)Scale.Value.Y, (float)Scale.Value.Z));
 			case ColliderShapes.Cylinder:
-				return gameData.PhysicsWorld.Simulation.Shapes.Add(new Cylinder((float)Scale.Value.X, (float)Scale.Value.Y));
+				return gameData.PhysicsWorld.Simulation.Shapes.Add(new Cylinder((float)Scale!.Value.X, (float)Scale.Value.Y));
 			case ColliderShapes.ConvexMesh:
 				Mesh mesh;
 				if (Mesh is null && MeshPath is null)

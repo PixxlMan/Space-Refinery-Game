@@ -75,6 +75,8 @@ public sealed class LevelObjectType : IEntityType, ISerializableReference
 
 		writer.WriteElementString(nameof(ModelPath), ModelPath);
 
+		writer.SerializeWithoutEmbeddedType(Collider, nameof(Collider));
+
 		writer.SerializeReference(MaterialInfo, nameof(MaterialInfo));
 
 		writer.Serialize(TypeOfLevelObject);
@@ -90,7 +92,7 @@ public sealed class LevelObjectType : IEntityType, ISerializableReference
 
 		Mesh = serializationData.GameData.GraphicsWorld.MeshLoader.LoadCached(ModelPath);
 
-		IEntitySerializable.DeserializeWithoutEmbeddedType<Collider>(reader, serializationData, referenceHandler, nameof(Collider));
+		Collider = reader.DeserializeEntitySerializableWithoutEmbeddedType<Collider>(serializationData, referenceHandler, nameof(Collider));
 
 		reader.DeserializeReference<MaterialInfo>(referenceHandler, (mI) => MaterialInfo = mI, nameof(MaterialInfo));
 

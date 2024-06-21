@@ -1,38 +1,32 @@
 ﻿using ImGuiNET;
 
-namespace Space_Refinery_Engine
+namespace Space_Refinery_Engine;
+
+public class LevelObjectInformationProvider(LevelObject levelObject) : IInformationProvider
 {
-	public class LevelObjectInformationProvider : IInformationProvider
+	public LevelObject LevelObject { get; private set; } = levelObject;
+
+	public string Name => LevelObject.LevelObjectType.Name;
+
+	public virtual void InformationUI()
 	{
-		public LevelObject LevelObject;
+		ImGui.Spacing();
 
-		public LevelObjectInformationProvider(LevelObject levelObject)
+		if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Show debug information in information provider"))
 		{
-			LevelObject = levelObject;
-		}
+			ImGui.Text("GUID: " + LevelObject.SerializableReference.ToString());
 
-		public string Name => LevelObject.LevelObjectType.Name;
+			ImGui.Text("Postition: " + LevelObject.Transform.Position.ToString());
 
-		public virtual void InformationUI()
-		{
-			ImGui.Spacing();
+			ImGui.Text("Orientation: " + LevelObject.Transform.Rotation.ToString());
 
-			if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Show debug information in information provider"))
+			ImGui.Text("LevelObject type: " + LevelObject.LevelObjectType.Name);
+
+			if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Show rendering debug information in information provider"))
 			{
-				ImGui.Text("GUID: " + LevelObject.SerializableReference.ToString());
+				ImGui.Text("Batch renderer: " + LevelObject.LevelObjectType.BatchRenderable.Name);
 
-				ImGui.Text("Postition: " + LevelObject.Transform.Position.ToString());
-
-				ImGui.Text("Orientation: " + LevelObject.Transform.Rotation.ToString());
-
-				ImGui.Text("LevelObject type: " + LevelObject.LevelObjectType.Name);
-
-				if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Show rendering debug information in information provider"))
-				{
-					ImGui.Text("Batch renderer: " + LevelObject.LevelObjectType.BatchRenderable.Name);
-
-					ImGui.Text("Rendering index: " + LevelObject.LevelObjectType.BatchRenderable.DebugGetRenderableIndex(LevelObject));
-				}
+				ImGui.Text("Rendering index: " + LevelObject.LevelObjectType.BatchRenderable.DebugGetRenderableIndex(LevelObject));
 			}
 		}
 	}

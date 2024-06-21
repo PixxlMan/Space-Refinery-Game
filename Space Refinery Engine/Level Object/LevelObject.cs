@@ -1,5 +1,4 @@
-﻿using BepuPhysics.Collidables;
-using Space_Refinery_Game_Renderer;
+﻿using Space_Refinery_Game_Renderer;
 using Singulink.Reflection;
 using System.Xml;
 
@@ -33,6 +32,8 @@ namespace Space_Refinery_Engine
 		public SerializableReference SerializableReference { get; private set; } = Guid.NewGuid();
 
 		public SerializationReferenceHandler ReferenceHandler { get; private set; }
+
+		public string Name => LevelObjectType.Name;
 
 		protected GameData gameData;
 
@@ -75,9 +76,7 @@ namespace Space_Refinery_Engine
 
 				levelObjectType.BatchRenderable.CreateBatchRenderableEntity(transform, levelObject);
 
-				PhysicsObject physObj = CreatePhysicsObject(gameData.PhysicsWorld, transform, levelObject, levelObjectType.Mesh);
-
-				levelObject.SetUp(levelObjectType, physObj, gameData);
+				levelObject.SetUp(levelObjectType, gameData);
 
 				gameData.Game.GameWorld.AddEntity(levelObject);
 
@@ -87,46 +86,22 @@ namespace Space_Refinery_Engine
 			}
 		}
 
-		private static PhysicsObject CreatePhysicsObject(PhysicsWorld physWorld, Transform transform, LevelObject levelObject, Space_Refinery_Game_Renderer.Mesh mesh)
-		{
-			PhysicsObjectDescription<ConvexHull> physicsObjectDescription = new(physWorld.GetConvexHullForMesh(mesh), transform, 0, true);
+		protected abstract PhysicsObject CreatePhysicsObject();
 
-			PhysicsObject physObj = physWorld.AddPhysicsObject(physicsObjectDescription, levelObject);
-			return physObj;
-		}
-
-		private void SetUp(LevelObjectType levelObjectType, PhysicsObject physicsObject, GameData gameData)
+		private void SetUp(LevelObjectType levelObjectType, GameData gameData)
 		{
 			lock (SyncRoot)
 			{
-				PhysicsObject = physicsObject;
 				LevelObjectType = levelObjectType;
 				ReferenceHandler = gameData.Game.GameReferenceHandler;
+
+				PhysicsObject = CreatePhysicsObject();
 
 				SetUp();
 			}
 		}
 
 		protected virtual void SetUp()
-		{
-		}
-
-		public virtual void Deconstruct()
-		{
-			lock (SyncRoot)
-			{
-				if (Destroyed)
-				{
-					return;
-				}
-
-				DisplaceContents();
-
-				Destroy();
-			}
-		}
-
-		protected virtual void DisplaceContents()
 		{
 		}
 
@@ -184,13 +159,11 @@ namespace Space_Refinery_Engine
 
 				levelObjectType.BatchRenderable.CreateBatchRenderableEntity(transform, this);
 
-				PhysicsObject physObj = CreatePhysicsObject(serializationData.GameData.PhysicsWorld, transform, this, levelObjectType.Mesh);
-
 				LevelObjectType = levelObjectType;
 
 				serializationData.DeserializationCompleteEvent += () =>
 				{
-					SetUp(levelObjectType, physObj, serializationData.GameData);
+					SetUp(levelObjectType, serializationData.GameData);
 				};
 
 				serializationData.GameData.Game.GameWorld.AddEntity(this);

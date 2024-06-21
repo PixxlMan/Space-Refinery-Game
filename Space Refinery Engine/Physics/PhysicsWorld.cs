@@ -12,8 +12,11 @@ namespace Space_Refinery_Engine;
 
 public sealed partial class PhysicsWorld
 {
-	private Dictionary<BodyHandle, PhysicsObject> bodyHandleToPhysicsObject = new();
+	private Dictionary<BodyHandle, PhysicsObject> bodyHandleToPhysicsObject = [];
 	public ReadOnlyDictionary<BodyHandle, PhysicsObject> BodyHandleToPhysicsObject { get; private set; }
+	
+	private Dictionary<StaticHandle, PhysicsObject> staticHandleToPhysicsObject = [];
+	public ReadOnlyDictionary<StaticHandle, PhysicsObject> StaticHandleToPhysicsObject { get; private set; }
 
 	public object SyncRoot = new();
 
@@ -28,13 +31,12 @@ public sealed partial class PhysicsWorld
 	private string responseSpinner = "_";
 	public string ResponseSpinner { get { lock (responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
 
-	private Dictionary<Space_Refinery_Game_Renderer.Mesh, ConvexHull> convexHulls = new();
-
 	private GameData gameData;
 
 	public PhysicsWorld()
 	{
 		BodyHandleToPhysicsObject = bodyHandleToPhysicsObject.AsReadOnly();
+		StaticHandleToPhysicsObject = staticHandleToPhysicsObject.AsReadOnly();
 	}
 
 	public void SetUp(Simulation simulation, BufferPool bufferPool, IThreadDispatcher threadDispatcher, GameData gameData)
@@ -89,9 +91,14 @@ public sealed partial class PhysicsWorld
 
 	public Action<IntervalUnit>? OnPhysicsUpdate;
 
-	public bool HasHandle(BodyHandle bodyHandle)
+	public bool HasHandle(BodyHandle? bodyHandle)
 	{
-		return BodyHandleToPhysicsObject.ContainsKey(bodyHandle);
+		return bodyHandle.HasValue && BodyHandleToPhysicsObject.ContainsKey(bodyHandle.Value);
+	}
+
+	public bool HasHandle(StaticHandle? staticHandle)
+	{
+		return staticHandle.HasValue && StaticHandleToPhysicsObject.ContainsKey(staticHandle.Value);
 	}
 
 	public PhysicsObject AddPhysicsObject<TShape>(PhysicsObjectDescription<TShape> physicsObjectDescription, Entity entity) where TShape : unmanaged, IConvexShape
@@ -101,7 +108,6 @@ public sealed partial class PhysicsWorld
 			var inertia = physicsObjectDescription.Shape.ComputeInertia(physicsObjectDescription.Mass.ToFloat());
 
 			BodyHandle bodyHandle;
-
 			if (!physicsObjectDescription.Kinematic)
 			{
 				bodyHandle = Simulation.Bodies.Add(BodyDescription.CreateDynamic(new RigidPose(physicsObjectDescription.InitialTransform.Position.ToVector3(), physicsObjectDescription.InitialTransform.Rotation.ToQuaternion()), inertia, Simulation.Shapes.Add(physicsObjectDescription.Shape), 0.01f));
@@ -111,7 +117,7 @@ public sealed partial class PhysicsWorld
 				bodyHandle = Simulation.Bodies.Add(BodyDescription.CreateKinematic(new RigidPose(physicsObjectDescription.InitialTransform.Position.ToVector3(), physicsObjectDescription.InitialTransform.Rotation.ToQuaternion()), Simulation.Shapes.Add(physicsObjectDescription.Shape), 0.01f));
 			}
 
-			PhysicsObject physicsObject = new PhysicsObject(this, bodyHandle, entity);
+			PhysicsObject physicsObject = new(this, bodyHandle, entity);
 
 			bodyHandleToPhysicsObject.Add(bodyHandle, physicsObject);
 
@@ -123,11 +129,9 @@ public sealed partial class PhysicsWorld
 	{
 		lock (SyncRoot)
 		{
-			BodyHandle bodyHandle;
+			var bodyHandle = Simulation.Bodies.Add(bodyDescription);
 
-			bodyHandle = Simulation.Bodies.Add(bodyDescription);
-
-			PhysicsObject physicsObject = new PhysicsObject(this, bodyHandle, entity);
+			PhysicsObject physicsObject = new(this, bodyHandle, entity);
 
 			bodyHandleToPhysicsObject.Add(bodyHandle, physicsObject);
 
@@ -135,15 +139,49 @@ public sealed partial class PhysicsWorld
 		}
 	}
 
-	public void DestroyPhysicsObject(PhysicsObject physicsObject)
+	public PhysicsObject AddPhysicsObject(StaticDescription staticDescription, Entity entity)
 	{
 		lock (SyncRoot)
 		{
-			HandleExistsSafetyCheck(physicsObject.BodyHandle);
+			var staticHandle = Simulation.Statics.Add(staticDescription);
 
-			bodyHandleToPhysicsObject.Remove(physicsObject.BodyHandle);
+			PhysicsObject physicsObject = new(this, staticHandle, entity);
 
-			Simulation.Bodies.Remove(physicsObject.BodyHandle);
+			staticHandleToPhysicsObject.Add(staticHandle, physicsObject);
+
+			return physicsObject;
+		}
+	}
+
+	public void DestroyPhysicsObject(PhysicsObject physicsObject)
+	{
+		if (physicsObject.Destroyed)
+		{
+			return;
+		}
+
+		lock (SyncRoot)
+		{
+			HandleExistsSafetyCheck(physicsObject);
+
+			if (physicsObject.IsDynamic)
+			{
+				bodyHandleToPhysicsObject.Remove(physicsObject.BodyHandle!.Value);
+
+				Simulation.Bodies.Remove(physicsObject.BodyHandle!.Value);
+			}
+			else if (physicsObject.IsStatic)
+			{
+				staticHandleToPhysicsObject.Remove(physicsObject.StaticHandle!.Value);
+
+				Simulation.Statics.Remove(physicsObject.StaticHandle!.Value);
+			}
+			else
+			{
+				throw new GlitchInTheMatrixException();
+			}
+
+			physicsObject.Destroy();
 		}
 	}
 
@@ -155,38 +193,8 @@ public sealed partial class PhysicsWorld
 		lock (SyncRoot)
 		{
 			bodyHandleToPhysicsObject.Clear();
-			convexHulls.Clear(); // When the simulation is cleared, this will be outdated, so it must too be cleared.
 			Simulation.Clear();
 			Simulation.Bodies.Clear();
-		}
-	}
-
-	public ConvexHull GetConvexHullForMesh(Space_Refinery_Game_Renderer.Mesh mesh)
-	{
-		lock (SyncRoot)
-		{
-			if (convexHulls.ContainsKey(mesh))
-			{
-				return convexHulls[mesh];				
-			}
-			else
-			{
-				return AddConvexHullForMesh(mesh);
-			}
-		}
-	}
-
-	private ConvexHull AddConvexHullForMesh(Space_Refinery_Game_Renderer.Mesh mesh)
-	{
-		lock (SyncRoot)
-		{
-			ConvexHull convexHull = new(mesh.Points.AsSpan(), BufferPool, out _);
-
-			//ConvexHullHelper.ComputeHull(mesh.Points.AsSpan(), BufferPool, out var hullData);
-
-			convexHulls.Add(mesh, convexHull);
-
-			return convexHull;
 		}
 	}
 
@@ -194,9 +202,14 @@ public sealed partial class PhysicsWorld
 	{
 		lock (SyncRoot)
 		{
+			if (!physicsObject.IsDynamic)
+			{
+				throw new Exception("Cannot add impulse to a physics object which is not dynamic!");
+			}
+
 			Vector3 floatImpulse = impulse.ToVector3();
 			Vector3 offset = physicsObject.Transform.Position.ToVector3();
-			new BodyReference(physicsObject.BodyHandle, Simulation.Bodies).ApplyImpulse(in floatImpulse, in offset);
+			new BodyReference(physicsObject.BodyHandle!.Value, Simulation.Bodies).ApplyImpulse(in floatImpulse, in offset);
 		}
 	}
 
@@ -205,14 +218,57 @@ public sealed partial class PhysicsWorld
 		lock (SyncRoot)
 		{
 			PhysicsObjectNotDestroyedSafetyCheck(physicsObject);
-			HandleExistsSafetyCheck(physicsObject.BodyHandle);
+			HandleExistsSafetyCheck(physicsObject);
 
-			// Something here causes bepu physics to get unstable.
-			var oldShape = Simulation.Bodies[physicsObject.BodyHandle].Collidable.Shape;
-			Simulation.Bodies[physicsObject.BodyHandle].SetShape(Simulation.Shapes.Add(shape));
-			//simulation.Shapes.RecursivelyRemoveAndDispose(oldShape, bufferPool);
-			//simulation.Shapes.RemoveAndDispose(oldShape, bufferPool);
-			//simulation.Shapes.Remove(oldShape); // Least broken option
+			if (physicsObject.IsDynamic)
+			{
+				// Something here causes bepu physics to get unstable.
+				var oldShape = Simulation.Bodies[physicsObject.BodyHandle!.Value].Collidable.Shape;
+				Simulation.Bodies[physicsObject.BodyHandle!.Value].SetShape(Simulation.Shapes.Add(shape));
+				//simulation.Shapes.RecursivelyRemoveAndDispose(oldShape, bufferPool);
+				//simulation.Shapes.RemoveAndDispose(oldShape, bufferPool);
+				//simulation.Shapes.Remove(oldShape); // Least broken option
+			}
+			else if (physicsObject.IsStatic)
+			{
+
+			}
+			else
+			{
+				throw new GlitchInTheMatrixException();
+			}
+		}
+	}
+
+	public Transform GetTransform(PhysicsObject physicsObject)
+	{
+		if (physicsObject.IsDynamic)
+		{
+			return GetTransform(physicsObject.BodyHandle!.Value);
+		}
+		else if (physicsObject.IsStatic)
+		{
+			return GetTransform(physicsObject.StaticHandle!.Value);
+		}
+		else
+		{
+			throw new GlitchInTheMatrixException();
+		}
+	}
+
+	public void SetTransform(PhysicsObject physicsObject, Transform transform)
+	{
+		if (physicsObject.IsDynamic)
+		{
+			SetTransform(physicsObject.BodyHandle!.Value, transform);
+		}
+		else if (physicsObject.IsStatic)
+		{
+			SetTransform(physicsObject.StaticHandle!.Value, transform);
+		}
+		else
+		{
+			throw new GlitchInTheMatrixException();
 		}
 	}
 
@@ -244,11 +300,63 @@ public sealed partial class PhysicsWorld
 		}
 	}
 
+	public Transform GetTransform(StaticHandle staticHandle)
+	{
+		lock (SyncRoot)
+		{
+			HandleExistsSafetyCheck(staticHandle);
+
+			RigidPose pose = Simulation.Statics[staticHandle].Pose;
+
+			return new(pose.Position.ToFixed<Vector3FixedDecimalInt4>(), pose.Orientation.ToFixed<QuaternionFixedDecimalInt4>());
+		}
+	}
+
+	public void SetTransform(StaticHandle staticHandle, Transform transform)
+	{
+		lock (SyncRoot)
+		{
+			HandleExistsSafetyCheck(staticHandle);
+
+			RigidPose pose = Simulation.Statics[staticHandle].Pose;
+
+			pose.Position = transform.Position.ToVector3();
+
+			pose.Orientation = transform.Rotation.ToQuaternion();
+
+			Simulation.Statics[staticHandle].Pose = pose;
+		}
+	}
+
+	private void HandleExistsSafetyCheck(PhysicsObject physicsObject)
+	{
+		if (physicsObject.IsDynamic)
+		{
+			HandleExistsSafetyCheck(physicsObject.BodyHandle!.Value);
+		}
+		else if (physicsObject.IsStatic)
+		{
+			HandleExistsSafetyCheck(physicsObject.StaticHandle!.Value);
+		}
+		else
+		{
+			throw new GlitchInTheMatrixException();
+		}
+	}
+
 	private void HandleExistsSafetyCheck(BodyHandle bodyHandle)
 	{
 		if (!BodyHandleToPhysicsObject.ContainsKey(bodyHandle))
 		{
 			throw new ArgumentException($"{nameof(BodyHandle)} is either invalid or the corresponding object is destroyed!", nameof(bodyHandle));
+		}
+	}
+	
+	private void HandleExistsSafetyCheck(StaticHandle staticHandle)
+	{
+		if (!StaticHandleToPhysicsObject.ContainsKey(staticHandle))
+		{
+			throw new ArgumentException($"{nameof(StaticHandle)} is either invalid or the corresponding object is destroyed!", nameof(staticHandle));
 		}
 	}
 

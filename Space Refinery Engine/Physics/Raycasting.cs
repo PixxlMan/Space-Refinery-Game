@@ -63,11 +63,15 @@ namespace Space_Refinery_Engine
 					return;
 				}
 
-				var physicsObject = physicsWorld.BodyHandleToPhysicsObject[collidable.BodyHandle];
-
+				PhysicsObject physicsObject = collidable.Mobility switch
+				{
+					CollidableMobility.Dynamic or CollidableMobility.Kinematic => physicsWorld.BodyHandleToPhysicsObject[collidable.BodyHandle],
+					CollidableMobility.Static => physicsWorld.StaticHandleToPhysicsObject[collidable.StaticHandle],
+					_ => throw new GlitchInTheMatrixException(),
+				};
 				if (physicsObject.Entity is T && physicsObject.Enabled && physicsObject.RecievesRaycasts)
 				{
-					PhysicsObject = physicsWorld.BodyHandleToPhysicsObject[collidable.BodyHandle];
+					PhysicsObject = physicsObject;
 				}
 			}
 		}

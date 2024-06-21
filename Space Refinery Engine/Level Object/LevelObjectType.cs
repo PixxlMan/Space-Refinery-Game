@@ -26,22 +26,24 @@ public sealed class LevelObjectType : IEntityType, ISerializableReference
 
 	public string Name { get; private set; }
 
-	public LevelObjectType(string name, string modelPath, Mesh mesh, Type typeOfPipe)
+	public LevelObjectType(string name, string modelPath, Mesh mesh, Collider collider, Type typeOfLevelObject)
 	{
 		Name = name;
 		ModelPath = modelPath;
 		Mesh = mesh;
-		TypeOfLevelObject = typeOfPipe;
+		Collider = collider;
+		TypeOfLevelObject = typeOfLevelObject;
 
 		SerializableReference = Guid.NewGuid();
 	}
 
-	public LevelObjectType(string name, Mesh mesh, Material material, Type typeOfPipe)
+	public LevelObjectType(string name, Mesh mesh, Collider collider, Material material, Type typeOfLevelObject)
 	{
 		Name = name;
 		Mesh = mesh;
+		Collider = collider;
 		Material = material;
-		TypeOfLevelObject = typeOfPipe;
+		TypeOfLevelObject = typeOfLevelObject;
 
 		SerializableReference = Guid.NewGuid();
 	}

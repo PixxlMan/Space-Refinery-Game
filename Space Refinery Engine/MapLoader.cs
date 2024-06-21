@@ -78,7 +78,7 @@ public static class MapLoader
 				}
 				else
 				{
-					levelObjectType = new(name, mesh!, gameData.GraphicsWorld.MaterialLoader.LoadCached(((MaterialInfo)referenceHandler["Rusty Metal Sheet"]).MaterialTexturePaths), typeof(OrdinaryLevelObject));
+					levelObjectType = new(name, mesh!, new Collider(ColliderShapes.ConvexMesh, mesh: mesh), gameData.GraphicsWorld.MaterialLoader.LoadCached(((MaterialInfo)referenceHandler["Rusty Metal Sheet"]).MaterialTexturePaths), typeof(OrdinaryLevelObject));
 
 					levelObjectType.SetUp(gameData);
 				}

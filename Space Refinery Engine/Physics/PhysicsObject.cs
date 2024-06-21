@@ -1,5 +1,6 @@
 ﻿using BepuPhysics;
 using Space_Refinery_Game_Renderer;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Space_Refinery_Engine;
 
@@ -52,16 +53,24 @@ public sealed class PhysicsObject
 
 	public PhysicsWorld World { get; private set; }
 
-	public Transform Transform { get => World.GetTransform(BodyHandle); set { World.SetTransform(BodyHandle, value); } }
+	public Transform Transform { get => World.GetTransform(this); set { World.SetTransform(this, value); } }
 
-	public BodyHandle BodyHandle { get; private set; }
+	public bool IsDynamic => BodyHandle.HasValue;
+	public bool IsStatic => StaticHandle.HasValue;
+
+	[MemberNotNull(nameof(IsDynamic))]
+	public BodyHandle? BodyHandle { get; private set; }
+	[MemberNotNull(nameof(IsStatic))]
+	public StaticHandle? StaticHandle { get; private set; }
 
 	private readonly object syncRoot = new();
 
 	/// <summary>
 	/// Indicates whether this <see cref="PhysicsObject"/> is valid and can be used.
 	/// </summary>
-	public bool Valid => !Destroyed && World.HasHandle(BodyHandle);
+	public bool Valid => !Destroyed &&
+		(World.HasHandle(BodyHandle) || World.HasHandle(StaticHandle)) &&
+		((BodyHandle.HasValue && !StaticHandle.HasValue) || (StaticHandle.HasValue && !BodyHandle.HasValue));
 
 	private bool destroyed = true;
 	public bool Destroyed
@@ -75,10 +84,17 @@ public sealed class PhysicsObject
 		}
 	}
 
-	public PhysicsObject(PhysicsWorld world, BodyHandle bodyHandle, Entity entity)
+	internal PhysicsObject(PhysicsWorld world, BodyHandle bodyHandle, Entity entity)
 	{
 		World = world;
 		BodyHandle = bodyHandle;
+		Entity = entity;
+	}
+
+	internal PhysicsObject(PhysicsWorld world, StaticHandle staticHandle, Entity entity)
+	{
+		World = world;
+		StaticHandle = staticHandle;
 		Entity = entity;
 	}
 

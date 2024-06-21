@@ -120,7 +120,7 @@ public sealed class Window : IDisposable
 	{
 		if (!IsSetUp)
 		{
-			throw new InvalidOperationException("SetUp must be called before CreateSwapchain.");
+			throw new InvalidOperationException($"{nameof(SetUp)} must be called before {nameof(CreateSwapchain)}.");
 		}
 
 		SwapchainDescription swapchainDescription = new(
@@ -140,7 +140,7 @@ public sealed class Window : IDisposable
 		{
 			if (!IsSetUp)
 			{
-				throw new InvalidOperationException("SetUp must be called before Open.");
+				throw new InvalidOperationException($"{nameof(SetUp)} must be called before {nameof(Open)}.");
 			}
 
 			if (CaptureMouse)

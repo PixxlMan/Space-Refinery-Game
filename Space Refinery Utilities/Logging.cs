@@ -65,6 +65,7 @@ public static class Logging
 	{
 		None = int.MinValue,
 		Everything = int.MaxValue,
+
 		Release = Critical,
 		Debug = Everything,
 
@@ -95,33 +96,33 @@ public static class Logging
 			// TODO: print entire thread name instead of thread id
 		}
 
-		string timeStamp = $"@{stopwatch.Elapsed:mm\\:ss\\.fffffff}:";
+		string timeStamp = $"@{stopwatch.Elapsed:mm\\:ss\\.fffffff}";
 
 		string formatText = string.Empty;
 
 		switch (logType)
 		{
 			case LogType.Error:
-				formatText = ($"{{{Environment.CurrentManagedThreadId}}}[ERROR]{timeStamp}");
+				formatText = ($"{{{Environment.CurrentManagedThreadId}}}[ERROR]{timeStamp}:");
 				break;
 			case LogType.Warning:
-				formatText = ($"{{{Environment.CurrentManagedThreadId}}}[WARN]{timeStamp}");
+				formatText = ($"{{{Environment.CurrentManagedThreadId}}}[WARN]{timeStamp}:");
 				break;
 			case LogType.Simulation:
 				timeStamp = $"{stopwatch.Elapsed} s & {Time.CurrentTickTime} tt & {Time.TicksElapsed} ticks";
-				formatText = ($"{{{Environment.CurrentManagedThreadId}}}[SIMUL]{timeStamp}");
+				formatText = ($"{{{Environment.CurrentManagedThreadId}}}[SIMUL]{timeStamp}:");
 				break;
 			case LogType.Log:
-				formatText = ($"{{{Environment.CurrentManagedThreadId}}}[LOG]{timeStamp}");
+				formatText = ($"{{{Environment.CurrentManagedThreadId}}}[LOG]{timeStamp}:");
 				break;
 			case LogType.Debug:
 				// Debug doesn't call PreFormat.
 				break;
 			case LogType.Legend:
-				formatText = ($"{{{Environment.CurrentManagedThreadId}}}[LGND]{timeStamp}");
+				formatText = ($"{{{Environment.CurrentManagedThreadId}}}[LGND]{timeStamp}:");
 				break;
 			default:
-				formatText = ($"{{{Environment.CurrentManagedThreadId}}}[MISC]{timeStamp}");
+				formatText = ($"{{{Environment.CurrentManagedThreadId}}}[MISC]{timeStamp}:");
 				break;
 			}
 

@@ -100,6 +100,23 @@ public record struct Collider : IEntitySerializable
 			return convexHull;
 		}
 	}
+
+	public void AddDebugObjects(Transform transform)
+	{
+		switch (Shape)
+		{
+			case ColliderShapes.Box:
+				GameData.DebugRender.DrawCube(transform.PerformTransform(Offset), Veldrid.RgbaFloat.Orange, Scale!.Value);
+				break;
+			case ColliderShapes.Cylinder:
+				throw new NotImplementedException();
+			case ColliderShapes.ConvexMesh:
+				GameData.DebugRender.DrawMesh(Mesh!, transform.PerformTransform(Offset), Veldrid.RgbaFloat.Orange);
+				break;
+			default:
+				throw new GlitchInTheMatrixException();
+		}
+	}
 }
 
 [Serializable]

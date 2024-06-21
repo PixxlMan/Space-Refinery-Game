@@ -56,10 +56,15 @@ namespace Space_Refinery_Engine
 
 		public virtual void AddDebugObjects()
 		{
-			if (!GameData.DebugSettings.AccessSetting<BooleanDebugSetting>($"{nameof(LevelObject)} debug orientation marks"))
-				return;
+			if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>($"{nameof(LevelObject)} collider debug"))
+			{
+				LevelObjectType.Collider.AddDebugObjects(transform);
+			}
 
-			GameData.DebugRender.DrawOrientationMarks(Transform);
+			if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>($"{nameof(LevelObject)} debug orientation marks"))
+			{
+				GameData.DebugRender.DrawOrientationMarks(Transform);
+			}
 		}
 
 		public static LevelObject Create(LevelObjectType levelObjectType, Transform transform, GameData gameData, SerializationReferenceHandler referenceHandler)
@@ -86,7 +91,7 @@ namespace Space_Refinery_Engine
 			}
 		}
 
-		protected abstract PhysicsObject CreatePhysicsObject();
+		protected abstract PhysicsObject? CreatePhysicsObject();
 
 		private void SetUp(LevelObjectType levelObjectType, GameData gameData)
 		{
@@ -181,7 +186,7 @@ namespace Space_Refinery_Engine
 
 				Destroyed = true;
 
-				PhysicsObject.Destroy();
+				PhysicsObject?.Destroy();
 
 				LevelObjectType.BatchRenderable.RemoveBatchRenderableEntity(this);
 

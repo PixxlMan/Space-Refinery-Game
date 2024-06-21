@@ -3,34 +3,21 @@ using Veldrid;
 
 namespace Space_Refinery_Game_Renderer;
 
-internal readonly struct DebugRenderable : IRenderable, IDisposable
+internal readonly struct DebugRenderable(Mesh mesh, DeviceBuffer transformationBuffer, DeviceBuffer colorBuffer) : IRenderable, IDisposable
 {
-	public DebugRenderable(Mesh mesh, DeviceBuffer transformationBuffer, DeviceBuffer colorBuffer)
-	{
-		Mesh = mesh;
-		TransformationBuffer = transformationBuffer;
-		ColorBuffer = colorBuffer;
-	}
-
-	public readonly Mesh Mesh;
-
-	public readonly DeviceBuffer TransformationBuffer;
-
-	public readonly DeviceBuffer ColorBuffer;
-
 	public void AddDrawCommands(CommandList commandList, FixedDecimalLong8 deltaTime)
 	{
-		commandList.SetVertexBuffer(0, Mesh.VertexBuffer);
-		commandList.SetIndexBuffer(Mesh.IndexBuffer, Mesh.IndexFormat);
-		commandList.SetVertexBuffer(1, ColorBuffer);
-		commandList.SetVertexBuffer(2, TransformationBuffer);
+		commandList.SetVertexBuffer(0, mesh.VertexBuffer);
+		commandList.SetIndexBuffer(mesh.IndexBuffer, mesh.IndexFormat);
+		commandList.SetVertexBuffer(1, colorBuffer);
+		commandList.SetVertexBuffer(2, transformationBuffer);
 
-		commandList.DrawIndexed(Mesh.IndexCount);
+		commandList.DrawIndexed(mesh.IndexCount);
 	}
 
 	public void Dispose()
 	{
-		TransformationBuffer.Dispose();
-		ColorBuffer.Dispose();
+		transformationBuffer.Dispose();
+		colorBuffer.Dispose();
 	}
 }

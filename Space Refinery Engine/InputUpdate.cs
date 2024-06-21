@@ -69,6 +69,8 @@ public sealed class InputUpdate
 				GameData.DebugRender.ShouldRender = !GameData.DebugRender.ShouldRender;
 			}
 
+			GameData.DebugRender.Wireframe = GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Wireframe debug render", defaultSettingValue: true);
+
 			if (gameData.UI.InMenu || gameData.Paused)
 			{
 				gameData.GraphicsWorld.Window.CaptureMouse = false;

@@ -7,9 +7,13 @@ namespace Space_Refinery_Game_Renderer;
 
 public sealed class DebugRender : IRenderable
 {
-	public bool ShouldRender;
+	public bool ShouldRender { get; set; }
 
-	private Pipeline pipeline;
+	public bool Wireframe { get; set; }
+
+	private Pipeline regularPipeline;
+
+	private Pipeline wireframePipeline;
 
 	private ResourceLayout sharedLayout;
 
@@ -86,15 +90,40 @@ public sealed class DebugRender : IRenderable
 			scissorTestEnabled: false
 			),
 			PrimitiveTopology = PrimitiveTopology.TriangleList,
-			ResourceLayouts = new ResourceLayout[] { sharedLayout },
+			ResourceLayouts = [sharedLayout],
 			ShaderSet = new ShaderSetDescription(
-				vertexLayouts: new VertexLayoutDescription[] { RenderingResources.VertexLayout, colorVertexLayout, transformationVertexShaderParameterLayout },
+				vertexLayouts: [RenderingResources.VertexLayout, colorVertexLayout, transformationVertexShaderParameterLayout],
 				shaders: Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), "DebugRenderable", factory)
 			),
 			Outputs = gd.MainSwapchain.Framebuffer.OutputDescription
 		};
 
-		pipeline = factory.CreateGraphicsPipeline(pipelineDescription);
+		regularPipeline = factory.CreateGraphicsPipeline(pipelineDescription);
+
+		GraphicsPipelineDescription wireframePipelineDescription = new GraphicsPipelineDescription()
+		{
+			BlendState = BlendStateDescription.SingleOverrideBlend,
+			DepthStencilState = new DepthStencilStateDescription(
+			depthTestEnabled: false,
+			depthWriteEnabled: true,
+			comparisonKind: ComparisonKind.LessEqual),
+			RasterizerState = new RasterizerStateDescription(
+			cullMode: FaceCullMode.None,
+			fillMode: PolygonFillMode.Wireframe,
+			frontFace: FrontFace.Clockwise,
+			depthClipEnabled: true,
+			scissorTestEnabled: false
+			),
+			PrimitiveTopology = PrimitiveTopology.TriangleList,
+			ResourceLayouts = [sharedLayout],
+			ShaderSet = new ShaderSetDescription(
+				vertexLayouts: [RenderingResources.VertexLayout, colorVertexLayout, transformationVertexShaderParameterLayout],
+				shaders: Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), "DebugRenderable", factory)
+			),
+			Outputs = gd.MainSwapchain.Framebuffer.OutputDescription
+		};
+
+		wireframePipeline = factory.CreateGraphicsPipeline(wireframePipelineDescription);
 
 		BindableResource[] bindableResources = [GraphicsWorld.CameraProjViewBuffer];
 		ResourceSetDescription resourceSetDescription = new(sharedLayout, bindableResources);
@@ -110,6 +139,16 @@ public sealed class DebugRender : IRenderable
 				persistentRenderables.Clear();
 
 				return;
+			}
+
+			Pipeline pipeline;
+			if (Wireframe)
+			{
+				pipeline = wireframePipeline;
+			}
+			else
+			{
+				pipeline = regularPipeline;
 			}
 
 			AddDebugObjects?.Invoke();
@@ -177,13 +216,7 @@ public sealed class DebugRender : IRenderable
 	{
 		lock (sync)
 		{
-			Mesh mesh;
-
-			if (cubeMeshes.ContainsKey(size))
-			{
-				mesh = cubeMeshes[size];
-			}
-			else
+			if (!cubeMeshes.TryGetValue(size, out Mesh? mesh))
 			{
 				mesh = Utils.CreateDeviceResources(Utils.GetCubeVertexPositionTexture(size.ToVector3()), Utils.GetCubeIndices(), GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory);
 
@@ -200,9 +233,7 @@ public sealed class DebugRender : IRenderable
 	{
 		lock (sync)
 		{
-			DeviceBuffer transformationBuffer, colorBuffer;
-
-			GetBuffers(color, new(transform), out transformationBuffer, out colorBuffer);
+			GetBuffers(color, new(transform), out DeviceBuffer transformationBuffer, out DeviceBuffer colorBuffer);
 
 			DebugRenderable renderable = new(GetCubeMesh(scale), transformationBuffer, colorBuffer);
 
@@ -216,9 +247,7 @@ public sealed class DebugRender : IRenderable
 	{
 		lock (sync)
 		{
-			DeviceBuffer transformationBuffer, colorBuffer;
-
-			GetBuffers(color, new(transform), out transformationBuffer, out colorBuffer);
+			GetBuffers(color, new(transform), out DeviceBuffer transformationBuffer, out DeviceBuffer colorBuffer);
 
 			DebugRenderable renderable = new(GetCubeMesh(scale), transformationBuffer, colorBuffer);
 
@@ -239,9 +268,7 @@ public sealed class DebugRender : IRenderable
 
 			Transform transform = new(origin + (direction * length / 2), QuaternionFixedDecimalInt4.CreateLookingAt(direction, Vector3FixedDecimalInt4.UnitZ, Vector3FixedDecimalInt4.UnitY));
 
-			DeviceBuffer transformationBuffer, colorBuffer;
-
-			GetBuffers(color, transform, out transformationBuffer, out colorBuffer);
+			GetBuffers(color, transform, out DeviceBuffer transformationBuffer, out DeviceBuffer colorBuffer);
 
 			DebugRenderable renderable = new(GetCubeMesh(new((FixedDecimalInt4).1, (FixedDecimalInt4).1, length)), transformationBuffer, colorBuffer);
 
@@ -262,9 +289,8 @@ public sealed class DebugRender : IRenderable
 
 			Transform transform = new(origin, QuaternionFixedDecimalInt4.CreateLookingAt(direction, Vector3FixedDecimalInt4.UnitZ, Vector3FixedDecimalInt4.UnitY));
 
-			DeviceBuffer transformationBuffer, colorBuffer;
 
-			GetBuffers(color, transform, out transformationBuffer, out colorBuffer);
+			GetBuffers(color, transform, out DeviceBuffer transformationBuffer, out DeviceBuffer colorBuffer);
 
 			DebugRenderable renderable = new(GetCubeMesh(new((FixedDecimalInt4).1, (FixedDecimalInt4).1, length)), transformationBuffer, colorBuffer);
 
@@ -281,6 +307,18 @@ public sealed class DebugRender : IRenderable
 		DrawRay(transform.Position, -transform.LocalUnitX, new(.4f, 0, 0, 1));
 		DrawRay(transform.Position, -transform.LocalUnitY, new(0, .4f, 0, 1));
 		DrawRay(transform.Position, -transform.LocalUnitZ, new(0, 0, .4f, 1));
+	}
+
+	public void DrawMesh(Mesh mesh, Transform transform, RgbaFloat color)
+	{
+		lock (sync)
+		{
+			GetBuffers(color, new(transform), out var transformationBuffer, out var colorBuffer);
+
+			DebugRenderable renderable = new(mesh, transformationBuffer, colorBuffer);
+
+			debugRenderables.Add(renderable);
+		}
 	}
 
 	public void Reset()

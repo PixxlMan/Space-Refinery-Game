@@ -131,7 +131,7 @@ public sealed class Window : IDisposable
 				false
 				);
 
-		return Factory.CreateSwapchain(swapchainDescription);
+		return Factory.CreateSwapchain(ref swapchainDescription);
 	}
 
 	public void Open()

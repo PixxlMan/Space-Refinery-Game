@@ -52,11 +52,12 @@ public sealed class EntityRenderable : IRenderable
 
 	public static EntityRenderable CreateAndAdd(GraphicsWorld graphicsWorld, Transform transform, Mesh mesh, Material material, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
 	{
-		EntityRenderable entityRenderable = new(transform);
-
-		entityRenderable.mesh = mesh;
-		entityRenderable.material = material;
-		entityRenderable.transformationBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes, BufferUsage.VertexBuffer));
+		EntityRenderable entityRenderable = new(transform)
+		{
+			mesh = mesh,
+			material = material,
+			transformationBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes, BufferUsage.VertexBuffer))
+		};
 
 		graphicsWorld.GraphicsDevice.UpdateBuffer(entityRenderable.transformationBuffer, 0, entityRenderable.Transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
 
@@ -85,7 +86,7 @@ public sealed class EntityRenderable : IRenderable
 	{
 		commandList.UpdateBuffer(transformationBuffer, 0, Transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
 
-		commandList.SetPipeline(ClockwisePipelineResource);
+		commandList.SetPipeline(pipeline);
 		commandList.SetGraphicsResourceSet(0, resourceSet);
 		material.AddSetCommands(commandList);
 		commandList.SetVertexBuffer(0, mesh.VertexBuffer);

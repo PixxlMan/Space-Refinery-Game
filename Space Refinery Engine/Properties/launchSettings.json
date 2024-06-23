@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Space Refinery Engine": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

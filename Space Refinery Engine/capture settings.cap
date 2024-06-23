@@ -5,7 +5,7 @@
         "commandLine": "",
         "environment": [
         ],
-        "executable": "E:\\dev\\Space Refinery Game\\Space Refinery Game\\bin\\Debug\\net8.0\\Space Refinery Game.exe",
+        "executable": "E:\\dev\\Space Refinery Game\\Space Refinery Engine\\bin\\Debug\\net8.0\\Space Refinery Engine.exe",
         "inject": false,
         "numQueuedFrames": 1,
         "options": {

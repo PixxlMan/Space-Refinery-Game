@@ -108,7 +108,7 @@ public sealed class PerformanceStatisticsCollector
 
 	private void InputUpdate_CollectPerformanceData(IntervalUnit deltaTime)
 	{
-		DebugPerfWarn(deltaTime, nameof(Initialization));
+		DebugPerfWarn(deltaTime, nameof(InputUpdate));
 
 		switch (Mode)
 		{

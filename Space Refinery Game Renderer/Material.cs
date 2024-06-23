@@ -1,6 +1,7 @@
 ﻿using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Space_Refinery_Utilities;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Veldrid;
 using static Space_Refinery_Game_Renderer.RenderingResources;
@@ -38,6 +39,27 @@ public sealed class Material
 			fixed (Rgba32* ptr = &MemoryMarshal.GetReference(memory.Span))
 			{
 				gd.UpdateTexture(texture: imageTexture, source: (IntPtr)ptr, sizeInBytes: (uint)(/*Unsafe.SizeOf<Rgba32>()*/ (sizeof(float) * 4) * image.Width * image.Height), x: 0u, y: 0u, z: 0u, width: (uint)image.Width, height: (uint)image.Height, depth: 1, mipLevel: 0, arrayLayer: 0);
+
+				return imageTexture;
+			}
+		}
+	}
+
+	public static Texture CreateTextureFromBytes(GraphicsDevice gd, ResourceFactory factory, ReadOnlySpan<byte> bytes)
+	{
+		Image<Rgba32> image = Image.Load<Rgba32>(bytes);
+		var imageTexture = factory.CreateTexture(TextureDescription.Texture2D((uint)image.Width, (uint)image.Height, 1, 1u, PixelFormat.R8_G8_B8_A8_UNorm, TextureUsage.Sampled));
+
+		unsafe
+		{
+			if (!image.DangerousTryGetSinglePixelMemory(out var memory))
+			{
+				throw new Exception("ImageSharp memory was not contiguous and now the world is exploding.");
+			}
+
+			fixed (Rgba32* ptr = &MemoryMarshal.GetReference(memory.Span))
+			{
+				gd.UpdateTexture(texture: imageTexture, source: (IntPtr)ptr, sizeInBytes: (uint)(Unsafe.SizeOf<Rgba32>() * image.Width * image.Height), x: 0u, y: 0u, z: 0u, width: (uint)image.Width, height: (uint)image.Height, depth: 1, mipLevel: 0, arrayLayer: 0);
 
 				return imageTexture;
 			}

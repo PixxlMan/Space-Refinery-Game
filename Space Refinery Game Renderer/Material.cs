@@ -10,16 +10,12 @@ namespace Space_Refinery_Game_Renderer;
 public sealed class Material
 {
 	private readonly string name;
-
 	private readonly ResourceSet textureSet;
-
 	private readonly Texture metallicTexture;
-
 	private readonly Texture roughnessTexture;
-
 	private readonly Texture ambientOcclusionTexture;
 
-	public Material(string name, ResourceSet textureSet, Texture metallicTexture, Texture roughnessTexture, Texture ambientOcclusionTexture)
+	private Material(string name, ResourceSet textureSet, Texture metallicTexture, Texture roughnessTexture, Texture ambientOcclusionTexture)
 	{
 		this.name = name;
 		this.textureSet = textureSet;
@@ -51,6 +47,7 @@ public sealed class Material
 	public static Material LoadMaterial(GraphicsDevice gd, ResourceFactory factory, string name, string diffuseTexturePath, string metallicTexturePath, string roughnessTexturePath, string ambientOcclusionTexturePath)
 	{
 		Logging.LogScopeStart($"Loading resources for material {name}");
+
 		Texture diffuseTexture, metallicTexture, roughnessTexture, ambientOcclusionTexture;
 
 		Logging.Log($"Loading diffuse texture at {diffuseTexturePath}");
@@ -78,7 +75,7 @@ public sealed class Material
 		TextureView metallicTextureView = factory.CreateTextureView(metallicTexture);
 		TextureView roughnessTextureView = factory.CreateTextureView(roughnessTexture);
 		TextureView ambientOcclusionTextureView = factory.CreateTextureView(ambientOcclusionTexture);
-
+		
 		var textureSet = factory.CreateResourceSet(
 			new ResourceSetDescription(
 				MaterialLayout,

@@ -1,12 +1,6 @@
 ﻿using FixedPrecision;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using Veldrid;
 using Veldrid.SPIRV;
 
@@ -53,6 +47,12 @@ public static class Utils
 		return factory.CreateFromSpirv(
 			new ShaderDescription(ShaderStages.Vertex, ReadBytes(Path.Combine(path, setName) + "-vertex.glsl"), "main"),
 			new ShaderDescription(ShaderStages.Fragment, ReadBytes(Path.Combine(path, setName) + "-fragment.glsl"), "main"));
+	}
+
+	public static Shader LoadShader(string path, string setName, ResourceFactory factory)
+	{
+		return factory.CreateFromSpirv(
+			new ShaderDescription(ShaderStages.Compute, ReadBytes(Path.Combine(path, setName) + "-compute.glsl"), "main"));
 	}
 
 	public static byte[] ReadBytes(string path)

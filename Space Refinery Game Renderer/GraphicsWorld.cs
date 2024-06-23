@@ -235,13 +235,8 @@ public sealed class GraphicsWorld
 
 		// Depends on Window
 		camera = new(window.Width, window.Height, Perspective.Perspective);
-
-		Camera.Transform.Position = new Vector3FixedDecimalInt4(0, 0, 10);
-
 		Camera.FarDistance = 10000;
-
-		Camera.NearDistance = (FixedDecimalInt4)0.1;
-
+		Camera.NearDistance = 0.1;
 		Camera.FieldOfView = 75 * FixedDecimalInt4.DegreesToRadians;
 
 
@@ -251,7 +246,7 @@ public sealed class GraphicsWorld
 		RenderingResources.CreateStaticDeviceResources(this);
 
 
-		// These depend on the device resources.
+		// These depend on device resources.
 		MeshLoader = new(this);
 		
 		// This depends on using contigous image buffers.
@@ -375,7 +370,7 @@ public sealed class GraphicsWorld
 			}
 			else
 			{
-				specificOrderRenderables.Add(order, new() { renderable });
+				specificOrderRenderables.Add(order, [renderable]);
 
 				renderableToOrder.AddUnique(renderable, order);
 			}

@@ -1,14 +1,15 @@
-﻿using Veldrid;
+﻿using Space_Refinery_Utilities;
+using Veldrid;
 
 namespace Space_Refinery_Game_Renderer;
 
 public static class RenderingResources
 {
+	public static bool HasCreatedStaticDeviceResources { get; private set; } = false;
+
 	public static Texture DefaultTexture { get; private set; }
 
 	public static Material DefaultMaterial { get; private set; }
-
-	public static bool HasCreatedStaticDeviceResources { get; private set; } = false;
 
 	public static ResourceLayout TextureLayout { get; private set; }
 
@@ -30,6 +31,8 @@ public static class RenderingResources
 		{
 			return;
 		}
+
+		Logging.LogScopeStart("Creating rendering resources");
 
 		ResourceLayoutElementDescription[] textureLayoutDescriptions =
 		{
@@ -93,11 +96,10 @@ public static class RenderingResources
 			ResourceLayouts = [SharedLayout, MaterialLayout],
 			ShaderSet = new ShaderSetDescription(
 				vertexLayouts: [VertexLayout, TransformationVertexShaderParameterLayout],
-				shaders: graphicsWorld.ShaderLoader.LoadCached("EntityRenderable")
+				shaders: graphicsWorld.ShaderLoader.LoadVertexFragmentCached("EntityRenderable")
 			),
 			Outputs = graphicsWorld.GraphicsDevice.MainSwapchain.Framebuffer.OutputDescription
 		};
-
 		ClockwisePipelineResource = graphicsWorld.Factory.CreateGraphicsPipeline(clockwisePipelineDescription);
 
 		GraphicsPipelineDescription counterClockwisePipelineDescription = new()
@@ -118,16 +120,17 @@ public static class RenderingResources
 			ResourceLayouts = [SharedLayout, MaterialLayout],
 			ShaderSet = new ShaderSetDescription(
 				vertexLayouts: [VertexLayout, TransformationVertexShaderParameterLayout],
-				shaders: graphicsWorld.ShaderLoader.LoadCached("EntityRenderable")
+				shaders: graphicsWorld.ShaderLoader.LoadVertexFragmentCached("EntityRenderable")
 			),
 			Outputs = graphicsWorld.GraphicsDevice.MainSwapchain.Framebuffer.OutputDescription
 		};
-
 		CounterClockwisePipelineResource = graphicsWorld.Factory.CreateGraphicsPipeline(counterClockwisePipelineDescription);
 
 		DefaultTexture = Utils.GetSolidColoredTexture(RgbaByte.LightGrey, graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
 		DefaultMaterial = Material.FromTextures(graphicsWorld.GraphicsDevice, graphicsWorld.Factory, "Default Material", DefaultTexture, DefaultTexture, DefaultTexture, DefaultTexture);
 
 		HasCreatedStaticDeviceResources = true;
+
+		Logging.LogScopeEnd();
 	}
 }

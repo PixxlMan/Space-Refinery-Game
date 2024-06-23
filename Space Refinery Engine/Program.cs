@@ -36,25 +36,25 @@ public static class Program
 
 		Window window = new("Loading...");
 
-		GraphicsDeviceOptions options = new GraphicsDeviceOptions(
+		GraphicsDeviceOptions options = new(
+#if DEBUG
+			debug: true,
+#else
 			debug: false,
+#endif
 			swapchainDepthFormat: PixelFormat.R16_UNorm,
 			syncToVerticalBlank: false,
 			resourceBindingModel: ResourceBindingModel.Improved,
 			preferDepthRangeZeroToOne: true,
 			preferStandardClipSpaceYDirection: true);
-		//#if DEBUG
-		options.Debug = true;
-		//#endif
 		var graphicsDevice = VeldridStartup.CreateGraphicsDevice(window.SdlWindow, options, GraphicsBackend.Direct3D11);
 		var factory = new DisposeCollectorResourceFactory(graphicsDevice.ResourceFactory);
 
 		window.SetUp(graphicsDevice, factory);
-
 		window.CaptureMouse = true;
+		var swapchain = window.CreateSwapchain();
 
 		Initialization initialization = new();
-
-		initialization.Start(window, graphicsDevice, factory, window.CreateSwapchain());
+		initialization.Start(window, graphicsDevice, factory, swapchain);
 	}
 }

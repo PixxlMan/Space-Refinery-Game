@@ -70,7 +70,8 @@ public static class MapLoader
 			}
 
 			LevelObjectType levelObjectType;
-			if (meshInfo.Material.Name == "Default")
+			var levelObjectTypeNameJsonNode = instance.Extras?["LevelObjectType"];
+			if (levelObjectTypeNameJsonNode is null)
 			{
 				if (LevelObjectType.LevelObjectTypes.TryGetValue(name, out LevelObjectType? value))
 				{
@@ -78,20 +79,21 @@ public static class MapLoader
 				}
 				else
 				{
-					levelObjectType = new(name, mesh!, new Collider(ColliderShapes.ConvexMesh, Transform.Identity, mesh: mesh), gameData.GraphicsWorld.MaterialLoader.LoadCached(((MaterialInfo)referenceHandler["Rusty Metal Sheet"]).MaterialTexturePaths), typeof(OrdinaryLevelObject));
+					levelObjectType = new(name, mesh!, new Collider(ColliderShapes.ConvexMesh, Transform.Identity, mesh: mesh), gameData.GraphicsWorld.MaterialLoader.LoadGLTFMaterial(meshInfo.Material), typeof(OrdinaryLevelObject));
 
 					levelObjectType.SetUp(gameData);
 				}
 			}
 			else
 			{
-				if (LevelObjectType.LevelObjectTypes.TryGetValue(meshInfo.Material.Name, out LevelObjectType? value))
+				var levelObjectTypeName = levelObjectTypeNameJsonNode.GetValue<string>();
+				if (LevelObjectType.LevelObjectTypes.TryGetValue(levelObjectTypeName, out LevelObjectType? value))
 				{
 					levelObjectType = value;
 				}
 				else
 				{
-					throw new Exception($"No {nameof(LevelObjectType)} exists with the name '{meshInfo.Material.Name}'");
+					throw new Exception($"No {nameof(LevelObjectType)} exists with the name '{levelObjectTypeName}'");
 				}
 			}
 

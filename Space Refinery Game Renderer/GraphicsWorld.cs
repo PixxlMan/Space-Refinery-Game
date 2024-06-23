@@ -173,6 +173,8 @@ public sealed class GraphicsWorld
 		}
 	}
 
+	public PostProcessing PostProcessing { get; private set; }
+
 	public MeshLoader MeshLoader { get; private set; }
 
 	public MaterialLoader MaterialLoader { get; private set; }
@@ -245,10 +247,13 @@ public sealed class GraphicsWorld
 
 		RenderingResources.CreateStaticDeviceResources(this);
 
+		// These depend on device resources.
+		PostProcessing = new();
+		PostProcessing.CreateDeviceResources(this);
 
 		// These depend on device resources.
 		MeshLoader = new(this);
-		
+
 		// This depends on using contigous image buffers.
 		MaterialLoader = new(this);
 
@@ -476,7 +481,13 @@ public sealed class GraphicsWorld
 			}
 			commandList.PopDebugGroup();
 
+			commandList.PushDebugGroup("");
+			PostProcessing.AddPostEffectCommands(commandList, deltaTime);
+			commandList.PopDebugGroup();
+
+			commandList.PushDebugGroup("Custom draw operations");
 			CustomDrawOperations?.Invoke(commandList);
+			commandList.PopDebugGroup();
 
 			// End() must be called before commands can be submitted for execution.
 			commandList.End();

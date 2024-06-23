@@ -19,7 +19,7 @@ public static class Utils
 		using (Stream stream = File.OpenRead(path))
 		{
 			byte[] bytes = new byte[stream.Length];
-			using (MemoryStream ms = new MemoryStream(bytes))
+			using (MemoryStream ms = new(bytes))
 			{
 				stream.CopyTo(ms);
 				return bytes;
@@ -60,7 +60,7 @@ public static class Utils
 		using (Stream stream = File.OpenRead(path))
 		{
 			byte[] bytes = new byte[stream.Length];
-			using (MemoryStream ms = new MemoryStream(bytes))
+			using (MemoryStream ms = new(bytes))
 			{
 				stream.CopyTo(ms);
 				return bytes;

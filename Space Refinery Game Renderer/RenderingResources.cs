@@ -1,4 +1,5 @@
-﻿using Space_Refinery_Utilities;
+﻿using CommunityToolkit.HighPerformance;
+using Space_Refinery_Utilities;
 using Veldrid;
 
 namespace Space_Refinery_Game_Renderer;
@@ -11,19 +12,29 @@ public static class RenderingResources
 
 	public static Material DefaultMaterial { get; private set; }
 
+	/// <summary>
+	/// A simple fragment stage resource layout with one texture in the first location and a sampler in the second.
+	/// </summary>
 	public static ResourceLayout TextureLayout { get; private set; }
-
 	public static ResourceLayout MaterialLayout { get; private set; }
-
 	public static ResourceLayout SharedLayout { get; private set; }
 
 	public static VertexLayoutDescription TransformationVertexShaderParameterLayout { get; private set; }
-
 	public static VertexLayoutDescription VertexLayout { get; private set; }
 
 	public static Pipeline ClockwisePipelineResource { get; private set; }
-
 	public static Pipeline CounterClockwisePipelineResource { get; private set; }
+
+	public static PixelFormat DepthFormat => PixelFormat.R16_UNorm;
+	public static PixelFormat ColorFormat => PixelFormat.B8_G8_R8_A8_UNorm;
+	public static PixelFormat InternalColorFormat => PixelFormat.R32_G32_B32_A32_Float;
+
+	public static ReadOnlyMemory<VertexPositionTexture2D> FullscreenQuadVertexPositionTexture2D { get; } = Utils.GetQuadVertexPositionTexture();
+	public static ushort[] FullscreenQuadIndicies { get; } = [0, 1, 2, 0, 2, 3];
+	public static DeviceBuffer FullscreenQuadVertexBuffer { get; private set; }
+	public static DeviceBuffer FullscreenQuadIndexBuffer { get; private set; }
+	public static VertexLayoutDescription FullscreenQuadVertexLayout { get; private set; }
+	public static Pipeline FullscreenQuadPipeline { get; private set; } 
 
 	public static void CreateStaticDeviceResources(GraphicsWorld graphicsWorld)
 	{
@@ -57,7 +68,7 @@ public static class RenderingResources
 			new ResourceLayoutElementDescription("ProjView", ResourceKind.UniformBuffer, ShaderStages.Vertex),
 		};
 		ResourceLayoutDescription resourceLayoutDescription = new ResourceLayoutDescription(resourceLayoutElementDescriptions);
-		SharedLayout = graphicsWorld.Factory.CreateResourceLayout(resourceLayoutDescription);
+		SharedLayout = graphicsWorld.Factory.CreateResourceLayout(ref resourceLayoutDescription);
 
 		TransformationVertexShaderParameterLayout = new VertexLayoutDescription(
 				new VertexElementDescription("InstancePosition", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3),
@@ -82,15 +93,16 @@ public static class RenderingResources
 		{
 			BlendState = BlendStateDescription.SingleOverrideBlend,
 			DepthStencilState = new DepthStencilStateDescription(
-			depthTestEnabled: true,
-			depthWriteEnabled: true,
-			comparisonKind: ComparisonKind.LessEqual),
+				depthTestEnabled: true,
+				depthWriteEnabled: true,
+				comparisonKind: ComparisonKind.LessEqual
+			),
 			RasterizerState = new RasterizerStateDescription(
-			cullMode: FaceCullMode.Back,
-			fillMode: PolygonFillMode.Solid,
-			frontFace: FrontFace.Clockwise,
-			depthClipEnabled: true,
-			scissorTestEnabled: false
+				cullMode: FaceCullMode.Back,
+				fillMode: PolygonFillMode.Solid,
+				frontFace: FrontFace.Clockwise,
+				depthClipEnabled: true,
+				scissorTestEnabled: false
 			),
 			PrimitiveTopology = PrimitiveTopology.TriangleList,
 			ResourceLayouts = [SharedLayout, MaterialLayout],
@@ -98,23 +110,24 @@ public static class RenderingResources
 				vertexLayouts: [VertexLayout, TransformationVertexShaderParameterLayout],
 				shaders: graphicsWorld.ShaderLoader.LoadVertexFragmentCached("EntityRenderable")
 			),
-			Outputs = graphicsWorld.GraphicsDevice.MainSwapchain.Framebuffer.OutputDescription
+			Outputs = graphicsWorld.RenderFramebuffer.OutputDescription
 		};
-		ClockwisePipelineResource = graphicsWorld.Factory.CreateGraphicsPipeline(clockwisePipelineDescription);
+		ClockwisePipelineResource = graphicsWorld.Factory.CreateGraphicsPipeline(ref clockwisePipelineDescription);
 
 		GraphicsPipelineDescription counterClockwisePipelineDescription = new()
 		{
 			BlendState = BlendStateDescription.SingleOverrideBlend,
 			DepthStencilState = new DepthStencilStateDescription(
-			depthTestEnabled: true,
-			depthWriteEnabled: true,
-			comparisonKind: ComparisonKind.LessEqual),
+				depthTestEnabled: true,
+				depthWriteEnabled: true,
+				comparisonKind: ComparisonKind.LessEqual
+			),
 			RasterizerState = new RasterizerStateDescription(
-			cullMode: FaceCullMode.Back,
-			fillMode: PolygonFillMode.Solid,
-			frontFace: FrontFace.CounterClockwise,
-			depthClipEnabled: true,
-			scissorTestEnabled: false
+				cullMode: FaceCullMode.Back,
+				fillMode: PolygonFillMode.Solid,
+				frontFace: FrontFace.CounterClockwise,
+				depthClipEnabled: true,
+				scissorTestEnabled: false
 			),
 			PrimitiveTopology = PrimitiveTopology.TriangleList,
 			ResourceLayouts = [SharedLayout, MaterialLayout],
@@ -122,9 +135,47 @@ public static class RenderingResources
 				vertexLayouts: [VertexLayout, TransformationVertexShaderParameterLayout],
 				shaders: graphicsWorld.ShaderLoader.LoadVertexFragmentCached("EntityRenderable")
 			),
-			Outputs = graphicsWorld.GraphicsDevice.MainSwapchain.Framebuffer.OutputDescription
+			Outputs = graphicsWorld.RenderFramebuffer.OutputDescription
 		};
-		CounterClockwisePipelineResource = graphicsWorld.Factory.CreateGraphicsPipeline(counterClockwisePipelineDescription);
+		CounterClockwisePipelineResource = graphicsWorld.Factory.CreateGraphicsPipeline(ref counterClockwisePipelineDescription);
+
+		FullscreenQuadVertexLayout = new(
+			new VertexElementDescription("Position", VertexElementFormat.Float2, VertexElementSemantic.TextureCoordinate),
+			new VertexElementDescription("TexCoord", VertexElementFormat.Float2, VertexElementSemantic.TextureCoordinate)
+		);
+
+		BufferDescription fullscreenQuadVertexBufferDescription = new(VertexPositionTexture2D.SizeInBytes * (uint)FullscreenQuadVertexPositionTexture2D.Length, BufferUsage.VertexBuffer);
+		FullscreenQuadVertexBuffer = graphicsWorld.Factory.CreateBuffer(ref fullscreenQuadVertexBufferDescription);
+		graphicsWorld.GraphicsDevice.UpdateBuffer(FullscreenQuadVertexBuffer, 0, FullscreenQuadVertexPositionTexture2D.Span);
+
+		BufferDescription fullscreenQuadIndexBufferDescription = new(sizeof(ushort) * (uint)FullscreenQuadIndicies.Length, BufferUsage.IndexBuffer);
+		FullscreenQuadIndexBuffer = graphicsWorld.Factory.CreateBuffer(ref fullscreenQuadIndexBufferDescription);
+		graphicsWorld.GraphicsDevice.UpdateBuffer(FullscreenQuadIndexBuffer, 0, FullscreenQuadIndicies);
+
+		GraphicsPipelineDescription fullscreenQuadPipelineDescription = new()
+		{
+			BlendState = BlendStateDescription.SingleOverrideBlend,
+			DepthStencilState = new DepthStencilStateDescription(
+				depthTestEnabled: false,
+				depthWriteEnabled: false,
+				comparisonKind: ComparisonKind.LessEqual
+			),
+			RasterizerState = new RasterizerStateDescription(
+				cullMode: FaceCullMode.None,
+				fillMode: PolygonFillMode.Solid,
+				frontFace: FrontFace.Clockwise,
+				depthClipEnabled: false,
+				scissorTestEnabled: false
+			),
+			PrimitiveTopology = PrimitiveTopology.TriangleList,
+			ResourceLayouts = [TextureLayout],
+			ShaderSet = new ShaderSetDescription(
+				vertexLayouts: [FullscreenQuadVertexLayout],
+				shaders: graphicsWorld.ShaderLoader.LoadVertexFragmentCached("FullscreenQuad")
+			),
+			Outputs = graphicsWorld.Swapchain.Framebuffer.OutputDescription
+		};
+		FullscreenQuadPipeline = graphicsWorld.Factory.CreateGraphicsPipeline(ref fullscreenQuadPipelineDescription);
 
 		DefaultTexture = Utils.GetSolidColoredTexture(RgbaByte.LightGrey, graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
 		DefaultMaterial = Material.FromTextures(graphicsWorld.GraphicsDevice, graphicsWorld.Factory, "Default Material", DefaultTexture, DefaultTexture, DefaultTexture, DefaultTexture);

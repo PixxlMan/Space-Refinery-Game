@@ -76,6 +76,30 @@ public static class Utils
 		return pinkTexture;
 	}
 
+	public static Memory<VertexPositionTexture2D> GetQuadVertexPositionTexture(bool isClipSpaceYInverted = false)
+	{
+		if (isClipSpaceYInverted)
+		{
+			return new Memory<VertexPositionTexture2D>
+				([
+					new(new(-1, -1), new(0, 0)),
+					new(new(1, -1), new(1, 0)),
+					new(new(1, 1), new(1, 1)),
+					new(new(-1, 1), new(0, 1))
+				]);
+		}
+		else
+		{
+			return new Memory<VertexPositionTexture2D>
+			([
+				new(new(-1, 1), new(0, 0)),
+				new(new(1, 1), new(1, 0)),
+				new(new(1, -1), new(1, 1)),
+				new(new(-1, -1), new(0, 1))
+			]);
+		}
+	}
+
 	public static VertexPositionTexture[] GetCubeVertexPositionTexture(Vector3 scale)
 	{
 		VertexPositionTexture[] vertices =
@@ -236,6 +260,26 @@ public struct VertexPositionTexture
 		NormalX = normal.X;
 		NormalY = normal.Y;
 		NormalZ = normal.Z;
+
+		TexU = uv.X;
+		TexV = uv.Y;
+	}
+}
+
+public struct VertexPositionTexture2D
+{
+	public const uint SizeInBytes = sizeof(float) * 4;
+
+	public float PosX;
+	public float PosY;
+
+	public float TexU;
+	public float TexV;
+
+	public VertexPositionTexture2D(Vector2 pos, Vector2 uv)
+	{
+		PosX = pos.X;
+		PosY = pos.Y;
 
 		TexU = uv.X;
 		TexV = uv.Y;

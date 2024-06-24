@@ -90,6 +90,27 @@ public sealed class GraphicsWorld
 		}
 	}
 
+	private readonly object framebufferSyncRoot = new();
+	private Framebuffer renderFramebuffer;
+	public Framebuffer RenderFramebuffer
+	{
+		get
+		{
+			lock (framebufferSyncRoot)
+			{
+				return renderFramebuffer;
+			}
+		}
+
+		set
+		{
+			lock (framebufferSyncRoot)
+			{
+				renderFramebuffer = value;
+			}
+		}
+	}
+
 	private CommandList commandList;
 
 	private DeviceBuffer cameraProjViewBuffer;
@@ -182,7 +203,10 @@ public sealed class GraphicsWorld
 	public ShaderLoader ShaderLoader { get; private set; }
 
 	private string responseSpinner = "_";
-	public string ResponseSpinner { get { lock(responseSpinner) return responseSpinner; } } // The response spinner can be used to visually show that the thread is running correctly and is not stopped or deadlocked.
+	/// <summary>
+	/// The response spinner can be used to visually show in the UI that the thread is running correctly and is not stopped or deadlocked.
+	/// </summary>
+	public string ResponseSpinner { get { lock(responseSpinner) return responseSpinner; } }
 	
 	private Camera camera;
 	public Camera Camera
@@ -202,6 +226,8 @@ public sealed class GraphicsWorld
 			}
 		}
 	}
+
+	private FullscreenQuad fullscreenQuad;
 
 	public IntervalUnit FrametimeLowerLimit { get; set; } = 0.001;
 
@@ -244,12 +270,15 @@ public sealed class GraphicsWorld
 
 		// These depend on the shader loader
 		CreateDeviceObjects(gd, factory, swapchain);
-
 		RenderingResources.CreateStaticDeviceResources(this);
 
 		// These depend on device resources.
 		PostProcessing = new();
 		PostProcessing.CreateDeviceResources(this);
+
+		// These depend on rendering resources
+		fullscreenQuad = new();
+		fullscreenQuad.CreateDeviceObject(this);
 
 		// These depend on device resources.
 		MeshLoader = new(this);
@@ -273,9 +302,31 @@ public sealed class GraphicsWorld
 				swapchain.Resize(Window.Width, Window.Height);
 			}
 
+			CreateRenderFramebuffer();
+
 			GraphicsDevice.ResizeMainWindow(Window.Width, Window.Height);
 
 			WindowResized?.Invoke((int)Window.Width, (int)Window.Height);
+		}
+	}
+
+	private void CreateRenderFramebuffer()
+	{
+		lock (framebufferSyncRoot)
+		{
+			if (RenderFramebuffer is not null)
+			{
+				renderFramebuffer.Dispose();
+			}
+
+			Texture depthTexture = Factory.CreateTexture(TextureDescription.Texture2D(Window.Width, Window.Height, 1, 1, RenderingResources.DepthFormat, TextureUsage.DepthStencil | TextureUsage.Sampled));
+			depthTexture.Name = "Render framebuffer depth texture";
+			Texture colorTexture = Factory.CreateTexture(TextureDescription.Texture2D(Window.Width, Window.Height, 1, 1, RenderingResources.ColorFormat, TextureUsage.RenderTarget | TextureUsage.Sampled));
+			colorTexture.Name = "Render framebuffer color texture";
+			var framebuffer = Factory.CreateFramebuffer(new(depthTexture, colorTexture));
+			framebuffer.Name = "Render framebuffer";
+
+			RenderFramebuffer = framebuffer;
 		}
 	}
 
@@ -340,6 +391,8 @@ public sealed class GraphicsWorld
 		this.graphicsDevice = gd;
 		this.factory = factory;
 		this.swapchain = swapchain;
+
+		CreateRenderFramebuffer();
 
 		commandList = factory.CreateCommandList();
 
@@ -413,7 +466,6 @@ public sealed class GraphicsWorld
 
 			// Update per-frame resources.
 			commandList.UpdateBuffer(CameraProjViewBuffer, 0, new MatrixPair(Camera.ViewMatrix.ToMatrix4x4(), Camera.ProjectionMatrix.ToMatrix4x4()));
-
 			commandList.UpdateBuffer(lightInfoBuffer, 0, new LightInfo(lightDir.ToVector3(), Camera.Transform.Position.ToVector3()));
 
 			Matrix4x4.Invert(Camera.ProjectionMatrix.ToMatrix4x4(), out Matrix4x4 inverseProjection);
@@ -422,11 +474,7 @@ public sealed class GraphicsWorld
 				inverseProjection,
 				inverseView));
 
-			lock (swapchain)
-			{
-				// We want to render directly to the output Window.
-				commandList.SetFramebuffer(swapchain.Framebuffer);
-			}
+			commandList.SetFramebuffer(renderFramebuffer);
 			commandList.ClearColorTarget(0, RgbaFloat.Pink);
 			commandList.ClearDepthStencil(1f);
 
@@ -481,13 +529,26 @@ public sealed class GraphicsWorld
 			}
 			commandList.PopDebugGroup();
 
-			commandList.PushDebugGroup("");
-			PostProcessing.AddPostEffectCommands(commandList, deltaTime);
-			commandList.PopDebugGroup();
-
 			commandList.PushDebugGroup("Custom draw operations");
 			CustomDrawOperations?.Invoke(commandList);
 			commandList.PopDebugGroup();
+
+			PostProcessing.AddPostEffectCommands(commandList, deltaTime);
+
+			// Direct3D 11 doesn't allow easy access to the device textures, so we render to a fullscreen quad instead.
+			switch (graphicsDevice.BackendType)
+			{
+				case GraphicsBackend.Direct3D11:
+					commandList.SetFramebuffer(swapchain.Framebuffer);
+					fullscreenQuad.AddDrawCommands(commandList, deltaTime);
+					break;
+				case GraphicsBackend.Vulkan:
+				case GraphicsBackend.OpenGL:
+				case GraphicsBackend.Metal:
+				case GraphicsBackend.OpenGLES:
+					commandList.CopyTexture(renderFramebuffer.ColorTargets[0].Target, swapchain.Framebuffer.ColorTargets[0].Target);
+					break;
+			}
 
 			// End() must be called before commands can be submitted for execution.
 			commandList.End();

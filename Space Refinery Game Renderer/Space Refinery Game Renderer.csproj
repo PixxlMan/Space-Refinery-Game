@@ -25,6 +25,8 @@
     <None Remove="Shaders\ConstructionMarker-vertex.glsl" />
     <None Remove="Shaders\DebugRenderable-fragment.glsl" />
     <None Remove="Shaders\DebugRenderable-vertex.glsl" />
+    <None Remove="Shaders\FullscreenQuad-fragment.glsl" />
+    <None Remove="Shaders\FullscreenQuad-vertex.glsl" />
     <None Remove="Shaders\Sky-fragment.glsl" />
     <None Remove="Shaders\Sky-vertex.glsl" />
     <None Remove="Starfield-fragment.glsl" />
@@ -40,6 +42,12 @@
     </Content>
     <Content Include="Shaders\ConstructionMarker-vertex.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\FullscreenQuad-vertex.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\FullscreenQuad-fragment.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\EntityRenderable-fragment.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -68,6 +76,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="SharpGLTF.Core" Version="1.0.0" />
+    <PackageReference Include="SharpGLTF.Toolkit" Version="1.0.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
     <PackageReference Include="Veldrid" Version="4.9.0" />
     <PackageReference Include="Veldrid.ImageSharp" Version="4.9.0" />

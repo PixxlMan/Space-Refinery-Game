@@ -1,7 +1,5 @@
 ﻿using FixedPrecision;
 using Space_Refinery_Utilities;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using Veldrid;
 
 namespace Space_Refinery_Game_Renderer;
@@ -10,13 +8,11 @@ public sealed class PostProcessing
 {
 	private SortedDictionary<int, List<IPostEffect>> postEffects = [];
 
-	public Texture ScreenTextureColorIn;
-	public Texture ScreenTextureColorOut;
-	public Texture ScreenTextureDepth;
+	private Texture screenTextureColorIn;
+	public Texture screenTextureColorOut;
 	
-	public TextureView ScreenTextureColorInView;
-	public TextureView ScreenTextureColorOutView;
-	public TextureView ScreenTextureDepthView;
+	private TextureView screenTextureColorInView;
+	private TextureView screenTextureDepthView;
 
 	private GraphicsWorld graphicsWorld;
 
@@ -24,15 +20,17 @@ public sealed class PostProcessing
 	{
 		this.graphicsWorld = graphicsWorld;
 
-		var color = this.graphicsWorld.Swapchain.Framebuffer.ColorTargets[0].Target;
-		var depth = this.graphicsWorld.Swapchain.Framebuffer.DepthTarget!.Value.Target;
+		var color = this.graphicsWorld.RenderFramebuffer.ColorTargets[0].Target;
 
-		ScreenTextureColorIn = this.graphicsWorld.Factory.CreateTexture(new(color.Width, color.Height, 1, color.MipLevels, color.ArrayLayers, color.Format, TextureUsage.Sampled, TextureType.Texture2D, color.SampleCount));
-		ScreenTextureColorOut = this.graphicsWorld.Factory.CreateTexture(new(color.Width, color.Height, 1, color.MipLevels, color.ArrayLayers, color.Format, TextureUsage.Storage, TextureType.Texture2D, color.SampleCount));
-		ScreenTextureDepth = this.graphicsWorld.Factory.CreateTexture(new(depth.Width, depth.Height, 1, depth.MipLevels, depth.ArrayLayers, depth.Format, TextureUsage.Sampled, TextureType.Texture2D, depth.SampleCount));
+		screenTextureColorIn = this.graphicsWorld.Factory.CreateTexture(TextureDescription.Texture2D(color.Width, color.Height, 1, 1, color.Format, TextureUsage.Sampled));
+		screenTextureColorIn.Name = "Screen Texture Color In";
+		screenTextureColorOut = this.graphicsWorld.Factory.CreateTexture(TextureDescription.Texture2D(color.Width, color.Height, 1, 1, color.Format, TextureUsage.Sampled | TextureUsage.Storage | TextureUsage.RenderTarget));
+		screenTextureColorOut.Name = "Screen Texture Color Out";
 
-		ScreenTextureColorInView = this.graphicsWorld.Factory.CreateTextureView(ScreenTextureColorIn);
-		ScreenTextureDepthView = this.graphicsWorld.Factory.CreateTextureView(ScreenTextureDepth);
+		screenTextureColorInView = this.graphicsWorld.Factory.CreateTextureView(screenTextureColorIn);
+		screenTextureColorInView.Name = "Screen Texture Color In View";
+		screenTextureDepthView = this.graphicsWorld.Factory.CreateTextureView(graphicsWorld.RenderFramebuffer.DepthTarget!.Value.Target);
+		screenTextureDepthView.Name = "Screen Depth View";
 	}
 
 	public void AddPostEffect(int order, IPostEffect postEffect)
@@ -52,29 +50,34 @@ public sealed class PostProcessing
 			postEffects.Add(order, list);
 		}
 
-		postEffect.CreateDeviceObjects(graphicsWorld, ScreenTextureColorInView, ScreenTextureColorOut, ScreenTextureDepthView);
+		postEffect.CreateDeviceObjects(graphicsWorld, screenTextureColorInView, screenTextureColorOut, screenTextureDepthView);
 
 		Logging.LogScopeEnd();
 	}
 
 	public void AddPostEffectCommands(CommandList commandList, FixedDecimalLong8 deltaTime)
 	{
-		commandList.CopyTexture(graphicsWorld.Swapchain.Framebuffer.ColorTargets[0].Target, ScreenTextureColorIn);
-		commandList.CopyTexture(graphicsWorld.Swapchain.Framebuffer.DepthTarget!.Value.Target, ScreenTextureDepth);
+		commandList.PushDebugGroup("Post processing effects");
 
-		Debug.Assert(graphicsWorld.Swapchain.Framebuffer.ColorTargets.Count == 1);
+		commandList.CopyTexture(graphicsWorld.RenderFramebuffer.ColorTargets[0].Target, screenTextureColorIn);
 
 		foreach ((_, List<IPostEffect> currentOrderPostEffects) in postEffects)
 		{
 			foreach (IPostEffect postEffect in currentOrderPostEffects)
 			{
+				commandList.PushDebugGroup(postEffect.Name);
+
 				postEffect.AddEffectCommands(commandList, deltaTime);
 
-				commandList.CopyTexture(ScreenTextureColorOut, ScreenTextureColorIn);
+				commandList.CopyTexture(screenTextureColorOut, screenTextureColorIn);
+
+				commandList.PopDebugGroup();
 			}
 		}
 
-		commandList.CopyTexture(ScreenTextureColorIn, graphicsWorld.Swapchain.Framebuffer.ColorTargets[0].Target);
+		commandList.CopyTexture(screenTextureColorOut, graphicsWorld.RenderFramebuffer.ColorTargets[0].Target);
+
+		commandList.PopDebugGroup();
 	}
 }
 
@@ -84,7 +87,7 @@ public interface IPostEffect
 
 	public void AddEffectCommands(CommandList commandList, FixedDecimalLong8 deltaTime);
 
-	public void CreateDeviceObjects(GraphicsWorld graphicsWorld, TextureView screenTextureColorIn, Texture screenTextureColorOut, TextureView screenTextureDepth);
+	public void CreateDeviceObjects(GraphicsWorld graphicsWorld, TextureView screenTextureColorInView, Texture screenTextureColorOut, TextureView screenTextureDepthView);
 }
 
 public sealed record class Bloom : IPostEffect
@@ -110,13 +113,12 @@ public sealed record class Bloom : IPostEffect
 	public void AddEffectCommands(CommandList commandList, FixedDecimalLong8 deltaTime)
 	{
 		commandList.SetPipeline(bloomPipeline);
-
 		commandList.SetComputeResourceSet(0, bloomResources);
 
-		commandList.Dispatch(screenTextureColorInView.Target.Width / 32, screenTextureColorInView.Target.Height / 32, 1);
+		commandList.Dispatch((screenTextureColorInView.Target.Width + 31) / 32, (screenTextureColorInView.Target.Height + 31) / 32, 1);
 	}
 
-	public void CreateDeviceObjects(GraphicsWorld graphicsWorld, TextureView screenTextureColorIn, Texture screenTextureColorOut, TextureView screenTextureDepth)
+	public void CreateDeviceObjects(GraphicsWorld graphicsWorld, TextureView screenTextureColorInView, Texture screenTextureColorOut, TextureView screenTextureDepthView)
 	{
 		if (hasCreatedDeviceObjects)
 		{
@@ -125,30 +127,37 @@ public sealed record class Bloom : IPostEffect
 
 		this.graphicsWorld = graphicsWorld;
 
-		this.screenTextureColorInView = screenTextureColorIn;
+		this.screenTextureColorInView = screenTextureColorInView;
 		this.screenTextureColorOut = screenTextureColorOut;
-		this.screenTextureDepthView = screenTextureDepth;
+		this.screenTextureDepthView = screenTextureDepthView;
 
 		ResourceLayoutDescription bloomResourceLayoutDescription = new(
+			new ResourceLayoutElementDescription("Sampler", ResourceKind.Sampler, ShaderStages.Compute),
 			new ResourceLayoutElementDescription("ScreenTextureColorIn", ResourceKind.TextureReadOnly, ShaderStages.Compute),
-			new ResourceLayoutElementDescription("ScreenTextureColorOut", ResourceKind.TextureReadWrite, ShaderStages.Compute),
 			new ResourceLayoutElementDescription("ScreenTextureDepth", ResourceKind.TextureReadOnly, ShaderStages.Compute),
-			new ResourceLayoutElementDescription("Sampler", ResourceKind.Sampler, ShaderStages.Compute));
-		ResourceLayout bloomResourceLayout = graphicsWorld.Factory.CreateResourceLayout(bloomResourceLayoutDescription);
+			new ResourceLayoutElementDescription("ScreenTextureColorOut", ResourceKind.TextureReadWrite, ShaderStages.Compute));
+		ResourceLayout bloomResourceLayout = graphicsWorld.Factory.CreateResourceLayout(ref bloomResourceLayoutDescription);
 
-		ResourceSetDescription bloomResourcesDescription = new(bloomResourceLayout, screenTextureColorIn, screenTextureColorOut, screenTextureDepth, graphicsWorld.GraphicsDevice.PointSampler);
-		bloomResources = graphicsWorld.Factory.CreateResourceSet(bloomResourcesDescription);
+		ResourceSetDescription bloomResourcesDescription = new(
+			bloomResourceLayout,
+			[
+				graphicsWorld.GraphicsDevice.PointSampler,
+				screenTextureColorInView,
+				screenTextureDepthView,
+				screenTextureColorOut,
+			]);
+		bloomResources = graphicsWorld.Factory.CreateResourceSet(ref bloomResourcesDescription);
 
 		ComputePipelineDescription postProcessingPipelineDescription = new()
 		{
 			//Specializations = [new SpecializationConstant()],
 			ComputeShader = graphicsWorld.ShaderLoader.LoadComputeCached("Bloom"),
-			ThreadGroupSizeX = 32,
-			ThreadGroupSizeY = 32,
-			ThreadGroupSizeZ = 1,
+			//ThreadGroupSizeX = 32,
+			//ThreadGroupSizeY = 32,
+			//ThreadGroupSizeZ = 1,
 			ResourceLayouts = [bloomResourceLayout],
 		};
-		bloomPipeline = graphicsWorld.Factory.CreateComputePipeline(postProcessingPipelineDescription);
+		bloomPipeline = graphicsWorld.Factory.CreateComputePipeline(ref postProcessingPipelineDescription);
 
 		hasCreatedDeviceObjects = true;
 	}

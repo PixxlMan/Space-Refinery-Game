@@ -12,8 +12,6 @@ layout(local_size_x = 32, local_size_y = 32) in;
 void main()
 {
     ivec2 pixelPos = ivec2(gl_GlobalInvocationID.xy);
-    ivec2 texSize = textureSize(TexColorIn, 0);
-    vec2 texPos = vec2(dvec2(pixelPos.xy) / dvec2(texSize));
-    vec4 color = texture(sampler2D(TexColorIn, Samp), texPos);
+    vec4 color = texelFetch(sampler2D(TexColorIn, Samp), pixelPos, 0);
     imageStore(TexColorOut, pixelPos, color);
 }

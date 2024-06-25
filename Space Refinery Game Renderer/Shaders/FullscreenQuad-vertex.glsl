@@ -6,6 +6,6 @@ layout(location = 0) out vec2 fsin_0;
 
 void main()
 {
-    fsin_0 = TexCoords;
-    gl_Position = vec4(Position.x, Position.y, 0, 1);
+	fsin_0 = TexCoords;
+	gl_Position = vec4(Position.x, Position.y, 0, 1);
 }

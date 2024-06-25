@@ -27,18 +27,18 @@ vec3 lottes(vec3 x) {
   const vec3 midOut = vec3(0.267);
 
   const vec3 b =
-      (-pow(midIn, a) + pow(hdrMax, a) * midOut) /
-      ((pow(hdrMax, a * d) - pow(midIn, a * d)) * midOut);
+	  (-pow(midIn, a) + pow(hdrMax, a) * midOut) /
+	  ((pow(hdrMax, a * d) - pow(midIn, a * d)) * midOut);
   const vec3 c =
-      (pow(hdrMax, a * d) * pow(midIn, a) - pow(hdrMax, a) * pow(midIn, a * d) * midOut) /
-      ((pow(hdrMax, a * d) - pow(midIn, a * d)) * midOut);
+	  (pow(hdrMax, a * d) * pow(midIn, a) - pow(hdrMax, a) * pow(midIn, a * d) * midOut) /
+	  ((pow(hdrMax, a * d) - pow(midIn, a * d)) * midOut);
 
   return pow(x, a) / (pow(x, a * d) * b + c);
 }
 
 void main()
 {
-    vec4 color = texture(sampler2D(SourceTexture, SourceSampler), fsin_TexCoords);
+	vec4 color = texture(sampler2D(SourceTexture, SourceSampler), fsin_TexCoords);
 
-    OutputColor = vec4(lottes(color.xyz), 1);
+	OutputColor = vec4(lottes(color.xyz), 1);
 }

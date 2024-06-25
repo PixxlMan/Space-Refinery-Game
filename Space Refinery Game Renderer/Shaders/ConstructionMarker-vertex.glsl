@@ -4,8 +4,8 @@
 
 layout(set = 0, binding = 1) uniform ProjView
 {
-    mat4 Proj;
-    mat4 View;
+	mat4 Proj;
+	mat4 View;
 };
 
 layout(location = 0) in vec3 Position;
@@ -27,11 +27,11 @@ layout(location = 0) out vec4 color;
 
 void main()
 {
-    mat3 instanceRotFull = mat3(InstanceRotationM11, InstanceRotationM12, InstanceRotationM13, InstanceRotationM21, InstanceRotationM22, InstanceRotationM23,InstanceRotationM31, InstanceRotationM32, InstanceRotationM33);
+	mat3 instanceRotFull = mat3(InstanceRotationM11, InstanceRotationM12, InstanceRotationM13, InstanceRotationM21, InstanceRotationM22, InstanceRotationM23,InstanceRotationM31, InstanceRotationM32, InstanceRotationM33);
 
-    vec3 transformedPos = (instanceRotFull * Position) + InstancePosition;
-    vec4 pos = vec4(transformedPos, 1); 
-    gl_Position = View * Proj * pos;
+	vec3 transformedPos = (instanceRotFull * Position) + InstancePosition;
+	vec4 pos = vec4(transformedPos, 1); 
+	gl_Position = View * Proj * pos;
 
-    color = Color;
+	color = Color;
 }

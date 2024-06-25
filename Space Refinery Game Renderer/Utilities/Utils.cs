@@ -181,6 +181,46 @@ public static class Utils
 		}
 	}
 
+	public static Texture CreateIdenticalTexture(Texture texture, ResourceFactory factory)
+	{
+		return factory.CreateTexture(
+			TextureDescription.Texture2D(
+				texture.Width,
+				texture.Height,
+				texture.MipLevels,
+				texture.ArrayLayers,
+				texture.Format,
+				texture.Usage
+				)
+			);
+	}
+	
+	public static Texture CloneTexture(Texture texture, CommandList commandList, ResourceFactory factory)
+	{
+		var clone = CreateIdenticalTexture(texture, factory);
+		commandList.CopyTexture(texture, clone);
+
+		return clone;
+	}
+
+	public static Texture CloneTexture(Texture texture, GraphicsDevice graphicsDevice, ResourceFactory factory)
+	{
+		var commandList = factory.CreateCommandList();
+		commandList.Begin();
+
+		var clone = CloneTexture(texture, commandList, factory);
+
+		var fence = factory.CreateFence(false);
+		fence.Name = "Texture clone completion fence";
+
+		commandList.End();
+		graphicsDevice.SubmitCommands(commandList, fence);
+		graphicsDevice.WaitForFence(fence);
+		commandList.Dispose();
+		fence.Dispose();
+
+		return clone;
+	}
 
 	public static Mesh CreateDeviceResources(VertexPositionTexture[] vertexData, ushort[] indexData, GraphicsDevice gd, ResourceFactory factory)
 	{

@@ -23,9 +23,9 @@ namespace Space_Refinery_Engine
 			}
 		}
 
-		protected IInformationProvider informationProvider;
+		protected IInformationProvider? informationProvider;
 
-		public IInformationProvider InformationProvider => informationProvider;
+		public IInformationProvider? InformationProvider => informationProvider;
 
 		public LevelObjectType LevelObjectType { get; private set; }
 

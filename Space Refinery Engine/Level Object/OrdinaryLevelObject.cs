@@ -4,6 +4,6 @@ public sealed class OrdinaryLevelObject : StaticLevelObject
 {
 	private OrdinaryLevelObject()
 	{
-		informationProvider = new LevelObjectInformationProvider(this);
+		informationProvider = null;
 	}
 }

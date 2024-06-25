@@ -30,9 +30,9 @@ vec3 starField(vec3 pos)
     if (rnd >= threshhold)
     {
         float starCol = pow(abs((rnd - threshhold) / (1.0 - threshhold)), 16.0);
-        color += vec3(starCol, starCol, starCol);
+        color = vec3(starCol, starCol, starCol);
     }
-    return color;
+    return color * 10;
 }
 
 void main()

@@ -2,7 +2,7 @@
 using System.Numerics;
 using Veldrid;
 
-namespace Space_Refinery_Game.Renderer;
+namespace Space_Refinery_Engine.Renderer;
 
 public class SkyRenderable : IRenderable
 {
@@ -30,7 +30,7 @@ public class SkyRenderable : IRenderable
 
 		ShaderSetDescription starfieldShaders = new(
 			[],
-			Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), "Sky", graphicsWorld.Factory));
+			Utils.LoadShaders(SerializationPaths.ShadersPath, "Sky", graphicsWorld.Factory));
 
 		starfieldPipeline = graphicsWorld.Factory.CreateGraphicsPipeline(new GraphicsPipelineDescription(
 			BlendStateDescription.SingleOverrideBlend,

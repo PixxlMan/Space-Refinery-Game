@@ -3,7 +3,7 @@ using SharpGLTF.Memory;
 using Space_Refinery_Engine;
 using Veldrid;
 
-namespace Space_Refinery_Game.Renderer;
+namespace Space_Refinery_Engine.Renderer;
 
 public sealed class MaterialLoader(GraphicsWorld graphicsWorld)
 {

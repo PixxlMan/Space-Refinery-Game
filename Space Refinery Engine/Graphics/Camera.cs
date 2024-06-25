@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using FixedPrecision;
 
-namespace Space_Refinery_Game.Renderer;
+namespace Space_Refinery_Engine.Renderer;
 
 // TODO: thread safety?
 public sealed class Camera

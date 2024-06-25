@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using System.Runtime.InteropServices;
 
-namespace Space_Refinery_Game.Renderer;
+namespace Space_Refinery_Engine.Renderer;
 
 [StructLayout(LayoutKind.Sequential)]
 public struct LightInfo

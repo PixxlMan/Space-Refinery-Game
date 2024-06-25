@@ -9,4 +9,6 @@ public static class SerializationPaths
 	public static readonly string ExtensionManifestFileExtension = ".manifest.srh.xml";
 
 	public static readonly string SerializableReferenceHandlerFileExtension = ".srh.xml";
+
+	public static readonly string ShadersPath = Path.Combine(Environment.CurrentDirectory, "Graphics", "Shaders");
 }

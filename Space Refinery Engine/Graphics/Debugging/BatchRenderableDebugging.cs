@@ -1,6 +1,6 @@
 ﻿using ImGuiNET;
 
-namespace Space_Refinery_Game.Renderer;
+namespace Space_Refinery_Engine.Renderer;
 
 public partial class BatchRenderable
 {

@@ -1,7 +1,7 @@
 ﻿using FixedPrecision;
 using Veldrid;
 
-namespace Space_Refinery_Game.Renderer;
+namespace Space_Refinery_Engine.Renderer;
 
 internal readonly struct DebugRenderable(Mesh mesh, DeviceBuffer transformationBuffer, DeviceBuffer colorBuffer) : IRenderable, IDisposable
 {

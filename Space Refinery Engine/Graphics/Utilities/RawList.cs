@@ -9,7 +9,7 @@ using System.Diagnostics;
 // CREDIT: MIT, mellinoe
 // MODIFIED: intercompatibility with IList, bugfix with count and enumerable
 
-namespace Space_Refinery_Game.Renderer;
+namespace Space_Refinery_Engine.Renderer;
 
 /// <summary>
 /// A resizable, generic list which exposes direct access to its underlying array.

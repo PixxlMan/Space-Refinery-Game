@@ -1,8 +1,8 @@
 ﻿using FixedPrecision;
 using Veldrid;
-using static Space_Refinery_Game.Renderer.RenderingResources;
+using static Space_Refinery_Engine.Renderer.RenderingResources;
 
-namespace Space_Refinery_Game.Renderer;
+namespace Space_Refinery_Engine.Renderer;
 
 public sealed class FullscreenQuad : IRenderable
 {

@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Veldrid;
 
-namespace Space_Refinery_Game.Renderer;
+namespace Space_Refinery_Engine.Renderer;
 
 public sealed class ShaderLoader
 {
@@ -21,7 +21,7 @@ public sealed class ShaderLoader
 		{
 			Logging.LogScopeStart($"Vertex-fragment shader loading '{shaderName}'");
 
-			var path = Path.Combine(Environment.CurrentDirectory, "Shaders");
+			var path = Path.Combine(Environment.CurrentDirectory, "Graphics", "Shaders");
 			shaders = Utils.LoadShaders(path, shaderName, graphicsWorld.Factory);
 
 			shaderCache.Add(shaderName, shaders);
@@ -45,7 +45,7 @@ public sealed class ShaderLoader
 		{
 			Logging.LogScopeStart($"Compute shader loading '{shaderName}'");
 
-			var path = Path.Combine(Environment.CurrentDirectory, "Shaders");
+			var path = Path.Combine(Environment.CurrentDirectory, "Graphics", "Shaders");
 			shader = Utils.LoadShader(path, shaderName, graphicsWorld.Factory);
 
 			shaderCache.Add(shaderName, [shader]);

@@ -1,7 +1,7 @@
 ﻿using FixedPrecision;
 using Veldrid;
 
-namespace Space_Refinery_Game.Renderer;
+namespace Space_Refinery_Engine.Renderer;
 
 public interface IRenderable
 {

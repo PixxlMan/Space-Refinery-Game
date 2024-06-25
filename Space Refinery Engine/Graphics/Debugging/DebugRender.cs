@@ -3,7 +3,7 @@ using Space_Refinery_Engine;
 using System.Numerics;
 using Veldrid;
 
-namespace Space_Refinery_Game.Renderer;
+namespace Space_Refinery_Engine.Renderer;
 
 public sealed class DebugRender : IRenderable
 {
@@ -93,7 +93,7 @@ public sealed class DebugRender : IRenderable
 			ResourceLayouts = [sharedLayout],
 			ShaderSet = new ShaderSetDescription(
 				vertexLayouts: [RenderingResources.VertexLayout, colorVertexLayout, transformationVertexShaderParameterLayout],
-				shaders: Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), "DebugRenderable", graphicsWorld.Factory)
+				shaders: Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Graphics", "Shaders"), "DebugRenderable", graphicsWorld.Factory)
 			),
 			Outputs = graphicsWorld.RenderingOutputDescription
 		};
@@ -118,7 +118,7 @@ public sealed class DebugRender : IRenderable
 			ResourceLayouts = [sharedLayout],
 			ShaderSet = new ShaderSetDescription(
 				vertexLayouts: [RenderingResources.VertexLayout, colorVertexLayout, transformationVertexShaderParameterLayout],
-				shaders: Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), "DebugRenderable", graphicsWorld.Factory)
+				shaders: Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Graphics", "Shaders"), "DebugRenderable", graphicsWorld.Factory)
 			),
 			Outputs = graphicsWorld.RenderingOutputDescription
 		};

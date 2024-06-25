@@ -19,7 +19,8 @@ vec3 aces(vec3 x)
   return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
 }
 
-vec3 lottes(vec3 x) {
+vec3 lottes(vec3 x)
+{
   const vec3 a = vec3(1.6);
   const vec3 d = vec3(0.977);
   const vec3 hdrMax = vec3(8.0);
@@ -34,6 +35,17 @@ vec3 lottes(vec3 x) {
 	  ((pow(hdrMax, a * d) - pow(midIn, a * d)) * midOut);
 
   return pow(x, a) / (pow(x, a * d) * b + c);
+}
+
+vec3 none(vec3 x)
+{
+	return x;
+}
+
+vec3 reinhard2(vec3 x) {
+  const float L_white = 4.0;
+
+  return (x * (1.0 + x / (L_white * L_white))) / (1.0 + x);
 }
 
 void main()

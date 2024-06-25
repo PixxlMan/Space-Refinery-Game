@@ -111,6 +111,8 @@ public sealed class GraphicsWorld
 		}
 	}
 
+	public OutputDescription RenderingOutputDescription => RenderFramebuffer.OutputDescription;
+
 	private CommandList commandList;
 
 	private DeviceBuffer cameraProjViewBuffer;
@@ -197,9 +199,7 @@ public sealed class GraphicsWorld
 	public PostProcessing PostProcessing { get; private set; }
 
 	public MeshLoader MeshLoader { get; private set; }
-
 	public MaterialLoader MaterialLoader { get; private set; }
-
 	public ShaderLoader ShaderLoader { get; private set; }
 
 	private string responseSpinner = "_";
@@ -321,7 +321,7 @@ public sealed class GraphicsWorld
 
 			Texture depthTexture = Factory.CreateTexture(TextureDescription.Texture2D(Window.Width, Window.Height, 1, 1, RenderingResources.DepthFormat, TextureUsage.DepthStencil | TextureUsage.Sampled));
 			depthTexture.Name = "Render framebuffer depth texture";
-			Texture colorTexture = Factory.CreateTexture(TextureDescription.Texture2D(Window.Width, Window.Height, 1, 1, RenderingResources.ColorFormat, TextureUsage.RenderTarget | TextureUsage.Sampled));
+			Texture colorTexture = Factory.CreateTexture(TextureDescription.Texture2D(Window.Width, Window.Height, 1, 1, RenderingResources.InternalColorFormat, TextureUsage.RenderTarget | TextureUsage.Sampled));
 			colorTexture.Name = "Render framebuffer color texture";
 			var framebuffer = Factory.CreateFramebuffer(new(depthTexture, colorTexture));
 			framebuffer.Name = "Render framebuffer";

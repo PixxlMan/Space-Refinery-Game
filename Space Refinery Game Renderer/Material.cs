@@ -86,6 +86,8 @@ public sealed class Material
 
 		Material material = FromTextures(gd, factory, name, diffuseTexture, metallicTexture, roughnessTexture, ambientOcclusionTexture);
 
+		Logging.Log($"Created new material {name} from disk");
+
 		Logging.LogScopeEnd();
 
 		return material;
@@ -108,6 +110,8 @@ public sealed class Material
 				ambientOcclusionTextureView
 			)
 		);
+
+		Logging.Log($"Created new material {name} from textures");
 
 		return new Material(name, textureSet, metallicTexture, roughnessTexture, ambientOcclusionTexture);
 	}

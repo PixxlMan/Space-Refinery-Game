@@ -16,11 +16,11 @@ public sealed class Starfield
 		Renderable = renderable;
 	}
 
-	public static Starfield CreateAndAdd(GraphicsWorld graphWorld)
+	public static Starfield CreateAndAdd(GraphicsWorld graphicsWorld)
 	{
-		StarfieldRenderable renderable = StarfieldRenderable.Create(graphWorld.ViewInfoBuffer, graphWorld.GraphicsDevice, graphWorld.Factory);
+		StarfieldRenderable renderable = StarfieldRenderable.Create(graphicsWorld.ViewInfoBuffer, graphicsWorld);
 
-		var starfield = new Starfield(graphWorld, renderable);
+		var starfield = new Starfield(graphicsWorld, renderable);
 
 		starfield.AddToGraphicsWorld();
 

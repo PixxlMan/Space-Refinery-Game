@@ -14,11 +14,11 @@ public sealed class Sky
 		Renderable = renderable;
 	}
 
-	public static Sky CreateAndAdd(GraphicsWorld graphWorld)
+	public static Sky CreateAndAdd(GraphicsWorld graphicsWorld)
 	{
-		SkyRenderable renderable = SkyRenderable.Create(graphWorld.ViewInfoBuffer, graphWorld.GraphicsDevice, graphWorld.Factory);
+		SkyRenderable renderable = SkyRenderable.Create(graphicsWorld.ViewInfoBuffer, graphicsWorld);
 
-		var starfield = new Sky(graphWorld, renderable);
+		var starfield = new Sky(graphicsWorld, renderable);
 
 		starfield.AddToGraphicsWorld();
 

@@ -57,6 +57,11 @@ public sealed class PostProcessing
 
 	public void AddPostEffectCommands(CommandList commandList, FixedDecimalLong8 deltaTime)
 	{
+		//if (!DebugSettings.Shared.AccessSetting<BooleanDebugSetting>($"Do post effects"))
+		//{
+		//	return;
+		//}
+
 		commandList.PushDebugGroup("Post processing effects");
 
 		commandList.CopyTexture(graphicsWorld.RenderFramebuffer.ColorTargets[0].Target, screenTextureColorIn);
@@ -65,6 +70,11 @@ public sealed class PostProcessing
 		{
 			foreach (IPostEffect postEffect in currentOrderPostEffects)
 			{
+				//if (!DebugSettings.Shared.AccessSetting<BooleanDebugSetting>($"Do post effect {postEffect.Name}"))
+				//{
+				//	continue;
+				//}
+
 				commandList.PushDebugGroup(postEffect.Name);
 
 				postEffect.AddEffectCommands(commandList, deltaTime);

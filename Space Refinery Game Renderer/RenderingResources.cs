@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.HighPerformance;
-using Space_Refinery_Utilities;
+﻿using Space_Refinery_Utilities;
 using Veldrid;
 
 namespace Space_Refinery_Game_Renderer;
@@ -8,8 +7,11 @@ public static class RenderingResources
 {
 	public static bool HasCreatedStaticDeviceResources { get; private set; } = false;
 
-	public static Texture DefaultTexture { get; private set; }
+	public static Texture WhiteTexture { get; private set; }
 
+	public static Texture NeutralNormal { get; private set; }
+
+	public static Texture DefaultTexture { get; private set; }
 	public static Material DefaultMaterial { get; private set; }
 
 	/// <summary>
@@ -55,10 +57,11 @@ public static class RenderingResources
 		ResourceLayoutElementDescription[] materialLayoutDescriptions =
 		{
 			new ResourceLayoutElementDescription("Sampler", ResourceKind.Sampler, ShaderStages.Fragment),
-			new ResourceLayoutElementDescription("DiffuseTexture", ResourceKind.TextureReadOnly, ShaderStages.Fragment),
+			new ResourceLayoutElementDescription("AlbedoTexture", ResourceKind.TextureReadOnly, ShaderStages.Fragment),
+			new ResourceLayoutElementDescription("NormalTexture", ResourceKind.TextureReadOnly, ShaderStages.Fragment),
 			new ResourceLayoutElementDescription("MetallicTexture", ResourceKind.TextureReadOnly, ShaderStages.Fragment),
 			new ResourceLayoutElementDescription("RoughnessTexture", ResourceKind.TextureReadOnly, ShaderStages.Fragment),
-			new ResourceLayoutElementDescription("AOTexture", ResourceKind.TextureReadOnly, ShaderStages.Fragment),
+			new ResourceLayoutElementDescription("AmbientOcclusionTexture", ResourceKind.TextureReadOnly, ShaderStages.Fragment),
 		};
 		MaterialLayout = graphicsWorld.Factory.CreateResourceLayout(new ResourceLayoutDescription(materialLayoutDescriptions));
 
@@ -177,8 +180,12 @@ public static class RenderingResources
 		};
 		FullscreenQuadPipeline = graphicsWorld.Factory.CreateGraphicsPipeline(ref fullscreenQuadPipelineDescription);
 
+		WhiteTexture = Utils.GetSolidColoredTexture(RgbaByte.White, graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
+
+		NeutralNormal = Utils.GetSolidColoredTexture(new RgbaByte(128, 128, 255, 1), graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
+
 		DefaultTexture = Utils.GetSolidColoredTexture(RgbaByte.LightGrey, graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
-		DefaultMaterial = Material.FromTextures(graphicsWorld.GraphicsDevice, graphicsWorld.Factory, "Default Material", DefaultTexture, DefaultTexture, DefaultTexture, DefaultTexture);
+		DefaultMaterial = Material.FromTextures("Default Material", DefaultTexture, DefaultTexture, DefaultTexture, DefaultTexture, DefaultTexture, graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
 
 		HasCreatedStaticDeviceResources = true;
 

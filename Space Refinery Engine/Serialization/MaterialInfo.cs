@@ -14,7 +14,8 @@ public sealed record class MaterialInfo
 	{
 		writer.SerializeReference(this);
 
-		writer.Serialize(MaterialTexturePaths.DiffuseTexturePath, nameof(MaterialTexturePaths.DiffuseTexturePath));
+		writer.Serialize(MaterialTexturePaths.AlbedoTexturePath, nameof(MaterialTexturePaths.AlbedoTexturePath));
+		writer.Serialize(MaterialTexturePaths.NormalTexturePath, nameof(MaterialTexturePaths.NormalTexturePath));
 		writer.Serialize(MaterialTexturePaths.MetallicTexturePath, nameof(MaterialTexturePaths.MetallicTexturePath));
 		writer.Serialize(MaterialTexturePaths.RoughnessTexturePath, nameof(MaterialTexturePaths.RoughnessTexturePath));
 		writer.Serialize(MaterialTexturePaths.AmbientOcclusionTexturePath, nameof(MaterialTexturePaths.AmbientOcclusionTexturePath));
@@ -24,11 +25,12 @@ public sealed record class MaterialInfo
 	{
 		SerializableReference = reader.ReadReference();
 
-		var diffuseTexturePath = reader.ReadResorucePath(serializationData, nameof(MaterialTexturePaths.DiffuseTexturePath));
+		var albedoTexturePath = reader.ReadResorucePath(serializationData, nameof(MaterialTexturePaths.AlbedoTexturePath));
+		var normalTexturePath = reader.ReadResorucePath(serializationData, nameof(MaterialTexturePaths.NormalTexturePath));
 		var metallicTexturePath = reader.ReadResorucePath(serializationData, nameof(MaterialTexturePaths.MetallicTexturePath));
 		var roughnessTexturePath = reader.ReadResorucePath(serializationData, nameof(MaterialTexturePaths.RoughnessTexturePath));
 		var ambientOcclusionTexturePath = reader.ReadResorucePath(serializationData, nameof(MaterialTexturePaths.AmbientOcclusionTexturePath));
 
-		MaterialTexturePaths = new(SerializableReference.ToString(), diffuseTexturePath, metallicTexturePath, roughnessTexturePath, ambientOcclusionTexturePath);
+		MaterialTexturePaths = new(SerializableReference.ToString(), albedoTexturePath, normalTexturePath, metallicTexturePath, roughnessTexturePath, ambientOcclusionTexturePath);
 	}
 }

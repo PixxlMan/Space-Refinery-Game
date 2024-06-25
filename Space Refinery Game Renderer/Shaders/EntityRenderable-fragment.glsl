@@ -1,5 +1,4 @@
 #version 450
-#extension GL_KHR_vulkan_glsl : enable // just to satisfy my plugin for source highlighting
 
 layout(set = 0, binding = 0) uniform LightInfo
 {
@@ -10,10 +9,11 @@ layout(set = 0, binding = 0) uniform LightInfo
 };
 
 layout(set = 1, binding = 0) uniform sampler Samp;
-layout(set = 1, binding = 1) uniform texture2D DiffTex;
-layout(set = 1, binding = 2) uniform texture2D MetalTex;
-layout(set = 1, binding = 3) uniform texture2D RoughTex;
-layout(set = 1, binding = 4) uniform texture2D AOTex;
+layout(set = 1, binding = 1) uniform texture2D AlbedoTex;
+layout(set = 1, binding = 2) uniform texture2D NormalTex;
+layout(set = 1, binding = 3) uniform texture2D MetalTex;
+layout(set = 1, binding = 4) uniform texture2D RoughTex;
+layout(set = 1, binding = 5) uniform texture2D AOTex;
 
 layout(location = 0) in vec3 fsin_Position_WorldSpace;
 layout(location = 1) in vec3 fsin_Normal;
@@ -30,54 +30,46 @@ const float PI = 3.14159265359;
 
 void main() // https://learnopengl.com/PBR/Lighting
 {
-	vec3 texColor = vec3(texture(sampler2D(DiffTex, Samp), fsin_TexCoord));
-	float metallic = float(texture(sampler2D(MetalTex, Samp), fsin_TexCoord));
-	float roughness = float(texture(sampler2D(RoughTex, Samp), fsin_TexCoord));
-	float ao = float(texture(sampler2D(AOTex, Samp), fsin_TexCoord));
+	vec3 albedo = texture(sampler2D(AlbedoTex, Samp), fsin_TexCoord).xyz;
+	vec3 normal = texture(sampler2D(NormalTex, Samp), fsin_TexCoord).rgb;
+	float metallic = texture(sampler2D(MetalTex, Samp), fsin_TexCoord).r;
+	float roughness = texture(sampler2D(RoughTex, Samp), fsin_TexCoord).r;
+	float ao = texture(sampler2D(AOTex, Samp), fsin_TexCoord).r;
 
 	vec3 N = normalize(fsin_Normal);
-	vec3 V = normalize(fsin_Position_WorldSpace);
+	vec3 V = normalize(CameraPosition - fsin_Position_WorldSpace);
 
 	vec3 F0 = vec3(0.04); 
-	F0 = mix(F0, texColor, metallic);
+	F0 = mix(F0, albedo, metallic);
 			   
 	// reflectance equation
 	vec3 Lo = vec3(0.0);
-	{
-		// calculate per-light radiance
-		vec3 L = normalize(LightDirection);
-		vec3 H = normalize(V + L);
-		//float distance    = length(lightPositions[i] - worldPos);
-		//float attenuation = 1.0 / (distance * distance);
-		vec3 radiance     = vec3(1, 1, 1);//lightColors[i] * attenuation;        
+
+	// calculate per-light radiance
+	vec3 L = LightDirection;
+	vec3 H = normalize(V + L);
+	vec3 radiance     = vec3(5, 5, 5);     
 		
-		// cook-torrance brdf
-		float NDF = DistributionGGX(N, H, roughness);        
-		float G   = GeometrySmith(N, V, L, roughness);      
-		vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);       
+	// cook-torrance brdf
+	float NDF = DistributionGGX(N, H, roughness);        
+	float G   = GeometrySmith(N, V, L, roughness);      
+	vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);       
 		
-		vec3 kS = F;
-		vec3 kD = vec3(1.0) - kS;
-		kD *= 1.0 - metallic;	  
+	vec3 kS = F;
+	vec3 kD = vec3(1.0) - kS;
+	kD *= 1.0 - metallic;	  
 		
-		vec3 numerator    = NDF * G * F;
-		float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
-		vec3 specular     = numerator / denominator;  
+	vec3 numerator    = NDF * G * F;
+	float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
+	vec3 specular     = numerator / denominator;  
 			
-		// add to outgoing radiance Lo
-		float NdotL = max(dot(N, L), 0.0);                
-		Lo += (kD * texColor / PI + specular) * radiance * NdotL; 
-	}   
+	// add to outgoing radiance Lo
+	float NdotL = max(dot(N, L), 0.0);                
+	Lo += (kD * albedo / PI + specular) * radiance * NdotL; 
   
-	vec3 ambient = vec3(0.03) * texColor * ao;
+	vec3 ambient = vec3(0.2) * albedo * ao;
 	vec3 color = ambient + Lo;
-	
-	color = color / (color + vec3(1.0));
-	color = pow(color, vec3(1.0/2.2));  
-
-	// Add ambient lighting. Not PBR-based.
-	color = max(color, 0.2 * texColor);
-
+   
 	outputColor = vec4(color, 1.0);
 }
 

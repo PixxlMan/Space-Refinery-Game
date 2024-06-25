@@ -11,7 +11,7 @@ layout(location = 1) in vec3 fsin_TexCoord;
 
 layout(location = 0) out vec4 outputColor;
 
-vec3 starField(vec3 pos)
+vec3 sky(vec3 pos)
 {
     vec3 color = vec3(max(min(0.7 - pos.y * 2, 0.5), 0.25), 0.6, max(pos.y + 0.5, 0.8));
 
@@ -32,5 +32,5 @@ void main()
 
     worldDirection = floor(worldDirection * 700) / 700;
 
-    outputColor =  vec4(starField(worldDirection), 1.0);
+    outputColor =  vec4(sky(worldDirection), 1.0);
 }

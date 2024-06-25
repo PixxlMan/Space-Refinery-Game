@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Space Refinery Game Renderer", "Space Refinery Game Renderer\Space Refinery Game Renderer.csproj", "{FD35CD9A-AF07-46B2-BC18-FD56D5C80445}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Space Refinery Utilities", "Space Refinery Utilities\Space Refinery Utilities.csproj", "{148EFCD8-07A8-4D75-BAE7-979FACDFC938}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Space Refinery Engine", "Space Refinery Engine\Space Refinery Engine.csproj", "{3C24C3A9-D749-4E03-BCD6-69B88C138A6D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{83CEE590-471C-468F-9FF7-265013E71512}"
@@ -21,14 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FD35CD9A-AF07-46B2-BC18-FD56D5C80445}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FD35CD9A-AF07-46B2-BC18-FD56D5C80445}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FD35CD9A-AF07-46B2-BC18-FD56D5C80445}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FD35CD9A-AF07-46B2-BC18-FD56D5C80445}.Release|Any CPU.Build.0 = Release|Any CPU
-		{148EFCD8-07A8-4D75-BAE7-979FACDFC938}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{148EFCD8-07A8-4D75-BAE7-979FACDFC938}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{148EFCD8-07A8-4D75-BAE7-979FACDFC938}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{148EFCD8-07A8-4D75-BAE7-979FACDFC938}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3C24C3A9-D749-4E03-BCD6-69B88C138A6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3C24C3A9-D749-4E03-BCD6-69B88C138A6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C24C3A9-D749-4E03-BCD6-69B88C138A6D}.Release|Any CPU.ActiveCfg = Release|Any CPU

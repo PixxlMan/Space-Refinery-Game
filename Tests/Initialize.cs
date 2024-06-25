@@ -1,7 +1,7 @@
 ﻿using Space_Refinery_Engine;
 using Space_Refinery_Engine.Audio;
-using Space_Refinery_Utilities;
-using Space_Refinery_Utilities.Units;
+using Space_Refinery_Engine;
+using Space_Refinery_Engine.Units;
 using System.Diagnostics;
 
 namespace Tests

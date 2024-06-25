@@ -28,13 +28,22 @@
     <None Remove="Assets\External\Fonts\OpenSans\static\OpenSans\OpenSans-Regular.ttf" />
     <None Remove="Assets\Settings\Audio\VolumeSettings.srh.xml" />
     <None Remove="Assets\Settings\Graphics\DisplaySettings.srh.xml" />
+    <None Remove="Graphics\Shaders\Bloom-blur-compute.glsl" />
+    <None Remove="Graphics\Shaders\Bloom-threshold-compute.glsl" />
+    <None Remove="Graphics\Shaders\ConstructionMarker-fragment.glsl" />
+    <None Remove="Graphics\Shaders\ConstructionMarker-vertex.glsl" />
+    <None Remove="Graphics\Shaders\DebugRenderable-fragment.glsl" />
+    <None Remove="Graphics\Shaders\DebugRenderable-vertex.glsl" />
+    <None Remove="Graphics\Shaders\EntityRenderable-fragment.glsl" />
+    <None Remove="Graphics\Shaders\EntityRenderable-vertex.glsl" />
+    <None Remove="Graphics\Shaders\FullscreenQuad-fragment.glsl" />
+    <None Remove="Graphics\Shaders\FullscreenQuad-vertex.glsl" />
+    <None Remove="Graphics\Shaders\Sky-fragment.glsl" />
+    <None Remove="Graphics\Shaders\Sky-vertex.glsl" />
+    <None Remove="Graphics\Shaders\Starfield-fragment.glsl" />
+    <None Remove="Graphics\Shaders\Starfield-vertex.glsl" />
     <None Remove="Mods\README.txt" />
     <None Remove="soft_oal.dll" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\Space Refinery Utilities\GlobalUsings.cs" Link="GlobalUsings.cs" />
-    <Compile Include="..\Space Refinery Utilities\Units\UnitsUsage.cs" Link="UnitsUsage.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -62,6 +71,48 @@
     <Content Include="Assets\Settings\Graphics\DisplaySettings.srh.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Graphics\Shaders\Bloom-blur-compute.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Shaders\Bloom-threshold-compute.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Shaders\ConstructionMarker-fragment.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Shaders\ConstructionMarker-vertex.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Shaders\DebugRenderable-fragment.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Shaders\DebugRenderable-vertex.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Shaders\EntityRenderable-fragment.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Shaders\EntityRenderable-vertex.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Shaders\FullscreenQuad-fragment.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Shaders\FullscreenQuad-vertex.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Shaders\Sky-fragment.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Shaders\Sky-vertex.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Shaders\Starfield-fragment.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Shaders\Starfield-vertex.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Mods\README.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -78,6 +129,7 @@
         <PackageReference Include="SharpGLTF.Core" Version="1.0.0" />
         <PackageReference Include="SharpGLTF.Toolkit" Version="1.0.0" />
         <PackageReference Include="Singulink.Reflection.ObjectFactory" Version="1.0.0" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
         <PackageReference Include="Veldrid" Version="4.9.0" />
         <PackageReference Include="Veldrid.ImGui" Version="5.72.0" />
         <PackageReference Include="Veldrid.RenderDoc" Version="1.0.1" />
@@ -89,8 +141,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\FixedPrecision\FixedPrecision\FixedPrecision.csproj" />
-    <ProjectReference Include="..\Space Refinery Game Renderer\Space Refinery Game Renderer.csproj" />
-    <ProjectReference Include="..\Space Refinery Utilities\Space Refinery Utilities.csproj" />
   </ItemGroup>
     
   <ItemGroup>
@@ -100,10 +150,6 @@
     <Reference Include="FXRenderer">
       <HintPath>..\..\FXPRenderer\FXRenderer\bin\Debug\net7.0\FXRenderer.dll</HintPath>
     </Reference>
-  </ItemGroup>
-    
-  <ItemGroup>
-    <Using Include="Space_Refinery_Utilities" />
   </ItemGroup>
 
 </Project>

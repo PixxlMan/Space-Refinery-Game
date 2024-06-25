@@ -1,9 +1,9 @@
 ﻿using BepuPhysics.Collidables;
 using FixedPrecision;
-using Space_Refinery_Game_Renderer;
+using Space_Refinery_Game.Renderer;
 using System.Collections.Concurrent;
 using System.Xml;
-using Mesh = Space_Refinery_Game_Renderer.Mesh;
+using Mesh = Space_Refinery_Game.Renderer.Mesh;
 
 namespace Space_Refinery_Engine;
 

@@ -1,1 +1,0 @@
-﻿global using DN = Space_Refinery_Utilities.DecimalNumber;

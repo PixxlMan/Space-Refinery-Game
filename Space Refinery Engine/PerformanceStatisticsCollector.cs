@@ -1,5 +1,5 @@
-﻿using Space_Refinery_Game_Renderer;
-using Space_Refinery_Utilities;
+﻿using Space_Refinery_Game.Renderer;
+using Space_Refinery_Engine;
 using System.Diagnostics;
 
 namespace Space_Refinery_Engine;

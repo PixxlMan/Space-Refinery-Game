@@ -1,6 +1,6 @@
 ﻿using BepuPhysics.Collidables;
 using FixedPrecision;
-using Space_Refinery_Game_Renderer;
+using Space_Refinery_Game.Renderer;
 
 namespace Space_Refinery_Engine;
 

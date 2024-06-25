@@ -99,12 +99,10 @@ namespace Space_Refinery_Engine
 		private UI(GameData gameData)
 		{
 			this.gameData = gameData;
-
 			gd = gameData.GraphicsWorld.GraphicsDevice;
 
-			imGuiRenderer = new(gd, gd.MainSwapchain.Framebuffer.OutputDescription, (int)width, (int)height);
-
-			imGuiRenderer.CreateDeviceResources(gd, gd.MainSwapchain.Framebuffer.OutputDescription);
+			imGuiRenderer = new(gd, gameData.GraphicsWorld.RenderingOutputDescription, width, height);
+			imGuiRenderer.CreateDeviceResources(gd, gameData.GraphicsWorld.RenderingOutputDescription);
 		}
 
 		private void WindowResized(int width, int height)
@@ -112,13 +110,10 @@ namespace Space_Refinery_Engine
 			lock (syncRoot)
 			{
 				imGuiRenderer.WindowResized(width, height);
-
 				imGuiRenderer.DestroyDeviceObjects();
-
-				imGuiRenderer.CreateDeviceResources(gd, gameData.GraphicsWorld.Swapchain.Framebuffer.OutputDescription);
+				imGuiRenderer.CreateDeviceResources(gd, gameData.GraphicsWorld.RenderingOutputDescription);
 
 				this.width = width;
-
 				this.height = height;
 			}
 		}

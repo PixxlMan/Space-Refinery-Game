@@ -9,11 +9,11 @@ public class StarfieldRenderable : IRenderable
 	private ResourceSet viewInfoSet;
 	private Pipeline starfieldPipeline;
 
-	public static StarfieldRenderable Create(DeviceBuffer viewInfoBuffer, GraphicsDevice gd, ResourceFactory factory)
+	public static StarfieldRenderable Create(DeviceBuffer viewInfoBuffer, GraphicsWorld graphicsWorld)
 	{
 		StarfieldRenderable starfieldRenderable = new();
 
-		starfieldRenderable.CreateDeviceObjects(viewInfoBuffer, gd, factory);
+		starfieldRenderable.CreateDeviceObjects(viewInfoBuffer, graphicsWorld);
 
 		return starfieldRenderable;
 	}
@@ -21,25 +21,25 @@ public class StarfieldRenderable : IRenderable
 	private StarfieldRenderable()
 	{ }
 
-	public void CreateDeviceObjects(DeviceBuffer viewInfoBuffer, GraphicsDevice gd, ResourceFactory factory)
+	public void CreateDeviceObjects(DeviceBuffer viewInfoBuffer, GraphicsWorld graphicsWorld)
 	{
-		ResourceLayout invCameraInfoLayout = factory.CreateResourceLayout(new ResourceLayoutDescription(
+		ResourceLayout invCameraInfoLayout = graphicsWorld.Factory.CreateResourceLayout(new ResourceLayoutDescription(
 			new ResourceLayoutElementDescription("InvCameraInfo", ResourceKind.UniformBuffer, ShaderStages.Fragment)));
 
-		viewInfoSet = factory.CreateResourceSet(new ResourceSetDescription(invCameraInfoLayout, viewInfoBuffer));
+		viewInfoSet = graphicsWorld.Factory.CreateResourceSet(new ResourceSetDescription(invCameraInfoLayout, viewInfoBuffer));
 
-		ShaderSetDescription starfieldShaders = new ShaderSetDescription(
-			Array.Empty<VertexLayoutDescription>(),
-			Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), "Starfield", factory));
+		ShaderSetDescription starfieldShaders = new(
+			[],
+			Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), "Starfield", graphicsWorld.Factory));
 
-		starfieldPipeline = factory.CreateGraphicsPipeline(new GraphicsPipelineDescription(
+		starfieldPipeline = graphicsWorld.Factory.CreateGraphicsPipeline(new GraphicsPipelineDescription(
 			BlendStateDescription.SingleOverrideBlend,
 			DepthStencilStateDescription.Disabled,
 			RasterizerStateDescription.CullNone,
 			PrimitiveTopology.TriangleList,
 			starfieldShaders,
 			[invCameraInfoLayout],
-			gd.MainSwapchain.Framebuffer.OutputDescription));
+			graphicsWorld.RenderingOutputDescription));
 	}
 
 	public void AddDrawCommands(CommandList commandList, FixedDecimalLong8 _)

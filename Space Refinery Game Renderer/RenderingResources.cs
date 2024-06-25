@@ -110,7 +110,7 @@ public static class RenderingResources
 				vertexLayouts: [VertexLayout, TransformationVertexShaderParameterLayout],
 				shaders: graphicsWorld.ShaderLoader.LoadVertexFragmentCached("EntityRenderable")
 			),
-			Outputs = graphicsWorld.RenderFramebuffer.OutputDescription
+			Outputs = graphicsWorld.RenderingOutputDescription
 		};
 		ClockwisePipelineResource = graphicsWorld.Factory.CreateGraphicsPipeline(ref clockwisePipelineDescription);
 
@@ -135,7 +135,7 @@ public static class RenderingResources
 				vertexLayouts: [VertexLayout, TransformationVertexShaderParameterLayout],
 				shaders: graphicsWorld.ShaderLoader.LoadVertexFragmentCached("EntityRenderable")
 			),
-			Outputs = graphicsWorld.RenderFramebuffer.OutputDescription
+			Outputs = graphicsWorld.RenderingOutputDescription
 		};
 		CounterClockwisePipelineResource = graphicsWorld.Factory.CreateGraphicsPipeline(ref counterClockwisePipelineDescription);
 

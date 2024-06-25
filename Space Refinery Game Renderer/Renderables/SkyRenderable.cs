@@ -9,11 +9,11 @@ public class SkyRenderable : IRenderable
 	private ResourceSet viewInfoSet;
 	private Pipeline starfieldPipeline;
 
-	public static SkyRenderable Create(DeviceBuffer viewInfoBuffer, GraphicsDevice gd, ResourceFactory factory)
+	public static SkyRenderable Create(DeviceBuffer viewInfoBuffer, GraphicsWorld graphicsWorld)
 	{
 		SkyRenderable skyRenderable = new();
 
-		skyRenderable.CreateDeviceObjects(viewInfoBuffer, gd, factory);
+		skyRenderable.CreateDeviceObjects(viewInfoBuffer, graphicsWorld);
 
 		return skyRenderable;
 	}
@@ -21,25 +21,25 @@ public class SkyRenderable : IRenderable
 	private SkyRenderable()
 	{ }
 
-	public void CreateDeviceObjects(DeviceBuffer viewInfoBuffer, GraphicsDevice gd, ResourceFactory factory)
+	public void CreateDeviceObjects(DeviceBuffer viewInfoBuffer, GraphicsWorld graphicsWorld)
 	{
-		ResourceLayout invCameraInfoLayout = factory.CreateResourceLayout(new ResourceLayoutDescription(
+		ResourceLayout invCameraInfoLayout = graphicsWorld.Factory.CreateResourceLayout(new ResourceLayoutDescription(
 			new ResourceLayoutElementDescription("InvCameraInfo", ResourceKind.UniformBuffer, ShaderStages.Fragment)));
 
-		viewInfoSet = factory.CreateResourceSet(new ResourceSetDescription(invCameraInfoLayout, viewInfoBuffer));
+		viewInfoSet = graphicsWorld.Factory.CreateResourceSet(new ResourceSetDescription(invCameraInfoLayout, viewInfoBuffer));
 
 		ShaderSetDescription starfieldShaders = new(
 			[],
-			Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), "Sky", factory));
+			Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), "Sky", graphicsWorld.Factory));
 
-		starfieldPipeline = factory.CreateGraphicsPipeline(new GraphicsPipelineDescription(
+		starfieldPipeline = graphicsWorld.Factory.CreateGraphicsPipeline(new GraphicsPipelineDescription(
 			BlendStateDescription.SingleOverrideBlend,
 			DepthStencilStateDescription.Disabled,
 			RasterizerStateDescription.CullNone,
 			PrimitiveTopology.TriangleList,
 			starfieldShaders,
 			[invCameraInfoLayout],
-			gd.MainSwapchain.Framebuffer.OutputDescription));
+			graphicsWorld.RenderingOutputDescription));
 	}
 
 	public void AddDrawCommands(CommandList commandList, FixedDecimalLong8 _)

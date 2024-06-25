@@ -41,20 +41,20 @@ public sealed class DebugRender : IRenderable
 
 		graphicsWorld.AddRenderable(debugRender, 9_000);
 
-		debugRender.CreateDeviceObjects(graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
+		debugRender.CreateDeviceObjects(graphicsWorld);
 
 		Logging.LogScopeEnd();
 		return debugRender;
 	}
 
-	private void CreateDeviceObjects(GraphicsDevice gd, ResourceFactory factory)
+	private void CreateDeviceObjects(GraphicsWorld graphicsWorld)
 	{
 		ResourceLayoutElementDescription[] resourceLayoutElementDescriptions =
 		{
 			new ResourceLayoutElementDescription("ProjView", ResourceKind.UniformBuffer, ShaderStages.Vertex),
 		};
 		ResourceLayoutDescription resourceLayoutDescription = new ResourceLayoutDescription(resourceLayoutElementDescriptions);
-		sharedLayout = factory.CreateResourceLayout(resourceLayoutDescription);
+		sharedLayout = graphicsWorld.Factory.CreateResourceLayout(resourceLayoutDescription);
 
 		VertexLayoutDescription transformationVertexShaderParameterLayout = new VertexLayoutDescription(
 			new VertexElementDescription("InstancePosition", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3),
@@ -93,12 +93,12 @@ public sealed class DebugRender : IRenderable
 			ResourceLayouts = [sharedLayout],
 			ShaderSet = new ShaderSetDescription(
 				vertexLayouts: [RenderingResources.VertexLayout, colorVertexLayout, transformationVertexShaderParameterLayout],
-				shaders: Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), "DebugRenderable", factory)
+				shaders: Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), "DebugRenderable", graphicsWorld.Factory)
 			),
-			Outputs = gd.MainSwapchain.Framebuffer.OutputDescription
+			Outputs = graphicsWorld.RenderingOutputDescription
 		};
 
-		regularPipeline = factory.CreateGraphicsPipeline(pipelineDescription);
+		regularPipeline = graphicsWorld.Factory.CreateGraphicsPipeline(pipelineDescription);
 
 		GraphicsPipelineDescription wireframePipelineDescription = new GraphicsPipelineDescription()
 		{
@@ -118,16 +118,16 @@ public sealed class DebugRender : IRenderable
 			ResourceLayouts = [sharedLayout],
 			ShaderSet = new ShaderSetDescription(
 				vertexLayouts: [RenderingResources.VertexLayout, colorVertexLayout, transformationVertexShaderParameterLayout],
-				shaders: Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), "DebugRenderable", factory)
+				shaders: Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Shaders"), "DebugRenderable", graphicsWorld.Factory)
 			),
-			Outputs = gd.MainSwapchain.Framebuffer.OutputDescription
+			Outputs = graphicsWorld.RenderingOutputDescription
 		};
 
-		wireframePipeline = factory.CreateGraphicsPipeline(wireframePipelineDescription);
+		wireframePipeline = graphicsWorld.Factory.CreateGraphicsPipeline(wireframePipelineDescription);
 
 		BindableResource[] bindableResources = [GraphicsWorld.CameraProjViewBuffer];
 		ResourceSetDescription resourceSetDescription = new(sharedLayout, bindableResources);
-		resourceSet = factory.CreateResourceSet(resourceSetDescription);
+		resourceSet = graphicsWorld.Factory.CreateResourceSet(resourceSetDescription);
 	}
 
 	public void AddDrawCommands(CommandList cl, FixedDecimalLong8 _)

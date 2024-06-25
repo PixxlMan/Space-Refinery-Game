@@ -1,4 +1,5 @@
 ﻿using SharpGLTF.Materials;
+using Space_Refinery_Utilities;
 
 namespace Space_Refinery_Game_Renderer;
 
@@ -36,6 +37,8 @@ public sealed class MaterialLoader(GraphicsWorld graphicsWorld)
 		{
 			return material;
 		}
+
+		Logging.Log($"Loading resources for material {gltfMaterial.Name} from GLTF material");
 
 		var diffuseImage = gltfMaterial.GetChannel(KnownChannel.BaseColor).GetValidTexture().PrimaryImage.Content;
 		var metallicImage = gltfMaterial.GetChannel(KnownChannel.Normal).GetValidTexture().PrimaryImage.Content;

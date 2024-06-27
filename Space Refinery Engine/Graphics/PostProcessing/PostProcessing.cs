@@ -57,10 +57,10 @@ public sealed class PostProcessing : IRenderable
 
 	public void AddDrawCommands(CommandList commandList, FixedDecimalLong8 deltaTime)
 	{
-		//if (!DebugSettings.Shared.AccessSetting<BooleanDebugSetting>($"Do post effects"))
-		//{
-		//	return;
-		//}
+		if (!GameData.DebugSettings.AccessSetting<BooleanDebugSetting>($"Do post effects", true))
+		{
+			return;
+		}
 
 		commandList.PushDebugGroup("Post processing effects");
 
@@ -70,10 +70,11 @@ public sealed class PostProcessing : IRenderable
 		{
 			foreach (IPostEffect postEffect in currentOrderPostEffects)
 			{
-				//if (!DebugSettings.Shared.AccessSetting<BooleanDebugSetting>($"Do post effect {postEffect.Name}"))
-				//{
-				//	continue;
-				//}
+				if (!GameData.DebugSettings.AccessSetting<BooleanDebugSetting>($"Do post effect {postEffect.Name}", true))
+				{
+					commandList.CopyTexture(screenTextureColorIn, screenTextureColorOut);
+					continue;
+				}
 
 				commandList.PushDebugGroup(postEffect.Name);
 

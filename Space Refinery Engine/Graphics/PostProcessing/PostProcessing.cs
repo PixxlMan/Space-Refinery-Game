@@ -4,7 +4,7 @@ using Veldrid;
 
 namespace Space_Refinery_Engine.Renderer;
 
-public sealed class PostProcessing
+public sealed class PostProcessing : IRenderable
 {
 	private SortedDictionary<int, List<IPostEffect>> postEffects = [];
 
@@ -55,7 +55,7 @@ public sealed class PostProcessing
 		Logging.LogScopeEnd();
 	}
 
-	public void AddPostEffectCommands(CommandList commandList, FixedDecimalLong8 deltaTime)
+	public void AddDrawCommands(CommandList commandList, FixedDecimalLong8 deltaTime)
 	{
 		//if (!DebugSettings.Shared.AccessSetting<BooleanDebugSetting>($"Do post effects"))
 		//{

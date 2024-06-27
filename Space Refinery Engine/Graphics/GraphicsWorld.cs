@@ -196,8 +196,6 @@ public sealed class GraphicsWorld
 		}
 	}
 
-	public PostProcessing PostProcessing { get; private set; }
-
 	public MeshLoader MeshLoader { get; private set; }
 	public MaterialLoader MaterialLoader { get; private set; }
 	public ShaderLoader ShaderLoader { get; private set; }
@@ -271,10 +269,6 @@ public sealed class GraphicsWorld
 		// These depend on the shader loader
 		CreateDeviceObjects(gd, factory, swapchain);
 		RenderingResources.CreateStaticDeviceResources(this);
-
-		// These depend on device resources.
-		PostProcessing = new();
-		PostProcessing.CreateDeviceResources(this);
 
 		// These depend on rendering resources
 		fullscreenQuad = new();
@@ -532,8 +526,6 @@ public sealed class GraphicsWorld
 			commandList.PushDebugGroup("Custom draw operations");
 			CustomDrawOperations?.Invoke(commandList);
 			commandList.PopDebugGroup();
-
-			PostProcessing.AddPostEffectCommands(commandList, deltaTime);
 
 			// Direct3D 11 doesn't allow easy access to the device textures, so we render to a fullscreen quad instead.
 			switch (graphicsDevice.BackendType)

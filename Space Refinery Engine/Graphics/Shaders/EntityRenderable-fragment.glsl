@@ -71,6 +71,9 @@ void main() // https://learnopengl.com/PBR/Lighting
 	vec3 color = ambient + Lo;
    
 	outputColor = vec4(color, 1.0);
+	
+	outputColor = color / (color + vec4(1.0)); // Gamma correction
+	outputColor = pow(color, vec4(1.0/2.2));
 }
 
 vec3 fresnelSchlick(float cosTheta, vec3 F0)

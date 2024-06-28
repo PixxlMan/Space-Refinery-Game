@@ -42,17 +42,17 @@ public static class Utils
 						: "300.glsles";
 	}
 
-	public static Shader[] LoadShaders(string path, string setName, ResourceFactory factory)
+	public static Shader[] LoadShaders(string path, string shaderSetName, ResourceFactory factory)
 	{
 		return factory.CreateFromSpirv(
-			new ShaderDescription(ShaderStages.Vertex, ReadBytes(Path.Combine(path, setName) + "-vertex.glsl"), "main"),
-			new ShaderDescription(ShaderStages.Fragment, ReadBytes(Path.Combine(path, setName) + "-fragment.glsl"), "main"));
+			new ShaderDescription(ShaderStages.Vertex, ReadBytes(Path.Combine(path, shaderSetName) + "-vertex.glsl"), "main"),
+			new ShaderDescription(ShaderStages.Fragment, ReadBytes(Path.Combine(path, shaderSetName) + "-fragment.glsl"), "main"));
 	}
 
-	public static Shader LoadShader(string path, string setName, ResourceFactory factory)
+	public static Shader LoadShader(string path, string shaderName, ResourceFactory factory)
 	{
 		return factory.CreateFromSpirv(
-			new ShaderDescription(ShaderStages.Compute, ReadBytes(Path.Combine(path, setName) + "-compute.glsl"), "main"));
+			new ShaderDescription(ShaderStages.Compute, ReadBytes(Path.Combine(path, shaderName) + "-compute.glsl"), "main"));
 	}
 
 	public static byte[] ReadBytes(string path)

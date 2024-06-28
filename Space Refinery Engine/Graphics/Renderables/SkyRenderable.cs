@@ -9,11 +9,11 @@ public class SkyRenderable : IRenderable
 	private ResourceSet viewInfoSet;
 	private Pipeline starfieldPipeline;
 
-	public static SkyRenderable Create(DeviceBuffer viewInfoBuffer, GraphicsWorld graphicsWorld)
+	public static SkyRenderable Create(GraphicsWorld graphicsWorld)
 	{
 		SkyRenderable skyRenderable = new();
 
-		skyRenderable.CreateDeviceObjects(viewInfoBuffer, graphicsWorld);
+		skyRenderable.CreateDeviceObjects(graphicsWorld);
 
 		return skyRenderable;
 	}
@@ -21,12 +21,12 @@ public class SkyRenderable : IRenderable
 	private SkyRenderable()
 	{ }
 
-	public void CreateDeviceObjects(DeviceBuffer viewInfoBuffer, GraphicsWorld graphicsWorld)
+	public void CreateDeviceObjects(GraphicsWorld graphicsWorld)
 	{
 		ResourceLayout invCameraInfoLayout = graphicsWorld.Factory.CreateResourceLayout(new ResourceLayoutDescription(
 			new ResourceLayoutElementDescription("InvCameraInfo", ResourceKind.UniformBuffer, ShaderStages.Fragment)));
 
-		viewInfoSet = graphicsWorld.Factory.CreateResourceSet(new ResourceSetDescription(invCameraInfoLayout, viewInfoBuffer));
+		viewInfoSet = graphicsWorld.Factory.CreateResourceSet(new ResourceSetDescription(invCameraInfoLayout, RenderingResources.ViewInfoBuffer));
 
 		ShaderSetDescription starfieldShaders = new(
 			[],

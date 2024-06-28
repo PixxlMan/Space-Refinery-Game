@@ -7,3 +7,8 @@ public interface IRenderable
 {
 	public void AddDrawCommands(CommandList commandList, FixedDecimalLong8 deltaTime);
 }
+
+public interface IShadowCaster
+{
+	public void AddShadowCasterDrawCommands(CommandList commandList);
+}

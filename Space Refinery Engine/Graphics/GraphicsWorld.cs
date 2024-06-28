@@ -1,11 +1,8 @@
 ﻿using FixedPrecision;
 using SixLabors.ImageSharp;
-using Space_Refinery_Engine;
-using Space_Refinery_Engine.Units;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using Veldrid;
 
 namespace Space_Refinery_Engine.Renderer;
@@ -31,6 +28,8 @@ public sealed class GraphicsWorld
 	private SortedDictionary<int, HashSet<IRenderable>> specificOrderRenderables = new(); // Use Lookup<int, IRenderable> and sort manually as it's not very common to add objects?
 
 	private ConcurrentDictionary<IRenderable, int> renderableToOrder = new();
+
+	private List<IShadowCaster> shadowCasters = new();
 
 	private GraphicsDevice graphicsDevice;
 	public GraphicsDevice GraphicsDevice
@@ -90,13 +89,13 @@ public sealed class GraphicsWorld
 		}
 	}
 
-	private readonly object framebufferSyncRoot = new();
+	private readonly object renderFramebufferSyncRoot = new();
 	private Framebuffer renderFramebuffer;
 	public Framebuffer RenderFramebuffer
 	{
 		get
 		{
-			lock (framebufferSyncRoot)
+			lock (renderFramebufferSyncRoot)
 			{
 				return renderFramebuffer;
 			}
@@ -104,78 +103,41 @@ public sealed class GraphicsWorld
 
 		set
 		{
-			lock (framebufferSyncRoot)
+			lock (renderFramebufferSyncRoot)
 			{
 				renderFramebuffer = value;
 			}
 		}
 	}
 
+	private readonly object shadowFramebufferSyncRoot = new();
+	private Framebuffer shadowFramebuffer;
+	public Framebuffer ShadowFramebuffer
+	{
+		get
+		{
+			lock (shadowFramebufferSyncRoot)
+			{
+				return shadowFramebuffer;
+			}
+		}
+
+		set
+		{
+			lock (shadowFramebufferSyncRoot)
+			{
+				shadowFramebuffer = value;
+			}
+		}
+	}
+	private Texture shadowMapTexture;
+
 	public OutputDescription RenderingOutputDescription => RenderFramebuffer.OutputDescription;
+	public OutputDescription ShadowRenderingOutputDescription => ShadowFramebuffer.OutputDescription;
 
 	private CommandList commandList;
 
-	private DeviceBuffer cameraProjViewBuffer;
-	public DeviceBuffer CameraProjViewBuffer
-	{
-		get
-		{
-			lock (cameraProjViewBuffer)
-			{
-				return cameraProjViewBuffer;
-			}
-		}
-
-		set
-		{
-			lock (cameraProjViewBuffer)
-			{
-				cameraProjViewBuffer = value;
-			}
-		}
-	}
-
-	private DeviceBuffer lightInfoBuffer;
-	public DeviceBuffer LightInfoBuffer
-	{
-		get
-		{
-			lock (lightInfoBuffer)
-			{
-				return lightInfoBuffer;
-			}
-		}
-
-		set
-		{
-			lock (lightInfoBuffer)
-			{
-				lightInfoBuffer = value;
-			}
-		}
-	}
-
 	private Vector3FixedDecimalInt4 lightDir;
-
-	private DeviceBuffer viewInfoBuffer;
-	public DeviceBuffer ViewInfoBuffer
-	{
-		get
-		{
-			lock (viewInfoBuffer)
-			{
-				return viewInfoBuffer;
-			}
-		}
-
-		set
-		{
-			lock (viewInfoBuffer)
-			{
-				viewInfoBuffer = value;
-			}
-		}
-	}
 
 	private Window window;
 	public Window Window
@@ -204,8 +166,8 @@ public sealed class GraphicsWorld
 	/// <summary>
 	/// The response spinner can be used to visually show in the UI that the thread is running correctly and is not stopped or deadlocked.
 	/// </summary>
-	public string ResponseSpinner { get { lock(responseSpinner) return responseSpinner; } }
-	
+	public string ResponseSpinner { get { lock (responseSpinner) return responseSpinner; } }
+
 	private Camera camera;
 	public Camera Camera
 	{
@@ -248,20 +210,23 @@ public sealed class GraphicsWorld
 		// No dependency
 		Configuration.Default.PreferContiguousImageBuffers = true; // Use contigous image buffers in ImageSharp to load textures.
 																   // This is necessary for them to uploadable to the GPU!
-
-		// No dependency
+																   // No dependency
 		ShaderLoader = new(this);
 
 
 		// No dependency
 		this.window = window;
 
+		// No dependency
 		Window.Resized += HandleWindowResized;
+
+		// No dependency
+		lightDir = Vector3FixedDecimalInt4.Normalize(new Vector3FixedDecimalInt4((FixedDecimalInt4)0.3, (FixedDecimalInt4)0.75, -(FixedDecimalInt4)0.3));
 
 
 		// Depends on Window
 		camera = new(window.Width, window.Height, Perspective.Perspective);
-		Camera.FarDistance = 10000;
+		Camera.FarDistance = 100;
 		Camera.NearDistance = 0.1;
 		Camera.FieldOfView = 75 * FixedDecimalInt4.DegreesToRadians;
 
@@ -306,12 +271,9 @@ public sealed class GraphicsWorld
 
 	private void CreateRenderFramebuffer()
 	{
-		lock (framebufferSyncRoot)
+		lock (renderFramebufferSyncRoot)
 		{
-			if (RenderFramebuffer is not null)
-			{
-				renderFramebuffer.Dispose();
-			}
+			RenderFramebuffer?.Dispose();
 
 			Texture depthTexture = Factory.CreateTexture(TextureDescription.Texture2D(Window.Width, Window.Height, 1, 1, RenderingResources.DepthFormat, TextureUsage.DepthStencil | TextureUsage.Sampled));
 			depthTexture.Name = "Render framebuffer depth texture";
@@ -324,11 +286,116 @@ public sealed class GraphicsWorld
 		}
 	}
 
+	private void CreateShadowMapFramebuffer()
+	{
+		lock (shadowFramebufferSyncRoot)
+		{
+			ShadowFramebuffer?.Dispose();
+
+			shadowMapTexture = Factory.CreateTexture(TextureDescription.Texture2D(4096, 4096, 1, 1, RenderingResources.DepthFormat, TextureUsage.DepthStencil | TextureUsage.Sampled));
+			shadowMapTexture.Name = "Shadow map framebuffer depth texture";
+			var framebuffer = Factory.CreateFramebuffer(new(shadowMapTexture, []));
+			framebuffer.Name = "Shadow map framebuffer";
+
+			ShadowFramebuffer = framebuffer;
+		}
+	}
+
+	// https://gamedev.stackexchange.com/questions/193929/how-to-move-the-shadow-map-with-the-camera
+	// https://learnopengl.com/code_viewer_gh.php?code=src/8.guest/2021/2.csm/shadow_mapping.cpp
+	// https://learnopengl.com/Guest-Articles/2021/CSM
+	public void CalculateShadowMapMatricies(out Matrix4x4FixedDecimalInt4 lightViewMatrix, out Matrix4x4FixedDecimalInt4 lightProjectionMatrix)
+	{
+		FixedDecimalInt4 Hnear = 2 * FixedDecimalInt4.Tan(camera.FieldOfView / 2) * camera.NearDistance;
+		FixedDecimalInt4 Wnear = Hnear * camera.AspectRatio;
+		FixedDecimalInt4 Hfar = 2 * FixedDecimalInt4.Tan(camera.FieldOfView / 2) * camera.FarDistance;
+		FixedDecimalInt4 Wfar = Hfar * camera.AspectRatio;
+
+		Vector3FixedDecimalInt4 centerFar = camera.Transform.Position + camera.Forward * camera.FarDistance;
+		Vector3FixedDecimalInt4 centerNear = camera.Transform.Position + camera.Forward * camera.NearDistance;
+		Vector3FixedDecimalInt4 frustumCenter = (centerFar - centerNear) * 0.5;
+
+		Vector3FixedDecimalInt4 topLeftFar = centerFar + (camera.Transform.LocalUnitY * Hfar / 2) - (camera.Transform.LocalUnitX * Wfar / 2);
+		Vector3FixedDecimalInt4 topRightFar = centerFar + (camera.Transform.LocalUnitY * Hfar / 2) + (camera.Transform.LocalUnitX * Wfar / 2);
+		Vector3FixedDecimalInt4 bottomLeftFar = centerFar - (camera.Transform.LocalUnitY * Hfar / 2) - (camera.Transform.LocalUnitX * Wfar / 2);
+		Vector3FixedDecimalInt4 bottomRightFar = centerFar - (camera.Transform.LocalUnitY * Hfar / 2) + (camera.Transform.LocalUnitX * Wfar / 2);
+
+		Vector3FixedDecimalInt4 topLeftNear = centerNear + (camera.Transform.LocalUnitY * Hnear / 2) - (camera.Transform.LocalUnitX * Wnear / 2);
+		Vector3FixedDecimalInt4 topRightNear = centerNear + (camera.Transform.LocalUnitY * Hnear / 2) + (camera.Transform.LocalUnitX * Wnear / 2);
+		Vector3FixedDecimalInt4 bottomLeftNear = centerNear - (camera.Transform.LocalUnitY * Hnear / 2) - (camera.Transform.LocalUnitX * Wnear / 2);
+		Vector3FixedDecimalInt4 bottomRightNear = centerNear - (camera.Transform.LocalUnitY * Hnear / 2) + (camera.Transform.LocalUnitX * Wnear / 2);
+
+		Vector3FixedDecimalInt4[] corners = [topLeftFar, topRightFar, bottomLeftFar, bottomRightFar, topLeftNear, topRightNear, bottomLeftNear, bottomRightNear];
+
+		Matrix4x4FixedDecimalInt4 lightView = Matrix4x4FixedDecimalInt4.CreateLookAt(frustumCenter + lightDir, frustumCenter, new(0.0, 1.0, 0.0));
+
+		FixedDecimalInt4 minX = FixedDecimalInt4.MaxValue;
+		FixedDecimalInt4 maxX = -FixedDecimalInt4.MaxValue;
+		FixedDecimalInt4 minY = FixedDecimalInt4.MaxValue;
+		FixedDecimalInt4 maxY = -FixedDecimalInt4.MaxValue;
+		FixedDecimalInt4 minZ = FixedDecimalInt4.MaxValue;
+		FixedDecimalInt4 maxZ = - FixedDecimalInt4.MaxValue;
+		foreach (var corner in corners)
+		{
+			var trf = LeftMultiplyColumnMajor(lightView, corner);
+			minX = FixedDecimalInt4.Min(minX, trf.X);
+			maxX = FixedDecimalInt4.Max(maxX, trf.X);
+			minY = FixedDecimalInt4.Min(minY, trf.Y);
+			maxY = FixedDecimalInt4.Max(maxY, trf.Y);
+			minZ = FixedDecimalInt4.Min(minZ, trf.Z);
+			maxZ = FixedDecimalInt4.Max(maxZ, trf.Z);
+			
+			if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Debug display shadow map"))
+			{
+				GameData.DebugRender.DrawCube(camera.Transform.PerformTransform(new(corner)), RgbaFloat.Red, new(0.1, 0.1, 0.1));
+			}
+		}
+
+		// Tune this parameter according to the scene
+		FixedDecimalInt4 zMult = 10.0;
+		if (minZ < 0)
+		{
+			minZ *= zMult;
+		}
+		else
+		{
+			minZ /= zMult;
+		}
+		if (maxZ < 0)
+		{
+			maxZ /= zMult;
+		}
+		else
+		{
+			maxZ *= zMult;
+		}
+
+		lightProjectionMatrix = Matrix4x4FixedDecimalInt4.CreateOrthographicOffCenter(minX, maxX, minY, maxY, minZ, maxZ);
+
+		lightViewMatrix = /*lightProjectionMatrix **/ lightView;
+
+		if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Debug display shadow map"))
+		{
+			GameData.DebugRender.DrawCube(camera.Transform.PerformTransform(new(lightViewMatrix.ToMatrix4x4().Translation.ToFixed<Vector3FixedDecimalInt4>())), RgbaFloat.White, Vector3FixedDecimalInt4.One * 10);
+			Logging.Log(lightViewMatrix.ToMatrix4x4().Translation.ToString());
+		}
+
+		// https://stackoverflow.com/questions/7574125/multiplying-a-matrix-and-a-vector-in-glm-opengl
+		static Vector3FixedDecimalInt4 LeftMultiplyColumnMajor(Matrix4x4FixedDecimalInt4 matrix, Vector3FixedDecimalInt4 vector)
+		{
+			return new(
+				matrix.M11 * vector.X,
+				matrix.M12 * vector.Y,
+				matrix.M13 * vector.Z
+				);
+		}
+	}
+
 	public void Run()
 	{
 		Debug.Assert(setUp, "The GraphicsWorld has not been set up!");
 
-		Thread thread = new Thread(new ThreadStart(() =>
+		Thread thread = new(new ThreadStart(() =>
 		{
 			Stopwatch stopwatch = new();
 			stopwatch.Start();
@@ -348,7 +415,7 @@ public sealed class GraphicsWorld
 				try
 				{
 #endif
-					Window.PumpEvents();
+				Window.PumpEvents();
 #if SilenceWeirdErrors
 				}
 				catch (Exception ex)
@@ -387,15 +454,9 @@ public sealed class GraphicsWorld
 		this.swapchain = swapchain;
 
 		CreateRenderFramebuffer();
+		CreateShadowMapFramebuffer();
 
 		commandList = factory.CreateCommandList();
-
-		cameraProjViewBuffer = factory.CreateBuffer(
-			new BufferDescription((uint)(Unsafe.SizeOf<Matrix4x4>() * 2), BufferUsage.UniformBuffer | BufferUsage.Dynamic));
-		lightInfoBuffer = factory.CreateBuffer(new BufferDescription(32, BufferUsage.UniformBuffer | BufferUsage.Dynamic));
-		lightDir = Vector3FixedDecimalInt4.Normalize(new Vector3FixedDecimalInt4((FixedDecimalInt4)0.3, (FixedDecimalInt4)0.75, -(FixedDecimalInt4)0.3));
-
-		viewInfoBuffer = factory.CreateBuffer(new BufferDescription((uint)Unsafe.SizeOf<MatrixPair>(), BufferUsage.UniformBuffer | BufferUsage.Dynamic));
 	}
 
 	public void AddRenderable(IRenderable renderable)
@@ -448,6 +509,26 @@ public sealed class GraphicsWorld
 		}
 	}
 
+	public void AddShadowCaster(IShadowCaster shadowCaster)
+	{
+		Debug.Assert(shadowCaster is not null);
+
+		lock (shadowCasters)
+		{
+			shadowCasters.Add(shadowCaster);
+		}
+	}
+
+	public void RemoveShadowCaster(IShadowCaster shadowCaster)
+	{
+		Debug.Assert(shadowCaster is not null);
+
+		lock (shadowCasters)
+		{
+			shadowCasters.Remove(shadowCaster);
+		}
+	}
+
 	private void RenderScene(FixedDecimalLong8 deltaTime) // Use FixedDecimalLong8 to make code simpler and faster, otherwise Debug would be too much slower.
 	{
 		lock (commandList)
@@ -455,24 +536,39 @@ public sealed class GraphicsWorld
 			// Begin() must be called before commands can be issued.
 			commandList.Begin();
 
+			commandList.PushDebugGroup("Updating resources");
 			Camera.UpdatePerspectiveMatrix();
 			Camera.UpdateViewMatrix();
 
-			// Update per-frame resources.
-			commandList.UpdateBuffer(CameraProjViewBuffer, 0, new MatrixPair(Camera.ViewMatrix.ToMatrix4x4(), Camera.ProjectionMatrix.ToMatrix4x4()));
-			commandList.UpdateBuffer(lightInfoBuffer, 0, new LightInfo(lightDir.ToVector3(), Camera.Transform.Position.ToVector3()));
+			commandList.UpdateBuffer(RenderingResources.CameraProjViewBuffer, 0, new MatrixPair(Camera.ViewMatrix.ToMatrix4x4(), Camera.ProjectionMatrix.ToMatrix4x4()));
+			commandList.UpdateBuffer(RenderingResources.LightInfoBuffer, 0, new LightInfo(lightDir.ToVector3(), Camera.Transform.Position.ToVector3()));
 
 			Matrix4x4.Invert(Camera.ProjectionMatrix.ToMatrix4x4(), out Matrix4x4 inverseProjection);
 			Matrix4x4.Invert(Camera.ViewMatrix.ToMatrix4x4(), out Matrix4x4 inverseView);
-			commandList.UpdateBuffer(viewInfoBuffer, 0, new MatrixPair(
+			commandList.UpdateBuffer(RenderingResources.ViewInfoBuffer, 0, new MatrixPair(
 				inverseProjection,
 				inverseView));
+			commandList.PopDebugGroup();
 
-			commandList.SetFramebuffer(renderFramebuffer);
+			commandList.PushDebugGroup("Draw shadow casters");
+			commandList.SetFramebuffer(ShadowFramebuffer);
+			commandList.ClearDepthStencil(1f);
+
+			CalculateShadowMapMatricies(out var lightViewMatrix, out var lightProjectionMatrix);
+			commandList.UpdateBuffer(RenderingResources.ShadowProjViewBuffer, 0, new MatrixPair(lightViewMatrix.ToMatrix4x4(), lightProjectionMatrix.ToMatrix4x4()));
+
+			foreach (var shadowCaster in shadowCasters)
+			{
+				shadowCaster.AddShadowCasterDrawCommands(commandList);
+			}
+
+			commandList.PopDebugGroup();
+
+			commandList.SetFramebuffer(RenderFramebuffer);
+			commandList.PushDebugGroup("Draw renderables");
 			commandList.ClearColorTarget(0, RgbaFloat.Pink);
 			commandList.ClearDepthStencil(1f);
 
-			commandList.PushDebugGroup("Draw renderables");
 			if (specificOrderRenderables.Count == 0)
 			{
 				lock (unorderedRenderables)
@@ -565,22 +661,22 @@ public sealed class GraphicsWorld
 
 		// Locks all objects which are lockable to ensure no activity is going on during the reset.
 		lock (commandList)
-		lock (unorderedRenderables)
-		lock (specificOrderRenderables)
-		{
-			unorderedRenderables.Clear();
-			specificOrderRenderables.Clear();
-			renderableToOrder.Clear();
+			lock (unorderedRenderables)
+				lock (specificOrderRenderables)
+				{
+					unorderedRenderables.Clear();
+					specificOrderRenderables.Clear();
+					renderableToOrder.Clear();
 
-			foreach (var batchRenderable in BatchRenderable.BatchRenderables)
-			{
-				batchRenderable.Clear();
-			}
+					foreach (var batchRenderable in BatchRenderable.BatchRenderables)
+					{
+						batchRenderable.Clear();
+					}
 
-			CustomDrawOperations = null;
-			FrameRendered = null;
-			CollectRenderingPerformanceData = null;
-			WindowResized = null;
-		}
+					CustomDrawOperations = null;
+					FrameRendered = null;
+					CollectRenderingPerformanceData = null;
+					WindowResized = null;
+				}
 	}
 }

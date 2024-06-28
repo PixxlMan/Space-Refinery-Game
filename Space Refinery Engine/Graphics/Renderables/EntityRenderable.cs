@@ -5,13 +5,11 @@ using static Space_Refinery_Engine.Renderer.RenderingResources;
 
 namespace Space_Refinery_Engine.Renderer;
 
-public sealed class EntityRenderable : IRenderable
+public sealed class EntityRenderable : IRenderable, IShadowCaster
 {
 	private Mesh mesh;
 
 	private Material material;
-
-	private ResourceSet resourceSet;
 
 	private DeviceBuffer transformationBuffer;
 
@@ -50,7 +48,7 @@ public sealed class EntityRenderable : IRenderable
 
 	public Transform Transform;
 
-	public static EntityRenderable CreateAndAdd(GraphicsWorld graphicsWorld, Transform transform, Mesh mesh, Material material, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
+	public static EntityRenderable CreateAndAdd(GraphicsWorld graphicsWorld, Transform transform, Mesh mesh, Material material)
 	{
 		EntityRenderable entityRenderable = new(transform)
 		{
@@ -60,10 +58,6 @@ public sealed class EntityRenderable : IRenderable
 		};
 
 		graphicsWorld.GraphicsDevice.UpdateBuffer(entityRenderable.transformationBuffer, 0, entityRenderable.Transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
-
-		BindableResource[] bindableResources = [lightInfoBuffer, cameraProjViewBuffer];
-		ResourceSetDescription resourceSetDescription = new(SharedLayout, bindableResources);
-		entityRenderable.resourceSet = graphicsWorld.Factory.CreateResourceSet(resourceSetDescription);
 
 		entityRenderable.graphicsWorld = graphicsWorld;
 
@@ -87,8 +81,21 @@ public sealed class EntityRenderable : IRenderable
 		commandList.UpdateBuffer(transformationBuffer, 0, Transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
 
 		commandList.SetPipeline(pipeline);
-		commandList.SetGraphicsResourceSet(0, resourceSet);
+		commandList.SetGraphicsResourceSet(0, SharedResourceSet);
 		material.AddSetCommands(commandList);
+		commandList.SetVertexBuffer(0, mesh.VertexBuffer);
+		commandList.SetIndexBuffer(mesh.IndexBuffer, mesh.IndexFormat);
+		commandList.SetVertexBuffer(1, transformationBuffer);
+
+		commandList.DrawIndexed(mesh.IndexCount);
+	}
+
+	public void AddShadowCasterDrawCommands(CommandList commandList)
+	{
+		commandList.UpdateBuffer(transformationBuffer, 0, Transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
+
+		commandList.SetPipeline(ShadowCasterPipelineResource);
+		commandList.SetGraphicsResourceSet(0, ShadowCasterProjViewOnlyResourceSet);
 		commandList.SetVertexBuffer(0, mesh.VertexBuffer);
 		commandList.SetIndexBuffer(mesh.IndexBuffer, mesh.IndexFormat);
 		commandList.SetVertexBuffer(1, transformationBuffer);

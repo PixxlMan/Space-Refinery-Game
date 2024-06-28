@@ -9,11 +9,11 @@ public class StarfieldRenderable : IRenderable
 	private ResourceSet viewInfoSet;
 	private Pipeline starfieldPipeline;
 
-	public static StarfieldRenderable Create(DeviceBuffer viewInfoBuffer, GraphicsWorld graphicsWorld)
+	public static StarfieldRenderable Create(GraphicsWorld graphicsWorld)
 	{
 		StarfieldRenderable starfieldRenderable = new();
 
-		starfieldRenderable.CreateDeviceObjects(viewInfoBuffer, graphicsWorld);
+		starfieldRenderable.CreateDeviceObjects(graphicsWorld);
 
 		return starfieldRenderable;
 	}
@@ -21,12 +21,12 @@ public class StarfieldRenderable : IRenderable
 	private StarfieldRenderable()
 	{ }
 
-	public void CreateDeviceObjects(DeviceBuffer viewInfoBuffer, GraphicsWorld graphicsWorld)
+	public void CreateDeviceObjects(GraphicsWorld graphicsWorld)
 	{
 		ResourceLayout invCameraInfoLayout = graphicsWorld.Factory.CreateResourceLayout(new ResourceLayoutDescription(
 			new ResourceLayoutElementDescription("InvCameraInfo", ResourceKind.UniformBuffer, ShaderStages.Fragment)));
 
-		viewInfoSet = graphicsWorld.Factory.CreateResourceSet(new ResourceSetDescription(invCameraInfoLayout, viewInfoBuffer));
+		viewInfoSet = graphicsWorld.Factory.CreateResourceSet(new ResourceSetDescription(invCameraInfoLayout, RenderingResources.ViewInfoBuffer));
 
 		ShaderSetDescription starfieldShaders = new(
 			[],

@@ -57,7 +57,7 @@ public sealed class LevelObjectType : IEntityType, ISerializableReference
 	{
 		Material ??= gameData.GraphicsWorld.MaterialLoader.LoadCached(MaterialInfo.MaterialTexturePaths);
 
-		BatchRenderable = BatchRenderable.CreateAndAdd($"{Name} LevelObject Type Batch Renderable", gameData.GraphicsWorld, Mesh, Material, gameData.GraphicsWorld.CameraProjViewBuffer, gameData.GraphicsWorld.LightInfoBuffer);
+		BatchRenderable = BatchRenderable.CreateAndAdd($"{Name} LevelObject Type Batch Renderable", gameData.GraphicsWorld, Mesh, Material);
 
 		gameData.GraphicsWorld.AddRenderable(BatchRenderable);
 

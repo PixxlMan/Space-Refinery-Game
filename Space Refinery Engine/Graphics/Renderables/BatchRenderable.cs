@@ -5,13 +5,11 @@ using static Space_Refinery_Engine.Renderer.RenderingResources;
 
 namespace Space_Refinery_Engine.Renderer;
 
-public sealed partial class BatchRenderable : IRenderable
+public sealed partial class BatchRenderable : IRenderable, IShadowCaster
 {
 	private Mesh mesh;
 
 	private Material material;
-
-	private ResourceSet resourceSet;
 
 	private DeviceBuffer transformationsBuffer;
 
@@ -135,6 +133,7 @@ public sealed partial class BatchRenderable : IRenderable
 	public void Restore()
 	{
 		graphicsWorld.AddRenderable(this);
+		graphicsWorld.AddShadowCaster(this);
 	}
 
 	public void Clear()
@@ -169,7 +168,7 @@ public sealed partial class BatchRenderable : IRenderable
 		}
 	}
 
-	public static BatchRenderable CreateAndAdd(string name, GraphicsWorld graphicsWorld, Mesh mesh, Material material, BindableResource cameraProjViewBuffer, BindableResource lightInfoBuffer)
+	public static BatchRenderable CreateAndAdd(string name, GraphicsWorld graphicsWorld, Mesh mesh, Material material)
 	{
 		BatchRenderable batchRenderable = new()
 		{
@@ -177,10 +176,6 @@ public sealed partial class BatchRenderable : IRenderable
 			mesh = mesh,
 			material = material,
 		};
-
-		BindableResource[] bindableResources = [lightInfoBuffer, cameraProjViewBuffer];
-		ResourceSetDescription resourceSetDescription = new ResourceSetDescription(SharedLayout, bindableResources);
-		batchRenderable.resourceSet = graphicsWorld.Factory.CreateResourceSet(resourceSetDescription);
 
 		batchRenderable.graphicsWorld = graphicsWorld;
 
@@ -289,8 +284,27 @@ public sealed partial class BatchRenderable : IRenderable
 			}
 
 			commandList.SetPipeline(pipeline);
-			commandList.SetGraphicsResourceSet(0, resourceSet);
+			commandList.SetGraphicsResourceSet(0, SharedResourceSet);
 			material.AddSetCommands(commandList);
+			commandList.SetVertexBuffer(0, mesh.VertexBuffer);
+			commandList.SetIndexBuffer(mesh.IndexBuffer, mesh.IndexFormat);
+			commandList.SetVertexBuffer(1, transformationsBuffer);
+
+			commandList.DrawIndexed(mesh.IndexCount, (uint)transforms.Count, 0, 0, 0);
+		}
+	}
+
+	public void AddShadowCasterDrawCommands(CommandList commandList)
+	{
+		lock (syncRoot)
+		{
+			if (TransformsCount == 0 || !shouldDraw)
+			{
+				return;
+			}
+
+			commandList.SetPipeline(ShadowCasterPipelineResource);
+			commandList.SetGraphicsResourceSet(0, ShadowCasterProjViewOnlyResourceSet);
 			commandList.SetVertexBuffer(0, mesh.VertexBuffer);
 			commandList.SetIndexBuffer(mesh.IndexBuffer, mesh.IndexFormat);
 			commandList.SetVertexBuffer(1, transformationsBuffer);

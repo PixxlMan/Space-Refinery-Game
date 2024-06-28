@@ -15,10 +15,6 @@ public sealed class DebugRender : IRenderable
 
 	private Pipeline wireframePipeline;
 
-	private ResourceLayout sharedLayout;
-
-	private ResourceSet resourceSet;
-
 	private Dictionary<Transform, DeviceBuffer> transformationBuffers = new();
 
 	private Dictionary<Vector4, DeviceBuffer> colorBuffers = new();
@@ -49,13 +45,6 @@ public sealed class DebugRender : IRenderable
 
 	private void CreateDeviceObjects(GraphicsWorld graphicsWorld)
 	{
-		ResourceLayoutElementDescription[] resourceLayoutElementDescriptions =
-		{
-			new ResourceLayoutElementDescription("ProjView", ResourceKind.UniformBuffer, ShaderStages.Vertex),
-		};
-		ResourceLayoutDescription resourceLayoutDescription = new ResourceLayoutDescription(resourceLayoutElementDescriptions);
-		sharedLayout = graphicsWorld.Factory.CreateResourceLayout(resourceLayoutDescription);
-
 		VertexLayoutDescription transformationVertexShaderParameterLayout = new VertexLayoutDescription(
 			new VertexElementDescription("InstancePosition", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3),
 			new VertexElementDescription("InstanceRotationM11", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float1),
@@ -90,7 +79,7 @@ public sealed class DebugRender : IRenderable
 			scissorTestEnabled: false
 			),
 			PrimitiveTopology = PrimitiveTopology.TriangleList,
-			ResourceLayouts = [sharedLayout],
+			ResourceLayouts = [RenderingResources.CameraProjViewOnlyLayout],
 			ShaderSet = new ShaderSetDescription(
 				vertexLayouts: [RenderingResources.VertexLayout, colorVertexLayout, transformationVertexShaderParameterLayout],
 				shaders: Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Graphics", "Shaders"), "DebugRenderable", graphicsWorld.Factory)
@@ -115,7 +104,7 @@ public sealed class DebugRender : IRenderable
 			scissorTestEnabled: false
 			),
 			PrimitiveTopology = PrimitiveTopology.TriangleList,
-			ResourceLayouts = [sharedLayout],
+			ResourceLayouts = [RenderingResources.CameraProjViewOnlyLayout],
 			ShaderSet = new ShaderSetDescription(
 				vertexLayouts: [RenderingResources.VertexLayout, colorVertexLayout, transformationVertexShaderParameterLayout],
 				shaders: Utils.LoadShaders(Path.Combine(Environment.CurrentDirectory, "Graphics", "Shaders"), "DebugRenderable", graphicsWorld.Factory)
@@ -124,10 +113,6 @@ public sealed class DebugRender : IRenderable
 		};
 
 		wireframePipeline = graphicsWorld.Factory.CreateGraphicsPipeline(wireframePipelineDescription);
-
-		BindableResource[] bindableResources = [GraphicsWorld.CameraProjViewBuffer];
-		ResourceSetDescription resourceSetDescription = new(sharedLayout, bindableResources);
-		resourceSet = graphicsWorld.Factory.CreateResourceSet(resourceSetDescription);
 	}
 
 	public void AddDrawCommands(CommandList cl, FixedDecimalLong8 _)
@@ -156,7 +141,7 @@ public sealed class DebugRender : IRenderable
 			cl.PushDebugGroup("Debug objects");
 
 			cl.SetPipeline(pipeline);
-			cl.SetGraphicsResourceSet(0, resourceSet);
+			cl.SetGraphicsResourceSet(0, RenderingResources.CameraProjViewOnlyResourceSet);
 
 			foreach (var renderable in debugRenderables)
 			{

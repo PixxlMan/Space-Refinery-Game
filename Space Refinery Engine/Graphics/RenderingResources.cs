@@ -1,4 +1,7 @@
-﻿using Space_Refinery_Engine;
+﻿using FixedPrecision;
+using Space_Refinery_Engine;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using Veldrid;
 
 namespace Space_Refinery_Engine.Renderer;
@@ -20,12 +23,15 @@ public static class RenderingResources
 	public static ResourceLayout TextureLayout { get; private set; }
 	public static ResourceLayout MaterialLayout { get; private set; }
 	public static ResourceLayout SharedLayout { get; private set; }
+	public static ResourceLayout CameraProjViewOnlyLayout { get; private set; }
 
 	public static VertexLayoutDescription TransformationVertexShaderParameterLayout { get; private set; }
 	public static VertexLayoutDescription VertexLayout { get; private set; }
 
 	public static Pipeline ClockwisePipelineResource { get; private set; }
 	public static Pipeline CounterClockwisePipelineResource { get; private set; }
+
+	public static Pipeline ShadowCasterPipelineResource { get; private set; }
 
 	public static PixelFormat DepthFormat => PixelFormat.R16_UNorm;
 	public static PixelFormat ColorFormat => PixelFormat.B8_G8_R8_A8_UNorm;
@@ -36,7 +42,18 @@ public static class RenderingResources
 	public static DeviceBuffer FullscreenQuadVertexBuffer { get; private set; }
 	public static DeviceBuffer FullscreenQuadIndexBuffer { get; private set; }
 	public static VertexLayoutDescription FullscreenQuadVertexLayout { get; private set; }
-	public static Pipeline FullscreenQuadPipeline { get; private set; } 
+	public static Pipeline FullscreenQuadPipeline { get; private set; }
+	
+	public static DeviceBuffer CameraProjViewBuffer { get; private set; }
+	public static DeviceBuffer LightInfoBuffer { get; private set; }
+	public static ResourceSet SharedResourceSet { get; private set; }
+	public static DeviceBuffer ViewInfoBuffer { get; private set; }
+
+	public static ResourceSet CameraProjViewOnlyResourceSet { get; private set; }
+
+	public static ResourceSet ShadowCasterProjViewOnlyResourceSet { get; private set; }
+
+	public static DeviceBuffer ShadowProjViewBuffer { get; private set; }
 
 	public static void CreateStaticDeviceResources(GraphicsWorld graphicsWorld)
 	{
@@ -72,6 +89,13 @@ public static class RenderingResources
 		};
 		ResourceLayoutDescription resourceLayoutDescription = new ResourceLayoutDescription(resourceLayoutElementDescriptions);
 		SharedLayout = graphicsWorld.Factory.CreateResourceLayout(ref resourceLayoutDescription);
+
+		ResourceLayoutElementDescription[] cameraProjViewOnlyLayoutElementDescription =
+		{
+			new ResourceLayoutElementDescription("ProjView", ResourceKind.UniformBuffer, ShaderStages.Vertex),
+		};
+		ResourceLayoutDescription cameraProjViewOnlyLayoutDescription = new ResourceLayoutDescription(cameraProjViewOnlyLayoutElementDescription);
+		CameraProjViewOnlyLayout = graphicsWorld.Factory.CreateResourceLayout(ref cameraProjViewOnlyLayoutDescription);
 
 		TransformationVertexShaderParameterLayout = new VertexLayoutDescription(
 				new VertexElementDescription("InstancePosition", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3),
@@ -142,6 +166,31 @@ public static class RenderingResources
 		};
 		CounterClockwisePipelineResource = graphicsWorld.Factory.CreateGraphicsPipeline(ref counterClockwisePipelineDescription);
 
+		GraphicsPipelineDescription shadowCasterPipelineDescription = new()
+		{
+			BlendState = BlendStateDescription.SingleOverrideBlend,
+			DepthStencilState = new DepthStencilStateDescription(
+				depthTestEnabled: true,
+				depthWriteEnabled: true,
+				comparisonKind: ComparisonKind.LessEqual
+			),
+			RasterizerState = new RasterizerStateDescription(
+				cullMode: FaceCullMode.Front, // If shadows are cast only from backfaces, we can avoid shadow acne.
+				fillMode: PolygonFillMode.Solid,
+				frontFace: FrontFace.Clockwise,
+				depthClipEnabled: true,
+				scissorTestEnabled: false
+			),
+			PrimitiveTopology = PrimitiveTopology.TriangleList,
+			ResourceLayouts = [CameraProjViewOnlyLayout],
+			ShaderSet = new ShaderSetDescription(
+				vertexLayouts: [VertexLayout, TransformationVertexShaderParameterLayout],
+				shaders: graphicsWorld.ShaderLoader.LoadVertexFragmentCached("ShadowCaster")
+			),
+			Outputs = graphicsWorld.ShadowRenderingOutputDescription
+		};
+		ShadowCasterPipelineResource = graphicsWorld.Factory.CreateGraphicsPipeline(ref shadowCasterPipelineDescription);
+
 		FullscreenQuadVertexLayout = new(
 			new VertexElementDescription("Position", VertexElementFormat.Float2, VertexElementSemantic.TextureCoordinate),
 			new VertexElementDescription("TexCoord", VertexElementFormat.Float2, VertexElementSemantic.TextureCoordinate)
@@ -179,6 +228,24 @@ public static class RenderingResources
 			Outputs = graphicsWorld.Swapchain.Framebuffer.OutputDescription
 		};
 		FullscreenQuadPipeline = graphicsWorld.Factory.CreateGraphicsPipeline(ref fullscreenQuadPipelineDescription);
+
+
+		CameraProjViewBuffer = graphicsWorld.Factory.CreateBuffer(
+			new BufferDescription((uint)(Unsafe.SizeOf<Matrix4x4>() * 2), BufferUsage.UniformBuffer | BufferUsage.Dynamic));
+		LightInfoBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(32, BufferUsage.UniformBuffer | BufferUsage.Dynamic));
+		ViewInfoBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription((uint)Unsafe.SizeOf<MatrixPair>(), BufferUsage.UniformBuffer | BufferUsage.Dynamic));
+		
+		ShadowProjViewBuffer = graphicsWorld.Factory.CreateBuffer(
+			new BufferDescription((uint)(Unsafe.SizeOf<Matrix4x4>() * 2), BufferUsage.UniformBuffer | BufferUsage.Dynamic));
+
+		ResourceSetDescription sharedResourceSetDescription = new(SharedLayout, [LightInfoBuffer, CameraProjViewBuffer]);
+		SharedResourceSet = graphicsWorld.Factory.CreateResourceSet(ref sharedResourceSetDescription);
+
+		ResourceSetDescription cameraProjViewOnlyResourceSetDescription = new(CameraProjViewOnlyLayout, [CameraProjViewBuffer]);
+		CameraProjViewOnlyResourceSet = graphicsWorld.Factory.CreateResourceSet(ref cameraProjViewOnlyResourceSetDescription);
+
+		ResourceSetDescription shadowCasterProjViewOnlyResourceSetDescription = new(CameraProjViewOnlyLayout, [ShadowProjViewBuffer]);
+		ShadowCasterProjViewOnlyResourceSet = graphicsWorld.Factory.CreateResourceSet(ref shadowCasterProjViewOnlyResourceSetDescription);
 
 		WhiteTexture = Utils.GetSolidColoredTexture(RgbaByte.White, graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
 

@@ -16,7 +16,7 @@ public sealed class Sky
 
 	public static Sky CreateAndAdd(GraphicsWorld graphicsWorld)
 	{
-		SkyRenderable renderable = SkyRenderable.Create(graphicsWorld.ViewInfoBuffer, graphicsWorld);
+		SkyRenderable renderable = SkyRenderable.Create(graphicsWorld);
 
 		var starfield = new Sky(graphicsWorld, renderable);
 

@@ -33,7 +33,7 @@ void main() // https://learnopengl.com/PBR/Lighting
 	vec3 albedo = texture(sampler2D(AlbedoTex, Samp), fsin_TexCoord).xyz;
 	vec3 normal = texture(sampler2D(NormalTex, Samp), fsin_TexCoord).rgb;
 	float metallic = texture(sampler2D(MetalTex, Samp), fsin_TexCoord).r;
-	float roughness = texture(sampler2D(RoughTex, Samp), fsin_TexCoord).r;
+	float roughness = texture(sampler2D(RoughTex, Samp), fsin_TexCoord).r / 3;
 	float ao = texture(sampler2D(AOTex, Samp), fsin_TexCoord).r;
 
 	vec3 N = normalize(fsin_Normal);
@@ -70,6 +70,9 @@ void main() // https://learnopengl.com/PBR/Lighting
 	vec3 ambient = vec3(0.2) * albedo * ao;
 	vec3 color = ambient + Lo;
    
+	color = color / (color + vec3(1.0)); // Gamma correction
+	color = pow(color, vec3(1.0/2.2));
+	
 	outputColor = vec4(color, 1.0);
 	
 	outputColor = color / (color + vec4(1.0)); // Gamma correction

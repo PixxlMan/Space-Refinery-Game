@@ -38,6 +38,8 @@
     <None Remove="Graphics\Shaders\EntityRenderable-vertex.glsl" />
     <None Remove="Graphics\Shaders\FullscreenQuad-fragment.glsl" />
     <None Remove="Graphics\Shaders\FullscreenQuad-vertex.glsl" />
+    <None Remove="Graphics\Shaders\ShadowCaster-fragment.glsl" />
+    <None Remove="Graphics\Shaders\ShadowCaster-vertex.glsl" />
     <None Remove="Graphics\Shaders\Sky-fragment.glsl" />
     <None Remove="Graphics\Shaders\Sky-vertex.glsl" />
     <None Remove="Graphics\Shaders\Starfield-fragment.glsl" />
@@ -89,8 +91,14 @@
     <Content Include="Graphics\Shaders\DebugRenderable-vertex.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Graphics\Shaders\ShadowCaster-fragment.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Graphics\Shaders\EntityRenderable-fragment.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Shaders\ShadowCaster-vertex.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Graphics\Shaders\EntityRenderable-vertex.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -45,6 +45,6 @@ void main()
 			result += texelFetch(sampler2D(ThresholdIn, Samp), ivec2(pixelPos.x, pixelPos.y - i), 0).xyz * weights[i];
 		}
 
-		imageStore(TexColorOut, pixelPos, vec4(baseColor + result * 2, 1));
+		imageStore(TexColorOut, pixelPos, vec4(baseColor + result, 1));
 	}
 }

@@ -71,8 +71,12 @@ partial class UI
 	internal IInformationProvider? CurrentlySelectedInformationProvider { get { lock (syncRoot) return currentlySelectedInformationProvider; } set { lock (syncRoot) currentlySelectedInformationProvider = value; } }
 	/*TODO: do locking on each individual objects themselves instead of using SyncRoot (performance, mainly)? and of course get rid of the field then - all accesses have to be locked! even from within this class*/
 
+	private IInformationProvider? relevantInformationProvider;
+
 	private void DoInformationPanel(DecimalNumber deltaTime)
 	{
+		relevantInformationProvider = CurrentlySelectedInformationProvider ?? (informationPanelFading != 0 ? relevantInformationProvider : null); // Only update relevantInformationProvider the new CurrentlySelectedInformationProvider is not null
+
 		informationPanelFading += 1 * /*informationPanelFading **/ deltaTime * (CurrentlySelectedInformationProvider is null ? -1 : 4);
 		informationPanelFading = DecimalNumber.Clamp(informationPanelFading, 0, 1);
 
@@ -81,7 +85,7 @@ partial class UI
 		// Lock to ensure LookedAtPhysicsObject isn't destroyed while being used.
 		lock (gameData.PhysicsWorld.SyncRoot)
 		{
-			if (currentlySelectedInformationProvider is null || CurrentlyLookedAtPhysicsObject is null || !CurrentlyLookedAtPhysicsObject.Valid)
+			if (relevantInformationProvider is null || CurrentlyLookedAtPhysicsObject is null || !CurrentlyLookedAtPhysicsObject.Valid)
 			{
 				if (informationPanelFading != 0 && lastLookedAtPhysicsObject is not null && lastLookedAtPhysicsObject.Valid)
 				{
@@ -102,31 +106,30 @@ partial class UI
 
 		// TODO: add if (looking at but not visible) -> place at middle! - to ensure visibility when inside object?)
 
-		ImGui.SetNextWindowBgAlpha((float)informationPanelFading);
-		ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoInputs);
-		ImGui.SetWindowPos(panelLocation.ToVector2(), ImGuiCond.Always);
-		//ImGui.SetWindowSize();
+		if (relevantInformationProvider is not null && !GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Show player info") && informationPanelFading != 0)
 		{
-			if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Show player info"))
+			ImGui.SetNextWindowBgAlpha((float)informationPanelFading);
+			ImGui.Begin("Information panel", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoInputs);
+			ImGui.SetWindowPos(panelLocation.ToVector2(), ImGuiCond.Always);
+			//ImGui.SetWindowSize();
 			{
-				ImGui.TextDisabled("Information for: Player");
-				ImGui.Text("Connector: " + ConnectorSelection);
-				ImGui.Text("Entity: " + EntitySelection);
-				ImGui.Text("Rotation: " + RotationIndex);
-				ImGui.Separator();
-			}
+				if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Show player info"))
+				{
+					ImGui.TextDisabled("Information for: Player");
+					ImGui.Text("Connector: " + ConnectorSelection);
+					ImGui.Text("Entity: " + EntitySelection);
+					ImGui.Text("Rotation: " + RotationIndex);
+					ImGui.Separator();
+				}
 
-			if (CurrentlySelectedInformationProvider is not null)
-			{
-				ImGui.TextDisabled($"{CurrentlySelectedInformationProvider.Name}");
-				CurrentlySelectedInformationProvider.InformationUI();
+				if (relevantInformationProvider is not null)
+				{
+					ImGui.TextDisabled($"{relevantInformationProvider.Name}");
+					relevantInformationProvider.InformationUI();
+				}
 			}
-			else
-			{
-				ImGui.TextDisabled("Nothing to view information for.");
-			}
+			ImGui.End();
 		}
-		ImGui.End();
 	}
 
 	private void DoHotbar(FixedDecimalLong8 deltaTime)

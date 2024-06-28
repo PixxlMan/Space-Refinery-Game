@@ -15,11 +15,30 @@ layout(set = 1, binding = 3) uniform texture2D MetalTex;
 layout(set = 1, binding = 4) uniform texture2D RoughTex;
 layout(set = 1, binding = 5) uniform texture2D AOTex;
 
+layout(set = 3, binding = 0) uniform texture2D shadowMap;
+
 layout(location = 0) in vec3 fsin_Position_WorldSpace;
 layout(location = 1) in vec3 fsin_Normal;
 layout(location = 2) in vec2 fsin_TexCoord;
+layout(location = 3) in vec4 fsin_Position_LightSpace;
 
 layout(location = 0) out vec4 outputColor;
+
+float ShadowCalculation(vec4 fragPosLightSpace)
+{
+    // perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(sampler2D(shadowMap, Samp), projCoords.xy).r; 
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+    // check whether current frag pos is in shadow
+    float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+
+    return shadow;
+}  
 
 float DistributionGGX(vec3 N, vec3 H, float roughness);
 float GeometrySchlickGGX(float NdotV, float roughness);
@@ -36,10 +55,12 @@ void main() // https://learnopengl.com/PBR/Lighting
 	float roughness = texture(sampler2D(RoughTex, Samp), fsin_TexCoord).r / 3;
 	float ao = texture(sampler2D(AOTex, Samp), fsin_TexCoord).r;
 
+	float shadow = ShadowCalculation(fsin_Position_LightSpace);
+
 	vec3 N = normalize(fsin_Normal);
 	vec3 V = normalize(CameraPosition - fsin_Position_WorldSpace);
 
-	vec3 F0 = vec3(0.04); 
+	vec3 F0 = vec3(0.04);
 	F0 = mix(F0, albedo, metallic);
 			   
 	// reflectance equation
@@ -68,15 +89,12 @@ void main() // https://learnopengl.com/PBR/Lighting
 	Lo += (kD * albedo / PI + specular) * radiance * NdotL; 
   
 	vec3 ambient = vec3(0.2) * albedo * ao;
-	vec3 color = ambient + Lo;
+	vec3 color = ambient + (Lo * shadow);
    
 	color = color / (color + vec3(1.0)); // Gamma correction
 	color = pow(color, vec3(1.0/2.2));
 	
 	outputColor = vec4(color, 1.0);
-	
-	outputColor = color / (color + vec4(1.0)); // Gamma correction
-	outputColor = pow(color, vec4(1.0/2.2));
 }
 
 vec3 fresnelSchlick(float cosTheta, vec3 F0)

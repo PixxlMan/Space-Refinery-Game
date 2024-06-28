@@ -51,7 +51,7 @@ public sealed class MaterialLoader(GraphicsWorld graphicsWorld)
 		}
 		else
 		{
-			normalTexture = RenderingResources.NeutralNormal;
+			normalTexture = RenderingResources.NeutralNormalTexture;
 		}
 		var metallicImage = gltfMaterial.GetChannel(KnownChannel.MetallicRoughness).GetValidTexture().PrimaryImage.Content;
 		var roughnessImage = gltfMaterial.GetChannel(KnownChannel.MetallicRoughness).GetValidTexture().PrimaryImage.Content;

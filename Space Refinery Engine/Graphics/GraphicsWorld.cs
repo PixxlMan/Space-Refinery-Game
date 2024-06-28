@@ -79,7 +79,6 @@ public sealed class GraphicsWorld
 				return swapchain;
 			}
 		}
-
 		set
 		{
 			lock (swapchain)
@@ -100,7 +99,6 @@ public sealed class GraphicsWorld
 				return renderFramebuffer;
 			}
 		}
-
 		set
 		{
 			lock (renderFramebufferSyncRoot)
@@ -121,7 +119,6 @@ public sealed class GraphicsWorld
 				return shadowFramebuffer;
 			}
 		}
-
 		set
 		{
 			lock (shadowFramebufferSyncRoot)
@@ -131,6 +128,7 @@ public sealed class GraphicsWorld
 		}
 	}
 	private Texture shadowMapTexture;
+	public ResourceSet ShadowMapResourceSet { get; private set; }
 
 	public OutputDescription RenderingOutputDescription => RenderFramebuffer.OutputDescription;
 	public OutputDescription ShadowRenderingOutputDescription => ShadowFramebuffer.OutputDescription;
@@ -208,11 +206,15 @@ public sealed class GraphicsWorld
 		Logging.LogScopeStart("Setting up GraphicsWorld");
 
 		// No dependency
+		this.graphicsDevice = gd;
+		this.factory = factory;
+		this.swapchain = swapchain;
+
+		// No dependency
 		Configuration.Default.PreferContiguousImageBuffers = true; // Use contigous image buffers in ImageSharp to load textures.
 																   // This is necessary for them to uploadable to the GPU!
-																   // No dependency
+		// No dependency
 		ShaderLoader = new(this);
-
 
 		// No dependency
 		this.window = window;
@@ -223,17 +225,17 @@ public sealed class GraphicsWorld
 		// No dependency
 		lightDir = Vector3FixedDecimalInt4.Normalize(new Vector3FixedDecimalInt4((FixedDecimalInt4)0.3, (FixedDecimalInt4)0.75, -(FixedDecimalInt4)0.3));
 
-
 		// Depends on Window
 		camera = new(window.Width, window.Height, Perspective.Perspective);
 		Camera.FarDistance = 100;
 		Camera.NearDistance = 0.1;
 		Camera.FieldOfView = 75 * FixedDecimalInt4.DegreesToRadians;
 
-
 		// These depend on the shader loader
-		CreateDeviceObjects(gd, factory, swapchain);
+		CreateShadowMapFramebuffer();
+		CreateRenderFramebuffer();
 		RenderingResources.CreateStaticDeviceResources(this);
+		CreateDeviceObjects();
 
 		// These depend on rendering resources
 		fullscreenQuad = new();
@@ -248,6 +250,13 @@ public sealed class GraphicsWorld
 		setUp = true;
 
 		Logging.LogScopeEnd();
+	}
+
+	private void CreateDeviceObjects()
+	{
+		commandList = factory.CreateCommandList();
+
+		ShadowMapResourceSet = factory.CreateResourceSet(new(RenderingResources.ShadowMapTextureLayout, shadowMapTexture));
 	}
 
 	private void HandleWindowResized()
@@ -344,11 +353,6 @@ public sealed class GraphicsWorld
 			maxY = FixedDecimalInt4.Max(maxY, trf.Y);
 			minZ = FixedDecimalInt4.Min(minZ, trf.Z);
 			maxZ = FixedDecimalInt4.Max(maxZ, trf.Z);
-			
-			if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Debug display shadow map"))
-			{
-				GameData.DebugRender.DrawCube(camera.Transform.PerformTransform(new(corner)), RgbaFloat.Red, new(0.1, 0.1, 0.1));
-			}
 		}
 
 		// Tune this parameter according to the scene
@@ -373,12 +377,6 @@ public sealed class GraphicsWorld
 		lightProjectionMatrix = Matrix4x4FixedDecimalInt4.CreateOrthographicOffCenter(minX, maxX, minY, maxY, minZ, maxZ);
 
 		lightViewMatrix = /*lightProjectionMatrix **/ lightView;
-
-		if (GameData.DebugSettings.AccessSetting<BooleanDebugSetting>("Debug display shadow map"))
-		{
-			GameData.DebugRender.DrawCube(camera.Transform.PerformTransform(new(lightViewMatrix.ToMatrix4x4().Translation.ToFixed<Vector3FixedDecimalInt4>())), RgbaFloat.White, Vector3FixedDecimalInt4.One * 10);
-			Logging.Log(lightViewMatrix.ToMatrix4x4().Translation.ToString());
-		}
 
 		// https://stackoverflow.com/questions/7574125/multiplying-a-matrix-and-a-vector-in-glm-opengl
 		static Vector3FixedDecimalInt4 LeftMultiplyColumnMajor(Matrix4x4FixedDecimalInt4 matrix, Vector3FixedDecimalInt4 vector)
@@ -445,18 +443,6 @@ public sealed class GraphicsWorld
 		{ Name = "Render Thread" };
 
 		thread.Start();
-	}
-
-	private void CreateDeviceObjects(GraphicsDevice gd, ResourceFactory factory, Swapchain swapchain)
-	{
-		this.graphicsDevice = gd;
-		this.factory = factory;
-		this.swapchain = swapchain;
-
-		CreateRenderFramebuffer();
-		CreateShadowMapFramebuffer();
-
-		commandList = factory.CreateCommandList();
 	}
 
 	public void AddRenderable(IRenderable renderable)
@@ -543,6 +529,12 @@ public sealed class GraphicsWorld
 			commandList.UpdateBuffer(RenderingResources.CameraProjViewBuffer, 0, new MatrixPair(Camera.ViewMatrix.ToMatrix4x4(), Camera.ProjectionMatrix.ToMatrix4x4()));
 			commandList.UpdateBuffer(RenderingResources.LightInfoBuffer, 0, new LightInfo(lightDir.ToVector3(), Camera.Transform.Position.ToVector3()));
 
+			CalculateShadowMapMatricies(out var lightViewMatrix, out var lightProjectionMatrix);
+			Matrix4x4.Invert(lightViewMatrix.ToMatrix4x4(), out var lightViewMatrixInv);
+			Matrix4x4.Invert(lightProjectionMatrix.ToMatrix4x4(), out var lightProjectionMatrixInv);
+			commandList.UpdateBuffer(RenderingResources.ShadowProjViewBuffer, 0, new MatrixPair(lightViewMatrix.ToMatrix4x4(), lightProjectionMatrix.ToMatrix4x4()));
+			commandList.UpdateBuffer(RenderingResources.ShadowRecieverBuffer, 0, lightViewMatrix.ToMatrix4x4() * lightProjectionMatrix.ToMatrix4x4());
+
 			Matrix4x4.Invert(Camera.ProjectionMatrix.ToMatrix4x4(), out Matrix4x4 inverseProjection);
 			Matrix4x4.Invert(Camera.ViewMatrix.ToMatrix4x4(), out Matrix4x4 inverseView);
 			commandList.UpdateBuffer(RenderingResources.ViewInfoBuffer, 0, new MatrixPair(
@@ -553,9 +545,6 @@ public sealed class GraphicsWorld
 			commandList.PushDebugGroup("Draw shadow casters");
 			commandList.SetFramebuffer(ShadowFramebuffer);
 			commandList.ClearDepthStencil(1f);
-
-			CalculateShadowMapMatricies(out var lightViewMatrix, out var lightProjectionMatrix);
-			commandList.UpdateBuffer(RenderingResources.ShadowProjViewBuffer, 0, new MatrixPair(lightViewMatrix.ToMatrix4x4(), lightProjectionMatrix.ToMatrix4x4()));
 
 			foreach (var shadowCaster in shadowCasters)
 			{

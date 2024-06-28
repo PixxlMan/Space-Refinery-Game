@@ -82,6 +82,8 @@ public sealed class EntityRenderable : IRenderable, IShadowCaster
 
 		commandList.SetPipeline(pipeline);
 		commandList.SetGraphicsResourceSet(0, SharedResourceSet);
+		commandList.SetGraphicsResourceSet(2, ShadowRecieverResourceSet);
+		commandList.SetGraphicsResourceSet(3, graphicsWorld.ShadowMapResourceSet);
 		material.AddSetCommands(commandList);
 		commandList.SetVertexBuffer(0, mesh.VertexBuffer);
 		commandList.SetIndexBuffer(mesh.IndexBuffer, mesh.IndexFormat);

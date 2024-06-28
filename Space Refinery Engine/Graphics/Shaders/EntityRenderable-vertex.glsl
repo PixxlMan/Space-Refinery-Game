@@ -8,6 +8,11 @@ layout(set = 0, binding = 1) uniform ProjView
 	mat4 View;
 };
 
+layout(set = 2, binding = 0) uniform ShadowReciever
+{
+	mat4 LightSpace;
+};
+
 layout(location = 0) in vec3 Position;
 layout(location = 1) in vec3 Normal;
 layout(location = 2) in vec2 TexCoord;
@@ -25,6 +30,7 @@ layout(location = 12) in float InstanceRotationM33;
 layout(location = 0) out vec3 fsin_Position_WorldSpace;
 layout(location = 1) out vec3 fsin_Normal;
 layout(location = 2) out vec2 fsin_TexCoord;
+layout(location = 3) out vec4 fsin_Position_LightSpace;
 
 void main()
 {
@@ -35,5 +41,6 @@ void main()
 	fsin_Position_WorldSpace = transformedPos;
 	gl_Position = View * Proj * pos;
 	fsin_Normal = normalize(instanceRotFull * Normal);
-	fsin_TexCoord = vec2(TexCoord);//, 0/*InstanceTexArrayIndex*/);
+	fsin_TexCoord = vec2(TexCoord);//, 0);
+	fsin_Position_LightSpace = LightSpace * vec4(transformedPos, 1.0);
 }

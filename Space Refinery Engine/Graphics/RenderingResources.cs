@@ -12,7 +12,7 @@ public static class RenderingResources
 
 	public static Texture WhiteTexture { get; private set; }
 
-	public static Texture NeutralNormal { get; private set; }
+	public static Texture NeutralNormalTexture { get; private set; }
 
 	public static Texture DefaultTexture { get; private set; }
 	public static Material DefaultMaterial { get; private set; }
@@ -24,6 +24,8 @@ public static class RenderingResources
 	public static ResourceLayout MaterialLayout { get; private set; }
 	public static ResourceLayout SharedLayout { get; private set; }
 	public static ResourceLayout CameraProjViewOnlyLayout { get; private set; }
+	public static ResourceLayout ShadowRecieverLayout { get; private set; }
+	public static ResourceLayout ShadowMapTextureLayout { get; private set; }
 
 	public static VertexLayoutDescription TransformationVertexShaderParameterLayout { get; private set; }
 	public static VertexLayoutDescription VertexLayout { get; private set; }
@@ -37,7 +39,7 @@ public static class RenderingResources
 	public static PixelFormat ColorFormat => PixelFormat.B8_G8_R8_A8_UNorm;
 	public static PixelFormat InternalColorFormat => PixelFormat.R32_G32_B32_A32_Float;
 
-	public static ReadOnlyMemory<VertexPositionTexture2D> FullscreenQuadVertexPositionTexture2D { get; } = Utils.GetQuadVertexPositionTexture();
+	public static ReadOnlyMemory<VertexPositionTexture2D> FullscreenQuadVertexPositionTexture2D { get; private set; }
 	public static ushort[] FullscreenQuadIndicies { get; } = [0, 1, 2, 0, 2, 3];
 	public static DeviceBuffer FullscreenQuadVertexBuffer { get; private set; }
 	public static DeviceBuffer FullscreenQuadIndexBuffer { get; private set; }
@@ -46,14 +48,18 @@ public static class RenderingResources
 	
 	public static DeviceBuffer CameraProjViewBuffer { get; private set; }
 	public static DeviceBuffer LightInfoBuffer { get; private set; }
-	public static ResourceSet SharedResourceSet { get; private set; }
 	public static DeviceBuffer ViewInfoBuffer { get; private set; }
+
+	public static ResourceSet SharedResourceSet { get; private set; }
+	public static ResourceSet ShadowRecieverResourceSet { get; private set; }
 
 	public static ResourceSet CameraProjViewOnlyResourceSet { get; private set; }
 
 	public static ResourceSet ShadowCasterProjViewOnlyResourceSet { get; private set; }
 
 	public static DeviceBuffer ShadowProjViewBuffer { get; private set; }
+
+	public static DeviceBuffer ShadowRecieverBuffer { get; private set; }
 
 	public static void CreateStaticDeviceResources(GraphicsWorld graphicsWorld)
 	{
@@ -70,6 +76,12 @@ public static class RenderingResources
 			new ResourceLayoutElementDescription("Samp", ResourceKind.Sampler, ShaderStages.Fragment),
 		};
 		TextureLayout = graphicsWorld.Factory.CreateResourceLayout(new ResourceLayoutDescription(textureLayoutDescriptions));
+
+		ResourceLayoutElementDescription[] shadowMapResourceLayoutDescriptions =
+		{
+			new ResourceLayoutElementDescription("ShadowMapTexture", ResourceKind.TextureReadOnly, ShaderStages.Fragment),
+		};
+		ShadowMapTextureLayout = graphicsWorld.Factory.CreateResourceLayout(new ResourceLayoutDescription(shadowMapResourceLayoutDescriptions));
 
 		ResourceLayoutElementDescription[] materialLayoutDescriptions =
 		{
@@ -89,6 +101,13 @@ public static class RenderingResources
 		};
 		ResourceLayoutDescription resourceLayoutDescription = new ResourceLayoutDescription(resourceLayoutElementDescriptions);
 		SharedLayout = graphicsWorld.Factory.CreateResourceLayout(ref resourceLayoutDescription);
+
+		ResourceLayoutElementDescription[] shadowRecieverResourceLayourElementDescriptions =
+		{
+			new ResourceLayoutElementDescription("ShadowInfo", ResourceKind.UniformBuffer, ShaderStages.Vertex),
+		};
+		ResourceLayoutDescription shadowRecieverResourceLayoutDescription = new ResourceLayoutDescription(shadowRecieverResourceLayourElementDescriptions);
+		ShadowRecieverLayout = graphicsWorld.Factory.CreateResourceLayout(ref shadowRecieverResourceLayoutDescription);
 
 		ResourceLayoutElementDescription[] cameraProjViewOnlyLayoutElementDescription =
 		{
@@ -132,7 +151,7 @@ public static class RenderingResources
 				scissorTestEnabled: false
 			),
 			PrimitiveTopology = PrimitiveTopology.TriangleList,
-			ResourceLayouts = [SharedLayout, MaterialLayout],
+			ResourceLayouts = [SharedLayout, MaterialLayout, ShadowRecieverLayout, ShadowMapTextureLayout],
 			ShaderSet = new ShaderSetDescription(
 				vertexLayouts: [VertexLayout, TransformationVertexShaderParameterLayout],
 				shaders: graphicsWorld.ShaderLoader.LoadVertexFragmentCached("EntityRenderable")
@@ -157,7 +176,7 @@ public static class RenderingResources
 				scissorTestEnabled: false
 			),
 			PrimitiveTopology = PrimitiveTopology.TriangleList,
-			ResourceLayouts = [SharedLayout, MaterialLayout],
+			ResourceLayouts = [SharedLayout, MaterialLayout, ShadowRecieverLayout, ShadowMapTextureLayout],
 			ShaderSet = new ShaderSetDescription(
 				vertexLayouts: [VertexLayout, TransformationVertexShaderParameterLayout],
 				shaders: graphicsWorld.ShaderLoader.LoadVertexFragmentCached("EntityRenderable")
@@ -190,6 +209,8 @@ public static class RenderingResources
 			Outputs = graphicsWorld.ShadowRenderingOutputDescription
 		};
 		ShadowCasterPipelineResource = graphicsWorld.Factory.CreateGraphicsPipeline(ref shadowCasterPipelineDescription);
+
+		FullscreenQuadVertexPositionTexture2D = Utils.GetQuadVertexPositionTexture();
 
 		FullscreenQuadVertexLayout = new(
 			new VertexElementDescription("Position", VertexElementFormat.Float2, VertexElementSemantic.TextureCoordinate),
@@ -237,9 +258,15 @@ public static class RenderingResources
 		
 		ShadowProjViewBuffer = graphicsWorld.Factory.CreateBuffer(
 			new BufferDescription((uint)(Unsafe.SizeOf<Matrix4x4>() * 2), BufferUsage.UniformBuffer | BufferUsage.Dynamic));
+		
+		ShadowRecieverBuffer = graphicsWorld.Factory.CreateBuffer(
+			new BufferDescription((uint)(Unsafe.SizeOf<Matrix4x4>()), BufferUsage.UniformBuffer | BufferUsage.Dynamic));
 
 		ResourceSetDescription sharedResourceSetDescription = new(SharedLayout, [LightInfoBuffer, CameraProjViewBuffer]);
 		SharedResourceSet = graphicsWorld.Factory.CreateResourceSet(ref sharedResourceSetDescription);
+
+		ResourceSetDescription shadowRecieverResourceSetDescription = new(ShadowRecieverLayout, [ShadowRecieverBuffer]);
+		ShadowRecieverResourceSet = graphicsWorld.Factory.CreateResourceSet(ref shadowRecieverResourceSetDescription);
 
 		ResourceSetDescription cameraProjViewOnlyResourceSetDescription = new(CameraProjViewOnlyLayout, [CameraProjViewBuffer]);
 		CameraProjViewOnlyResourceSet = graphicsWorld.Factory.CreateResourceSet(ref cameraProjViewOnlyResourceSetDescription);
@@ -249,10 +276,10 @@ public static class RenderingResources
 
 		WhiteTexture = Utils.GetSolidColoredTexture(RgbaByte.White, graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
 
-		NeutralNormal = Utils.GetSolidColoredTexture(new RgbaByte(128, 128, 255, 1), graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
+		NeutralNormalTexture = Utils.GetSolidColoredTexture(new RgbaByte(128, 128, 255, 1), graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
 
 		DefaultTexture = Utils.GetSolidColoredTexture(RgbaByte.LightGrey, graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
-		DefaultMaterial = Material.FromTextures("Default Material", DefaultTexture, DefaultTexture, DefaultTexture, DefaultTexture, DefaultTexture, graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
+		DefaultMaterial = Material.FromTextures("Default Material", DefaultTexture, NeutralNormalTexture, Utils.GetSolidColoredTexture(RgbaByte.Black, graphicsWorld.GraphicsDevice, graphicsWorld.Factory), DefaultTexture, DefaultTexture, graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
 
 		HasCreatedStaticDeviceResources = true;
 

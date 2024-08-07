@@ -3,7 +3,6 @@ using SharpGLTF.Scenes;
 using Space_Refinery_Engine.Renderer;
 using System.Numerics;
 using System.Xml;
-using Veldrid.Utilities;
 
 namespace Space_Refinery_Engine;
 
@@ -14,6 +13,8 @@ public static class MapLoader
 		Logging.LogScopeStart($"Loading map '{mapInfo.SerializableReference}' at {mapInfo.MapPath}");
 
 		var scene = SceneBuilder.LoadDefaultScene(mapInfo.MapPath);
+
+		gameData.GraphicsWorld.MeshLoader.LoadAndCacheAll(scene);
 
 		foreach (var instance in scene.Instances)
 		{
@@ -36,50 +37,27 @@ public static class MapLoader
 			Transform transform = new(gltfTransform.Translation.Value.ToFixed<Vector3FixedDecimalInt4>(), rotation);
 			Logging.Log(transform.ToString()!);
 
-			Vector3 scale;
-			if (gltfTransform.Scale is null)
-			{
-				scale = Vector3.One;
-			}
-			else
-			{
-				scale = gltfTransform.Scale.Value;
-			}
-			Logging.Log($"Scale = {scale}");
-
-			var meshInfo = instance.Content.GetGeometryAsset().Primitives.First();
-
-			if (!gameData.GraphicsWorld.MeshLoader.TryGetCached(name, out var mesh))
-			{
-				var verticies = new VertexPositionNormalTexture[meshInfo.Vertices.Count];
-
-				for (int i = 0; i < meshInfo.Vertices.Count; i++)
-				{
-					SharpGLTF.Geometry.IVertexBuilder? vertexBuilder = meshInfo.Vertices[i];
-					var geometry = vertexBuilder.GetGeometry();
-
-					var position = geometry.GetPosition() * scale;
-					geometry.TryGetNormal(out var normal);
-					var texCoords = vertexBuilder.GetMaterial().GetTexCoord(0);
-
-					verticies[i] = new(position, normal, texCoords);
-				}
-
-				mesh = Mesh.CreateMesh(meshInfo.GetIndices().Select((i) => (ushort)i).ToArray(), verticies, Veldrid.FrontFace.CounterClockwise, gameData.GraphicsWorld.GraphicsDevice, gameData.GraphicsWorld.Factory);
-				gameData.GraphicsWorld.MeshLoader.AddCache(name, mesh);
-			}
-
 			LevelObjectType levelObjectType;
 			var levelObjectTypeNameJsonNode = instance.Extras?["LevelObjectType"];
 			if (levelObjectTypeNameJsonNode is null)
 			{
+				if (gltfTransform.Scale is not null && gltfTransform.Scale.Value != Vector3.One)
+				{
+					throw new NotSupportedException("LevelObjects with an embedded mesh with a non-identity scale are not supported");
+				}
+
 				if (LevelObjectType.LevelObjectTypes.TryGetValue(name, out LevelObjectType? value))
 				{
 					levelObjectType = value;
 				}
 				else
 				{
-					levelObjectType = new(name, mesh!, new Collider(ColliderShapes.ConvexMesh, Transform.Identity, mesh: mesh), gameData.GraphicsWorld.MaterialLoader.LoadGLTFMaterial(meshInfo.Material), typeof(OrdinaryLevelObject));
+					if (!gameData.GraphicsWorld.MeshLoader.TryGetCached(name, out Mesh? mesh))
+					{
+						throw new GlitchInTheMatrixException($"Requested mesh {name} was not found in cache");
+					}
+
+					levelObjectType = new(name, mesh, new Collider(ColliderShapes.ConvexMesh, Transform.Identity, mesh: mesh), gameData.GraphicsWorld.MaterialLoader.LoadGLTFMaterial(instance.Content.GetGeometryAsset().Primitives.First().Material), typeof(OrdinaryLevelObject));
 
 					levelObjectType.SetUp(gameData);
 				}

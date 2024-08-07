@@ -26,18 +26,18 @@ layout(location = 0) out vec4 outputColor;
 
 float ShadowCalculation(vec4 fragPosLightSpace)
 {
-    // perform perspective divide
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    // transform to [0,1] range
-    projCoords = projCoords * 0.5 + 0.5;
-    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    float closestDepth = texture(sampler2D(shadowMap, Samp), projCoords.xy).r; 
-    // get depth of current fragment from light's perspective
-    float currentDepth = projCoords.z;
-    // check whether current frag pos is in shadow
-    float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+	// perform perspective divide
+	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+	// transform to [0,1] range
+	projCoords = projCoords * 0.5 + 0.5;
+	// get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+	float closestDepth = texture(sampler2D(shadowMap, Samp), projCoords.xy).r; 
+	// get depth of current fragment from light's perspective
+	float currentDepth = projCoords.z;
+	// check whether current frag pos is in shadow
+	float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
 
-    return shadow;
+	return shadow;
 }  
 
 float DistributionGGX(vec3 N, vec3 H, float roughness);
@@ -47,12 +47,18 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0);
 
 const float PI = 3.14159265359;
 
-void main() // https://learnopengl.com/PBR/Lighting
+// https://learnopengl.com/PBR/Lighting
+void main()
 {
 	vec3 albedo = texture(sampler2D(AlbedoTex, Samp), fsin_TexCoord).xyz;
+
 	vec3 normal = texture(sampler2D(NormalTex, Samp), fsin_TexCoord).rgb;
+	normal = normalize(normal * 2.0 - 1.0);
+
 	float metallic = texture(sampler2D(MetalTex, Samp), fsin_TexCoord).r;
-	float roughness = texture(sampler2D(RoughTex, Samp), fsin_TexCoord).r / 3;
+
+	float roughness = texture(sampler2D(RoughTex, Samp), fsin_TexCoord).r;
+
 	float ao = texture(sampler2D(AOTex, Samp), fsin_TexCoord).r;
 
 	float shadow = ShadowCalculation(fsin_Position_LightSpace);
@@ -69,7 +75,7 @@ void main() // https://learnopengl.com/PBR/Lighting
 	// calculate per-light radiance
 	vec3 L = LightDirection;
 	vec3 H = normalize(V + L);
-	vec3 radiance     = vec3(5, 5, 5);     
+	vec3 radiance     = vec3(5, 5, 5);
 		
 	// cook-torrance brdf
 	float NDF = DistributionGGX(N, H, roughness);        

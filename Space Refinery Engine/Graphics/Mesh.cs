@@ -1,6 +1,8 @@
 ﻿using System.Numerics;
 using Veldrid;
-using Veldrid.Utilities;
+using SharpGLTF.Scenes;
+using SharpGLTF.Geometry;
+using SharpGLTF.Materials;
 
 namespace Space_Refinery_Engine.Renderer;
 
@@ -9,13 +11,16 @@ public sealed class Mesh
 	private Mesh()
 	{ }
 
-	public Mesh(DeviceBuffer vertexBuffer, DeviceBuffer indexBuffer, IndexFormat indexFormat, uint indexCount)
+	public Mesh(string name, DeviceBuffer vertexBuffer, DeviceBuffer indexBuffer, IndexFormat indexFormat, uint indexCount)
 	{
+		Name = name;
 		VertexBuffer = vertexBuffer;
 		IndexBuffer = indexBuffer;
 		IndexFormat = indexFormat;
 		IndexCount = indexCount;
 	}
+
+	public string Name { get; private set; }
 
 	public Vector3[] Points { get; private set; }
 
@@ -29,38 +34,68 @@ public sealed class Mesh
 
 	public FrontFace WindingOrder { get; private set; }
 
-	public static Mesh LoadMesh(GraphicsDevice gd, ResourceFactory factory, string path)
+	public static Mesh LoadMesh(string path, GraphicsDevice gd, ResourceFactory factory)
 	{
-		ObjParser objParser = new();
+		SceneBuilder scene = SceneBuilder.LoadDefaultScene(path);
 
-		ObjFile objFile = objParser.Parse(File.ReadAllLines(path));
+		var mesh = LoadMesh(scene.Instances[0], gd, factory);
 
-		ConstructedMeshInfo meshInfo = objFile.GetFirstMesh();
+		return mesh;
+	}
+	
+	public static Mesh LoadMesh(InstanceBuilder instance, GraphicsDevice gd, ResourceFactory factory)
+	{
+		var meshInfo = instance.Content.GetGeometryAsset().Primitives.First();
 
-		Mesh mesh = new();
+		if (instance.Content.GetGeometryAsset().Primitives.Count > 1)
+		{
+			throw new NotSupportedException("Cannot load meshes containing several primitives");
+		}
 
-		mesh.IndexBuffer = factory.CreateBuffer(new BufferDescription((uint)(meshInfo.Indices.Length * 4), BufferUsage.IndexBuffer));
-		gd.UpdateBuffer(mesh.IndexBuffer, 0u, meshInfo.Indices);
-		mesh.IndexCount = (uint)meshInfo.Indices.Length;
-
-		mesh.VertexBuffer = factory.CreateBuffer(new BufferDescription((uint)(meshInfo.Vertices.Length * 32), BufferUsage.VertexBuffer));
-		gd.UpdateBuffer(mesh.VertexBuffer, 0u, meshInfo.Vertices);
-
-		mesh.IndexFormat = IndexFormat.UInt16;
-		mesh.WindingOrder = FrontFace.Clockwise;
+		var mesh = LoadMesh(instance.Name, meshInfo, gd, factory);
 
 		return mesh;
 	}
 
-	public static Mesh CreateMesh(ushort[] indicies, VertexPositionNormalTexture[] verticies, FrontFace windingOrder, GraphicsDevice gd, ResourceFactory factory)
+	public static Mesh LoadMesh(string name, IPrimitiveReader<MaterialBuilder> meshInfo, GraphicsDevice gd, ResourceFactory factory)
 	{
-		Mesh mesh = new();
+		var verticies = new VertexData[meshInfo.Vertices.Count];
 
-		mesh.IndexBuffer = factory.CreateBuffer(new BufferDescription((uint)(indicies.Length * 4), BufferUsage.IndexBuffer));
+		for (int i = 0; i < meshInfo.Vertices.Count; i++)
+		{
+			IVertexBuilder? vertexBuilder = meshInfo.Vertices[i];
+			var geometry = vertexBuilder.GetGeometry();
+
+			var position = geometry.GetPosition();
+			geometry.TryGetNormal(out var normal);
+			var texCoords = vertexBuilder.GetMaterial().GetTexCoord(0);
+			if (!geometry.TryGetTangent(out var tangent))
+			{
+				throw new NotSupportedException("Cannot load meshes that don't have exported tangents");
+			}
+
+			verticies[i] = new(position, normal, texCoords, new(tangent.X, tangent.Y, tangent.Z));
+		}
+
+		var mesh = CreateMesh(name, meshInfo.GetIndices().Select((i) => (ushort)i).ToArray(), verticies, FrontFace.CounterClockwise, gd, factory);
+
+		return mesh;
+	}
+
+	public static Mesh CreateMesh(string name, ushort[] indicies, VertexData[] verticies, FrontFace windingOrder, GraphicsDevice gd, ResourceFactory factory)
+	{
+		Mesh mesh = new()
+		{
+			Name = name,
+		};
+
+		mesh.IndexBuffer = factory.CreateBuffer(new BufferDescription((uint)(indicies.Length * sizeof(ushort)), BufferUsage.IndexBuffer));
+		mesh.IndexBuffer.Name = $"{name} index buffer";
 		gd.UpdateBuffer(mesh.IndexBuffer, 0u, indicies);
 		mesh.IndexCount = (uint)indicies.Length;
 
-		mesh.VertexBuffer = factory.CreateBuffer(new BufferDescription((uint)(verticies.Length * 32), BufferUsage.VertexBuffer));
+		mesh.VertexBuffer = factory.CreateBuffer(new BufferDescription((uint)(verticies.Length * VertexData.SizeInBytes), BufferUsage.VertexBuffer));
+		mesh.VertexBuffer.Name = $"{name} vertex buffer";
 		gd.UpdateBuffer(mesh.VertexBuffer, 0u, verticies);
 
 		mesh.Points = GetVertexPositions(verticies);
@@ -71,7 +106,7 @@ public sealed class Mesh
 		return mesh;
 	}
 
-	private static Vector3[] GetVertexPositions(VertexPositionNormalTexture[] verticies)
+	private static Vector3[] GetVertexPositions(VertexData[] verticies)
 	{
 		return verticies.Select(vpnt => vpnt.Position).ToArray();
 	}

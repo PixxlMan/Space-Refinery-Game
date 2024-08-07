@@ -29,6 +29,13 @@ public sealed class DebugRender : IRenderable
 
 	private object sync = new();
 
+	private GraphicsWorld graphicsWorld { get; }
+
+	private DebugRender(GraphicsWorld graphicsWorld)
+	{
+		this.graphicsWorld = graphicsWorld;
+	}
+
 	public static DebugRender Create(GraphicsWorld graphicsWorld)
 	{
 		Logging.LogScopeStart("Creating DebugRender");
@@ -160,13 +167,6 @@ public sealed class DebugRender : IRenderable
 		}
 	}
 
-	private DebugRender(GraphicsWorld graphicsWorld)
-	{
-		GraphicsWorld = graphicsWorld;
-	}
-
-	public GraphicsWorld GraphicsWorld;
-
 	private void GetBuffers(RgbaFloat color, Transform transform, out DeviceBuffer transformationBuffer, out DeviceBuffer colorBuffer)
 	{
 		lock (sync)
@@ -177,8 +177,8 @@ public sealed class DebugRender : IRenderable
 			}
 			else
 			{
-				transformationBuffer = GraphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes, BufferUsage.VertexBuffer));
-				GraphicsWorld.GraphicsDevice.UpdateBuffer(transformationBuffer, 0, transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
+				transformationBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription(BlittableTransform.SizeInBytes, BufferUsage.VertexBuffer));
+				graphicsWorld.GraphicsDevice.UpdateBuffer(transformationBuffer, 0, transform.GetBlittableTransform(Vector3FixedDecimalInt4.Zero));
 
 				transformationBuffers.Add(transform, transformationBuffer);
 			}
@@ -189,8 +189,8 @@ public sealed class DebugRender : IRenderable
 			}
 			else
 			{
-				colorBuffer = GraphicsWorld.Factory.CreateBuffer(new BufferDescription((uint)RgbaFloat.SizeInBytes, BufferUsage.VertexBuffer));
-				GraphicsWorld.GraphicsDevice.UpdateBuffer(colorBuffer, 0, new Vector3(color.R, color.G, color.B));
+				colorBuffer = graphicsWorld.Factory.CreateBuffer(new BufferDescription((uint)RgbaFloat.SizeInBytes, BufferUsage.VertexBuffer));
+				graphicsWorld.GraphicsDevice.UpdateBuffer(colorBuffer, 0, new Vector3(color.R, color.G, color.B));
 
 				colorBuffers.Add(color.ToVector4(), colorBuffer);
 			}
@@ -203,7 +203,7 @@ public sealed class DebugRender : IRenderable
 		{
 			if (!cubeMeshes.TryGetValue(size, out Mesh? mesh))
 			{
-				mesh = Utils.CreateDeviceResources(Utils.GetCubeVertexPositionTexture(size.ToVector3()), Utils.GetCubeIndices(), GraphicsWorld.GraphicsDevice, GraphicsWorld.Factory);
+				mesh = Utils.GetCubeMesh(size, graphicsWorld.GraphicsDevice, graphicsWorld.Factory);
 
 				cubeMeshes.Add(size, mesh);
 			}

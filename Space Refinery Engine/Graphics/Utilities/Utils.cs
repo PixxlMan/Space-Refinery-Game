@@ -222,7 +222,7 @@ public static class Utils
 		return clone;
 	}
 
-	public static Mesh CreateDeviceResources(VertexPositionTexture[] vertexData, ushort[] indexData, GraphicsDevice gd, ResourceFactory factory)
+	public static Mesh CreateNormallessTangentlessMesh(string name, VertexPositionTexture[] vertexData, ushort[] indexData, GraphicsDevice gd, ResourceFactory factory)
 	{
 		DeviceBuffer vertexBuffer = factory.CreateBuffer(new BufferDescription((uint)(VertexPositionTexture.SizeInBytes * vertexData.Length), BufferUsage.VertexBuffer));
 		gd.UpdateBuffer(vertexBuffer, 0, vertexData);
@@ -230,14 +230,14 @@ public static class Utils
 		DeviceBuffer indexBuffer = factory.CreateBuffer(new BufferDescription(sizeof(ushort) * (uint)indexData.Length, BufferUsage.IndexBuffer));
 		gd.UpdateBuffer(indexBuffer, 0, indexData);
 
-		return new Mesh(vertexBuffer, indexBuffer, IndexFormat.UInt16, (uint)indexData.Length);
+		return new Mesh(name, vertexBuffer, indexBuffer, IndexFormat.UInt16, (uint)indexData.Length);
 	}
 
 	public static Mesh GetCubeMesh(Vector3FixedDecimalInt4 size, GraphicsDevice graphicsDevice, ResourceFactory factory)
 	{
 		Mesh mesh;
 		
-		mesh = CreateDeviceResources(GetCubeVertexPositionTexture(size.ToVector3()), GetCubeIndices(), graphicsDevice, factory);
+		mesh = CreateNormallessTangentlessMesh($"{size.ToString()} cube mesh", GetCubeVertexPositionTexture(size.ToVector3()), GetCubeIndices(), graphicsDevice, factory);
 
 		return mesh;
 	}
@@ -246,21 +246,21 @@ public static class Utils
 	{
 		Mesh mesh;
 
-		mesh = CreateDeviceResources(GetQuadVertexPositionTexture(size.ToVector2()), GetQuadIndices(), graphicsDevice, factory);
+		mesh = CreateNormallessTangentlessMesh($"{size.ToString()} quad mesh", GetQuadVertexPositionTexture(size.ToVector2()), GetQuadIndices(), graphicsDevice, factory);
 
 		return mesh;
 	}
 
 	private static VertexPositionTexture[] GetQuadVertexPositionTexture(Vector2 size)
 	{
-		VertexPositionTexture[] vertices = new VertexPositionTexture[]
-		{
+		VertexPositionTexture[] vertices =
+		[
 			// Front                   
 			new VertexPositionTexture(new Vector3(new Vector2(-.5f, +.5f) * size, 0), new Vector3(0, 0, 1f), new Vector2(0, 0)),
 			new VertexPositionTexture(new Vector3(new Vector2(+.5f, +.5f) * size, 0), new Vector3(0, 0, 1f), new Vector2(1, 0)),
 			new VertexPositionTexture(new Vector3(new Vector2(+.5f, -.5f) * size, 0), new Vector3(0, 0, 1f), new Vector2(1, 1)),
 			new VertexPositionTexture(new Vector3(new Vector2(-.5f, -.5f) * size, 0), new Vector3(0, 0, 1f), new Vector2(0, 1)),
-		};
+		];
 
 		return vertices;
 	}
